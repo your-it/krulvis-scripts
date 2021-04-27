@@ -4,47 +4,51 @@ package org.powbot.krulvis.api.extensions.walking.local
 import org.powbot.krulvis.api.extensions.walking.Flag
 import org.powbot.krulvis.api.extensions.walking.Flag.Rotation
 import org.powbot.krulvis.api.extensions.walking.PathFinder
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorAction
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalTileAction
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalWebAction
-import org.powbot.krulvis.api.extensions.walking.local.nodes.StartTile
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorEdge
+import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalTileEdge
+import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
+import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
+import org.powbot.krulvis.api.ATContext.blocked
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
+import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
 import java.util.*
+import java.util.logging.Level
+import java.util.logging.Logger
 
 
-class LocalPathFinder(override val script: ATScript) :
-    PathFinder {
+object LocalPathFinder : PathFinder {
 
     val maxAttempts = 2500
-    lateinit var flags: ICollisionMap
+    lateinit var cachedFlags: ICollisionMap
+    val logger = Logger.getLogger("LocalPathFinder")
 
     fun findPath(end: Tile?): LocalPath {
         return if (end != null) {
-            findPath(me.tile(), end)
+            findPath(ClientContext.ctx().players.local().tile(), end)
         } else {
-            LocalPath(emptyList(), script)
+            LocalPath(emptyList())
         }
     }
 
     fun findPath(begin: Tile, end: Tile): LocalPath {
-        this.flags = ctx.client().collisionMaps[begin.floor()]
-        val end = if (end.blocked(flags)) end.getWalkableNeighbor() else end
+        this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()]
+        val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
 
-        val startAction = StartTile(
+        val startAction = StartEdge(
             begin,
             end ?: begin
         )
         if (begin == end || end == null) {
-            return LocalPath(listOf(startAction), script)
+            return LocalPath(listOf(startAction))
         }
-        debug("FIND LOCAL PATH: $begin -> $end")
+        logger.log(Level.INFO, "FIND LOCAL PATH: $begin -> $end, distance: ${begin.distanceTo(end)}")
         var attempts = 0
 
-        val open = getLocalNeighbors(startAction, end)
-        val searched = mutableListOf<LocalWebAction>()
+        val open = startAction.getLocalNeighbors(end)
+        val searched = mutableListOf<LocalEdge>()
 
         while (open.isNotEmpty() && attempts < maxAttempts) {
             val next = getBest(open) ?: continue
@@ -54,7 +58,7 @@ class LocalPathFinder(override val script: ATScript) :
             if (next.destination == end) {
                 return buildPath(next)
             }
-            val neighbors = next.getNeighbors(this).filterNot {
+            val neighbors = next.getNeighbors().filterNot {
                 open.contains(it.destination) || searched.contains(it.destination)
             }
 //            println("Found ${neighbors.size} neighbors")
@@ -63,40 +67,39 @@ class LocalPathFinder(override val script: ATScript) :
             searched.add(next)
             attempts++
         }
-        debug("Ran out of attempts trying to get LOCAL path")
+        logger.log(Level.WARNING, "Ran out of attempts trying to get LOCAL path to: $end")
 
-        return LocalPath(emptyList(), script)
+        return LocalPath(emptyList())
     }
 
-    fun buildPath(last: LocalWebAction): LocalPath {
-        val path = LinkedList<LocalWebAction>()
+    fun buildPath(last: LocalEdge): LocalPath {
+        val path = LinkedList<LocalEdge>()
         var r = last
-        while (r !is StartTile) {
+        while (r !is StartEdge) {
             path.add(r)
             r = r.parent
         }
-        return LocalPath(path.reversed(), script)
+        return LocalPath(path.reversed())
     }
 
-    fun getBest(open: Collection<LocalWebAction>): LocalWebAction? {
-        return open.minBy { it.getPathCost(this) + it.heuristics }
+    fun getBest(open: Collection<LocalEdge>): LocalEdge? {
+        return open.minByOrNull { it.getPathCost() + it.heuristics }
     }
 
-    fun MutableList<LocalWebAction>.contains(destination: Tile): Boolean {
+    fun MutableList<LocalEdge>.contains(destination: Tile): Boolean {
         return any { it.destination == destination }
     }
 
     /**
-     * Used to find neighbors of LocalTile's.
+     * Used to find neighbors of LocalTile
      */
-    fun getLocalNeighbors(
-        src: LocalWebAction,
+    fun LocalEdge.getLocalNeighbors(
         finalDesination: Tile,
-        flags: ICollisionMap = this.flags
-    ): MutableList<LocalWebAction> {
-        val neighbors = mutableListOf<LocalWebAction>()
+        flags: ICollisionMap = cachedFlags
+    ): MutableList<LocalEdge> {
+        val neighbors = mutableListOf<LocalEdge>()
 
-        val current = src.destination
+        val current = destination
         val p = current.floor()
 
         val n = Tile(current.x(), current.y() + 1, p)
@@ -112,20 +115,20 @@ class LocalPathFinder(override val script: ATScript) :
         if (!n.blocked(flags)) {
             if (!current.blocked(flags, Flag.W_N)) {
                 neighbors.add(
-                    LocalTileAction(
-                        src,
+                    LocalTileEdge(
+                        this,
                         n,
                         finalDesination
                     )
                 )
             } else {
                 var door = getDoor(current, Rotation.NORTH)
-                if(door == GameObject.NIL) door = getDoor(n, Rotation.SOUTH)
+                if (door == GameObject.NIL) door = getDoor(n, Rotation.SOUTH)
                 if (door != GameObject.NIL) {
                     neighbors.add(
-                        LocalDoorAction(
+                        LocalDoorEdge(
                             door,
-                            src,
+                            this,
                             n,
                             finalDesination
                         )
@@ -136,20 +139,20 @@ class LocalPathFinder(override val script: ATScript) :
         if (!e.blocked(flags)) {
             if (!current.blocked(flags, Flag.W_E)) {
                 neighbors.add(
-                    LocalTileAction(
-                        src,
+                    LocalTileEdge(
+                        this,
                         e,
                         finalDesination
                     )
                 )
             } else {
                 var door = getDoor(current, Rotation.EAST)
-                if(door == GameObject.NIL) door = getDoor(e, Rotation.WEST)
+                if (door == GameObject.NIL) door = getDoor(e, Rotation.WEST)
                 if (door != GameObject.NIL) {
                     neighbors.add(
-                        LocalDoorAction(
+                        LocalDoorEdge(
                             door,
-                            src,
+                            this,
                             e,
                             finalDesination
                         )
@@ -160,20 +163,20 @@ class LocalPathFinder(override val script: ATScript) :
         if (!s.blocked(flags)) {
             if (!current.blocked(flags, Flag.W_S)) {
                 neighbors.add(
-                    LocalTileAction(
-                        src,
+                    LocalTileEdge(
+                        this,
                         s,
                         finalDesination
                     )
                 )
             } else {
                 var door = getDoor(current, Rotation.SOUTH)
-                if(door == GameObject.NIL) door = getDoor(s, Rotation.NORTH)
+                if (door == GameObject.NIL) door = getDoor(s, Rotation.NORTH)
                 if (door != GameObject.NIL) {
                     neighbors.add(
-                        LocalDoorAction(
+                        LocalDoorEdge(
                             door,
-                            src,
+                            this,
                             s,
                             finalDesination
                         )
@@ -184,20 +187,20 @@ class LocalPathFinder(override val script: ATScript) :
         if (!w.blocked(flags)) {
             if (!current.blocked(flags, Flag.W_W)) {
                 neighbors.add(
-                    LocalTileAction(
-                        src,
+                    LocalTileEdge(
+                        this,
                         w,
                         finalDesination
                     )
                 )
             } else {
                 var door = getDoor(current, Rotation.WEST)
-                if(door == GameObject.NIL) door = getDoor(w, Rotation.EAST)
+                if (door == GameObject.NIL) door = getDoor(w, Rotation.EAST)
                 if (door != GameObject.NIL) {
                     neighbors.add(
-                        LocalDoorAction(
+                        LocalDoorEdge(
                             door,
-                            src,
+                            this,
                             w,
                             finalDesination
                         )
@@ -212,8 +215,8 @@ class LocalPathFinder(override val script: ATScript) :
             && !e.blocked(flags, Flag.W_N)
         ) {
             neighbors.add(
-                LocalTileAction(
-                    src,
+                LocalTileEdge(
+                    this,
                     ne,
                     finalDesination
                 )
@@ -225,8 +228,8 @@ class LocalPathFinder(override val script: ATScript) :
             && !e.blocked(flags, Flag.W_S)
         ) {
             neighbors.add(
-                LocalTileAction(
-                    src,
+                LocalTileEdge(
+                    this,
                     se,
                     finalDesination
                 )
@@ -238,8 +241,8 @@ class LocalPathFinder(override val script: ATScript) :
             && !w.blocked(flags, Flag.W_S)
         ) {
             neighbors.add(
-                LocalTileAction(
-                    src,
+                LocalTileEdge(
+                    this,
                     sw,
                     finalDesination
                 )
@@ -251,8 +254,8 @@ class LocalPathFinder(override val script: ATScript) :
             && !w.blocked(flags, Flag.W_N)
         ) {
             neighbors.add(
-                LocalTileAction(
-                    src,
+                LocalTileEdge(
+                    this,
                     nw,
                     finalDesination
                 )

@@ -1,4 +1,4 @@
-package com.epicbot.krulvis.api.script.painter
+package org.powbot.krulvis.api.script.painter
 
 import java.awt.Image
 import java.awt.Toolkit

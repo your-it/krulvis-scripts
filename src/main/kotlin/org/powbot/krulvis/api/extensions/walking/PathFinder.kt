@@ -1,17 +1,15 @@
 package org.powbot.krulvis.api.extensions.walking
 
-import org.powbot.krulvis.api.ATContext
+import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Constants
 import org.powerbot.script.rt4.GameObject
-import org.powerbot.script.rt4.Skills
-import java.util.*
 
-interface PathFinder : ATContext {
+interface PathFinder {
 
     fun canUseDoor(door: GameObject): Boolean {
         if (door.tile() == Tile(2611, 3394, 0)) {
-            return skills.level(Constants.SKILLS_ATTACK) >= 68
+            return ClientContext.ctx().skills.level(Constants.SKILLS_ATTACK) >= 68
         }
         return !blockedDoors.contains(door.tile())
     }
@@ -21,7 +19,7 @@ interface PathFinder : ATContext {
     }
 
     fun getDoor(tile: Tile, orientation: Int): GameObject {
-        return objects.toStream().at(tile).filter {
+        return ClientContext.ctx().objects.toStream().at(tile).filter {
             it.name() != null && isDoor(it)
                     && it.orientation() == orientation
                     && canUseDoor(it)

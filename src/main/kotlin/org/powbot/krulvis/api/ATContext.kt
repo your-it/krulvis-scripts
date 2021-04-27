@@ -1,88 +1,78 @@
 package org.powbot.krulvis.api
 
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.antiban.DelayHandler
+import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.extensions.walking.Flag
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
-import org.powerbot.script.*
+import org.powerbot.script.Locatable
+import org.powerbot.script.Nameable
+import org.powerbot.script.Tile
 import org.powerbot.script.rt4.*
-import org.powerbot.script.rt4.ClientContext
-import org.powerbot.script.rt4.Interactive
 import java.awt.Point
+import kotlin.math.abs
 
 
-interface ATContext {
+object ATContext {
 
-    val script: ATScript
-    val ctx: ClientContext get() = script.ctx
-    val controller: Script.Controller get() = ctx.controller
-    val inventory: Inventory get() = ctx.inventory
-    val bank: Bank get() = ctx.bank
-    val npcs: Npcs get() = ctx.npcs
-    val skills: Skills get() = ctx.skills
-    val objects: Objects get() = ctx.objects
-    val ge: GrandExchange get() = ctx.grandExchange
-    val combat: Combat get() = ctx.combat
-    val equipment: Equipment get() = ctx.equipment
+    val ctx: ClientContext get() = org.powerbot.script.ClientContext.ctx()
+
     val me: Player get() = ctx.players.local()
-    val game: Game get() = ctx.game
-    val menu: Menu get() = ctx.menu
-    val camera: Camera get() = ctx.camera
-    val widgets: Widgets get() = ctx.widgets
-    val input: Input get() = ctx.input
-    val walking: Movement get() = ctx.movement
-    val chat: Chat get() = ctx.chat
 
-    val lpf: LocalPathFinder get() = script.lpf
+    var nextRun = Random.nextInt(2, 5)
+
+    val walkDelay = DelayHandler(2500, OddsModifier(), "Walking delay")
+
+    var debugComponents: Boolean = true
 
     fun debug(msg: String) {
-        if (script.debugComponents) {
+        if (debugComponents) {
             println(msg)
         }
     }
 
-
     fun turnRunOn(): Boolean {
-        if (walking.running()) {
+        if (ctx.movement.running()) {
             return true
         }
-        if (ctx.client().runPercentage >= Random.nextInt(1, 5) && walking.running(true)) {
+        if (ctx.client().runPercentage >= Random.nextInt(1, 5) && ctx.movement.running(true)) {
             return true
         }
         return false
     }
 
-    fun Movement.moving(): Boolean = walking.destination() != Tile.NIL
+    fun Movement.moving(): Boolean = ctx.movement.destination() != Tile.NIL
 
     fun walk(position: Tile?, enableRun: Boolean = true, forceMinimap: Boolean = false): Boolean {
         if (position == null || position == Tile.NIL) {
             return true
         }
         val position = position.getWalkableNeighbor() ?: return false
-        if (me.tile() == position) {
+        if (ctx.players.local().tile() == position) {
             return true
         }
-        if (enableRun && !walking.running() && ctx.client().runPercentage > script.nextRun) {
-            walking.running(true)
-            script.nextRun = Random.nextInt(1, 5)
+        if (enableRun && !ctx.movement.running() && ctx.client().runPercentage > nextRun) {
+            ctx.movement.running(true)
+            nextRun = Random.nextInt(1, 5)
         }
-        if (!walking.moving() || script.walkDelay.isFinished()) {
+        if (!ctx.movement.moving() || walkDelay.isFinished()) {
             if (forceMinimap && position.onMap()) {
                 //PowBot single tile interaction method (map)
-                walking.step(position)
+                ctx.movement.step(position)
             } else {
-                val localPath = lpf.findPath(position)
+                val localPath = LocalPathFinder.findPath(position)
                 if (localPath.isNotEmpty()) {
                     localPath.traverse()
                 } else {
                     debug("Using powbot method to walk")
                     //Powbot method
-                    walking.walkTo(position)
+                    PBWebWalkingService.walkTo(position, false)
                 }
             }
-            script.walkDelay.resetTimer()
+            walkDelay.resetTimer()
         }
         return false
     }
@@ -99,7 +89,7 @@ interface ATContext {
     ): Boolean {
         val t = target ?: return false
         val pos = (t as Locatable).tile()
-        val destination = walking.destination()
+        val destination = ctx.movement.destination()
         turnRunOn()
         debug("Interacting with: ${(target as Nameable).name()} at: $pos")
         if (!t.inViewport()
@@ -108,107 +98,30 @@ interface ATContext {
             if (allowWalk) {
                 debug("Walking before interacting... in viewport: ${t.inViewport()}")
                 if (pos.matrix(ctx).onMap()) {
-                    walking.step(pos)
+                    ctx.movement.step(pos)
                 } else {
                     walk(pos)
                 }
             }
         }
         if (selectItem > -1) {
-            val item = inventory.firstOrNull { it.id() == selectItem } ?: return false
+            val item = ctx.inventory.firstOrNull { it.id() == selectItem } ?: return false
             item.click()
         }
-        return t.interact(action) && clicked()
+        return t.interact(action)
     }
 
-//    fun visible(target: Modelable): Boolean {
-//        val randPoint = target.next
-//        return randPoint.x > -1 && randPoint.y > -1
-//    }
-//
-//    /**
-//     * Custom interact function if Renderable is visible on screen
-//     */
-//    fun interactVisible(target: Interactive, action: String): Boolean {
-//        var tries = if (walking.destination() != Tile.NIL) 3 else 1
-//        val name = (target as Nameable).name().replace(Regex("<[^>]*>"), "")
-//        // Move away if hovering on similar target with same action, name
-//        if (!target.contains(input.location) && menu.contains(MenuOption(action, name))) {
-//            input.move(target.basePoint())
-//        }
-//        while (tries > 0 && visible(target)) {
-//            val timeout = Timer(Random.nextInt(600, 800))
-//            while (!timeout.isFinished()
-//                && menu.g(action, name) < 0
-//                && !menu.isOpen && visible(target)
-//            ) {
-//                debug("Moving mouse")
-//                mouse.move(target.randomPoint)
-//                waitFor(100) { menu.contains(action) }
-//            }
-//            val index = menu.getIndex(action, name)
-//            if (index == 0 && mouse.click(false)) {
-//                if (clicked()) {
-//                    debug("Left mouse-click")
-//                    return true
-//                }
-//            } else if (index > 0 && openMenu(action)) {
-//                if (menu.interact(action, name) && clicked()) {
-//                    debug("Interacted with menu")
-//                    return true
-//                }
-//            } else if (menu.isOpen) {
-//                menu.close()
-//            }
-//
-//            tries--
-//        }
-//        return false
-//    }
 
-    /**
-     * Opens menu if necessary
-     */
-    fun openMenu(action: String): Boolean {
-//        println("Opening menu")
-        if (menu.opened()) {
-            if (menu.containsAction(action)) {
-                return true
-            } else {
-//                println("Closing menu")
-                menu.close()
-            }
-        } else if (input.click(true)) {
-            if (waitFor { menu.opened() }) {
-                return menu.containsAction(action)
-            }
-        }
+    fun Locatable.distance(): Int =
+        tile().distanceTo(ctx.players.local()).toInt()
 
-        return false
+    fun Tile.distanceM(dest: Locatable): Int {
+        return abs(dest.tile().x() - x()) + abs(dest.tile().y() - y())
     }
-
-    /**
-     * Returns true if red mouse is found
-     */
-    fun clicked(): Boolean = waitFor(601) { ctx.game.crosshair() == Game.Crosshair.ACTION }
-
-    fun Locatable.distance(): Int = tile().distanceTo(me).toInt()
 
     fun Locatable.onMap(): Boolean = tile().matrix(ctx).onMap()
-    fun Locatable.mapPoint(): Point = game.tileToMap(tile())
 
-
-//    fun Menu.close(): Boolean {
-//        val ma = menu.area
-//        val width = 763
-//        val height = 499
-//        val x = if (ma.centerX > width / 2.0) Random.nextInt(ma.x - 1) else Random.nextInt(ma.x + ma.width, width)
-//        val y =
-//            if (ma.centerY > height / 2.0) Random.nextInt(ma.y - 1) else Random.nextInt(ma.y + ma.height, height)
-//        val pointToGetRid = Point(x, y)
-//        mouse.move(pointToGetRid)
-//        return waitFor { !menu.isOpen }
-//    }
+    fun Locatable.mapPoint(): Point = ctx.game.tileToMap(tile())
 
     /**
      * Returns: [Tile] nearest neighbor or self as  which is walkable
@@ -219,7 +132,7 @@ interface ATContext {
         filter: (Tile) -> Boolean = { true }
     ): Tile? {
         val walkableNeighbors = getWalkableNeighbors(excludeSelf, diagonalTiles)
-        return walkableNeighbors.filter(filter).minBy { it.distance() }
+        return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
     }
 
     fun Locatable.getWalkableNeighbors(
@@ -253,7 +166,7 @@ interface ATContext {
     }
 
     fun Tile.toRegionTile(): Tile {
-        val mos = game.mapOffset()
+        val mos = ctx.game.mapOffset()
         return Tile(x() - mos.x(), y() - mos.y(), floor())
     }
 
@@ -281,9 +194,10 @@ interface ATContext {
     }
 
 
-    fun Inventory.contains(vararg ids: Int): Boolean = toStream().anyMatch { it.id() in ids }
-    fun Inventory.emptySlots(): Int = (28 - toStream().count()).toInt()
+    fun Inventory.containsOneOf(vararg ids: Int): Boolean = toStream().anyMatch { it.id() in ids }
+    fun Inventory.emptyExcept(vararg ids: Int): Boolean = toStream().filter { it.id() !in ids }.findFirst().isEmpty
 
+    fun Inventory.emptySlots(): Int = (28 - toStream().count()).toInt()
     fun Inventory.getCount(vararg ids: Int): Int = getCount(false, *ids)
     fun Inventory.getCount(countStacks: Boolean, vararg ids: Int): Int {
         val items = toStream().id(*ids)
@@ -294,7 +208,7 @@ interface ATContext {
     fun Item.getItemDef() = CacheItemConfig.load(ctx.bot().cacheWorker, id())
 
     fun withdrawExact(id: Int, amount: Number, wait: Boolean = true): Boolean {
-        return bank.withdrawExact(id, amount, wait)
+        return ctx.bank.withdrawExact(id, amount, wait)
     }
 
     fun Bank.withdrawExact(amount: Int, id: Number, wait: Boolean = true): Boolean {
@@ -303,23 +217,38 @@ interface ATContext {
             return false
         }
         debug("WithdrawExact: $id, $amount")
-        val currentAmount = inventory.getCount(true, id)
+        val currentAmount = ctx.inventory.getCount(true, id)
         if (currentAmount < amount) {
-            if (bank.none { it.id() == id }) {
+            if (ctx.bank.none { it.id() == id }) {
                 return false
-            } else if (amount - currentAmount >= bank.toStream().id(id).count(true)) {
-                bank.withdraw(id, Bank.Amount.ALL)
-            } else if (amount - currentAmount >= inventory.emptySlots() && !id.getItemDef().stackable) {
+            } else if (amount - currentAmount >= ctx.bank.toStream().id(id).count(true)) {
+                ctx.bank.withdraw(id, Bank.Amount.ALL)
+            } else if (amount - currentAmount >= ctx.inventory.emptySlots() && !id.getItemDef().stackable) {
                 debug("Withdrawing all: $id, since there's just enough space")
-                bank.withdraw(id, Bank.Amount.ALL)
-            } else if (!bank.withdraw(amount - currentAmount, id)) {
+                ctx.bank.withdraw(id, Bank.Amount.ALL)
+            } else if (!ctx.bank.withdraw(amount - currentAmount, id)) {
                 return false
             }
         } else if (currentAmount > amount) {
-            bank.deposit(id, Bank.Amount.ALL)
-            if (wait) waitFor { !inventory.contains(id) }
+            ctx.bank.deposit(id, Bank.Amount.ALL)
+            if (wait) waitFor { !ctx.inventory.containsOneOf(id) }
             return false
         }
-        return if (wait) waitFor(5000) { inventory.getCount(true, id) == amount } else true
+        return if (wait) waitFor(5000) { ctx.inventory.getCount(true, id) == amount } else true
     }
+
+
+//    fun Menu.close(): Boolean {
+//        val ma = menu.area
+//        val width = 763
+//        val height = 499
+//        val x = if (ma.centerX > width / 2.0) Random.nextInt(ma.x - 1) else Random.nextInt(ma.x + ma.width, width)
+//        val y =
+//            if (ma.centerY > height / 2.0) Random.nextInt(ma.y - 1) else Random.nextInt(ma.y + ma.height, height)
+//        val pointToGetRid = Point(x, y)
+//        mouse.move(pointToGetRid)
+//        return waitFor { !menu.isOpen }
+//    }
+
+
 }

@@ -19,10 +19,10 @@ object Flag {
 
     object Rotation {
         const val DIAGONAL = 0x0
-        const val WEST = 0x1
-        const val NORTH = 0x2
-        const val EAST = 0x4
-        const val SOUTH = 0x8
+        const val WEST = 0x0
+        const val NORTH = 0x1
+        const val EAST = 0x2
+        const val SOUTH = 0x3
     }
 
 }

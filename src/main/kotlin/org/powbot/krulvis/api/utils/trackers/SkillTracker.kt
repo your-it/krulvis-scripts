@@ -25,13 +25,13 @@ class SkillTracker(val script: ATScript) {
     fun track() {
         if (started) {
             skills.forEachIndexed { index, skill ->
-                currentLvl[index] = script.skills.realLevel(skill.index)
-                currentXp[index] = script.skills.experience(skill.index)
+                currentLvl[index] = script.ctx.skills.realLevel(skill.index)
+                currentXp[index] = script.ctx.skills.experience(skill.index)
 
                 gainedLvl[index] = currentLvl[index] - startLvl[index]
                 gainedXp[index] = currentXp[index] - startXp[index]
             }
-        } else if (skills.sumBy { script.skills.experience(it.index) } > 0) {
+        } else if (skills.sumBy { script.ctx.skills.experience(it.index) } > 0) {
             startTracker()
             started = true
         }
@@ -54,12 +54,12 @@ class SkillTracker(val script: ATScript) {
 
     private fun startTracker() {
         skills.forEachIndexed { index, skill ->
-            startLvl[index] = script.skills.realLevel(skill.index)
-            startXp[index] = script.skills.experience(skill.index)
+            startLvl[index] = script.ctx.skills.realLevel(skill.index)
+            startXp[index] = script.ctx.skills.experience(skill.index)
         }
     }
 
-    fun draw(g: Graphics2D, t: Timer, x: Int, y: Int): Int {
+    fun draw(g: Graphics2D, x: Int, y: Int, t: Timer = script.timer): Int {
         var y = y
         skills.forEachIndexed { index, skill ->
             val gainedXp = this.gainedXp[index]

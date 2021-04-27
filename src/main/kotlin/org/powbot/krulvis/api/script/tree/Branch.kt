@@ -1,67 +1,39 @@
 package org.powbot.krulvis.api.script.tree
 
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.script.ATScript
-import org.powerbot.script.rt4.ClientContext
 
-abstract class Branch<out S : ATScript>(override val script: S) :
-    TreeComponent() {
+abstract class Branch<S : ATScript>(override val script: S, override val name: String) : TreeComponent<S>() {
 
-    open val name: String = javaClass.simpleName
 
-    override fun name() = name
+    abstract val successComponent: TreeComponent<S>
+    abstract val failedComponent: TreeComponent<S>
 
     abstract fun validate(): Boolean
 
-    var successComponent: TreeComponent? = null
-    var failedComponent: TreeComponent? = null
-
     /**
-     * No logic is allowed in the onSuccess() / onFailure() component. It needs to return an instance of a TreeComponent which will be stored
+     * Executes either successComponent or failedComponent depending on whether validate() return true or false
      */
-    abstract fun onSuccess(): TreeComponent
-
-    abstract fun onFailure(): TreeComponent
-
     override fun execute() {
-        if (validate()) {
-            debug("$name successful")
-            if (successComponent == null) {
-                successComponent = onSuccess()
-            }
-            successComponent?.execute()
-        } else {
-            debug("$name failed")
-            if (failedComponent == null) {
-                failedComponent = onFailure()
-            }
-            failedComponent?.execute()
+        val validate = validate()
+        val comp = if (validate) successComponent else failedComponent
+        debug("$name was ${if (validate) "successful" else "unsuccessful"}, executing: ${comp.name}")
+        if (comp is Leaf) {
+            script.lastLeaf = comp
         }
+        comp.execute()
     }
 
-    override fun reset() {
-        successComponent = null
-        failedComponent = null
-    }
 }
 
-class SimpleBranch<out S : ATScript>(
-    script: S,
-    override val name: String = "SimpleBranch",
-    val validator: () -> Boolean,
-    val onSuccess: TreeComponent,
-    val onFailure: TreeComponent
-) : Branch<S>(script) {
+class SimpleBranch<S : ATScript>(
+    script: S, name: String,
+    override val successComponent: TreeComponent<S>,
+    override val failedComponent: TreeComponent<S>,
+    val validator: () -> Boolean
+) : Branch<S>(script, name) {
 
     override fun validate(): Boolean {
         return validator()
     }
-
-    override fun onSuccess(): TreeComponent {
-        return onSuccess
-    }
-
-    override fun onFailure(): TreeComponent {
-        return onFailure
-    }
-
 }

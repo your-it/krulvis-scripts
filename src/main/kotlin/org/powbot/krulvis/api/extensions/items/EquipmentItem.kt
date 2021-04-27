@@ -1,6 +1,7 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powerbot.script.rt4.Equipment
@@ -17,47 +18,47 @@ interface EquipmentItem : Item {
     override val image: BufferedImage?
         get() = null
 
-    override fun hasWith(ctx: ATContext): Boolean = inInventory(ctx) || inEquipment(ctx)
+    override fun hasWith(): Boolean = inInventory() || inEquipment()
 
-    override fun getCount(ctx: ATContext, countNoted: Boolean): Int {
-        return getInventoryCount(ctx, countNoted) + ctx.equipment.toStream().id(*ids).count(true).toInt()
+    override fun getCount(countNoted: Boolean): Int {
+        return getInventoryCount(countNoted) + ctx.equipment.toStream().id(*ids).count(true).toInt()
     }
 
-    fun withdrawAndEquip(ctx: ATContext): Boolean {
-        if (inEquipment(ctx)) {
+    fun withdrawAndEquip(): Boolean {
+        if (inEquipment()) {
             return true
-        } else if (!inInventory(ctx)) {
-            if (ctx.bank.withdrawModeNoted(false) && inBank(ctx)
-                && ctx.bank.withdraw(1, getBankId(ctx, true))
+        } else if (!inInventory()) {
+            if (ctx.bank.withdrawModeNoted(false) && inBank()
+                && ctx.bank.withdraw(1, getBankId(true))
             ) {
-                waitFor(5000) { inInventory(ctx) }
+                waitFor(5000) { inInventory() }
             }
         }
-        if (inInventory(ctx)) {
-            return equip(ctx, true)
+        if (inInventory()) {
+            return equip(true)
         }
-        return inEquipment(ctx)
+        return inEquipment()
     }
 
-    fun inEquipment(ctx: ATContext): Boolean {
+    fun inEquipment(): Boolean {
         return ctx.equipment.any { it.id() in ids }
     }
 
-    fun canWear(ctx: ATContext): Boolean = requirements.all { it.hasRequirement(ctx) }
+    fun canWear(): Boolean = requirements.all { it.hasRequirement() }
 
-    fun equip(ctx: ATContext, wait: Boolean = true): Boolean {
-        if (!inEquipment(ctx) && inInventory(ctx)) {
+    fun equip(wait: Boolean = true): Boolean {
+        if (!inEquipment() && inInventory()) {
             val item = ctx.inventory.toStream().id(*ids).first()
             val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-            if (ctx.ge.close() && item.interact(action)) {
-                if (wait) waitFor(2000) { inEquipment(ctx) } else return true
+            if (ctx.grandExchange.close() && item.interact(action)) {
+                if (wait) waitFor(2000) { inEquipment() } else return true
             }
         }
-        return inEquipment(ctx)
+        return inEquipment()
     }
 
-    fun dequip(ctx: ATContext): Boolean {
-        if (!inEquipment(ctx)) {
+    fun dequip(): Boolean {
+        if (!inEquipment()) {
             return true
         }
         val equipped = ctx.equipment.toStream().id(*ids).first()

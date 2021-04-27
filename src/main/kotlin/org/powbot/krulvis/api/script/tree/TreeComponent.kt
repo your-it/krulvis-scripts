@@ -1,9 +1,13 @@
 package org.powbot.krulvis.api.script.tree
 
-import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.script.ATScript
+import org.powerbot.script.rt4.ClientContext
 
-abstract class TreeComponent: ATContext {
+abstract class TreeComponent<S : ATScript> {
 
+    abstract val script: S
+
+    val ctx: ClientContext get() = script.ctx
 
     /**
      * Leave this be, used in the TreeScript to update the logic
@@ -11,9 +15,7 @@ abstract class TreeComponent: ATContext {
     abstract fun execute()
 
     /**
-     * Reset stored components whenever required
+     * Name of the TreeComponent for debugging purposes
      */
-    abstract fun reset()
-
-    abstract fun name(): String
+    abstract val name: String
 }

@@ -8,10 +8,10 @@ import org.powbot.krulvis.api.ATContext
 import java.lang.reflect.Type
 
 interface Requirement {
-    fun hasRequirement(ctx: ATContext): Boolean
+    fun hasRequirement(): Boolean
 
-    fun List<Requirement>.hasAll(ctx: ATContext): Boolean {
-        return all { it.hasRequirement(ctx) }
+    fun List<Requirement>.hasAll(): Boolean {
+        return all { it.hasRequirement() }
     }
 }
 

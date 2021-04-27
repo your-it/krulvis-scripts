@@ -1,7 +1,10 @@
 package org.powbot.krulvis.test
 
+import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
@@ -27,44 +30,6 @@ class TemporossDebug : ATScript() {
     var tether = Optional.empty<GameObject>()
     var cookSpot = Tile.NIL
 
-    override fun rootComponent(): TreeComponent {
-        return object : Leaf<TemporossDebug>(this, "TestLeaf") {
-            override fun loop() {
-                if (tempoross.side == Tempoross.Side.UNKNOWN) {
-                    if (npcs.toStream().name("Ammunition crate").findFirst().isPresent) {
-                        val mast = objects.toStream().name("Mast").nearest().first()
-                        println("Mast found: $mast, orientation: ${mast.orientation()}")
-                        tempoross.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
-                        tempoross.mastLocation = mast.tile()
-                    }
-                } else if (tempoross.getEnergy() == -1) {
-                    println("Not in game...")
-                    tempoross.side = Tempoross.Side.UNKNOWN
-                } else {
-                    tempoross.blockedTiles.clear()
-                    tempoross.triedPaths.clear()
-                    tempoross.detectDangerousTiles()
-
-
-                    cookSpot =
-                        if (tempoross.side == Tempoross.Side.NORTH) tempoross.northCookSpot else tempoross.cookLocation
-                    // In game
-                    bucket = tempoross.getBucketCrate()
-                    ammo = tempoross.getAmmoCrate()
-                    bossPool = tempoross.getBossPool()
-                    tether = tempoross.getTetherPole()
-
-                    tempoross.collectFishSpots()
-                    tempoross.bestFishSpot = tempoross.getFishSpot(tempoross.fishSpots)
-                    checkPaths(bucket, tether)
-                    checkPaths(ammo, tempoross.bestFishSpot)
-                    tempoross.hasDangerousPath(tempoross.bossWalkLocation)
-
-                }
-                sleep(1000)
-            }
-        }
-    }
 
     fun <E : InteractiveEntity> checkPaths(vararg entities: Optional<E>) {
         entities.forEach {
@@ -74,8 +39,51 @@ class TemporossDebug : ATScript() {
         }
     }
 
-    override val painter: ATPainter<*>
-        get() = TemporossDebugPainter(this)
+    override val painter: ATPainter<*> = TemporossDebugPainter(this)
+
+    override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
+        override fun execute() {
+            if (tempoross.side == Tempoross.Side.UNKNOWN) {
+                if (ctx.npcs.toStream().name("Ammunition crate").findFirst().isPresent) {
+                    val mast = ctx.objects.toStream().name("Mast").nearest().first()
+                    println("Mast found: $mast, orientation: ${mast.orientation()}")
+                    tempoross.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
+                    tempoross.mastLocation = mast.tile()
+                }
+            } else if (tempoross.getEnergy() == -1) {
+                println("Not in game...")
+                tempoross.side = Tempoross.Side.UNKNOWN
+            } else {
+                tempoross.blockedTiles.clear()
+                tempoross.triedPaths.clear()
+                tempoross.detectDangerousTiles()
+
+
+                val dest = ctx.movement.destination()
+                val destination = if (dest != null && dest != Tile.NIL) dest else me.tile()
+                val validTiles = listOf(tempoross.totemLocation, tempoross.mastLocation)
+                val tetherpoles = ctx.objects.toStream().filter {
+                    validTiles.contains(it.tile())
+                }.forEach { println("Found ${it.name()}: ${it.actions().joinToString()}") }
+                println(tetherpoles)
+                cookSpot =
+                    if (tempoross.side == Tempoross.Side.NORTH) tempoross.northCookSpot else tempoross.cookLocation
+                // In game
+                bucket = tempoross.getBucketCrate()
+                ammo = tempoross.getAmmoCrate()
+                bossPool = tempoross.getBossPool()
+                tether = tempoross.getTetherPole()
+
+                tempoross.collectFishSpots()
+                tempoross.bestFishSpot = tempoross.getFishSpot(tempoross.fishSpots)
+                checkPaths(bucket, tether)
+                checkPaths(ammo, tempoross.bestFishSpot)
+                tempoross.hasDangerousPath(tempoross.bossWalkLocation)
+
+            }
+            sleep(1000)
+        }
+    }
 
     override fun startGUI() {
         skillTracker.addSkill(Skill.FISHING)
@@ -93,8 +101,10 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         y += yy
         drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
         y += yy
-        val clicked = ctx.game.crosshair() == Game.Crosshair.ACTION
-        val lastClick = System.currentTimeMillis() - ctx.input.pressWhen
+        drawSplitText(g, "Destination: ", "${script.ctx.movement.destination()}", x, y)
+        y += yy
+        val clicked = script.ctx.game.crosshair() == Game.Crosshair.ACTION
+        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
         drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
         y += yy
 
@@ -114,12 +124,12 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString("TP", mm.x, mm.y)
             }
 
-            drawTileOnScreen(g, script.cookSpot, Color.CYAN)
-            drawTileOnScreen(g, script.tempoross.anchorLocation, Color.CYAN)
-            drawTileOnScreen(g, script.tempoross.bossPoolLocation, Color.CYAN)
-            drawTileOnScreen(g, script.tempoross.totemLocation, Color.CYAN)
-            drawTileOnScreen(g, script.tempoross.bossWalkLocation, Color.CYAN)
-            drawTileOnScreen(g, script.tempoross.mastLocation, Color.CYAN)
+            script.cookSpot.drawOnScreen(g, null, Color.CYAN)
+            script.tempoross.anchorLocation.drawOnScreen(g, null, Color.CYAN)
+            script.tempoross.bossPoolLocation.drawOnScreen(g, null, Color.CYAN)
+            script.tempoross.totemLocation.drawOnScreen(g, null, Color.CYAN)
+            script.tempoross.bossWalkLocation.drawOnScreen(g, null, Color.CYAN)
+            script.tempoross.mastLocation.drawOnScreen(g, null, Color.CYAN)
 
             val blockedTiles = script.tempoross.blockedTiles.toList()
             val paths = script.tempoross.triedPaths.toList()
@@ -127,7 +137,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.NIL) {
-                    drawTileOnScreen(g, it, Color.RED)
+                    it.drawOnScreen(g, null, Color.RED)
                 }
             }
             if (paths.isNotEmpty()) {
@@ -135,9 +145,9 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                     val containsBadTile = tiles.any { blockedTiles.contains(it) }
                     val color = if (containsBadTile) Color.ORANGE else Color.GREEN
                     tiles.forEach { tile ->
-                        drawTileOnScreen(
+                        tile.drawOnScreen(
                             g,
-                            tile,
+                            null,
                             if (blockedTiles.contains(tile)) Color.BLACK else color
                         )
                     }
@@ -158,15 +168,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
     }
 
     override fun drawProgressImage(g: Graphics2D, startY: Int) {
-        var y = startY
-        println("Saving image with y: $y")
-        drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
-        y += yy
-        drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
-        y += yy
-        val clicked = ctx.game.crosshair() == Game.Crosshair.ACTION
-        val lastClick = System.currentTimeMillis() - ctx.input.pressWhen
-        drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
+
     }
 
 }

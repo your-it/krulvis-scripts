@@ -1,8 +1,17 @@
 package org.powbot.krulvis.tempoross
 
+import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
+import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
+import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.TreeComponent
@@ -22,13 +31,10 @@ import org.powerbot.script.rt4.Npc
 import java.util.*
 import kotlin.streams.toList
 
-@Script.Manifest(name = "Tempoross", description = "Does tempoross minigame", version = "1.0")
+@Script.Manifest(name = "krul Tempoross", description = "Does tempoross minigame", version = "1.0")
 class Tempoross : ATScript(), MessageListener {
 
-
-    override fun rootComponent(): TreeComponent {
-        return ShouldEnterBoat(this)
-    }
+    override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 
     override val painter: ATPainter<*> = TemporossPainter(this)
     override fun startGUI() {
@@ -51,7 +57,7 @@ class Tempoross : ATScript(), MessageListener {
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
 
     fun hasDangerousPath(end: Tile): Boolean {
-        val path = lpf.findPath(end)
+        val path = LocalPathFinder.findPath(end)
         return containsDangerousTile(path)
     }
 
@@ -69,7 +75,7 @@ class Tempoross : ATScript(), MessageListener {
         if (optional.isEmpty) {
             debug("Can't find: ${if (optional.isEmpty) action else (optional.get() as Nameable).name()}")
             if (destinationWhenNil != Tile.NIL) {
-                val path = lpf.findPath(destinationWhenNil)
+                val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
                     walkPath(path)
                 } else {
@@ -78,8 +84,8 @@ class Tempoross : ATScript(), MessageListener {
             }
         } else {
             val e = optional.get()
-            var path = lpf.findPath(e.tile())
-            if (path.isEmpty()) path = lpf.findPath(destinationWhenNil)
+            var path = LocalPathFinder.findPath(e.tile())
+            if (path.isEmpty()) path = LocalPathFinder.findPath(destinationWhenNil)
             if (douseIfNecessary(path, allowCrossing)) {
                 return interact(e as Interactive, action)
             }
@@ -97,22 +103,22 @@ class Tempoross : ATScript(), MessageListener {
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { blockedTiles.contains(it.destination) }
         val fireOptional =
-            if (blockedTile != null) objects.toStream().name("Fire").filter {
+            if (blockedTile != null) ctx.objects.toStream().name("Fire").filter {
                 it.tile().distanceTo(blockedTile.destination) <= 2
             }.nearest().findFirst() else Optional.empty()
-        if (fireOptional.isPresent && inventory.contains(BUCKET_OF_WATER)) {
+        if (fireOptional.isPresent && ctx.inventory.contains(BUCKET_OF_WATER)) {
             val fire = fireOptional.get()
             debug("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
                 if (fire.distance() > 8) {
                     val blockedIndex = path.actions.indexOf(blockedTile)
                     val safeSpot = path.actions[blockedIndex - 2].destination
-                    walking.step(safeSpot)
+                    ctx.movement.step(safeSpot)
                 }
-                camera.turnTo(fire)
+                ctx.camera.turnTo(fire)
                 waitFor(long()) { fire.inViewport() }
             } else if (fire.interact("Douse")) {
-                return waitFor(long()) { objects.toStream().at(fire).name("Fire").isEmpty() }
+                return waitFor(long()) { ctx.objects.toStream().at(fire).name("Fire").isEmpty() }
             }
         } else if (!fireOptional.isPresent || allowCrossing) {
             debug("No fire on the way")
@@ -124,7 +130,7 @@ class Tempoross : ATScript(), MessageListener {
     fun walkPath(path: LocalPath): Boolean {
         val finalTile = path.actions.last().destination
         return if (finalTile.matrix(ctx).onMap() && finalTile.distance() > 5) {
-            walking.step(finalTile)
+            ctx.movement.step(finalTile)
         } else if (path.isNotEmpty()) {
             path.traverse()
         } else {
@@ -136,17 +142,19 @@ class Tempoross : ATScript(), MessageListener {
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool().isPresent
 
     fun isTethering(): Boolean =
-        objects.toStream().action("Untether").isNotEmpty() || me.animation() == Data.TETHER_ANIM
+        ctx.objects.toStream().action("Untether").isNotEmpty() || me.animation() == Data.TETHER_ANIM
 
     fun getEnergy(): Int {
-        val text = widgets.widget(PARENT_WIDGET).firstOrNull { it.visible() && it.text().contains("Energy") }?.text()
-            ?: return -1
+        val text =
+            ctx.widgets.widget(PARENT_WIDGET).firstOrNull { it.visible() && it.text().contains("Energy") }?.text()
+                ?: return -1
         return text.substring(8, text.indexOf("%")).toInt()
     }
 
     fun getHealth(): Int {
-        val text = widgets.widget(PARENT_WIDGET).firstOrNull { it.visible() && it.text().contains("Essence") }?.text()
-            ?: return -1
+        val text =
+            ctx.widgets.widget(PARENT_WIDGET).firstOrNull { it.visible() && it.text().contains("Essence") }?.text()
+                ?: return -1
         return text.substring(9, text.indexOf("%")).toInt()
     }
 
@@ -166,7 +174,7 @@ class Tempoross : ATScript(), MessageListener {
             println("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
             val fishId = if (profile.cook) COOKED else RAW
-            val fish = inventory.toStream().id(fishId).count()
+            val fish = ctx.inventory.toStream().id(fishId).count()
             if (profile.shootAfterTethering && (fish >= profile.minFishToForceShoot || fish >= getHealth())) {
                 forcedShooting = true
             }
@@ -228,11 +236,11 @@ class Tempoross : ATScript(), MessageListener {
      * Detect and add blocked tiles.
      */
     fun detectDangerousTiles() {
-        npcs.toStream().name("Lightning cloud").filter { it.animation() > 0 }.forEach {
+        ctx.npcs.toStream().name("Lightning cloud").filter { it.animation() > 0 }.forEach {
             addTile(it.tile())
         }
 
-        val fires = objects.toStream().name("Fire")
+        val fires = ctx.objects.toStream().name("Fire")
         fires.forEach { fire ->
             addTile(fire.tile())
         }
@@ -246,10 +254,10 @@ class Tempoross : ATScript(), MessageListener {
     }
 
     fun collectFishSpots() {
-        val allSpots = npcs.toStream().action("Harpoon").name("Fishing spot").filter {
+        val allSpots = ctx.npcs.toStream().action("Harpoon").name("Fishing spot").filter {
             rightSide(it)
         }.toList()
-        fishSpots = allSpots.map { Pair(it, lpf.findPath(it.tile().getWalkableNeighbor())) }
+        fishSpots = allSpots.map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Optional<Npc> {
@@ -263,28 +271,29 @@ class Tempoross : ATScript(), MessageListener {
     }
 
     fun getBossPool() =
-        npcs.toStream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").findFirst()
+        ctx.npcs.toStream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").findFirst()
 
     fun getAmmoCrate(): Optional<Npc> =
-        npcs.toStream().name("Ammunition crate").filter { it.tile().distanceTo(mastLocation) <= 5 }.findFirst()
+        ctx.npcs.toStream().name("Ammunition crate").filter { it.tile().distanceTo(mastLocation) <= 5 }.findFirst()
 
     fun getBucketCrate(): Optional<GameObject> =
-        objects.toStream().name("Buckets").filter {
+        ctx.objects.toStream().name("Buckets").filter {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
         }.nearest().findFirst()
 
     fun getWaterpump(): Optional<GameObject> =
-        objects.toStream().name("Water pump").filter {
+        ctx.objects.toStream().name("Water pump").filter {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
         }.nearest().findFirst()
 
     fun getTetherPole(): Optional<GameObject> {
-        val destination = if (walking.destination() != null) walking.destination() else me.tile()
+        val dest = ctx.movement.destination()
+        val destination = if (dest != null && dest != Tile.NIL) dest else me.tile()
         val validTiles = listOf(totemLocation, mastLocation)
-        return objects.toStream().action("Repair", "Tether").filter {
+        return ctx.objects.toStream().filter {
             validTiles.contains(it.tile())
-        }.nearest(destination).nearest().findFirst()
+        }.action("Repair", "Tether").nearest(destination).findFirst()
     }
 
-    fun getLadder(): Optional<GameObject> = objects.toStream().action("Climb").name("Rope ladder").findFirst()
+    fun getLadder(): Optional<GameObject> = ctx.objects.toStream().name("Rope ladder").action("Climb").findFirst()
 }

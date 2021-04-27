@@ -1,18 +1,26 @@
 package org.powbot.krulvis.api.script.painter
 
-import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.blocked
+import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.getFlag
+import org.powbot.krulvis.api.ATContext.mapPoint
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.walking.Flag
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.resources.ATFont
 import org.powbot.krulvis.api.utils.resources.ATFont.Companion.RUNESCAPE_FONT
 import org.powbot.krulvis.api.utils.resources.ATImage.Companion.SKULL_GIF
+import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.ClientContext
+import org.powerbot.script.Nameable
 import org.powerbot.script.Tile
 import java.awt.*
 import java.awt.geom.Ellipse2D
+import java.awt.geom.Line2D
 import java.awt.image.BufferedImage
 import java.io.File
-import java.nio.Buffer
 import java.text.DecimalFormat
 import javax.imageio.ImageIO
 import kotlin.math.abs
@@ -22,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 
-abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 0, val width: Int = 200) : ATContext {
+abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 200) {
 
     val useLayout = lines > 0
     var hideUsername = true
@@ -43,7 +51,7 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
             //AntiBan.paintBreak(g);
             g.color = Color.ORANGE
             paint(g)
-            if (script.debugComponents) {
+            if (debugComponents) {
                 drawMouse(g)
             }
         } catch (e: Exception) {
@@ -128,13 +136,14 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
     private var chatBoxUsernameBox: Point? = null
 
     private fun hideChatboxName(g: Graphics, color: Color = Color.BLACK) {
-        if (username == null && game.loggedIn()) {
+        if (username == null && script.ctx.game.loggedIn()) {
             username = me.name()
         }
         if (username != null) {
             val username = username!!.replace("_", " ")
-            if (chatBoxUsernameBox == null || game.resizable()) {
-                val wc = widgets.widget(162).find { it.text().replace(160.toChar(), ' ').contains(username) } ?: return
+            if (chatBoxUsernameBox == null || ctx.game.resizable()) {
+                val wc =
+                    ctx.widgets.widget(162).find { it.text().replace(160.toChar(), ' ').contains(username) } ?: return
                 chatBoxUsernameBox = wc.screenPoint()
             }
             g.color = color
@@ -145,7 +154,7 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
     private fun drawMouse(g: Graphics2D) {
         val oldCol = g.color
         g.color = Color.LIGHT_GRAY
-        val ml = input.location
+        val ml = ctx.input.location
         val shape = Ellipse2D.Double(ml.getX() - 4, ml.getY() - 4, 8.0, 8.0)
         g.fill(shape)
         g.color = Color.DARK_GRAY
@@ -153,21 +162,14 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
         g.color = oldCol
     }
 
-    fun drawTile(g: Graphics2D, t: Tile) {
-        drawTileOnMap(g, t)
-        drawTileOnScreen(
+    fun drawTile(g: Graphics2D, t: Tile, text: String? = null) {
+        t.drawOnMap(g)
+        t.drawOnScreen(
             g,
-            t,
+            text,
             Color.GREEN,
             null
         )
-    }
-
-    fun drawTileOnMap(g: Graphics2D, t: Tile) {
-        val center = Rectangle(t.mapPoint().x, t.mapPoint().y, 3, 3)
-        if (center.x > 0 && center.y > 0) {
-            g.draw(center)
-        }
     }
 
     fun drawSplitText(
@@ -221,6 +223,42 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
             g.font = oldFont
         }
 
+        fun Tile.drawCollisions(g: Graphics2D, flags: ICollisionMap) {
+            val bounds = matrix(ClientContext.ctx()).bounds() ?: return
+            if (blocked(flags)) {
+                drawOnScreen(g, null, Color.RED)
+            } else {
+                val flag = getFlag(flags)
+                val south = Line2D.Double(
+                    Point(bounds.xpoints[0], bounds.ypoints[0]),
+                    Point(bounds.xpoints[1], bounds.ypoints[1])
+                )
+                val east = Line2D.Double(
+                    Point(bounds.xpoints[1], bounds.ypoints[1]),
+                    Point(bounds.xpoints[2], bounds.ypoints[2])
+                )
+                val north = Line2D.Double(
+                    Point(bounds.xpoints[2], bounds.ypoints[2]),
+                    Point(bounds.xpoints[3], bounds.ypoints[3])
+                )
+                val west = Line2D.Double(
+                    Point(bounds.xpoints[3], bounds.ypoints[3]),
+                    Point(bounds.xpoints[0], bounds.ypoints[0])
+                )
+                g.color = if (flag and Flag.W_S == 0) Color.GREEN else Color.RED
+                g.draw(south)
+
+                g.color = if (flag and Flag.W_E == 0) Color.GREEN else Color.RED
+                g.draw(east)
+
+                g.color = if (flag and Flag.W_N == 0) Color.GREEN else Color.RED
+                g.draw(north)
+
+                g.color = if (flag and Flag.W_W == 0) Color.GREEN else Color.RED
+                g.draw(west)
+            }
+        }
+
         fun drawShadowedText(
             g: Graphics2D,
             text: String,
@@ -242,19 +280,33 @@ abstract class ATPainter<S : ATScript>(override val script: S, val lines: Int = 
             g.font = oldF
         }
 
-        fun drawTileOnScreen(g: Graphics, t: Tile, draw: Color? = Color.GREEN, fill: Color? = null) {
+        fun Tile.drawOnMap(g: Graphics2D) {
+            val center = Rectangle(mapPoint().x, mapPoint().y, 3, 3)
+            if (center.x > 0 && center.y > 0) {
+                g.draw(center)
+            }
+        }
+
+        fun Tile.drawOnScreen(
+            g: Graphics,
+            text: String? = null,
+            outlineColor: Color? = Color.GREEN,
+            fillColor: Color? = null
+        ) {
             val c = g.color
-            val bounds = t.matrix(ClientContext.ctx()).bounds()
+            val bounds = matrix(ClientContext.ctx()).bounds()
             if (bounds != null) {
                 val p = bounds
-                if (draw != null) {
-                    g.color = draw
+                if (outlineColor != null) {
+                    g.color = outlineColor
                     g.drawPolygon(p)
                 }
-                if (fill != null) {
-                    g.color = fill
+                if (fillColor != null) {
+                    g.color = fillColor
                     g.fillPolygon(p)
                 }
+                if (text != null)
+                    g.drawString(text, bounds.bounds.centerX.toInt(), bounds.bounds.centerY.toInt())
             }
             g.color = c
         }

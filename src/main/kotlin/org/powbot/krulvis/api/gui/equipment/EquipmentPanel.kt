@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.gui.equipment
 
+import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Utils.getItemImage
@@ -37,7 +38,7 @@ class EquipmentPanel(val script: ATScript, var disabledSlots: ArrayList<VisualSl
                         }
                         continue
                     }
-                    val i: Item = script.equipment.itemAt(slot.iSlot)
+                    val i: Item = ctx.equipment.itemAt(slot.iSlot)
                     if (i != Item.NIL) {
                         val def = CacheItemConfig.load(ClientContext.ctx().bot().cacheWorker, i.id())
                         val e =

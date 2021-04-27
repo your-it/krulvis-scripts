@@ -1,10 +1,13 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.ctx
 import org.powerbot.script.rt4.CacheItemConfig
 import org.powerbot.script.rt4.ClientContext
 import org.powerbot.script.rt4.Item
 import java.awt.image.BufferedImage
+import java.util.*
+import kotlin.streams.toList
 
 interface Item {
 
@@ -21,16 +24,16 @@ interface Item {
 
     fun getNotedIds(): IntArray = ids.map { it + 1 }.toIntArray()
 
-    fun notedInBank(ctx: ATContext): Boolean = ctx.inventory.any { it.id() in getNotedIds() }
+    fun notedInBank(): Boolean = ctx.bank.toStream().id(*getNotedIds()).isNotEmpty()
 
-    fun inInventory(ctx: ATContext): Boolean = ctx.inventory.any { it.id() in ids }
+    fun inInventory(): Boolean = ctx.inventory.toStream().id(*ids).isNotEmpty()
 
-    fun hasWith(ctx: ATContext): Boolean
+    fun hasWith(): Boolean
 
-    fun inBank(ctx: ATContext): Boolean = ctx.bank.any { it.id() in ids }
+    fun inBank(): Boolean = ctx.bank.toStream().id(*ids).isNotEmpty()
 
-    fun getBankId(ctx: ATContext, worse: Boolean = false): Int {
-        val bankItems = ctx.bank
+    fun getBankId(worse: Boolean = false): Int {
+        val bankItems = ctx.bank.toStream().toList()
         val ids = if (worse) ids.reversed().toIntArray() else ids
         for (id in ids) {
             if (bankItems.any { it.id() == id }) {
@@ -40,22 +43,23 @@ interface Item {
         return -1
     }
 
-    fun getInvItem(ctx: ATContext): Item? = ctx.inventory.firstOrNull { it.id() in ids }
+    fun getInvItem(): Optional<Item> = ctx.inventory.toStream().id(*ids).findFirst()
 
-    fun getInventoryCount(ctx: ATContext, countNoted: Boolean = true): Int {
-        return if (countNoted) ctx.inventory.filter { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
-            .sumBy { it.stackSize() }
-        else ctx.inventory.filter { it.id() in ids }.size
+    fun getInventoryCount(countNoted: Boolean = true): Int {
+        return if (countNoted) ctx.inventory.toStream()
+            .filter { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
+            .toList().sumBy { it.stackSize() }
+        else ctx.inventory.toStream().id(*ids).toList().size
     }
 
-    fun getCount(ctx: ATContext, countNoted: Boolean = true): Int
+    fun getCount(countNoted: Boolean = true): Int
 
-    fun withdrawExact(ctx: ATContext, amount: Int, worse: Boolean = false, wait: Boolean = true): Boolean {
+    fun withdrawExact(amount: Int, worse: Boolean = false, wait: Boolean = true): Boolean {
 //        return ctx.withdrawExact(amount, getBankId(ctx, worse), wait)
         TODO("Not implemented yet")
     }
 
-    fun name(ctx: ATContext): String = CacheItemConfig.load(ctx.ctx.bot().cacheWorker, id).name
+    fun itemName(): String = CacheItemConfig.load(ctx.bot().cacheWorker, id).name
 
     companion object {
         val HAMMER = 2347

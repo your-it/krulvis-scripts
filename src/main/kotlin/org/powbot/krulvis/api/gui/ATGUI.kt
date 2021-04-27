@@ -2,7 +2,7 @@ package org.powbot.krulvis.api.gui
 
 
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.ScriptSettings
+import org.powbot.krulvis.api.script.ScriptProfile
 import org.powbot.krulvis.api.utils.resources.ATGson
 import org.powbot.krulvis.api.utils.resources.ATImage
 import java.awt.Dimension
@@ -17,7 +17,7 @@ import javax.swing.JPanel
 import javax.swing.WindowConstants
 
 
-abstract class ATGUI<S : ATScript, SS : ScriptSettings>(val script: S) : JFrame() {
+abstract class ATGUI<S : ATScript, SP : ScriptProfile>(val script: S) : JFrame() {
 
     private val settingsPanel = SettingsPanel()
 
@@ -36,7 +36,7 @@ abstract class ATGUI<S : ATScript, SS : ScriptSettings>(val script: S) : JFrame(
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent) {
                 println("Closed gui. Stopping script...")
-                script.stop()
+                script.ctx.controller.stop()
             }
         })
 
@@ -86,22 +86,22 @@ abstract class ATGUI<S : ATScript, SS : ScriptSettings>(val script: S) : JFrame(
     /**
      * Load the GUI's current settings: SS to the script: S
      */
-    abstract fun onStart(script: S, settings: SS)
+    abstract fun onStart(script: S, settings: SP)
 
     /**
      * Should return the settings that the GUI currently has as input
      */
-    abstract fun getCurrentSettings(): SS
+    abstract fun getCurrentSettings(): SP
 
     /**
      * Should parse the settingsString as SS and fill the GUI with the settings
      */
-    abstract fun loadSettings(settings: SS)
+    abstract fun loadSettings(settings: SP)
 
     /**
      * return the inputText converted to ScriptSettings
      */
-    abstract fun parseSettings(inputText: String): SS
+    abstract fun parseSettings(inputText: String): SP
 
     /**
      * Loads the found `getSettingsFiles()` as comboBoxModel

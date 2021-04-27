@@ -1,21 +1,17 @@
 package org.powbot.krulvis.api.script
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.EmptyLeaf
 import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.krulvis.api.script.tree.SimpleLeaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Discord
 import org.powbot.krulvis.api.utils.Imgur
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.utils.trackers.LootTracker
 import org.powbot.krulvis.api.utils.trackers.SkillTracker
 import org.powerbot.script.PaintListener
 import org.powerbot.script.PollingScript
@@ -23,12 +19,9 @@ import org.powerbot.script.rt4.ClientContext
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.io.File
-import java.net.HttpURLConnection
-import java.net.URL
-import java.io.OutputStream
 
 
-abstract class ATScript : PollingScript<ClientContext>(), ATContext, PaintListener {
+abstract class ATScript : PollingScript<ClientContext>(), PaintListener {
 
     override fun start() {
         println("Starting..")
@@ -38,33 +31,24 @@ abstract class ATScript : PollingScript<ClientContext>(), ATContext, PaintListen
 
     override fun poll() {
         if (started) {
-            if (rootComponent == null) {
-                rootComponent = rootComponent()
-            }
-            rootComponent!!.execute()
+            rootComponent.execute()
         }
         sleep(Random.nextInt(100, 200))
     }
 
-    override val script: ATScript get() = this
-    override val ctx: ClientContext get() = super<PollingScript>.ctx
-    override val lpf: LocalPathFinder = LocalPathFinder(this)
-
-    /**
-     * Components necessary to run the script
-     */
-    abstract fun rootComponent(): TreeComponent
     abstract val painter: ATPainter<*>
 
     /**
      * Variables used throughout script
      */
-    var debugComponents = false
+    val ctx: ClientContext = super.ctx
+
     var started = false
-    var rootComponent: TreeComponent? = null
-    var lastLeaf: Leaf<*> = EmptyLeaf(this, "Init")
+    abstract val rootComponent: TreeComponent<*>
+    var lastLeaf: Leaf<*> = SimpleLeaf(this, "Init") {}
     val timer = Timer()
     val skillTracker = SkillTracker(this)
+    val lootTracker = LootTracker(this)
     val oddsModifier = OddsModifier()
     val walkDelay = DelayHandler(500, 700, oddsModifier, "Walk Delay")
     var nextRun: Int = Random.nextInt(1, 6)
@@ -75,7 +59,7 @@ abstract class ATScript : PollingScript<ClientContext>(), ATContext, PaintListen
     fun startTracking() {
         println("Started tracking thread")
         Thread {
-            while (!controller.isStopping) {
+            while (!ctx.controller.isStopping) {
                 skillTracker.track()
 //            inventoryWatcher.watch()
 //            animationWatcher.watch()
@@ -113,6 +97,9 @@ abstract class ATScript : PollingScript<ClientContext>(), ATContext, PaintListen
         return File(pb + File.separator + "ScriptSettings" + File.separator + (manifest?.name ?: "EmptyScript"))
     }
 
+    /**
+     * Called whenever the script is stopped, This doesn't actually stop the script
+     */
     override fun stop() {
         if (timer.getElapsedTime() > 50 * 60 * 1000) {
             val img = painter.saveProgressImage()
