@@ -30,7 +30,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
             return
         }
         val poleO = script.getTetherPole()
-        if (poleO.isEmpty) {
+        if (!poleO.isPresent) {
             println("Can't find tetherpole")
             return
         }

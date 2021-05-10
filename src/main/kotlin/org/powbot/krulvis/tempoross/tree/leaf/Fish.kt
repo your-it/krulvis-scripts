@@ -19,7 +19,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     override fun execute() {
         val fishSpot = script.bestFishSpot
-        if (fishSpot.isEmpty) {
+        if (!fishSpot.isPresent) {
             debug("No safe fishing spot found!")
             if (script.blockedTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
@@ -75,7 +75,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
     }
 
     fun findSaveTile(tile: Tile): Tile? {
-        return tile.getWalkableNeighbor(excludeSelf = true, diagonalTiles = true) {
+        return tile.getWalkableNeighbor(diagonalTiles = true) {
             !script.blockedTiles.contains(it)
         }
     }

@@ -20,7 +20,7 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
         script.side = Tempoross.Side.UNKNOWN
 
         val ropeLadder = script.getLadder()
-        if (ropeLadder.isEmpty || ropeLadder.get().distance() > 5) {
+        if (!ropeLadder.isPresent || ropeLadder.get().distance() > 5) {
             debug("Walking first")
             walk(Tile(3137, 2841, 0))
         } else if (interact(ropeLadder.get(), "Climb")) {

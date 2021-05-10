@@ -16,7 +16,7 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
             return !waitFor(10000) { script.getEnergy() > -1 }
         }
         return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
-                && ctx.npcs.toStream().name("Ammunition crate").findFirst().isEmpty
+                && !ctx.npcs.toStream().name("Ammunition crate").findFirst().isPresent
                 && ctx.npcs.toStream().noneMatch { it.actions().contains("Leave") }
     }
 

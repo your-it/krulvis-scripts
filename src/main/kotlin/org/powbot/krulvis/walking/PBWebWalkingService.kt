@@ -5,9 +5,8 @@ import org.powbot.walking.model.*
 import org.powerbot.script.*
 import org.powerbot.script.rt4.ClientContext
 import org.slf4j.LoggerFactory
+import java.io.Serializable
 import java.util.concurrent.Callable
-
-data class GeneratePathRequest(val player: WebWalkingPlayer, val destination: WebTile)
 
 fun Tile.toWebTile(): WebTile {
     return WebTile(x(), y(), floor())

@@ -4,6 +4,7 @@ import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdgeType
+import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.walking.model.Edge
@@ -176,9 +177,11 @@ object Walking {
 
 //                path.tilePath.setRunMin(runMin)
 //                path.tilePath.setRunMin(runMax)
-
             val next = path.actions.getNext() ?: break
             logger.info("Next tile in localwalker: $next")
+            if (next is StartEdge && next.destination.distance() <= 1) {
+                return true
+            }
             if (next.execute()) {
                 Condition.wait {
                     next.destination.distance() <= 7

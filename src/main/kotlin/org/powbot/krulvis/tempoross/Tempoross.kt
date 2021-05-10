@@ -72,8 +72,8 @@ class Tempoross : ATScript(), MessageListener {
         destinationWhenNil: Tile,
         allowCrossing: Boolean
     ): Boolean {
-        if (optional.isEmpty) {
-            debug("Can't find: ${if (optional.isEmpty) action else (optional.get() as Nameable).name()}")
+        if (!optional.isPresent) {
+            debug("Can't find: ${if (!optional.isPresent) action else (optional.get() as Nameable).name()}")
             if (destinationWhenNil != Tile.NIL) {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {

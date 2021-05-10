@@ -71,7 +71,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val lowEnergy = energy / 4 < ctx.inventory.getCount(true, RAW, COOKED)
         val fullHealth = script.getHealth() == 100
         return script.profile.cook && rawCount > 0
-                && (ctx.inventory.isFull || (lowEnergy && !fullHealth) || script.bestFishSpot.isEmpty)
+                && (ctx.inventory.isFull || (lowEnergy && !fullHealth) || !script.bestFishSpot.isPresent)
     }
 
     override val successComponent: TreeComponent<Tempoross> = Cook(script)

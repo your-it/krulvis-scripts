@@ -3,7 +3,6 @@ package org.powbot.krulvis.fighter
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.fighter.tree.branch.ShouldBank
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Npc
@@ -22,7 +21,7 @@ class Fighter : ATScript() {
     }
 
     override val painter: ATPainter<*> = FighterPainter(this)
-    override val rootComponent: TreeComponent<*> = ShouldBank(this)
+    override val rootComponent = ShouldBank(this)
 
     override fun startGUI() {
         started = true

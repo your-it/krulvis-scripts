@@ -91,7 +91,7 @@ object LocalPathFinder : PathFinder {
     }
 
     /**
-     * Used to find neighbors of LocalTile
+     * Used to find neighbors of LocalEdge
      */
     fun LocalEdge.getLocalNeighbors(
         finalDesination: Tile,
@@ -209,57 +209,109 @@ object LocalPathFinder : PathFinder {
             }
         }
 
-        if (!ne.blocked(flags)
-            && !current.blocked(flags, Flag.W_NE or Flag.W_N or Flag.W_E)
+        if (!current.blocked(flags, Flag.W_NE or Flag.W_N or Flag.W_E)
             && !n.blocked(flags, Flag.W_E)
             && !e.blocked(flags, Flag.W_N)
         ) {
-            neighbors.add(
-                LocalTileEdge(
-                    this,
-                    ne,
-                    finalDesination
+            if (!ne.blocked(flags)) {
+                neighbors.add(
+                    LocalTileEdge(
+                        this,
+                        ne,
+                        finalDesination
+                    )
                 )
-            )
+            } else {
+                val door = getDoor(ne, Rotation.DIAGONAL)
+                if (door != GameObject.NIL) {
+                    neighbors.add(
+                        LocalDoorEdge(
+                            door,
+                            this,
+                            ne,
+                            finalDesination
+                        )
+                    )
+                }
+            }
         }
-        if (!se.blocked(flags)
-            && !current.blocked(flags, Flag.W_SE or Flag.W_S or Flag.W_E)
+        if (!current.blocked(flags, Flag.W_SE or Flag.W_S or Flag.W_E)
             && !s.blocked(flags, Flag.W_E)
             && !e.blocked(flags, Flag.W_S)
         ) {
-            neighbors.add(
-                LocalTileEdge(
-                    this,
-                    se,
-                    finalDesination
+            if (!se.blocked(flags)) {
+                neighbors.add(
+                    LocalTileEdge(
+                        this,
+                        se,
+                        finalDesination
+                    )
                 )
-            )
+            } else {
+                val door = getDoor(se, Rotation.DIAGONAL)
+                if (door != GameObject.NIL) {
+                    neighbors.add(
+                        LocalDoorEdge(
+                            door,
+                            this,
+                            se,
+                            finalDesination
+                        )
+                    )
+                }
+            }
         }
-        if (!sw.blocked(flags)
-            && !current.blocked(flags, Flag.W_SW or Flag.W_S or Flag.W_W)
+        if (!current.blocked(flags, Flag.W_SW or Flag.W_S or Flag.W_W)
             && !s.blocked(flags, Flag.W_W)
             && !w.blocked(flags, Flag.W_S)
         ) {
-            neighbors.add(
-                LocalTileEdge(
-                    this,
-                    sw,
-                    finalDesination
+            if (!sw.blocked(flags)) {
+                neighbors.add(
+                    LocalTileEdge(
+                        this,
+                        sw,
+                        finalDesination
+                    )
                 )
-            )
+            } else {
+                val door = getDoor(sw, Rotation.DIAGONAL)
+                if (door != GameObject.NIL) {
+                    neighbors.add(
+                        LocalDoorEdge(
+                            door,
+                            this,
+                            sw,
+                            finalDesination
+                        )
+                    )
+                }
+            }
         }
-        if (!nw.blocked(flags)
-            && !current.blocked(flags, Flag.W_NW or Flag.W_N or Flag.W_W)
+        if (!current.blocked(flags, Flag.W_NW or Flag.W_N or Flag.W_W)
             && !n.blocked(flags, Flag.W_W)
             && !w.blocked(flags, Flag.W_N)
         ) {
-            neighbors.add(
-                LocalTileEdge(
-                    this,
-                    nw,
-                    finalDesination
+            if (!nw.blocked(flags)) {
+                neighbors.add(
+                    LocalTileEdge(
+                        this,
+                        nw,
+                        finalDesination
+                    )
                 )
-            )
+            } else {
+                val door = getDoor(nw, Rotation.DIAGONAL)
+                if (door != GameObject.NIL) {
+                    neighbors.add(
+                        LocalDoorEdge(
+                            door,
+                            this,
+                            nw,
+                            finalDesination
+                        )
+                    )
+                }
+            }
         }
 
         return neighbors

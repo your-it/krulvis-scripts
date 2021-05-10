@@ -1,8 +1,12 @@
 package org.powbot.krulvis.test
 
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.emptySlots
+import org.powbot.krulvis.api.extensions.BankLocation
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -23,6 +27,12 @@ class TestScript : ATScript() {
         get() = Painter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
+            if (ctx.bank.opened()) {
+                return
+            }
+            val bank = ctx.bank.getNearestBank()
+            ATContext.debug("Nearest bank: $bank")
+            bank.open()
         }
     }
 

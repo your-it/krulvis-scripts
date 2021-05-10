@@ -162,13 +162,19 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         g.color = oldCol
     }
 
-    fun drawTile(g: Graphics2D, t: Tile, text: String? = null) {
+    fun drawTile(
+        g: Graphics2D,
+        t: Tile,
+        text: String? = null,
+        lineColor: Color? = Color.GREEN,
+        fillColor: Color? = null
+    ) {
         t.drawOnMap(g)
         t.drawOnScreen(
             g,
             text,
-            Color.GREEN,
-            null
+            lineColor,
+            fillColor
         )
     }
 

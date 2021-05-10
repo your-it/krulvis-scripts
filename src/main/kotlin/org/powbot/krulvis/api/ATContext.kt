@@ -127,22 +127,21 @@ object ATContext {
      * Returns: [Tile] nearest neighbor or self as  which is walkable
      */
     fun Locatable.getWalkableNeighbor(
-        excludeSelf: Boolean = false,
         diagonalTiles: Boolean = false,
         filter: (Tile) -> Boolean = { true }
     ): Tile? {
-        val walkableNeighbors = getWalkableNeighbors(excludeSelf, diagonalTiles)
+        val walkableNeighbors = getWalkableNeighbors(diagonalTiles)
         return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
     }
 
     fun Locatable.getWalkableNeighbors(
-        excludeSelf: Boolean = false,
         diagonalTiles: Boolean = false
     ): MutableList<Tile> {
 
-        val x = tile().x()
-        val y = tile().y()
-        val f = tile().floor()
+        val t = tile()
+        val x = t.x()
+        val y = t.y()
+        val f = t.floor()
         val cm = ctx.client().collisionMaps[f]
 
         val n = Tile(x, y + 1, f)
@@ -174,12 +173,9 @@ object ATContext {
         val regionTile = toRegionTile()
         val localX = regionTile.x()
         val localY = regionTile.y()
-//        val offset = walking.getCollisionOffset(plane)
 
-        val collX: Int = localX - collisionMap.offsetX
-        val collY: Int = localY - collisionMap.offsetY
         return try {
-            collisionMap.flags[collX][collY]
+            collisionMap.flags[localX][localY]
         } catch (e: ArrayIndexOutOfBoundsException) {
             0
         }
@@ -195,7 +191,7 @@ object ATContext {
 
 
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = toStream().anyMatch { it.id() in ids }
-    fun Inventory.emptyExcept(vararg ids: Int): Boolean = toStream().filter { it.id() !in ids }.findFirst().isEmpty
+    fun Inventory.emptyExcept(vararg ids: Int): Boolean = !toStream().filter { it.id() !in ids }.findFirst().isPresent
 
     fun Inventory.emptySlots(): Int = (28 - toStream().count()).toInt()
     fun Inventory.getCount(vararg ids: Int): Int = getCount(false, *ids)

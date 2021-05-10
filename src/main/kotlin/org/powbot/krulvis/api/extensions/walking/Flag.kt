@@ -18,7 +18,7 @@ object Flag {
     const val WATER = 19398912
 
     object Rotation {
-        const val DIAGONAL = 0x0
+        const val DIAGONAL = 0x1
         const val WEST = 0x0
         const val NORTH = 0x1
         const val EAST = 0x2

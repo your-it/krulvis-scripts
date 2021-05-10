@@ -81,5 +81,4 @@ class LocalPath(val actions: List<LocalEdge>) : Path() {
 
     val size = actions.size
 
-
 }

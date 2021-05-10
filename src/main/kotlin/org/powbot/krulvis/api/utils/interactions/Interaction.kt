@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.utils.interactions
 
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Locatable
@@ -42,14 +43,14 @@ interface Interaction<E : Interactive> {
      */
     fun execute(): Boolean {
         val o = getEntity()
-        if (o.isEmpty) {
-            println("Didn't get interaction entity...")
+        if (!o.isPresent) {
+            debug("Didn't get interaction entity...")
             PBWebWalkingService.walkTo(tile, false)
             return false
         }
 
         val entity = o.get()
-        println("Entity: $entity")
+        debug("Entity: $entity")
         val t = if (tile == Tile.NIL) (entity as Locatable).tile() else tile
         val destination = ctx.movement.destination() ?: Tile.NIL
 
