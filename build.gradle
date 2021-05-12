@@ -35,6 +35,7 @@ compileKotlin {
 }
 
 
+
 task jarScriptsOutput(type: Jar) {
     println(powScripts)
     from(sourceSets.main.output.classesDirs, sourceSets.main.output.resourcesDir)
