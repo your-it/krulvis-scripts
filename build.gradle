@@ -45,7 +45,3 @@ task copyScriptJar(type: Copy) {
     include "*.jar"
     into(powScripts)
 }
-
-
-
-
