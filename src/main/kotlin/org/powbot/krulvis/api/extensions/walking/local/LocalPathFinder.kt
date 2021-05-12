@@ -42,6 +42,7 @@ object LocalPathFinder : PathFinder {
             end ?: begin
         )
         if (begin == end || end == null) {
+            logger.info("Finding path from=$begin to=$end")
             return LocalPath(listOf(startAction))
         }
         logger.log(Level.INFO, "FIND LOCAL PATH: $begin -> $end, distance: ${begin.distanceTo(end)}")

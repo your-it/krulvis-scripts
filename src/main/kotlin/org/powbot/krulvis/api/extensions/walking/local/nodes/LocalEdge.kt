@@ -3,6 +3,7 @@ package org.powbot.krulvis.api.extensions.walking.local.nodes
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder.getLocalNeighbors
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
+import java.io.Serializable
 import kotlin.math.abs
 
 fun Tile.distanceM(dest: Tile): Int {
@@ -17,7 +18,7 @@ enum class LocalEdgeType {
 }
 
 
-abstract class LocalEdge(val destination: Tile, val finalDestination: Tile) {
+abstract class LocalEdge(val destination: Tile, val finalDestination: Tile) : Serializable {
 
     abstract val type: LocalEdgeType
 
@@ -39,6 +40,10 @@ abstract class LocalEdge(val destination: Tile, val finalDestination: Tile) {
             curr = curr.parent
         }
         return cost
+    }
+
+    override fun toString(): String {
+        return "${javaClass.simpleName}(to=${destination})"
     }
 }
 

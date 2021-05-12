@@ -27,12 +27,15 @@ class TestScript : ATScript() {
         get() = Painter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            if (ctx.bank.opened()) {
-                return
-            }
-            val bank = ctx.bank.getNearestBank()
-            ATContext.debug("Nearest bank: $bank")
-            bank.open()
+//            if (ctx.bank.opened()) {
+//                return
+//            }
+//            val bank = ctx.bank.getNearestBank()
+//            ATContext.debug("Nearest bank: $bank")
+//            bank.open()
+            val colMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
+            val offset = ctx.game.mapOffset()
+            println("CollisionMap: ${colMap.flags.size}, offSet: $offset")
         }
     }
 

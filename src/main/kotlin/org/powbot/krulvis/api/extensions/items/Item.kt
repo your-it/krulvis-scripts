@@ -1,13 +1,11 @@
 package org.powbot.krulvis.api.extensions.items
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powerbot.script.rt4.CacheItemConfig
-import org.powerbot.script.rt4.ClientContext
 import org.powerbot.script.rt4.Item
 import java.awt.image.BufferedImage
 import java.util.*
-import kotlin.streams.toList
+import java.util.stream.Collectors
 
 interface Item {
 
@@ -33,14 +31,9 @@ interface Item {
     fun inBank(): Boolean = ctx.bank.toStream().id(*ids).isNotEmpty()
 
     fun getBankId(worse: Boolean = false): Int {
-        val bankItems = ctx.bank.toStream().toList()
         val ids = if (worse) ids.reversed().toIntArray() else ids
-        for (id in ids) {
-            if (bankItems.any { it.id() == id }) {
-                return id
-            }
-        }
-        return -1
+        val bankItem = ctx.bank.toStream().filter { it.id() in ids }.findFirst()
+        return if (bankItem.isPresent) bankItem.get().id() else -1
     }
 
     fun getInvItem(): Optional<Item> = ctx.inventory.toStream().id(*ids).findFirst()
@@ -48,8 +41,8 @@ interface Item {
     fun getInventoryCount(countNoted: Boolean = true): Int {
         return if (countNoted) ctx.inventory.toStream()
             .filter { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
-            .toList().sumBy { it.stackSize() }
-        else ctx.inventory.toStream().id(*ids).toList().size
+            .collect(Collectors.summingInt(Item::stackSize))
+        else ctx.inventory.toStream().id(*ids).count().toInt()
     }
 
     fun getCount(countNoted: Boolean = true): Int
