@@ -12,6 +12,7 @@ object Data {
 data class MinerProfile(
     val center: Tile = Tile(0, 0, 0),
     val radius: Int = 15,
-    val powermine: Boolean = false,
+    val dropOres: Boolean = false,
+    val fastMining: Boolean = false,
     val oreLocations: List<Tile> = emptyList()
 ) : ScriptProfile

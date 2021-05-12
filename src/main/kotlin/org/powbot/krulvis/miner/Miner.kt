@@ -24,6 +24,7 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
     override val painter: ATPainter<*> = MinerPainter(this)
 
     override fun startGUI() {
+        ctx.objects.toStream().name("Rock").nearest().findFirst()
         SwingUtilities.invokeLater { gui = MinerGUI(this) }
         skillTracker.addSkill(Skill.MINING)
     }
