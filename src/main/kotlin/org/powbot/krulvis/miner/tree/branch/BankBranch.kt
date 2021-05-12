@@ -21,7 +21,7 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 class ShouldDrop(script: Miner) : Branch<Miner>(script, "Should Drop") {
 
     override fun validate(): Boolean {
-        return script.profile.powermine
+        return script.profile.dropOres
     }
 
     override val successComponent: TreeComponent<Miner> = Drop(script)

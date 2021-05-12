@@ -19,7 +19,7 @@ object Walking {
 
     val logger = LoggerFactory.getLogger(javaClass)
 
-    val maxNextTileDistance = 20
+    val maxNextTileDistance = 25
     private fun findNext(path: List<Edge<*>>, visited: Set<Edge<*>>, destination: Tile): Edge<*>? {
         if (path.isEmpty()) {
             logger.info("Path is empty")
@@ -31,7 +31,8 @@ object Walking {
          */
         val filteredEdges = path.filter { edge ->
             val from = edge.from
-            !visited.contains(edge) && (from == null || from.toRegularTile().distance() <= 15)
+            val tile = from?.toRegularTile()
+            !visited.contains(edge) && (tile == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
         }
 
 //        logger.info("findNext() filteredEdges: ${filteredEdges.size}")
@@ -47,14 +48,14 @@ object Walking {
         /**
          * If the final destination is close, make a new edge with the destination as `to`
          */
-        return if (destination.distance() < maxNextTileDistance && destination.loaded()) object : Edge<TileInteraction>(
+        return if (destination.distance() < maxNextTileDistance) object : Edge<TileInteraction>(
             from = path.last().to,
             to = destination.toWebTile(),
             type = EdgeType.Tile,
             interaction = TileInteraction()
         ) {} else filteredEdges.lastOrNull {
             val to = it.to.toRegularTile()
-            to.distance() <= maxNextTileDistance && to.loaded()
+            to.distance() <= maxNextTileDistance
         }
     }
 
@@ -163,14 +164,15 @@ object Walking {
         return PBWebWalkingResult(true, false, failureReason)
     }
 
-    val localTileDistance = 7
-
-    private fun nearLocalDestination(destination: Tile, path: LocalPath): Boolean {
-        val distance = destination.distance()
-        if (path.containsSpecialNode()) {
-            return distance < 1
+    private fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
+        val dest = ClientContext.ctx().movement.destination()
+        return if (path.containsSpecialNode()) {
+            localDest.distance() < 1
+        } else if (dest != Tile.NIL) {
+            dest.distanceTo(localDest) <= 2
+        } else {
+            localDest.distance() <= 6
         }
-        return distance <= localTileDistance
     }
 
     fun traverseLocally(
@@ -194,7 +196,7 @@ object Walking {
         var attempts = 0
         while (
             path.isNotEmpty() &&
-            !nearLocalDestination(edgeDest, path) &&
+            (if (finalTile) !atDestination(edgeDest) else !nearLocalDestination(edgeDest, path)) &&
             !ctx().controller.isStopping &&
             attempts <= 5
         ) {
@@ -211,13 +213,14 @@ object Walking {
             }
             if (next.execute()) {
                 Condition.wait {
-                    nearLocalDestination(edgeDest, path)
+                    walkUntil.call() || nearLocalDestination(next.destination, path)
                 }
             }
             path = LocalPathFinder.findPath(edgeDest)
             attempts++
         }
-
-        return atDestination(edgeDest, false)
+        val success = nearLocalDestination(edgeDest, path)
+        logger.info("LocalWalker to=$edgeDest, was ${if (success) "successful" else "unsuccessful"}")
+        return success
     }
 }
