@@ -1,6 +1,5 @@
 package org.powbot.krulvis.tempoross
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.distance
@@ -29,7 +28,8 @@ import org.powerbot.script.rt4.GameObject
 import org.powerbot.script.rt4.Interactive
 import org.powerbot.script.rt4.Npc
 import java.util.*
-import kotlin.streams.toList
+import java.util.stream.Collectors
+import java.util.stream.Stream
 
 @Script.Manifest(name = "krul Tempoross", description = "Does tempoross minigame", version = "1.0")
 class Tempoross : ATScript(), MessageListener {
@@ -54,7 +54,7 @@ class Tempoross : ATScript(), MessageListener {
     var pointsObtained = 0
     var rounds = 0
     var bestFishSpot: Optional<Npc> = Optional.empty()
-    var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
+    var fishSpots: Stream<Pair<Npc, LocalPath>> = Stream.empty()
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
@@ -254,20 +254,24 @@ class Tempoross : ATScript(), MessageListener {
     }
 
     fun collectFishSpots() {
-        val allSpots = ctx.npcs.toStream().action("Harpoon").name("Fishing spot").filter {
+        fishSpots = ctx.npcs.toStream().action("Harpoon").name("Fishing spot").filter {
             rightSide(it)
-        }.toList()
-        fishSpots = allSpots.map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+        }.map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
-    fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Optional<Npc> {
+    fun getFishSpot(spots: Stream<Pair<Npc, LocalPath>>): Optional<Npc> {
         val paths = spots.filter { !containsDangerousTile(it.second) }
-        val doublePath = paths.firstOrNull { it.first.id() == DOUBLE_FISH_ID }
-        if (doublePath != null) {
-            return Optional.of(doublePath.first)
+        val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.findFirst()
+        if (doublePath.isPresent) {
+            return Optional.of(doublePath.get().first)
         }
-        val minPath = paths.minByOrNull { it.second.actions.size }
-        return if (minPath != null) Optional.of(minPath.first) else Optional.empty()
+
+        if (paths.count() > 0) {
+            return Optional.of(
+                paths.collect(Collectors.minBy(Comparator.comparingInt { it.second.actions.size })).get().first
+            )
+        }
+        return Optional.empty()
     }
 
     fun getBossPool() =

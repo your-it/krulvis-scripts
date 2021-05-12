@@ -169,6 +169,11 @@ object ATContext {
         return Tile(x() - mos.x(), y() - mos.y(), floor())
     }
 
+    fun Tile.loaded(): Boolean {
+        val rt = toRegionTile()
+        return rt.x() < 104 && rt.y() < 104
+    }
+
     fun Tile.getFlag(collisionMap: ICollisionMap): Int {
         val regionTile = toRegionTile()
         val localX = regionTile.x()

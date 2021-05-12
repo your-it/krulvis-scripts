@@ -1,9 +1,7 @@
 package org.powbot.krulvis.api.extensions.walking.local
 
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.walking.Path
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder.logger
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdgeType
@@ -26,7 +24,7 @@ class LocalPath(val actions: List<LocalEdge>) : Path() {
         fun List<LocalEdge>.getNext(): LocalEdge? {
             val cutOff = indexOf(minByOrNull { it.destination.distance() })
             val remainder = subList(cutOff, size)
-//        println("Cutting of at: $cutOff of $size total, ${remainder.size} left")
+            logger.info("Cutting of at: $cutOff of $size total, ${remainder.size} left")
             val firstSpecial = remainder.firstOrNull { it.type != LocalEdgeType.WALKING }
             if (firstSpecial != null) {
                 logger.info("Found special: $firstSpecial")

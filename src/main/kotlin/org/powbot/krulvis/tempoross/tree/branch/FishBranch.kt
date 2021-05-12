@@ -61,7 +61,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             return true
         }
         val noEasyFishSpots =
-            script.fishSpots.isEmpty() || script.fishSpots.all { script.containsDangerousTile(it.second) }
+            script.fishSpots.count() == 0L || script.fishSpots.allMatch { script.containsDangerousTile(it.second) }
 
         if (rawCount > 3 && noEasyFishSpots && !script.hasDangerousPath(cookLocation)) {
             debug("Start early cooking since there is no available spot to fish at!")

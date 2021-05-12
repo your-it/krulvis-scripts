@@ -11,14 +11,14 @@ open class ATResource(val relativeFile: File, private val url: String) {
 
     fun getFile(): File {
         val file = getFileLocation()
-        println("File location: $file")
+//        println("File location: $file")
         if (!file.exists()) {
             println("$file not found, have to download it first")
             file.parentFile.mkdirs()
             file.createNewFile()
             downloadFile()
         } else {
-            println("File is found at location")
+//            println("File is found at location")
         }
         return file
     }

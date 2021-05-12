@@ -3,6 +3,7 @@ package org.powbot.krulvis.test
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.blocked
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.Flag
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.script.ATScript
@@ -20,7 +21,7 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val tile = Tile(3105, 3161, 0)
+    val tile = Tile(3275, 3428, 0)
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
 
@@ -29,7 +30,7 @@ class TestWeb : ATScript() {
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
             collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
-
+            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
 //            println("Is door: ${LocalPathFinder.getDoor(Tile(3107, 3162, 0), Flag.Rotation.WEST) != GameObject.NIL}")
 
 //            doors = ctx.objects.toStream().name("Door").list()
@@ -58,17 +59,21 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
             )
         }
 
-        script.doors.forEach {
-            val t = it.tile()
-            drawTile(
-                g,
-                t,
-                text = "${it.name()}, Orient: ${it.orientation()}",
-                lineColor = null,
-                fillColor = null
-            )
-        }
-        script.tile.drawOnScreen(g, null, fillColor = Color.CYAN)
+//        script.doors.forEach {
+//            val t = it.tile()
+//            drawTile(
+//                g,
+//                t,
+//                text = "${it.name()}, Orient: ${it.orientation()}",
+//                lineColor = null,
+//                fillColor = null
+//            )
+//        }
+        script.tile.drawOnScreen(
+            g,
+            null,
+            fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
+        )
 
     }
 
