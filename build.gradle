@@ -46,5 +46,3 @@ task copyScriptJar(type: Copy) {
     into(powScripts)
 }
 
-
-
