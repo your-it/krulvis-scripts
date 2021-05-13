@@ -5,6 +5,7 @@ import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
+import org.powbot.krulvis.api.utils.Random
 import org.powbot.walking.model.Edge
 import org.powbot.walking.model.EdgeType
 import org.powbot.walking.model.TileInteraction
@@ -31,8 +32,8 @@ object Walking {
          */
         val filteredEdges = path.filter { edge ->
             val from = edge.from
-            val tile = from?.toRegularTile()
-            !visited.contains(edge) && (tile == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
+            val tile = edge.to.toRegularTile()
+            !visited.contains(edge) && (from == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
         }
 
 //        logger.info("findNext() filteredEdges: ${filteredEdges.size}")
@@ -109,17 +110,17 @@ object Walking {
 
             logger.info("Next step is $nextEdge, distance: ${nextTile.distance()}")
 
+            val runOn = Random.nextInt(runMin, runMax) >= ctx().movement.energyLevel()
             val result = if (nextEdge.type == EdgeType.Tile) {
                 traverseLocally(
                     nextTile,
                     walkUntil,
-                    runMin,
-                    runMax,
+                    runOn,
                     nextTile == destination
                 )
             } else {
                 if (nextEdge.from != null && nextEdge.from!!.toRegularTile().distance() > 2) {
-                    traverseLocally(nextEdge.from!!.toRegularTile(), walkUntil, runMin, runMax)
+                    traverseLocally(nextEdge.from!!.toRegularTile(), walkUntil, runOn)
                 }
                 logger.info("Handling special edge: $nextEdge")
 
@@ -164,10 +165,7 @@ object Walking {
         return PBWebWalkingResult(true, false, failureReason)
     }
 
-    /**
-     * TODO: Change back to private
-     */
-    public fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
+    private fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
         val dest = ClientContext.ctx().movement.destination()
         return if (path.containsSpecialNode()) {
             localDest.distance() < 1
@@ -181,8 +179,7 @@ object Walking {
     fun traverseLocally(
         edgeDest: Tile,
         walkUntil: Callable<Boolean>,
-        runMin: Int,
-        runMax: Int,
+        runOn: Boolean,
         finalTile: Boolean = false
     ): Boolean {
         logger.info("LocalTraverse to: $edgeDest")
@@ -206,9 +203,9 @@ object Walking {
             if (walkUntil.call()) {
                 return true
             }
-
-//                path.tilePath.setRunMin(runMin)
-//                path.tilePath.setRunMin(runMax)
+            if (runOn && !ctx().movement.running() && ctx().movement.energyLevel() > 0) {
+                ctx().movement.running(true)
+            }
             val next = path.actions.getNext() ?: break
             logger.info("LocalTraverse next: $next")
             if (next is StartEdge && next.destination.distance() <= 1) {
