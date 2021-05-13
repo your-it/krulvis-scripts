@@ -21,7 +21,7 @@ object Walking {
     val logger = LoggerFactory.getLogger("Walking")
 
     val maxNextTileDistance = 25
-    private fun findNext(path: List<Edge<*>>, visited: Set<Edge<*>>, destination: Tile): Edge<*>? {
+    private fun findNext(path: List<Edge<*>>, visited: Set<Edge<*>>, finalDestination: Tile): Edge<*>? {
         if (path.isEmpty()) {
             logger.info("Path is empty")
             return null
@@ -33,7 +33,7 @@ object Walking {
         val filteredEdges = path.filter { edge ->
             val from = edge.from
             val tile = edge.to.toRegularTile()
-            !visited.contains(edge) && (from == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
+            !visited.contains(edge) && (from == null || tile.distance() <= maxNextTileDistance)
         }
 
 //        logger.info("findNext() filteredEdges: ${filteredEdges.size}")
@@ -49,14 +49,14 @@ object Walking {
         /**
          * If the final destination is close, make a new edge with the destination as `to`
          */
-        return if (destination.distance() < maxNextTileDistance) object : Edge<TileInteraction>(
+        return if (finalDestination.distance() < maxNextTileDistance && finalDestination.loaded()) object : Edge<TileInteraction>(
             from = path.last().to,
-            to = destination.toWebTile(),
+            to = finalDestination.toWebTile(),
             type = EdgeType.Tile,
             interaction = TileInteraction()
         ) {} else filteredEdges.lastOrNull {
             val to = it.to.toRegularTile()
-            to.distance() <= maxNextTileDistance
+            to.distance() <= maxNextTileDistance && to.loaded()
         }
     }
 
@@ -80,7 +80,7 @@ object Walking {
 
     fun walkPath(
         _path: List<Edge<*>>,
-        destination: Tile,
+        finalDestination: Tile,
         walkUntil: Callable<Boolean>,
         runMin: Int,
         runMax: Int
@@ -93,7 +93,7 @@ object Walking {
 
         logger.info("Path is [$_path]")
         while (
-            !atDestination(destination)
+            !atDestination(finalDestination)
             && ctx().controller.script() != null
             && attempts < 5
         ) {
@@ -101,7 +101,7 @@ object Walking {
                 break
             }
 
-            nextEdge = findNext(path, visited, destination)
+            nextEdge = findNext(path, visited, finalDestination)
             if (nextEdge == null) {
                 logger.info("Could not find next Edge")
                 break
@@ -116,7 +116,7 @@ object Walking {
                     nextTile,
                     walkUntil,
                     runOn,
-                    nextTile == destination
+                    nextTile == finalDestination
                 )
             } else {
                 if (nextEdge.from != null && nextEdge.from!!.toRegularTile().distance() > 2) {
@@ -140,7 +140,7 @@ object Walking {
             }
         }
 
-        if (atDestination(destination, true) || walkUntil.call()) {
+        if (atDestination(finalDestination, true) || walkUntil.call()) {
             return PBWebWalkingResult(true, true, null)
         }
 
