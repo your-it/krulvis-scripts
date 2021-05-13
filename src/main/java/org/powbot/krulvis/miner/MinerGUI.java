@@ -195,6 +195,8 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         minerPanel.add(label2, gbc);
         radiusSlider = new JSlider();
         radiusSlider.setMaximum(25);
+        radiusSlider.setMinimum(1);
+        radiusSlider.setMinorTickSpacing(1);
         radiusSlider.setPaintLabels(true);
         radiusSlider.setPaintTicks(true);
         radiusSlider.setSnapToTicks(false);

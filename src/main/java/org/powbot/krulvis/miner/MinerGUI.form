@@ -82,6 +82,8 @@
             </constraints>
             <properties>
               <maximum value="25"/>
+              <minimum value="1"/>
+              <minorTickSpacing value="1"/>
               <paintLabels value="true"/>
               <paintTicks value="true"/>
               <snapToTicks value="false"/>
