@@ -32,8 +32,8 @@ object Walking {
          */
         val filteredEdges = path.filter { edge ->
             val from = edge.from
-            val tile = from?.toRegularTile()
-            !visited.contains(edge) && (tile == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
+            val tile = edge.to.toRegularTile()
+            !visited.contains(edge) && (from == null || (tile.distance() <= maxNextTileDistance && tile.loaded()))
         }
 
 //        logger.info("findNext() filteredEdges: ${filteredEdges.size}")
@@ -164,7 +164,7 @@ object Walking {
         }
         return PBWebWalkingResult(true, false, failureReason)
     }
-    
+
     private fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
         val dest = ClientContext.ctx().movement.destination()
         return if (path.containsSpecialNode()) {
