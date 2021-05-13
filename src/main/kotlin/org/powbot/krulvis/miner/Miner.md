@@ -5,11 +5,11 @@
 
 ## Features
 
-- [x] **Select ores by clicking on them.**
-- [X] **Bank or powermine, fast or slow.**
-- [X] **Recognizes if others have mined your rock.**
-- [X] **Watches the centerTile with radius to walk back if player is too far away.**
-- [ ] **Makes use of dropboxes.**
+- **Select ores by clicking on them.**
+- **Bank or powermine, fast or slow.**
+- **Recognizes if others have mined your rock.**
+- **Watches the centerTile with radius to walk back if player is too far away.**
+- **Can hop from nearby players.**
 
 ## Options
 
@@ -17,3 +17,4 @@
 - **Drop ores to skip banking and powermine.**
 - **Fast mining removes the random delay before clicking next rock.**
 - **Set center position with radius to 1 for powermining on 1 tile.**
+- **Hop from players checks if another player is within your mining area for 2.5 seconds before hopping.**

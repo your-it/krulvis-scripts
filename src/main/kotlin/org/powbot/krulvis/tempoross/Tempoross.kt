@@ -35,7 +35,8 @@ import java.util.stream.Stream
     name = "krul Tempoross",
     description = "Does tempoross minigame",
     version = "1.0",
-    markdownFileName = "Tempoross.md"
+    markdownFileName = "Tempoross.md",
+    mobileReady = true
 )
 class Tempoross : ATScript(), MessageListener {
 

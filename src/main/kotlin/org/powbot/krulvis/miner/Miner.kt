@@ -15,9 +15,10 @@ import javax.swing.SwingUtilities
 
 @Script.Manifest(
     name = "krul Miner",
-    description = "Mines anything, anywhere",
+    description = "Mines & banks anything, anywhere",
     version = "1.0",
-    markdownFileName = "Miner.md"
+    markdownFileName = "Miner.md",
+    mobileReady = true
 )
 class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
