@@ -31,15 +31,19 @@ import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-@Script.Manifest(name = "krul Tempoross", description = "Does tempoross minigame", version = "1.0")
+@Script.Manifest(
+    name = "krul Tempoross",
+    description = "Does tempoross minigame",
+    version = "1.0",
+    markdownFileName = "Tempoross.md"
+)
 class Tempoross : ATScript(), MessageListener {
 
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 
     override val painter: ATPainter<*> = TemporossPainter(this)
     override fun startGUI() {
-        println("No GUI so we're starting")
-        started = true
+        TemporossGUI(this)
         debugComponents = true
         skillTracker.addSkill(Skill.FISHING)
     }

@@ -13,8 +13,7 @@ public class TemporossGUI extends ATGUI<Tempoross, TemporossProfile> {
 	private JCheckBox cookFishCheckBox;
 	private JCheckBox shootFishAfterTetheringCheckBox;
 	private JSlider forceShootSlider;
-	private JCheckBox firemanCheckBox;
-	private JCheckBox forceCookingWith10CheckBox;
+    private JCheckBox forceCookingWith10CheckBox;
 	private JSlider forceCookSlider;
 
 	public TemporossGUI(@NotNull Tempoross script) {
@@ -104,7 +103,7 @@ public class TemporossGUI extends ATGUI<Tempoross, TemporossProfile> {
 		shootFishAfterTetheringCheckBox.setText("Force shoot with 10 fish after tethering");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 2;
+		gbc.gridy = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		temporossPanel.add(shootFishAfterTetheringCheckBox, gbc);
 		forceShootSlider = new JSlider();
@@ -114,23 +113,15 @@ public class TemporossGUI extends ATGUI<Tempoross, TemporossProfile> {
 		forceShootSlider.setValue(10);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		temporossPanel.add(forceShootSlider, gbc);
-		firemanCheckBox = new JCheckBox();
-		firemanCheckBox.setText("Fireman");
-		firemanCheckBox.setToolTipText("Act as fireman and walk around dousing all fires");
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.anchor = GridBagConstraints.WEST;
-		temporossPanel.add(firemanCheckBox, gbc);
 		forceCookingWith10CheckBox = new JCheckBox();
 		forceCookingWith10CheckBox.setText("Force cooking with 10 fish in inventory");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 4;
+		gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		temporossPanel.add(forceCookingWith10CheckBox, gbc);
 		forceCookSlider = new JSlider();
@@ -139,7 +130,7 @@ public class TemporossGUI extends ATGUI<Tempoross, TemporossProfile> {
 		forceCookSlider.setValue(10);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 5;
+		gbc.gridy = 4;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		temporossPanel.add(forceCookSlider, gbc);

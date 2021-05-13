@@ -13,7 +13,12 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import javax.swing.SwingUtilities
 
-@Script.Manifest(name = "krul Miner", description = "Mines anything, anywhere", version = "1.0")
+@Script.Manifest(
+    name = "krul Miner",
+    description = "Mines anything, anywhere",
+    version = "1.0",
+    markdownFileName = "Miner.md"
+)
 class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
     var profile = MinerProfile()
