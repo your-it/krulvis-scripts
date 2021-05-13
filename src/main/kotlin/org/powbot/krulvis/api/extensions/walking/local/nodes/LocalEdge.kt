@@ -43,7 +43,7 @@ abstract class LocalEdge(val destination: Tile, val finalDestination: Tile) : Se
     }
 
     override fun toString(): String {
-        return "${javaClass.simpleName}(to=${destination})"
+        return "LocalEdge(to=${destination})"
     }
 }
 

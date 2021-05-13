@@ -1,18 +1,11 @@
 package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.emptySlots
-import org.powbot.krulvis.api.extensions.BankLocation
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
-import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.tempoross.Tempoross
 import org.powerbot.bot.rt4.client.internal.IActor
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
@@ -43,23 +36,20 @@ class TestScript : ATScript() {
         debugComponents = true
         started = true
     }
+
+    override fun stop() {
+        painter.saveProgressImage()
+    }
+
 }
 
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
-        var y = this.y
-        drawSplitText(g, "Orientation: ", "${realOrientation()}", x, y)
-        y += yy
-        drawSplitText(g, "Orientation: ", "${correctOrientation()}", x, y)
-        facingTile().drawOnScreen(g)
-        val facingRocks = ctx.objects.toStream().at(facingTile()).name("Rocks").findFirst()
-        y += yy
-        drawSplitText(
-            g,
-            "FacingRocks: ${facingRocks.isPresent}",
-            "${if (facingRocks.isPresent) facingRocks.get().getOre() != null else ""}",
-            x, y
-        )
+        val ct = script.ctx.players.local().tile()
+        if (ct != null) {
+            ct.drawOnMap(g)
+            ct.drawCircleOnMap(g, 5)
+        }
     }
 
     fun realOrientation(): Int {
@@ -91,7 +81,9 @@ class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
         return Tile.NIL
     }
 
-    override fun drawProgressImage(g: Graphics2D, height: Int) {
-        TODO("Not yet implemented")
+    override fun drawProgressImage(g: Graphics2D, startY: Int) {
+        var y = startY
+        g.drawString("Test string", x, y)
+        y += yy
     }
 }

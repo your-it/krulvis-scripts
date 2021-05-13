@@ -18,14 +18,8 @@ class MinerPainter(script: Miner) : ATPainter<Miner>(script, 10, 250) {
         if (!script.started && gui != null) {
             val ct = gui.centerTile
             if (ct != null) {
-                val radius = gui.radius
                 ct.drawOnMap(g)
-                val ellipse = Ellipse2D.Double()
-                val centerPoint = Point(ct.mapPoint().x, ct.mapPoint().y)
-                val radiusTile = Tile(ct.x() + radius, ct.y() + radius)
-                val corner = Point(radiusTile.mapPoint().x, radiusTile.mapPoint().y)
-                ellipse.setFrameFromCenter(centerPoint, corner)
-                g.draw(ellipse)
+                ct.drawCircleOnMap(g, gui.radius)
             }
             gui.oreLocations.forEach { tile ->
                 drawTile(g, tile)
@@ -39,6 +33,8 @@ class MinerPainter(script: Miner) : ATPainter<Miner>(script, 10, 250) {
                     )
                 }
             }
+        } else if (!script.started && (gui == null || !gui.isVisible)) {
+            drawSplitText(g, "Loading GUI", "...", x, y)
         } else {
             drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
             y += yy
