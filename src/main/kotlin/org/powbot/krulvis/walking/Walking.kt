@@ -17,7 +17,7 @@ import java.util.concurrent.Callable
 
 object Walking {
 
-    val logger = LoggerFactory.getLogger(javaClass)
+    val logger = LoggerFactory.getLogger("Walking")
 
     val maxNextTileDistance = 25
     private fun findNext(path: List<Edge<*>>, visited: Set<Edge<*>>, destination: Tile): Edge<*>? {
@@ -88,6 +88,7 @@ object Walking {
         var attempts = 0
         val visited = mutableSetOf<Edge<*>>()
         var nextEdge: Edge<*>? = null
+        var nextTile = Tile.NIL
 
         logger.info("Path is [$_path]")
         while (
@@ -104,22 +105,21 @@ object Walking {
                 logger.info("Could not find next Edge")
                 break
             }
+            nextTile = nextEdge.to.toRegularTile()
 
-            logger.info("Next step is $nextEdge, distance: ${nextEdge.to.toRegularTile().distance()}")
+            logger.info("Next step is $nextEdge, distance: ${nextTile.distance()}")
 
             val result = if (nextEdge.type == EdgeType.Tile) {
                 traverseLocally(
-                    nextEdge.to.toRegularTile(),
+                    nextTile,
                     walkUntil,
                     runMin,
                     runMax,
-                    nextEdge.to.toRegularTile() == destination
+                    nextTile == destination
                 )
             } else {
-                if (nextEdge.from != null && ClientContext.ctx().players.local().tile()
-                        .distanceTo(nextEdge.from?.toRegularTile()!!) > 2
-                ) {
-                    traverseLocally(nextEdge.from?.toRegularTile()!!, walkUntil, runMin, runMax)
+                if (nextEdge.from != null && nextEdge.from!!.toRegularTile().distance() > 2) {
+                    traverseLocally(nextEdge.from!!.toRegularTile(), walkUntil, runMin, runMax)
                 }
                 logger.info("Handling special edge: $nextEdge")
 
@@ -151,10 +151,10 @@ object Walking {
                 FailureReason.FailedInteract
             } else if (!ClientContext.ctx().movement.reachable(
                     ClientContext.ctx().players.local().tile(),
-                    nextEdge.to.toRegularTile()
+                    nextTile
                 )
             ) {
-                logger.info("Can't react next to tile [$nextEdge]")
+                logger.info("Can't react next to edge [$nextEdge] loaded: ${nextTile.loaded()}")
 
                 FailureReason.CantReachNextNode
             } else {
@@ -164,7 +164,10 @@ object Walking {
         return PBWebWalkingResult(true, false, failureReason)
     }
 
-    private fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
+    /**
+     * TODO: Change back to private
+     */
+    public fun nearLocalDestination(localDest: Tile, path: LocalPath): Boolean {
         val dest = ClientContext.ctx().movement.destination()
         return if (path.containsSpecialNode()) {
             localDest.distance() < 1
@@ -209,6 +212,7 @@ object Walking {
             val next = path.actions.getNext() ?: break
             logger.info("LocalTraverse next: $next")
             if (next is StartEdge && next.destination.distance() <= 1) {
+                logger.info("Standing next to StartTile: $next")
                 return true
             }
             if (next.execute()) {

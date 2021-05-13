@@ -2,11 +2,16 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
+import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.krulvis.walking.Walking
 import org.powerbot.bot.rt4.client.internal.IActor
+import org.powerbot.script.Condition
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Actor
@@ -16,19 +21,13 @@ import java.awt.Graphics2D
 class TestScript : ATScript() {
 
 
+    val tile = Tile(3277, 3178, 0)
+
     override val painter: ATPainter<*>
         get() = Painter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-//            if (ctx.bank.opened()) {
-//                return
-//            }
-//            val bank = ctx.bank.getNearestBank()
-//            ATContext.debug("Nearest bank: $bank")
-//            bank.open()
-            val colMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
-            val offset = ctx.game.mapOffset()
-            println("CollisionMap: ${colMap.flags.size}, offSet: $offset")
+
         }
     }
 

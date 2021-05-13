@@ -2,6 +2,7 @@ package org.powbot.krulvis.api.extensions.walking.local.nodes
 
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.extensions.walking.PathFinder
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powerbot.script.Tile
@@ -15,7 +16,8 @@ class LocalDoorEdge(val door: GameObject, parent: LocalEdge, destination: Tile, 
         LocalEdgeType.DOOR
 
     override fun execute(): Boolean {
-        return if (interact(door, "Open")) {
+        val action = door.actions().firstOrNull { it in PathFinder.actions } ?: return false
+        return if (interact(door, action)) {
             val openedDoor = waitFor { openedDoor() }
             println("Opened door: $openedDoor")
             openedDoor

@@ -19,7 +19,7 @@ interface PathFinder {
     }
 
     fun getDoor(tile: Tile, orientation: Int): GameObject {
-        return ClientContext.ctx().objects.toStream().at(tile).filter {
+        return ClientContext.ctx().objects.toStream().at(tile).action(actions).filter {
             it.name() != null && isDoor(it)
                     && it.orientation() == orientation
                     && canUseDoor(it)
@@ -27,6 +27,7 @@ interface PathFinder {
     }
 
     companion object {
+        val actions = listOf("Open", "Use", "Enter", "Pay")
         val doors = listOf(
             "Door",
             "Glass door",
@@ -41,7 +42,6 @@ interface PathFinder {
             "Prison door",
             "Barbarian door"
         )
-
         val blockedDoors = listOf(Tile(2515, 9575, 0), Tile(2568, 9893, 0), Tile(2566, 9901, 0), Tile(2924, 9803, 0))
     }
 

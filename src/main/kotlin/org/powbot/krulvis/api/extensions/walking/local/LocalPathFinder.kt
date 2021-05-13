@@ -8,8 +8,8 @@ import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalTileEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
-import org.powbot.krulvis.api.ATContext.blocked
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
+import org.powbot.krulvis.api.ATContext.loaded
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
@@ -35,6 +35,10 @@ object LocalPathFinder : PathFinder {
 
     fun findPath(begin: Tile, end: Tile): LocalPath {
         this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()]
+        if (!end.loaded()) {
+            logger.info("Tile not loaded: $end")
+            return LocalPath(emptyList())
+        }
         val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
 
         val startAction = StartEdge(
@@ -91,6 +95,49 @@ object LocalPathFinder : PathFinder {
         return any { it.destination == destination }
     }
 
+
+    enum class NeighBors(val currentFlag: Int, val currentRotation: Int, val nextRotation: Int) {
+        NORTH(Flag.W_N, Rotation.NORTH, Rotation.SOUTH),
+        EAST(Flag.W_E, Rotation.EAST, Rotation.WEST),
+        SOUTH(Flag.W_S, Rotation.SOUTH, Rotation.NORTH),
+        WEST(Flag.W_W, Rotation.WEST, Rotation.EAST);
+
+        fun getEdge(currentEdge: LocalEdge, flags: ICollisionMap): Optional<LocalEdge> {
+            val current = currentEdge.destination
+            val neighbor = when (this) {
+                NORTH -> Tile(current.x(), current.y() + 1, current.floor())
+                EAST -> Tile(current.x() + 1, current.y(), current.floor())
+                SOUTH -> Tile(current.x(), current.y() - 1, current.floor())
+                WEST -> Tile(current.x() - 1, current.y(), current.floor())
+            }
+            if (!neighbor.blocked(flags)) {
+                if (!current.blocked(flags, currentFlag)) {
+                    return Optional.of(
+                        LocalTileEdge(
+                            currentEdge,
+                            neighbor,
+                            currentEdge.finalDestination
+                        )
+                    )
+                } else {
+                    var door = getDoor(current, currentRotation)
+                    if (door == GameObject.NIL) door = getDoor(neighbor, nextRotation)
+                    if (door != GameObject.NIL) {
+                        return Optional.of(
+                            LocalDoorEdge(
+                                door,
+                                currentEdge,
+                                neighbor,
+                                currentEdge.finalDestination
+                            )
+                        )
+                    }
+                }
+            }
+            return Optional.empty()
+        }
+    }
+
     /**
      * Used to find neighbors of LocalEdge
      */
@@ -103,112 +150,22 @@ object LocalPathFinder : PathFinder {
         val current = destination
         val p = current.floor()
 
+        NeighBors.values().forEach {
+            val edge = it.getEdge(this, flags)
+            if (edge.isPresent) {
+                logger.info("Found neighbor ${it.name}: ${edge.get()}")
+                neighbors.add(edge.get())
+            }
+        }
+
         val n = Tile(current.x(), current.y() + 1, p)
         val e = Tile(current.x() + 1, current.y(), p)
         val s = Tile(current.x(), current.y() - 1, p)
         val w = Tile(current.x() - 1, current.y(), p)
-
         val ne = Tile(current.x() + 1, current.y() + 1, p)
         val se = Tile(current.x() + 1, current.y() - 1, p)
         val sw = Tile(current.x() - 1, current.y() - 1, p)
         val nw = Tile(current.x() - 1, current.y() + 1, p)
-
-        if (!n.blocked(flags)) {
-            if (!current.blocked(flags, Flag.W_N)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        n,
-                        finalDesination
-                    )
-                )
-            } else {
-                var door = getDoor(current, Rotation.NORTH)
-                if (door == GameObject.NIL) door = getDoor(n, Rotation.SOUTH)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            n,
-                            finalDesination
-                        )
-                    )
-                }
-            }
-        }
-        if (!e.blocked(flags)) {
-            if (!current.blocked(flags, Flag.W_E)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        e,
-                        finalDesination
-                    )
-                )
-            } else {
-                var door = getDoor(current, Rotation.EAST)
-                if (door == GameObject.NIL) door = getDoor(e, Rotation.WEST)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            e,
-                            finalDesination
-                        )
-                    )
-                }
-            }
-        }
-        if (!s.blocked(flags)) {
-            if (!current.blocked(flags, Flag.W_S)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        s,
-                        finalDesination
-                    )
-                )
-            } else {
-                var door = getDoor(current, Rotation.SOUTH)
-                if (door == GameObject.NIL) door = getDoor(s, Rotation.NORTH)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            s,
-                            finalDesination
-                        )
-                    )
-                }
-            }
-        }
-        if (!w.blocked(flags)) {
-            if (!current.blocked(flags, Flag.W_W)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        w,
-                        finalDesination
-                    )
-                )
-            } else {
-                var door = getDoor(current, Rotation.WEST)
-                if (door == GameObject.NIL) door = getDoor(w, Rotation.EAST)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            w,
-                            finalDesination
-                        )
-                    )
-                }
-            }
-        }
 
         if (!current.blocked(flags, Flag.W_NE or Flag.W_N or Flag.W_E)
             && !n.blocked(flags, Flag.W_E)
