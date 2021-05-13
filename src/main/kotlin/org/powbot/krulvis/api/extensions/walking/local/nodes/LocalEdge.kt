@@ -62,4 +62,8 @@ class StartEdge(startTile: Tile, finalDestination: Tile) : LocalEdge(startTile, 
     override fun execute(): Boolean {
         return ClientContext.ctx().movement.step(destination)
     }
+
+    override fun toString(): String {
+        return "StartEdge(to=${destination})"
+    }
 }

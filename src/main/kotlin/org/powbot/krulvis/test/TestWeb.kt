@@ -1,17 +1,20 @@
 package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.blocked
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.loaded
-import org.powbot.krulvis.api.extensions.walking.Flag
+import org.powbot.krulvis.api.extensions.walking.local.LocalPath
+import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.walking.PBWebWalkingService
+import org.powbot.krulvis.walking.Walking
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
-import org.powerbot.script.ClientContext
+import org.powerbot.script.Condition
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -21,10 +24,12 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val tile = Tile(3275, 3428, 0)
+    val tile = Tile(3277, 3178, 0)
+    var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
 
+    val outside = Tile(3281, 3191, 0)
     val bank = Tile(3269, 3166, 0)
     val tanner = Tile(3275, 3191, 0)
 
@@ -35,21 +40,45 @@ class TestWeb : ATScript() {
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
             collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
-            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
-            if (walkingToTanner) {
-                if (tanner.distance() > 0) {
-                    ctx.movement.walkTo(tanner)
-                } else {
-                    walkingToTanner = false
-                }
-            } else {
-                if (bank.distance() > 0) {
-                    ctx.movement.walkTo(bank)
-                } else {
-                    walkingToTanner = true
-                }
-            }
+            doors = ctx.objects.toStream().name("Door").list()
+//            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
+//            walk(tile)
+//            PBWebWalkingService.walkTo(tile, false)
+//            walkToTanner()
+            testPathFinder()
+        }
+    }
 
+    fun testPathFinder() {
+        path = LocalPathFinder.findPath(tile)
+        val next = path.actions.getNext() ?: return
+        Walking.logger.info("LocalTraverse next: $next")
+        if (next is StartEdge && next.destination.distance() <= 1) {
+            Walking.logger.info("Standing next to StartTile: $next")
+            return
+        }
+        if (next.execute()) {
+            sleep(600)
+        }
+    }
+
+
+    fun walkToTanner() {
+        if (walkingToTanner) {
+            if (tanner.distance() > 0) {
+                PBWebWalkingService.walkTo(tanner, false)
+//                ctx.movement.walkTo(tanner, false)
+            } else {
+                walkingToTanner = false
+            }
+        } else {
+            val other = bank
+            if (other.distance() > 0) {
+                PBWebWalkingService.walkTo(bank, false)
+//                ctx.movement.walkTo(other, false)
+            } else {
+                walkingToTanner = true
+            }
         }
     }
 
@@ -74,22 +103,26 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
             )
         }
 
-//        script.doors.forEach {
-//            val t = it.tile()
-//            drawTile(
-//                g,
-//                t,
-//                text = "${it.name()}, Orient: ${it.orientation()}",
-//                lineColor = null,
-//                fillColor = null
-//            )
-//        }
+        script.doors.forEach {
+            val t = it.tile()
+            drawTile(
+                g,
+                t,
+                text = "${it.name()}, Orient: ${it.orientation()}",
+                lineColor = null,
+                fillColor = null
+            )
+        }
         if (script.collisionMap != null) {
             script.tile.drawOnScreen(
                 g,
                 null,
                 fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
             )
+            val path = script.path
+            if (path.isNotEmpty()) {
+                path.draw(g)
+            }
         }
 
     }
