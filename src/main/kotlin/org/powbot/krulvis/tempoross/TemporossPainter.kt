@@ -75,7 +75,7 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
     }
 
     override fun drawTitle(g: Graphics2D, x: Int, y: Int) {
-        drawTitle(g, script.manifest?.name ?: "NoManifest", x - 10, y - 4)
+        drawTitle(g, "Tempoross", x - 10, y - 4)
     }
 
     override fun drawProgressImage(g: Graphics2D, startY: Int) {
