@@ -25,16 +25,31 @@ class TestWeb : ATScript() {
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
 
+    val bank = Tile(3269, 3166, 0)
+    val tanner = Tile(3275, 3191, 0)
+
+    var walkingToTanner = true
+
     override val painter: ATPainter<*>
         get() = WebPainter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
             collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
             println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
-//            println("Is door: ${LocalPathFinder.getDoor(Tile(3107, 3162, 0), Flag.Rotation.WEST) != GameObject.NIL}")
+            if (walkingToTanner) {
+                if (tanner.distance() > 0) {
+                    ctx.movement.walkTo(tanner)
+                } else {
+                    walkingToTanner = false
+                }
+            } else {
+                if (bank.distance() > 0) {
+                    ctx.movement.walkTo(bank)
+                } else {
+                    walkingToTanner = true
+                }
+            }
 
-//            doors = ctx.objects.toStream().name("Door").list()
-//            LocalPathFinder.findPath(tile).traverse()
         }
     }
 
@@ -69,11 +84,13 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
 //                fillColor = null
 //            )
 //        }
-        script.tile.drawOnScreen(
-            g,
-            null,
-            fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
-        )
+        if (script.collisionMap != null) {
+            script.tile.drawOnScreen(
+                g,
+                null,
+                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
+            )
+        }
 
     }
 

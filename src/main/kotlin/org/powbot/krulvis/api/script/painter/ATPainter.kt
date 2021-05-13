@@ -1,6 +1,5 @@
 package org.powbot.krulvis.api.script.painter
 
-import org.powbot.krulvis.api.ATContext.blocked
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getFlag
@@ -14,7 +13,6 @@ import org.powbot.krulvis.api.utils.resources.ATFont.Companion.RUNESCAPE_FONT
 import org.powbot.krulvis.api.utils.resources.ATImage.Companion.SKULL_GIF
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.ClientContext
-import org.powerbot.script.Nameable
 import org.powerbot.script.Tile
 import java.awt.*
 import java.awt.geom.Ellipse2D
@@ -115,6 +113,8 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         val g = img.graphics as Graphics2D
         val y = drawLayout(g, height - 5)
         drawProgressImage(g, y)
+        val mobile = ctx.client().isMobile
+        g.drawString("Client: ${if (mobile) "Mobile" else "Desktop"}", mid + 1, height - 8)
 
         val cal = Calendar.getInstance()
 
@@ -291,6 +291,15 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
             if (center.x > 0 && center.y > 0) {
                 g.draw(center)
             }
+        }
+
+        fun Tile.drawCircleOnMap(g: Graphics2D, radius: Int) {
+            val ellipse = Ellipse2D.Double()
+            val centerPoint = mapPoint()
+            val mmRadius = centerPoint.distance(Tile(x() + radius, y() + radius).mapPoint())
+            val corner = Point(centerPoint.x + mmRadius.toInt(), centerPoint.y + mmRadius.toInt())
+            ellipse.setFrameFromCenter(centerPoint, corner)
+            g.draw(ellipse)
         }
 
         fun Tile.drawOnScreen(
