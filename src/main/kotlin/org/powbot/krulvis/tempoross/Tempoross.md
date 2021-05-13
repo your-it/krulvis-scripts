@@ -5,9 +5,9 @@
 
 ## Features
 
-- [x] **Automatically picks up a rope and tether to poles when waves come in.**
-- [X] **Picks up and fills buckets with water to douse flames that are in its path.**
-- [x] **Prioritizes killing the spirit**
+- **Automatically picks up a rope and tether to poles when waves come in.**
+- **Picks up and fills buckets with water to douse flames that are in its path.**
+- **Prioritizes killing the spirit**
 
 ## Options
 
