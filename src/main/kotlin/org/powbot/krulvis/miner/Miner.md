@@ -5,11 +5,11 @@
 
 ## Features
 
--[x] **Select ores by clicking on them.**
--[X] **Bank or powermine, fast or slow.**
--[X] **Recognizes if others have mined your rock.**
--[X] **Watches the centerTile with radius to walk back if player is too far away.**
--[ ] **Makes use of dropboxes.**
+- [x] **Select ores by clicking on them.**
+- [X] **Bank or powermine, fast or slow.**
+- [X] **Recognizes if others have mined your rock.**
+- [X] **Watches the centerTile with radius to walk back if player is too far away.**
+- [ ] **Makes use of dropboxes.**
 
 ## Options
 
