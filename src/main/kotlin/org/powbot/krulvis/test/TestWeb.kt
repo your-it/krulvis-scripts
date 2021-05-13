@@ -24,7 +24,8 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val tile = Tile(3277, 3178, 0)
+    val from = Tile(3295, 3219, 0)
+    val tile = Tile(3291, 3240, 0)
     var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
@@ -50,6 +51,7 @@ class TestWeb : ATScript() {
     }
 
     fun testPathFinder() {
+        Walking.logger.info("Distance: ${tile.distance()}")
         path = LocalPathFinder.findPath(tile)
         val next = path.actions.getNext() ?: return
         Walking.logger.info("LocalTraverse next: $next")

@@ -35,17 +35,18 @@ object LocalPathFinder : PathFinder {
 
     fun findPath(begin: Tile, end: Tile): LocalPath {
         this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()]
-        if (!end.loaded()) {
+        val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
+
+        if (end == null || !end.loaded()) {
             logger.info("Tile not loaded: $end")
             return LocalPath(emptyList())
         }
-        val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
 
         val startAction = StartEdge(
             begin,
-            end ?: begin
+            end
         )
-        if (begin == end || end == null) {
+        if (begin == end) {
             logger.info("Finding path from=$begin to=$end")
             return LocalPath(listOf(startAction))
         }
@@ -153,7 +154,7 @@ object LocalPathFinder : PathFinder {
         NeighBors.values().forEach {
             val edge = it.getEdge(this, flags)
             if (edge.isPresent) {
-                logger.info("Found neighbor ${it.name}: ${edge.get()}")
+//                logger.info("Found neighbor ${it.name}: ${edge.get()}")
                 neighbors.add(edge.get())
             }
         }
