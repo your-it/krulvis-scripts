@@ -14,7 +14,6 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powbot.krulvis.walking.Walking
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
-import org.powerbot.script.Condition
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -31,8 +30,8 @@ class TestWeb : ATScript() {
     var collisionMap: ICollisionMap? = null
 
     val outside = Tile(3281, 3191, 0)
-    val bank = Tile(3269, 3166, 0)
-    val tanner = Tile(3275, 3191, 0)
+    val b = Tile(3244, 3209, 0)
+    val a = Tile(3245, 3193, 0)
 
     var walkingToTanner = true
 
@@ -45,14 +44,14 @@ class TestWeb : ATScript() {
 //            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
 //            walk(tile)
 //            PBWebWalkingService.walkTo(tile, false)
-//            walkToTanner()
-            testPathFinder()
+            walkToTanner()
+//            testPathFinder()
         }
     }
 
     fun testPathFinder() {
-        Walking.logger.info("Distance: ${tile.distance()}")
-        path = LocalPathFinder.findPath(tile)
+        Walking.logger.info("Distance: ${a.distance()}")
+        path = LocalPathFinder.findPath(a)
         val next = path.actions.getNext() ?: return
         Walking.logger.info("LocalTraverse next: $next")
         if (next is StartEdge && next.destination.distance() <= 1) {
@@ -67,16 +66,16 @@ class TestWeb : ATScript() {
 
     fun walkToTanner() {
         if (walkingToTanner) {
-            if (tanner.distance() > 0) {
-                PBWebWalkingService.walkTo(tanner, false)
+            if (a.distance() > 0) {
+                PBWebWalkingService.walkTo(a, false)
 //                ctx.movement.walkTo(tanner, false)
             } else {
                 walkingToTanner = false
             }
         } else {
-            val other = bank
+            val other = b
             if (other.distance() > 0) {
-                PBWebWalkingService.walkTo(bank, false)
+                PBWebWalkingService.walkTo(b, false)
 //                ctx.movement.walkTo(other, false)
             } else {
                 walkingToTanner = true

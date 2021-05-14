@@ -9,8 +9,10 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
     override fun execute() {
         if (!ctx.inventory.emptyExcept(*Data.TOOLS)) {
             ctx.bank.depositAllExcept(*Data.TOOLS)
+            ctx.depositBox.depositAllExcept(*Data.TOOLS)
         } else {
             ctx.bank.close()
+            ctx.depositBox.close()
         }
     }
 }

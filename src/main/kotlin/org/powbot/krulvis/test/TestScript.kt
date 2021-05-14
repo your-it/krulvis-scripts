@@ -21,7 +21,7 @@ import java.awt.Graphics2D
 class TestScript : ATScript() {
 
 
-    val tile = Tile(3277, 3178, 0)
+    val tile = Tile(3244, 3209, 0)
 
     override val painter: ATPainter<*>
         get() = Painter(this)

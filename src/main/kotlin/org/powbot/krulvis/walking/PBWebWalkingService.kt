@@ -1,5 +1,6 @@
 package org.powbot.krulvis.walking
 
+import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.walking.model.*
 import org.powerbot.script.*
@@ -26,7 +27,7 @@ object PBWebWalkingService : WebWalkingService {
     val playerState = PlayerState()
 
     override fun walkTo(loc: Locatable, refreshQuests: Boolean): Boolean {
-        return move(loc, refreshQuests, false).success
+        return move(loc, refreshQuests).success
     }
 
     override fun moveTo(
@@ -48,14 +49,13 @@ object PBWebWalkingService : WebWalkingService {
         TODO("Not implemented Yet")
     }
 
-    fun move(loc: Locatable, refreshQuests: Boolean, forceWeb: Boolean): PBWebWalkingResult {
-        return move(loc, refreshQuests, forceWeb, { false }, Random.nextInt(50, 55), Random.nextInt(56, 60))
+    fun move(loc: Locatable, refreshQuests: Boolean): PBWebWalkingResult {
+        return move(loc, refreshQuests, { false }, Random.nextInt(50, 55), Random.nextInt(56, 60))
     }
 
     fun move(
         loc: Locatable,
         refreshQuests: Boolean,
-        forceWeb: Boolean,
         walkUntil: Callable<Boolean>,
         runMin: Int,
         runMax: Int
@@ -64,7 +64,7 @@ object PBWebWalkingService : WebWalkingService {
             if (ClientContext.ctx().players.local().tile().distanceTo(loc) <= 0) {
                 return PBWebWalkingResult(false, true, null)
             }
-            if (ClientContext.ctx().players.local().tile().distanceTo(loc) <= 16) {
+            if (loc.tile().distance() <= 16 && loc.tile().loaded()) {
 //                &&                Walking.traverseLocally(loc.tile(), walkUntil, runMin, runMax){
                 /**
                  * Added custom localwalker

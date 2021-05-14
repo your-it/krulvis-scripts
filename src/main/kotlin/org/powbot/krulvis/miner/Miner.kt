@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities
 @Script.Manifest(
     name = "krul Miner",
     description = "Mines & banks anything, anywhere",
-    version = "1.0",
+    version = "1.1",
     markdownFileName = "Miner.md",
     mobileReady = true
 )
@@ -79,7 +79,7 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
     override fun onChange(evt: InventoryChangeEvent) {
         val item = evt.itemId
-        if (item.getOre() != null && !ctx.bank.opened()) {
+        if (item.getOre() != null && !ctx.bank.opened() && !ctx.depositBox.opened()) {
             lootTracker.addLoot(item, evt.quantityChange)
         }
     }

@@ -11,7 +11,7 @@ import org.powbot.krulvis.miner.tree.leaf.HandleBank
 class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 
     override fun validate(): Boolean {
-        return ctx.inventory.isFull || ctx.bank.opened()
+        return ctx.inventory.isFull || ctx.bank.opened() || ctx.depositBox.opened()
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldDrop(script)
@@ -31,12 +31,12 @@ class ShouldDrop(script: Miner) : Branch<Miner>(script, "Should Drop") {
 class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
 
     override fun validate(): Boolean {
-        return ctx.bank.opened()
+        return ctx.bank.opened() || ctx.depositBox.opened()
     }
 
     override val successComponent: TreeComponent<Miner> = HandleBank(script)
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
-        val nearestBank = ctx.bank.getNearestBank()
+        val nearestBank = ctx.bank.getNearestBank(true)
         println("Opening: ${nearestBank.name}")
         nearestBank.open()
     }

@@ -32,8 +32,7 @@ object Walking {
          */
         val filteredEdges = path.filter { edge ->
             val from = edge.from
-            val tile = edge.to.toRegularTile()
-            !visited.contains(edge) && (from == null || tile.distance() <= maxNextTileDistance)
+            !visited.contains(edge) && (from == null || from.toRegularTile().distance() <= maxNextTileDistance)
         }
 
 //        logger.info("findNext() filteredEdges: ${filteredEdges.size}")
