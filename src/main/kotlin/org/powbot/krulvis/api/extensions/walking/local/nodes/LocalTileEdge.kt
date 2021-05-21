@@ -29,7 +29,7 @@ open class LocalTileEdge(
     }
 
     override fun execute(): Boolean {
-        if (destination.distance() <= 1) {
+        if (destination.distance() <= 2) {
             val matrix = destination.matrix(org.powerbot.script.ClientContext.ctx())
             return if (ctx.input.move(matrix.nextPoint())) {
                 ctx.input.click(true)

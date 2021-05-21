@@ -2,6 +2,8 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.loaded
+import org.powbot.krulvis.api.ATContext.toRegionTile
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
@@ -23,8 +25,8 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val from = Tile(3286, 3368, 0)
-    val tile = Tile(3291, 3392, 0)
+    val from = Tile(3010, 3242, 0)
+    val tile = Tile(2986, 3240, 0)
     var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
@@ -44,27 +46,24 @@ class TestWeb : ATScript() {
 //            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
 //            walk(tile)
 //            PBWebWalkingService.walkTo(tile, false)
-            walkToTanner()
-//            testPathFinder()
+//            walkToTanner()
+            testPathFinder()
         }
     }
 
     fun testPathFinder() {
-        Walking.logger.info("Distance: ${a.distance()}")
-        path = LocalPathFinder.findPath(a)
+        Walking.logger.info("Distance: ${tile.distance()}")
+        path = LocalPathFinder.findPath(tile)
         val next = path.actions.getNext() ?: return
         Walking.logger.info("LocalTraverse next: $next")
         if (next is StartEdge && next.destination.distance() <= 1) {
             Walking.logger.info("Standing next to StartTile: $next")
             return
         }
-        if (next.execute()) {
-            sleep(600)
-        }
     }
 
 
-    fun walkToTanner() {
+    fun walkBackAndForth() {
         if (walkingToTanner) {
             if (a.distance() > 0) {
                 PBWebWalkingService.walkTo(a, false)
@@ -93,7 +92,7 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
 
     override fun paint(g: Graphics2D) {
         var y = this.y
-        debugTilesAroundMe(g)
+//        debugTilesAroundMe(g)
         if (script.collisionMap != null) {
             drawSplitText(
                 g,
@@ -102,6 +101,20 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
                 x,
                 y
             )
+            y += yy
+            drawSplitText(g, "Tile loaded: ", script.tile.loaded().toString(), x, y)
+            y += yy
+            drawSplitText(g, "RegionTile: ", script.tile.toRegionTile().toString(), x, y)
+            script.tile.drawOnMap(g, Color.CYAN)
+            script.tile.drawOnScreen(
+                g,
+                null,
+                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
+            )
+            val path = script.path
+            if (path.isNotEmpty()) {
+                path.draw(g)
+            }
         }
 
         script.doors.forEach {
@@ -113,17 +126,6 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
                 lineColor = null,
                 fillColor = null
             )
-        }
-        if (script.collisionMap != null) {
-            script.tile.drawOnScreen(
-                g,
-                null,
-                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
-            )
-            val path = script.path
-            if (path.isNotEmpty()) {
-                path.draw(g)
-            }
         }
 
     }

@@ -23,6 +23,9 @@ class LocalPath(val actions: List<LocalEdge>) : Path() {
         val logger = Logger.getLogger("LocalPath")
 
         fun List<LocalEdge>.getNext(): LocalEdge? {
+            if (isEmpty()) {
+                return null
+            }
             val cutOff = indexOf(minByOrNull { it.destination.distance() })
             val remainder = subList(cutOff, size)
             logger.info("Cutting of at: $cutOff of $size total, ${remainder.size} left")

@@ -2,6 +2,7 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
@@ -21,7 +22,7 @@ import java.awt.Graphics2D
 class TestScript : ATScript() {
 
 
-    val tile = Tile(3244, 3209, 0)
+    val tile = Tile(2986, 3240, 0)
 
     override val painter: ATPainter<*>
         get() = Painter(this)
@@ -29,6 +30,23 @@ class TestScript : ATScript() {
         override fun execute() {
 
         }
+    }
+
+    val inputTexts = listOf(
+        "enter message to", "enter amount", "set a price for each item",
+        "enter name", "how many do you wish to buy", "please pick a unique display name",
+        "how many charges would you like to add", "enter the player name",
+        "what would you like to buy"
+    )
+
+    fun waitingForInput(): Boolean {
+        val widget = ctx.widgets.widget(162).takeIf { w ->
+            w.any { wc ->
+                val text = wc.text().toLowerCase()
+                wc.visible() && inputTexts.any { it in text }
+            }
+        }
+        return widget?.any { it.visible() && it.text().endsWith("*") } ?: false
     }
 
     override fun startGUI() {
@@ -44,11 +62,13 @@ class TestScript : ATScript() {
 
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
-        val ct = script.ctx.players.local().tile()
-        if (ct != null) {
-            ct.drawOnMap(g)
-            ct.drawCircleOnMap(g, 5)
-        }
+//        val ct = script.ctx.players.local().tile()
+//        if (ct != null) {
+//            ct.drawOnMap(g)
+//            ct.drawCircleOnMap(g, 5)
+//        }
+        drawSplitText(g, "Loaded:", script.tile.loaded().toString(), x, y)
+        y += yy
     }
 
     fun realOrientation(): Int {

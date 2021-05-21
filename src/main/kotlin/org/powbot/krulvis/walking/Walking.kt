@@ -48,12 +48,13 @@ object Walking {
         /**
          * If the final destination is close, make a new edge with the destination as `to`
          */
-        return if (finalDestination.distance() < maxNextTileDistance && finalDestination.loaded()) object : Edge<TileInteraction>(
-            from = path.last().to,
-            to = finalDestination.toWebTile(),
-            type = EdgeType.Tile,
-            interaction = TileInteraction()
-        ) {} else filteredEdges.lastOrNull {
+        return if (finalDestination.distance() < maxNextTileDistance && finalDestination.loaded()) object :
+            Edge<TileInteraction>(
+                from = path.last().to,
+                to = finalDestination.toWebTile(),
+                type = EdgeType.Tile,
+                interaction = TileInteraction()
+            ) {} else filteredEdges.lastOrNull {
             val to = it.to.toRegularTile()
             to.distance() <= maxNextTileDistance && to.loaded()
         }
@@ -181,7 +182,7 @@ object Walking {
         runOn: Boolean,
         finalTile: Boolean = false
     ): Boolean {
-        logger.info("LocalTraverse to: $edgeDest")
+        logger.info("Traversing locally to=$edgeDest, is final tile=$finalTile")
         if (edgeDest.floor() != ClientContext.ctx().client().floor) {
             return false
         }
@@ -191,7 +192,7 @@ object Walking {
         }
 
         var path = LocalPathFinder.findPath(edgeDest)
-
+        logger.info("Traversing locally created path to=$edgeDest, with size: ${path.size}")
         var attempts = 0
         while (
             path.isNotEmpty() &&
@@ -220,7 +221,7 @@ object Walking {
             attempts++
         }
         val success = nearLocalDestination(edgeDest, path)
-        logger.info("LocalWalker to=$edgeDest, was ${if (success) "successful" else "unsuccessful"}")
+        logger.info("Traversing locally to=$edgeDest, was ${if (success) "successful" else "unsuccessful"}")
         return success
     }
 }
