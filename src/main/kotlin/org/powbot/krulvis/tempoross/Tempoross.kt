@@ -34,8 +34,9 @@ import java.util.stream.Stream
 @Script.Manifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.0",
+    version = "1.0.1",
     markdownFileName = "Tempoross.md",
+    properties = "category=Fishing;",
     mobileReady = true
 )
 class Tempoross : ATScript(), MessageListener {
