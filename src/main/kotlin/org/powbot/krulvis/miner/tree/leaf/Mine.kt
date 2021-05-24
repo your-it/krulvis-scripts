@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner.tree.leaf
 
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
@@ -21,9 +22,12 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
             && (mineDelay.isFinished() || script.profile.fastMining)
             && interact(rock.get(), "Mine")
         ) {
+            debug("Interacted with")
             if (waitFor(long()) { me.animation() > 0 }) {
                 mineDelay.resetTimer()
             }
+        } else {
+            debug("Failed to interact")
         }
     }
 }

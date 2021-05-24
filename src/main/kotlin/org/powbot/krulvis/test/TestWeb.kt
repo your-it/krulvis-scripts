@@ -2,6 +2,8 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.loaded
+import org.powbot.krulvis.api.ATContext.toRegionTile
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
@@ -14,7 +16,6 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powbot.krulvis.walking.Walking
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
-import org.powerbot.script.Condition
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -24,15 +25,15 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val from = Tile(3286, 3368, 0)
-    val tile = Tile(3291, 3392, 0)
+    val from = Tile(3010, 3242, 0)
+    val tile = Tile(2986, 3240, 0)
     var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
     var collisionMap: ICollisionMap? = null
 
     val outside = Tile(3281, 3191, 0)
-    val bank = Tile(3269, 3166, 0)
-    val tanner = Tile(3275, 3191, 0)
+    val b = Tile(3244, 3209, 0)
+    val a = Tile(3245, 3193, 0)
 
     var walkingToTanner = true
 
@@ -59,24 +60,21 @@ class TestWeb : ATScript() {
             Walking.logger.info("Standing next to StartTile: $next")
             return
         }
-        if (next.execute()) {
-            sleep(600)
-        }
     }
 
 
-    fun walkToTanner() {
+    fun walkBackAndForth() {
         if (walkingToTanner) {
-            if (tanner.distance() > 0) {
-                PBWebWalkingService.walkTo(tanner, false)
+            if (a.distance() > 0) {
+                PBWebWalkingService.walkTo(a, false)
 //                ctx.movement.walkTo(tanner, false)
             } else {
                 walkingToTanner = false
             }
         } else {
-            val other = bank
+            val other = b
             if (other.distance() > 0) {
-                PBWebWalkingService.walkTo(bank, false)
+                PBWebWalkingService.walkTo(b, false)
 //                ctx.movement.walkTo(other, false)
             } else {
                 walkingToTanner = true
@@ -94,7 +92,7 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
 
     override fun paint(g: Graphics2D) {
         var y = this.y
-        debugTilesAroundMe(g)
+//        debugTilesAroundMe(g)
         if (script.collisionMap != null) {
             drawSplitText(
                 g,
@@ -103,6 +101,20 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
                 x,
                 y
             )
+            y += yy
+            drawSplitText(g, "Tile loaded: ", script.tile.loaded().toString(), x, y)
+            y += yy
+            drawSplitText(g, "RegionTile: ", script.tile.toRegionTile().toString(), x, y)
+            script.tile.drawOnMap(g, Color.CYAN)
+            script.tile.drawOnScreen(
+                g,
+                null,
+                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
+            )
+            val path = script.path
+            if (path.isNotEmpty()) {
+                path.draw(g)
+            }
         }
 
         script.doors.forEach {
@@ -114,17 +126,6 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
                 lineColor = null,
                 fillColor = null
             )
-        }
-        if (script.collisionMap != null) {
-            script.tile.drawOnScreen(
-                g,
-                null,
-                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
-            )
-            val path = script.path
-            if (path.isNotEmpty()) {
-                path.draw(g)
-            }
         }
 
     }

@@ -1,10 +1,8 @@
 package org.powbot.krulvis.api.extensions
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.walking.local.nodes.distanceM
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.interactions.Interaction
 import org.powbot.krulvis.api.utils.interactions.NpcInteraction
@@ -17,7 +15,7 @@ import org.powerbot.script.rt4.ClientContext
 
 
 enum class BankType {
-    BOOTH, CHEST, NPC
+    BOOTH, CHEST, NPC, DEPOSIT_BOX
 }
 
 
@@ -73,6 +71,10 @@ enum class BankLocation(
         Tile(3047, 4974, 1), BankType.NPC,
         NpcInteraction("Emerald Benedict", "Bank")
     ),
+    PORT_SARIM_DB(
+        Tile(3045, 3235, 0), BankType.DEPOSIT_BOX,
+        ObjectInteraction("Bank deposit box", "Deposit", Tile(3045, 3234, 0))
+    )
     ;
 
     /**
@@ -86,7 +88,10 @@ enum class BankLocation(
             ctx.collectionBox.close()
         } else if (tile.distanceM(me) >= 20) {
             debug("Using web to walk to bank")
-            PBWebWalkingService.walkTo(tile, false)
+            PBWebWalkingService.move(tile, false, {
+                val b = interaction.getEntity()
+                b.isPresent && b.get().inViewport()
+            }, 1, 100)
             return false
         }
         return interaction.execute() && waitFor { ctx.bank.opened() }
@@ -105,9 +110,10 @@ enum class BankLocation(
         /**
          * @return the nearest bank according to the geographical distance
          */
-        fun Bank.getNearestBank(): BankLocation {
+        fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
             val me = ClientContext.ctx().players.local()
-            return values().filter { it.canUse() }
+            return values()
+                .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
                 .minByOrNull { it.tile.distanceM(me) }!!
         }
 

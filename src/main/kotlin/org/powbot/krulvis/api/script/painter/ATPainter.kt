@@ -286,11 +286,14 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
             g.font = oldF
         }
 
-        fun Tile.drawOnMap(g: Graphics2D) {
+        fun Tile.drawOnMap(g: Graphics2D, color: Color = Color.GREEN) {
+            val oldc = g.color
             val center = Rectangle(mapPoint().x, mapPoint().y, 3, 3)
             if (center.x > 0 && center.y > 0) {
+                g.color = color
                 g.draw(center)
             }
+            g.color = oldc
         }
 
         fun Tile.drawCircleOnMap(g: Graphics2D, radius: Int) {

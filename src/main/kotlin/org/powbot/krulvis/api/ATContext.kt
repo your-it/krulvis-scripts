@@ -171,7 +171,7 @@ object ATContext {
 
     fun Tile.loaded(): Boolean {
         val rt = toRegionTile()
-        return rt.x() < 104 && rt.y() < 104
+        return rt.x() in 0..103 && rt.y() in 0..103
     }
 
     fun Tile.getFlag(collisionMap: ICollisionMap): Int {

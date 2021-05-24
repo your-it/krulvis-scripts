@@ -10,6 +10,7 @@
 - **Recognizes if others have mined your rock.**
 - **Watches the centerTile with radius to walk back if player is too far away.**
 - **Can hop from nearby players.**
+- **Supports Deposit Boxes.**
 
 ## Options
 
