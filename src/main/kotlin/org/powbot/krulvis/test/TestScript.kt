@@ -2,7 +2,6 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge

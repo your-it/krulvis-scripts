@@ -1,7 +1,7 @@
 package org.powbot.krulvis.walking
 
-import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.walking.WebWalkingResult
 import org.powbot.walking.model.*
 import org.powerbot.script.*
 import org.powerbot.script.rt4.ClientContext
@@ -19,12 +19,22 @@ fun WebTile.toRegularTile(): Tile {
 
 object PBWebWalkingService : WebWalkingService {
 
-//    companion object {
-//    }
-
     val logger = LoggerFactory.getLogger(PBWebWalkingService::class.java)
 
     val playerState = PlayerState()
+
+    override fun moveToBank(refreshQuests: Boolean): WebWalkingResult {
+        TODO("Not implemented yet")
+    }
+
+    override fun moveToBank(
+        refreshQuests: Boolean,
+        walkUntil: Callable<Boolean>,
+        runMin: Int,
+        runMax: Int
+    ): WebWalkingResult {
+        TODO("Not implemented yet")
+    }
 
     override fun walkTo(loc: Locatable, refreshQuests: Boolean): Boolean {
         return move(loc, refreshQuests).success

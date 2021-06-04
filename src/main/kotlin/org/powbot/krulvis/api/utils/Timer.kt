@@ -6,7 +6,7 @@ import kotlin.math.pow
 
 class Timer(var time: Number) {
     companion object {
-        fun formatTime(time: Long): String {
+        fun formatTime(time: Long, addMilis: Boolean = false): String {
             if (time <= 0L)
                 return "--:--:--"
             val t = StringBuilder()
@@ -33,7 +33,7 @@ class Timer(var time: Number) {
             if (second < 10)
                 t.append("0")
             t.append(second)
-            if (time < 1000) {
+            if (time < 1000 && addMilis) {
                 t.append(":")
                 t.append(time)
             }

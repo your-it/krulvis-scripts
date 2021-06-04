@@ -2,7 +2,6 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.ATContext.toRegionTile
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
@@ -12,7 +11,7 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powbot.krulvis.walking.Walking
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
@@ -26,12 +25,13 @@ import java.awt.Graphics2D
 class TestWeb : ATScript() {
 
     val from = Tile(3010, 3242, 0)
-    val tile = Tile(2986, 3240, 0)
+    val tile = Tile(3152, 3289, 0)
+    val debugFence = Tile(3143, 3291, 0)
     var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
-    var collisionMap: ICollisionMap? = null
+    var collisionMap: Array<IntArray>? = null
 
-    val outside = Tile(3281, 3191, 0)
+    val draynor = Tile(3281, 3191, 0)
     val b = Tile(3244, 3209, 0)
     val a = Tile(3245, 3193, 0)
 
@@ -41,7 +41,7 @@ class TestWeb : ATScript() {
         get() = WebPainter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
-            collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()]
+            collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()].flags
             doors = ctx.objects.toStream().name("Door").list()
 //            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
 //            walk(tile)
@@ -53,7 +53,9 @@ class TestWeb : ATScript() {
 
     fun testPathFinder() {
         Walking.logger.info("Distance: ${tile.distance()}")
+        val start = System.currentTimeMillis()
         path = LocalPathFinder.findPath(tile)
+        Walking.logger.info("LocalPathFinder took: ${Timer.formatTime(System.currentTimeMillis() - start)}")
         val next = path.actions.getNext() ?: return
         Walking.logger.info("LocalTraverse next: $next")
         if (next is StartEdge && next.destination.distance() <= 1) {
@@ -94,14 +96,6 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
         var y = this.y
 //        debugTilesAroundMe(g)
         if (script.collisionMap != null) {
-            drawSplitText(
-                g,
-                "OffsetX: ${script.collisionMap!!.offsetX}",
-                "OffsetY: ${script.collisionMap!!.offsetY}",
-                x,
-                y
-            )
-            y += yy
             drawSplitText(g, "Tile loaded: ", script.tile.loaded().toString(), x, y)
             y += yy
             drawSplitText(g, "RegionTile: ", script.tile.toRegionTile().toString(), x, y)
@@ -127,6 +121,7 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
                 fillColor = null
             )
         }
+        debugTilesAroundMe(g)
 
     }
 

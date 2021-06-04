@@ -2,7 +2,6 @@ package org.powbot.krulvis.api.script.painter
 
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.getFlag
 import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.walking.Flag
@@ -11,7 +10,6 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.resources.ATFont
 import org.powbot.krulvis.api.utils.resources.ATFont.Companion.RUNESCAPE_FONT
 import org.powbot.krulvis.api.utils.resources.ATImage.Companion.SKULL_GIF
-import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
 import java.awt.*
@@ -20,12 +18,11 @@ import java.awt.geom.Line2D
 import java.awt.image.BufferedImage
 import java.io.File
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.math.roundToInt
-import java.text.SimpleDateFormat
-
-import java.util.Calendar
 
 
 abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 200) {
@@ -167,9 +164,10 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         t: Tile,
         text: String? = null,
         lineColor: Color? = Color.GREEN,
-        fillColor: Color? = null
+        fillColor: Color? = null,
+        mapColor: Color = Color.GREEN
     ) {
-        t.drawOnMap(g)
+        t.drawOnMap(g, mapColor)
         t.drawOnScreen(
             g,
             text,
@@ -229,12 +227,56 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
             g.font = oldFont
         }
 
-        fun Tile.drawCollisions(g: Graphics2D, flags: ICollisionMap) {
+        fun Tile.drawOnMap(g: Graphics2D, color: Color = Color.GREEN) {
+            val oldc = g.color
+            val center = Rectangle(mapPoint().x, mapPoint().y, 3, 3)
+            if (center.x > 0 && center.y > 0) {
+                g.color = color
+                g.draw(center)
+            }
+            g.color = oldc
+        }
+
+        fun Tile.drawCircleOnMap(g: Graphics2D, radius: Int) {
+            val ellipse = Ellipse2D.Double()
+            val centerPoint = mapPoint()
+            val mmRadius = centerPoint.distance(Tile(x() + radius, y() + radius).mapPoint())
+            val corner = Point(centerPoint.x + mmRadius.toInt(), centerPoint.y + mmRadius.toInt())
+            ellipse.setFrameFromCenter(centerPoint, corner)
+            g.draw(ellipse)
+        }
+
+        fun Tile.drawOnScreen(
+            g: Graphics,
+            text: String? = null,
+            outlineColor: Color? = Color.GREEN,
+            fillColor: Color? = null
+        ) {
+            val c = g.color
+            val bounds = matrix(ClientContext.ctx()).bounds()
+            if (bounds != null) {
+                val p = bounds
+                if (outlineColor != null) {
+                    g.color = outlineColor
+                    g.drawPolygon(p)
+                }
+                if (fillColor != null) {
+                    g.color = fillColor
+                    g.fillPolygon(p)
+                }
+                if (text != null)
+                    g.drawString(text, bounds.bounds.centerX.toInt(), bounds.bounds.centerY.toInt())
+            }
+            g.color = c
+        }
+
+        fun Tile.drawCollisions(g: Graphics2D, flags: Array<IntArray>) {
             val bounds = matrix(ClientContext.ctx()).bounds() ?: return
             if (blocked(flags)) {
                 drawOnScreen(g, null, Color.RED)
             } else {
-                val flag = getFlag(flags)
+                val flag = collisionFlag(flags)
+                g.drawString(flag.toString(), bounds.bounds.centerX.toInt(), bounds.bounds.centerY.toInt())
                 val south = Line2D.Double(
                     Point(bounds.xpoints[0], bounds.ypoints[0]),
                     Point(bounds.xpoints[1], bounds.ypoints[1])
@@ -286,48 +328,6 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
             g.font = oldF
         }
 
-        fun Tile.drawOnMap(g: Graphics2D, color: Color = Color.GREEN) {
-            val oldc = g.color
-            val center = Rectangle(mapPoint().x, mapPoint().y, 3, 3)
-            if (center.x > 0 && center.y > 0) {
-                g.color = color
-                g.draw(center)
-            }
-            g.color = oldc
-        }
-
-        fun Tile.drawCircleOnMap(g: Graphics2D, radius: Int) {
-            val ellipse = Ellipse2D.Double()
-            val centerPoint = mapPoint()
-            val mmRadius = centerPoint.distance(Tile(x() + radius, y() + radius).mapPoint())
-            val corner = Point(centerPoint.x + mmRadius.toInt(), centerPoint.y + mmRadius.toInt())
-            ellipse.setFrameFromCenter(centerPoint, corner)
-            g.draw(ellipse)
-        }
-
-        fun Tile.drawOnScreen(
-            g: Graphics,
-            text: String? = null,
-            outlineColor: Color? = Color.GREEN,
-            fillColor: Color? = null
-        ) {
-            val c = g.color
-            val bounds = matrix(ClientContext.ctx()).bounds()
-            if (bounds != null) {
-                val p = bounds
-                if (outlineColor != null) {
-                    g.color = outlineColor
-                    g.drawPolygon(p)
-                }
-                if (fillColor != null) {
-                    g.color = fillColor
-                    g.fillPolygon(p)
-                }
-                if (text != null)
-                    g.drawString(text, bounds.bounds.centerX.toInt(), bounds.bounds.centerY.toInt())
-            }
-            g.color = c
-        }
 
         fun format(i: Int): String = DECIMAL_FORMAT.format(i.toLong())
 

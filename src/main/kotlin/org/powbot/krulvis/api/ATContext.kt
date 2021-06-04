@@ -105,8 +105,9 @@ object ATContext {
             }
         }
         if (selectItem > -1) {
-            val item = ctx.inventory.firstOrNull { it.id() == selectItem } ?: return false
-            item.click()
+            val item = ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
+                it.click()
+            }
         }
         return t.interact(action)
     }
@@ -142,7 +143,7 @@ object ATContext {
         val x = t.x()
         val y = t.y()
         val f = t.floor()
-        val cm = ctx.client().collisionMaps[f]
+        val cm = ctx.client().collisionMaps[f].flags
 
         val n = Tile(x, y + 1, f)
         val e = Tile(x + 1, y, f)
@@ -168,32 +169,6 @@ object ATContext {
         val mos = ctx.game.mapOffset()
         return Tile(x() - mos.x(), y() - mos.y(), floor())
     }
-
-    fun Tile.loaded(): Boolean {
-        val rt = toRegionTile()
-        return rt.x() in 0..103 && rt.y() in 0..103
-    }
-
-    fun Tile.getFlag(collisionMap: ICollisionMap): Int {
-        val regionTile = toRegionTile()
-        val localX = regionTile.x()
-        val localY = regionTile.y()
-
-        return try {
-            collisionMap.flags[localX][localY]
-        } catch (e: ArrayIndexOutOfBoundsException) {
-            0
-        }
-    }
-
-    fun Tile.blocked(flags: ICollisionMap, blockFlag: Int = Flag.BLOCKED): Boolean {
-        val flag = getFlag(flags)
-        if (flag == 0) {
-            return false
-        }
-        return flag and (Flag.WATER or Flag.BLOCKED or Flag.BLOCKED2 or Flag.BLOCKED4 or blockFlag) != 0
-    }
-
 
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = toStream().anyMatch { it.id() in ids }
     fun Inventory.emptyExcept(vararg ids: Int): Boolean = !toStream().filter { it.id() !in ids }.findFirst().isPresent

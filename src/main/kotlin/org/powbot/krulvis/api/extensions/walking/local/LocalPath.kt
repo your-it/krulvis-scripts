@@ -71,7 +71,7 @@ class LocalPath(val actions: List<LocalEdge>) : Path() {
     fun draw(g: Graphics2D) = actions.draw(g)
 
     private fun List<LocalEdge>.draw(g: Graphics2D) {
-        val flags = ClientContext.ctx().client().collisionMaps[me.tile().floor()]
+        val flags = ClientContext.ctx().client().collisionMaps[me.tile().floor()].flags
         forEach {
             if (it is LocalDoorEdge) {
                 it.destination.drawOnScreen(g, null, Color.CYAN, null)

@@ -9,7 +9,6 @@ import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalTileEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powbot.krulvis.api.ATContext.loaded
 import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
@@ -22,7 +21,7 @@ import java.util.logging.Logger
 object LocalPathFinder : PathFinder {
 
     val maxAttempts = 2500
-    lateinit var cachedFlags: ICollisionMap
+    lateinit var cachedFlags: Array<IntArray>
     val logger = Logger.getLogger("LocalPathFinder")
 
     fun findPath(end: Tile?): LocalPath {
@@ -34,7 +33,7 @@ object LocalPathFinder : PathFinder {
     }
 
     fun findPath(begin: Tile, end: Tile): LocalPath {
-        this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()]
+        this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()].flags
         val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
 
         if (end == null || !end.loaded()) {
@@ -103,7 +102,7 @@ object LocalPathFinder : PathFinder {
         SOUTH(Flag.W_S, Rotation.SOUTH, Rotation.NORTH),
         WEST(Flag.W_W, Rotation.WEST, Rotation.EAST);
 
-        fun getEdge(currentEdge: LocalEdge, flags: ICollisionMap): Optional<LocalEdge> {
+        fun getEdge(currentEdge: LocalEdge, flags: Array<IntArray>): Optional<LocalEdge> {
             val current = currentEdge.destination
             val neighbor = when (this) {
                 NORTH -> Tile(current.x(), current.y() + 1, current.floor())
@@ -144,7 +143,7 @@ object LocalPathFinder : PathFinder {
      */
     fun LocalEdge.getLocalNeighbors(
         finalDesination: Tile,
-        flags: ICollisionMap = cachedFlags
+        flags: Array<IntArray> = cachedFlags
     ): MutableList<LocalEdge> {
         val neighbors = mutableListOf<LocalEdge>()
 
