@@ -8,6 +8,8 @@ object Data {
     val SEEDS = intArrayOf(13423, 13424, 13425)
 
     val GOLOVANOVA = 13426
+    val BOLOGANO = 13427
+    val HARVEST = intArrayOf(GOLOVANOVA, BOLOGANO)
 
 }
 

@@ -105,7 +105,7 @@ object ATContext {
             }
         }
         if (selectItem > -1) {
-            val item = ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
+            ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
                 it.click()
             }
         }
