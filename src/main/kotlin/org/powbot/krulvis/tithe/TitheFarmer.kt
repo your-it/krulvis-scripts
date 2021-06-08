@@ -6,9 +6,10 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
-import org.powbot.krulvis.tithe.tree.branch.ShouldRefill
+import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
+import org.powerbot.script.rt4.GameObject
 
 @Script.Manifest(
     name = "krul Tithe",
@@ -20,7 +21,7 @@ import org.powerbot.script.Tile
 )
 class TitheFarmer : ATScript() {
     override val painter: ATPainter<*> = TithePainter(this)
-    override val rootComponent: TreeComponent<*> = ShouldRefill(this)
+    override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
     init {
         skillTracker.addSkill(Skill.FARMING)
@@ -28,34 +29,39 @@ class TitheFarmer : ATScript() {
 
     var startPoints = -1
     var gainedPoints = 0
+    var patchCount = 16
     var patches = listOf<Patch>()
-    var tiles = listOf<Patch>()
     val chillTimer = Timer(2500)
+    var planting = false
 
-    fun getTopMostTile(): Tile {
-        val allPatches = ctx.objects.toStream().filter { it.isPatch() }.list()
-        val maxX = allPatches.maxOf { it.tile().x() }
+    fun getCornerPatchTile(): Tile {
+        val allPatches = ctx.objects.toStream(25).filter { it.isPatch() }.list()
+        val maxX = allPatches.minOf { it.tile().x() }
         val maxY = allPatches.maxOf { it.tile().y() }
         return Tile(maxX, maxY, 0)
     }
 
     fun getPatchTiles(): List<Tile> {
-        val tmt = getTopMostTile()
-        val startTiles = listOf(tmt, Tile(tmt.x() - 5, tmt.y()))
-
-        val column = mutableListOf<Tile>()
-        for (y in 0..9 step 3) {
-            column.add(Tile(tmt.x(), tmt.y() - y))
-            column.add(Tile(tmt.x() - 5, tmt.y() - y))
+        val tmt = getCornerPatchTile()
+        val columns = mutableListOf<Tile>()
+        listOf(tmt, Tile(tmt.x(), tmt.y() - 15)).forEach {
+            for (y in 0..9 step 3) {
+                columns.add(Tile(it.x(), it.y() - y))
+                columns.add(Tile(it.x() + 5, it.y() - y))
+            }
         }
-        return column.toList()
+
+        return columns.toList()
     }
 
     fun refreshPatches() {
         val tiles = getPatchTiles()
         val onorderedPatches =
-            ctx.objects.toStream().filter { it.name().isNotEmpty() && it.tile() in tiles }.list()
-        patches = tiles.map { tile -> Patch(onorderedPatches.first { it.tile() == tile }) }
+            ctx.objects.toStream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+                .list()
+        patches = tiles.mapIndexed { index, tile ->
+            Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.NIL, tile, index)
+        }
 
     }
 
@@ -74,7 +80,7 @@ class TitheFarmer : ATScript() {
 
     fun getWaterCount(): Int = ctx.inventory.toStream().id(*Data.WATER_CANS).list().sumBy { it.id() - 5332 }
 
-    fun hasEnoughWater(): Boolean = getWaterCount() >= 24
+    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3
 
     override fun startGUI() {
         started = true

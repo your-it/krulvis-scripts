@@ -10,8 +10,8 @@ import org.powerbot.script.Tile
 class WalkBack(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Walking back") {
     override fun execute() {
 
-        val topMostTile = script.getTopMostTile()
-        val walkableTile = Tile(topMostTile.x() - 2, topMostTile.y())
+        val topMostTile = script.getCornerPatchTile()
+        val walkableTile = Tile(topMostTile.x() + 2, topMostTile.y())
         if (walkableTile.distance() > 1 && walk(walkableTile)) {
             waitFor(long()) { walkableTile.distance() < 5 }
         }

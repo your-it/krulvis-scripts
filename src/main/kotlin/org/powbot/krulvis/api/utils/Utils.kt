@@ -46,8 +46,8 @@ object Utils {
             }
             sleep(
                 Random.nextInt(
-                    75,
-                    200
+                    150,
+                    250
                 )
             )
         } while (totalDelay > System.currentTimeMillis())

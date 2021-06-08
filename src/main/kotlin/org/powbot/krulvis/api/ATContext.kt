@@ -2,13 +2,13 @@ package org.powbot.krulvis.api
 
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.extensions.walking.Flag
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.walking.PBWebWalkingService
-import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.Locatable
+import org.powerbot.script.MenuCommand
 import org.powerbot.script.Nameable
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.*
@@ -88,10 +88,20 @@ object ATContext {
         selectItem: Int = -1
     ): Boolean {
         val t = target ?: return false
+        val name = (t as Nameable).name()
         val pos = (t as Locatable).tile()
         val destination = ctx.movement.destination()
         turnRunOn()
-        debug("Interacting with: ${(target as Nameable).name()} at: $pos")
+        debug("Interacting with: $name at: $pos")
+        if (ctx.menu.opened() && ctx.menu.contains {
+                it.action.equals(action, true) && it.option.contains(
+                    name,
+                    true
+                )
+            }) {
+            debug("Clicking directly on opened menu")
+            return ctx.menu.click { it.action.equals(action, true) && it.option.contains(name, true) }
+        }
         if (!t.inViewport()
             || (destination != pos && pos.distanceTo(if (destination == Tile.NIL) me else destination) > (if (alwaysWalk) 4 else 12))
         ) {
@@ -104,12 +114,19 @@ object ATContext {
                 }
             }
         }
-        if (selectItem > -1) {
-            ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
-                it.click()
+        val selectedId = ctx.inventory.selectedItem().id()
+        if (selectedId != selectItem) {
+            ctx.game.tab(Game.Tab.INVENTORY)
+            if (selectItem > -1) {
+                ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
+                    it.interact("Use")
+                }
+            } else {
+                ctx.inventory.toStream().id(selectedId).findFirst().get().click()
             }
+
         }
-        return t.interact(action)
+        return waitFor(short()) { ctx.inventory.selectedItem().id() == selectItem } && t.interact(action)
     }
 
 
@@ -211,6 +228,18 @@ object ATContext {
             return false
         }
         return if (wait) waitFor(5000) { ctx.inventory.getCount(true, id) == amount } else true
+    }
+
+    /**
+     * Only useful for mobile
+     */
+    fun closeOpenHUD(): Boolean {
+        val tab = ctx.game.tab()
+        if (!ctx.client().isMobile || tab == Game.Tab.NONE) {
+            return true
+        }
+        val c: Component = ctx.widgets.widget(601).firstOrNull { it.textureId() in tab.textures } ?: return true
+        return c.click(true)
     }
 
 

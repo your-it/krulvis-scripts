@@ -27,11 +27,10 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 if (safeTile != null && ctx.movement.step(safeTile)) {
                     waitFor { me.tile() == safeTile }
                 }
-            } else if (script.fishSpots.anyMatch { it.second.actions.last().destination.distance() <= 1 }) {
+            } else if (script.fishSpots.any { it.second.actions.last().destination.distance() <= 1 }) {
                 debug("Nearby blocked fishing spot found that is blocked")
                 val blockedTile =
-                    script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }.findFirst()
-                        .get().second.actions.last()
+                    script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }.first().second.actions.last()
                 val fireOptional =
                     ctx.objects.toStream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
                 if (fireOptional.isPresent) {

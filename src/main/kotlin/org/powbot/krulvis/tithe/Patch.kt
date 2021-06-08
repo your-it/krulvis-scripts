@@ -1,18 +1,20 @@
 package org.powbot.krulvis.tithe
 
 import org.powbot.krulvis.api.ATContext
-
+import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
+import org.powerbot.script.Tile
+import org.powerbot.script.rt4.Game
 import org.powerbot.script.rt4.GameObject
 
-class Patch(var go: GameObject) {
+class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
-//    val go: GameObject
-//        get() = ATContext.ctx.objects.toStream().at(tile).filter { it.name().isNotEmpty() }.findFirst().get()
+    constructor(go: GameObject, index: Int) : this(go, go.tile(), index)
 
     fun refresh() {
-        go = ATContext.ctx.objects.toStream().at(go.tile()).filter { it.name().isNotEmpty() }.findFirst().get()
+        go = ctx.objects.toStream(35).at(tile).filter { it.name().isNotEmpty() && it.name() != "null" }.findFirst()
+            .get()
     }
 
     val isNill get() = go == GameObject.NIL
@@ -31,13 +33,6 @@ class Patch(var go: GameObject) {
             refresh()
         }
         return id in DONE
-    }
-
-    fun isPlanted(refresh: Boolean = false): Boolean {
-        if (refresh) {
-            refresh()
-        }
-        return id in intArrayOf(*PLANTED, *WATERED_1, *GROWN_1, *WATERED_2, *GROWN_2, *WATERED_3, *DONE)
     }
 
     fun needsWatering(refresh: Boolean = false): Boolean {
@@ -59,7 +54,7 @@ class Patch(var go: GameObject) {
         if (refresh) {
             refresh()
         }
-        return id in intArrayOf(EMPTY, *PLANTED, *GROWN_1, *GROWN_2, *DONE)
+        return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2, *DONE)
     }
 
     fun clear(): Boolean = interact(go, "Clear")
@@ -68,19 +63,36 @@ class Patch(var go: GameObject) {
 
     fun harvest(): Boolean = interact(go, "Harvest")
 
-    fun plant(seed: Int): Boolean = interact(go, "Use", selectItem = seed)
+    fun plant(seed: Int): Boolean {
+        return interact(go, "Use", selectItem = seed)
+    }
+
+    fun walkBetween(patches: List<Patch>): Boolean {
+        if (!go.inViewport() || go.distance() > 12) {
+            val minX = patches.minOf { tile.x() } + 2
+            val t = tile
+            val tile = Tile(minX, t.y(), 0)
+            if (tile.matrix(ctx).onMap()) {
+                ctx.movement.step(tile)
+            } else {
+                ATContext.walk(tile)
+            }
+            return false
+        }
+        return true
+    }
 
     override fun toString(): String = "Patch(tile=${go.tile()})"
 
     companion object {
         val EMPTY = 27383
         val PLANTED = intArrayOf(27384, 27395)
-        val WATERED_1 = intArrayOf(27385, 27396)
-        val GROWN_1 = intArrayOf(27387, 27398)
-        val WATERED_2 = intArrayOf(27388, 27399)
-        val GROWN_2 = intArrayOf(27390, 27401)
-        val WATERED_3 = intArrayOf(27391, 27402)
-        val DONE = intArrayOf(27393, 27404)
+        val WATERED_1 = PLANTED.map { it + 1 }.toIntArray()
+        val GROWN_1 = PLANTED.map { it + 3 }.toIntArray()
+        val WATERED_2 = PLANTED.map { it + 4 }.toIntArray()
+        val GROWN_2 = PLANTED.map { it + 6 }.toIntArray()
+        val WATERED_3 = PLANTED.map { it + 7 }.toIntArray()
+        val DONE = PLANTED.map { it + 9 }.toIntArray()
         val BLIGHTED = intArrayOf(27386, 27389, 27392, 27394, 27397, 27400, 27403, 27405)
 
         fun GameObject.isPatch(): Boolean =
@@ -100,7 +112,7 @@ class Patch(var go: GameObject) {
 
         fun List<Patch>.hasDone(): Boolean = any { it.isDone() }
 
-        fun List<Patch>.nearest(): Patch = minByOrNull { it.go.distance() } ?: Patch(GameObject.NIL)
+        fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.NIL, -1)
 
     }
 
