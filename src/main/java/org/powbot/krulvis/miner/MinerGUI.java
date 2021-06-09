@@ -24,6 +24,7 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
     private JSlider radiusSlider;
     private JCheckBox fastMiningCheckBox;
     private JCheckBox hopFromPlayersCheckBox;
+    private JCheckBox drawRocksCheckBox;
     public ArrayList<Tile> oreLocations = new ArrayList<>();
 
     public MinerGUI(@NotNull Miner script) {
@@ -90,12 +91,13 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
     @Override
     public void onStart(@NotNull Miner script, @NotNull MinerProfile settings) {
         script.setProfile(settings);
+        ATContext.INSTANCE.setDebugComponents(script.getProfile().getDrawRocks());
     }
 
     @NotNull
     @Override
     public MinerProfile getCurrentSettings() {
-        return new MinerProfile(getCenterTile(), getRadius(), dropOresCheckBox.isSelected(), fastMiningCheckBox.isSelected(), hopFromPlayersCheckBox.isSelected(), oreLocations);
+        return new MinerProfile(getCenterTile(), getRadius(), dropOresCheckBox.isSelected(), fastMiningCheckBox.isSelected(), hopFromPlayersCheckBox.isSelected(), drawRocksCheckBox.isSelected(), oreLocations);
     }
 
     @Override
@@ -107,6 +109,7 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         radiusSlider.setValue(settings.getRadius());
         dropOresCheckBox.setSelected(settings.getDropOres());
         fastMiningCheckBox.setSelected(settings.getFastMining());
+        drawRocksCheckBox.setSelected(settings.getDrawRocks());
         hopFromPlayersCheckBox.setSelected(settings.getHopFromPlayers());
     }
 
@@ -155,13 +158,13 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         label1.setText("Center:");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         minerPanel.add(label1, gbc);
         centerTileField = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.weightx = 30.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -170,18 +173,18 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         currentPositionButton.setText("Current Position");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 20;
         minerPanel.add(currentPositionButton, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         minerPanel.add(spacer1, gbc);
         dropOresCheckBox = new JCheckBox();
-        dropOresCheckBox.setText("Drop Ores");
+        dropOresCheckBox.setText("Drop ores");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -192,7 +195,7 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         label2.setText("Radius:");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.WEST;
         minerPanel.add(label2, gbc);
         radiusSlider = new JSlider();
@@ -205,13 +208,13 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         radiusSlider.setValue(5);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         minerPanel.add(radiusSlider, gbc);
         fastMiningCheckBox = new JCheckBox();
-        fastMiningCheckBox.setText("Fast Mining");
+        fastMiningCheckBox.setText("Fast mining");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -226,6 +229,14 @@ public class MinerGUI extends ATGUI<Miner, MinerProfile> {
         gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.WEST;
         minerPanel.add(hopFromPlayersCheckBox, gbc);
+        drawRocksCheckBox = new JCheckBox();
+        drawRocksCheckBox.setText("Paint rocks");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        minerPanel.add(drawRocksCheckBox, gbc);
     }
 
     /**

@@ -24,7 +24,7 @@ class Refill(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Refilling") {
         val waterBarrel = getWaterBarrel()
 
         waterBarrel.ifPresent {
-            if (!stoppedMaking(WATER_CAN_FULL) || (it.distance() < 2 && ATContext.me.animation() != -1)) {
+            if (!stoppedMaking(WATER_CAN_FULL)) {
                 println("Already filling water...")
                 waitFor(long()) { ctx.inventory.toStream().noneMatch { item -> item.id() in Data.WATER_CANS } }
             } else if (ctx.game.tab(Game.Tab.INVENTORY) && interact(it, "Use", selectItem = EMPTY_CAN)) {

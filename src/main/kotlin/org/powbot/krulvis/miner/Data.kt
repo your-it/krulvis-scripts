@@ -14,5 +14,6 @@ data class MinerProfile(
     val dropOres: Boolean = false,
     val fastMining: Boolean = false,
     val hopFromPlayers: Boolean = false,
+    val drawRocks: Boolean = true,
     val oreLocations: List<Tile> = emptyList()
 ) : ScriptProfile

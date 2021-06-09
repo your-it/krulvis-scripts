@@ -3,7 +3,9 @@ package org.powbot.krulvis.tithe
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.utils.Utils.short
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Game
 import org.powerbot.script.rt4.GameObject
@@ -57,14 +59,21 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2, *DONE)
     }
 
-    fun clear(): Boolean = interact(go, "Clear")
+    fun clear(): Boolean = interact("Clear")
 
-    fun water(): Boolean = interact(go, "Water")
+    fun water(): Boolean = interact("Water")
 
-    fun harvest(): Boolean = interact(go, "Harvest")
+    fun harvest(): Boolean = interact("Harvest")
 
     fun plant(seed: Int): Boolean {
-        return interact(go, "Use", selectItem = seed)
+        val selectedId = ctx.inventory.selectedItem().id()
+        if (selectedId != seed) {
+            ctx.game.tab(Game.Tab.INVENTORY)
+            ctx.inventory.toStream().id(seed).findFirst().ifPresent {
+                it.interact("Use")
+            }
+        }
+        return waitFor(Utils.short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
     }
 
     fun walkBetween(patches: List<Patch>): Boolean {
@@ -80,6 +89,21 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             return false
         }
         return true
+    }
+
+    private fun interact(action: String): Boolean {
+        val name = go.name()
+        if (!ctx.client().isMenuOpen) {
+            if (ctx.client().isMobile) {
+                go.click()
+            } else {
+                go.click(false)
+            }
+        }
+        if (waitFor(short()) { ctx.client().isMenuOpen }) {
+            return ATContext.handleMenu(action, name)
+        }
+        return false
     }
 
     override fun toString(): String = "Patch(tile=${go.tile()})"

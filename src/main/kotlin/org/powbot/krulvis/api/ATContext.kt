@@ -7,12 +7,12 @@ import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.walking.PBWebWalkingService
-import org.powerbot.script.Locatable
-import org.powerbot.script.MenuCommand
-import org.powerbot.script.Nameable
-import org.powerbot.script.Tile
+import org.powerbot.script.*
 import org.powerbot.script.rt4.*
+import org.powerbot.script.rt4.ClientContext
+import org.powerbot.script.rt4.Interactive
 import java.awt.Point
+import java.awt.Rectangle
 import kotlin.math.abs
 
 
@@ -100,7 +100,7 @@ object ATContext {
                 )
             }) {
             debug("Clicking directly on opened menu")
-            return ctx.menu.click { it.action.equals(action, true) && it.option.contains(name, true) }
+            return handleMenu(action, name)
         }
         if (!t.inViewport()
             || (destination != pos && pos.distanceTo(if (destination == Tile.NIL) me else destination) > (if (alwaysWalk) 4 else 12))
@@ -129,6 +129,57 @@ object ATContext {
         return waitFor(short()) { ctx.inventory.selectedItem().id() == selectItem } && t.interact(action)
     }
 
+    /**
+     * Requires menu to be open
+     */
+    fun handleMenu(action: String, name: String): Boolean {
+        if (!ctx.client().isMenuOpen) {
+            return false
+        }
+        if (!ctx.menu.contains {
+                it.action.equals(action, true) && it.option.contains(
+                    name,
+                    true
+                )
+            }) {
+            debug("Closing menu")
+            clickMenu(Menu.filter("Cancel"))
+            waitFor { !ctx.client().isMenuOpen }
+            return false
+        }
+        return clickMenu(
+            Menu.filter(
+                action,
+                name
+            )
+        )
+    }
+
+    fun clickMenu(filter: Filter<in MenuCommand>): Boolean {
+        val slot = ctx.menu.indexOf(filter)
+        val headerOffset = if (ctx.client().isMobile) 29 else 19
+        val itemOffset = if (ctx.client().isMobile) 24 else 15
+
+        val rectangle = Rectangle(
+            ctx.client().menuX,
+            ctx.client().menuY + headerOffset + slot * itemOffset,
+            ctx.client().menuWidth,
+            itemOffset
+        )
+        val point = Point(
+            Random.nextInt(rectangle.x, rectangle.x + rectangle.width),
+            Random.nextInt(rectangle.y, rectangle.y + rectangle.height)
+        )
+        Condition.sleep(org.powerbot.script.Random.hicks(slot))
+//        if (!ctx.input.move(
+//                org.powerbot.script.Random.nextInt(rectangle.x, rectangle.x + rectangle.width),
+//                org.powerbot.script.Random.nextInt(rectangle.y, rectangle.y + rectangle.height)
+//            ) || !ctx.client().isMenuOpen
+//        ) {
+//            return false
+//        }
+        return ctx.input.click(point, true)
+    }
 
     fun Locatable.distance(): Int =
         tile().distanceTo(ctx.players.local()).toInt()

@@ -2,6 +2,7 @@ package org.powbot.krulvis.tithe.tree.tree
 
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.tithe.Patch
 import org.powbot.krulvis.tithe.TitheFarmer
 import java.util.logging.Logger
 
@@ -22,13 +23,13 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
                 if (patch.index < script.patchCount - 1) {
                     ctx.inventory.toStream().id(seed).findFirst().ifPresent { it.interact("Use") }
                 }
-                val doneDidIt = waitFor(5000) {
+                val doneDidIt = waitFor(2500) {
                     !patch.isEmpty(true)
                 }
                 logger.info("Planted on $patch: $doneDidIt")
-            } else {
-                logger.info("FAILED to plant()")
             }
         }
     }
+
+
 }

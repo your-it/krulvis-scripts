@@ -7,6 +7,8 @@ import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
+import org.powerbot.script.GameActionEvent
+import org.powerbot.script.GameActionListener
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -29,7 +31,7 @@ class TitheFarmer : ATScript() {
 
     var startPoints = -1
     var gainedPoints = 0
-    var patchCount = 16
+    var patchCount = 8
     var patches = listOf<Patch>()
     val chillTimer = Timer(2500)
     var planting = false
@@ -42,9 +44,12 @@ class TitheFarmer : ATScript() {
     }
 
     fun getPatchTiles(): List<Tile> {
-        val tmt = getCornerPatchTile()
+        val tiles = mutableListOf(getCornerPatchTile())
         val columns = mutableListOf<Tile>()
-        listOf(tmt, Tile(tmt.x(), tmt.y() - 15)).forEach {
+        if (patchCount == 16) {
+            tiles.add(Tile(tiles[0].x(), tiles[0].y() - 15))
+        }
+        tiles.forEach {
             for (y in 0..9 step 3) {
                 columns.add(Tile(it.x(), it.y() - y))
                 columns.add(Tile(it.x() + 5, it.y() - y))
@@ -85,5 +90,6 @@ class TitheFarmer : ATScript() {
     override fun startGUI() {
         started = true
     }
+
 
 }
