@@ -85,7 +85,7 @@ class TitheFarmer : ATScript() {
 
     fun getWaterCount(): Int = ctx.inventory.toStream().id(*Data.WATER_CANS).list().sumBy { it.id() - 5332 }
 
-    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3
+    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3.5
 
     override fun startGUI() {
         started = true

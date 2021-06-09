@@ -69,7 +69,7 @@ class ShouldMoveCamera(script: TitheFarmer) : Branch<TitheFarmer>(script, "Shoul
     override val failedComponent: TreeComponent<TitheFarmer> = ShouldPlant(script)
 
     override fun validate(): Boolean {
-        return ctx.camera.yaw() !in 255..290 || ctx.camera.pitch() < 95
+        return !ctx.client().isMobile && (ctx.camera.yaw() !in 255..290 || ctx.camera.pitch() < 95)
     }
 }
 

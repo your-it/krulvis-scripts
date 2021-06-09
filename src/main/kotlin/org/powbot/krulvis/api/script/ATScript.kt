@@ -2,6 +2,7 @@ package org.powbot.krulvis.api.script
 
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
+import org.powbot.krulvis.api.gui.ATGUI
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.SimpleLeaf

@@ -5,8 +5,8 @@ import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
 import java.util.*
 
-
 enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors: Int) : Item {
+    AMETHYST(intArrayOf(21347), 92, 6705),
     RUNITE(intArrayOf(451), 85, -31437),
     ADAMANTITE(intArrayOf(449), 70, 21662),
     MITHRIL(intArrayOf(447), 55, -22239),
@@ -17,6 +17,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
     COPPER(intArrayOf(436), 1, 4510, 4645, 8889),
     TIN(intArrayOf(438), 1, 53),
     CLAY(intArrayOf(434), 1, 6705);
+
 
     override fun hasWith(): Boolean {
         return getInventoryCount(false) > 0
@@ -34,7 +35,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
 
     companion object {
         fun GameObject.hasOre(vararg ores: Ore): Boolean {
-            return ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
+            return name() == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
         }
 
         fun GameObject.getOre(): Ore? {
@@ -58,3 +59,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
 
     }
 }
+
+
+
+

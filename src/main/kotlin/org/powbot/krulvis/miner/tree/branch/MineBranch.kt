@@ -3,6 +3,7 @@ package org.powbot.krulvis.miner.tree.branch
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
+import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.script.tree.Branch
 import org.powbot.krulvis.api.script.tree.SimpleLeaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
