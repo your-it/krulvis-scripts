@@ -1,4 +1,4 @@
-package org.powbot.krulvis.tithe.tree.tree
+package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distance

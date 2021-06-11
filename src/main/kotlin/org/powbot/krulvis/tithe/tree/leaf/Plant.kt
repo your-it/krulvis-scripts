@@ -1,4 +1,4 @@
-package org.powbot.krulvis.tithe.tree.tree
+package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor

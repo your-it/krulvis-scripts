@@ -9,7 +9,7 @@ import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data
 import org.powbot.krulvis.tithe.TitheFarmer
-import org.powbot.krulvis.tithe.tree.tree.*
+import org.powbot.krulvis.tithe.tree.leaf.*
 
 class ShouldStart(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should start") {
     override val successComponent: TreeComponent<TitheFarmer> = Start(script)

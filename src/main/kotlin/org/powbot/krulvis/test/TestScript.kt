@@ -3,6 +3,7 @@ package org.powbot.krulvis.test
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.toRegionTile
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -59,7 +60,13 @@ class TestScript : ATScript(), GameActionListener {
     }
 
     override fun onAction(evt: GameActionEvent) {
-        println(evt.interaction)
+        val tithe = ctx.objects.toStream().id(evt.id).nearest().findFirst()
+
+        println("Var0: ${evt.var0}, Interaction: ${evt.interaction}, ID: ${evt.id}, Name: ${evt.rawEntityName}, OpCode: ${evt.rawOpcode}")
+        if (tithe.isPresent) {
+            val localTile = tithe.get().tile().toRegionTile()
+            println("Nearest ${evt.rawEntityName} farm: Local X: ${localTile.x()}, Y: ${localTile.y()}")
+        }
     }
 
 }
