@@ -1,0 +1,17 @@
+# AIO Miner
+
+**Does the Tithe Farming mini-game in Zeah.**
+<br>
+
+## Instructions
+
+- **Make sure to close all interfaces other than Inventory**
+    - Chat & the interfaces on the left of the screen have to be closed for this script to properly work.
+
+## Features
+
+- **All seeds**
+
+## Options
+
+- **Drink stamina pots.**

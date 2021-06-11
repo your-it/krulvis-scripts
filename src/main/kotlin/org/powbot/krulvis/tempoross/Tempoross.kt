@@ -60,7 +60,7 @@ class Tempoross : ATScript(), MessageListener {
     var pointsObtained = 0
     var rounds = 0
     var bestFishSpot: Optional<Npc> = Optional.empty()
-    var fishSpots: Stream<Pair<Npc, LocalPath>> = Stream.empty()
+    var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
@@ -262,19 +262,19 @@ class Tempoross : ATScript(), MessageListener {
     fun collectFishSpots() {
         fishSpots = ctx.npcs.toStream().action("Harpoon").name("Fishing spot").filter {
             rightSide(it)
-        }.map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+        }.list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
-    fun getFishSpot(spots: Stream<Pair<Npc, LocalPath>>): Optional<Npc> {
+    fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Optional<Npc> {
         val paths = spots.filter { !containsDangerousTile(it.second) }
-        val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.findFirst()
-        if (doublePath.isPresent) {
-            return Optional.of(doublePath.get().first)
+        val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
+        if (doublePath != null) {
+            return Optional.of(doublePath.first)
         }
 
-        if (paths.count() > 0) {
+        if (paths.isNotEmpty()) {
             return Optional.of(
-                paths.collect(Collectors.minBy(Comparator.comparingInt { it.second.actions.size })).get().first
+                paths.minByOrNull { it.second.actions.size }!!.first
             )
         }
         return Optional.empty()

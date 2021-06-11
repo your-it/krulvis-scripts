@@ -41,9 +41,9 @@ open class ATResource(val relativeFile: File, private val url: String) {
 
     fun getResourceFolder(): File {
         val home = System.getProperty("user.home")
-        val eb = home + File.separator + "EpicBot"
+        val eb = home + File.separator + ".powbot"
         val resourceFolder =
-            File(eb + File.separator + "Script Settings" + File.separator + "ScriptResources" + File.separator)
+            File(eb + File.separator + "ScriptSettings" + File.separator + "ScriptResources" + File.separator)
         if (!resourceFolder.exists()) {
             println("Making resource folders!")
             resourceFolder.mkdirs()

@@ -1,6 +1,5 @@
 package org.powbot.krulvis.walking
 
-import org.powbot.krulvis.api.ATContext.loaded
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
