@@ -80,7 +80,7 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
     override fun onChange(evt: InventoryChangeEvent) {
         val item = evt.itemId
-        if (item.getOre() != null && !ctx.bank.opened() && !ctx.depositBox.opened()) {
+        if ((item.getOre() != null || item == 21341) && !ctx.bank.opened() && !ctx.depositBox.opened()) {
             lootTracker.addLoot(item, evt.quantityChange)
         }
     }

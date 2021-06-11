@@ -1,4 +1,4 @@
-package org.powbot.krulvis.tithe.tree.tree
+package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.interact
@@ -35,11 +35,11 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
     fun getSeedInput(): String {
         val farming = ctx.skills.level(Constants.SKILLS_FARMING)
         return if (farming >= 74) {
-            "Golovanova"
+            "Logavano"
         } else if (farming >= 54) {
             "Bologano"
         } else {
-            "Loganvano"
+            "Golovanova"
         }
     }
 }
