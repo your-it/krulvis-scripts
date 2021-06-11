@@ -22,7 +22,7 @@ import java.awt.Rectangle
 class TestScript : ATScript(), GameActionListener {
 
 
-    val tile = Tile(2986, 3240, 0)
+    val tile = Tile(7075, 3761, 0)
 
     override val painter: ATPainter<*>
         get() = Painter(this)
@@ -30,6 +30,8 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
+            val patch = ctx.objects.toStream().name("Tithe patch").nearest().findFirst()
+            println("Nearest patch: ${patch.get().tile()}")
         }
     }
 
@@ -73,7 +75,9 @@ class TestScript : ATScript(), GameActionListener {
 
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
-        drawSplitText(g, "Stopped making: ", stoppedMaking(227).toString(), x, y)
+        var y = this.y
+        drawSplitText(g, "Distance: ", script.tile.distance().toString(), x, y)
+        script.tile.drawOnScreen(g)
     }
 
 

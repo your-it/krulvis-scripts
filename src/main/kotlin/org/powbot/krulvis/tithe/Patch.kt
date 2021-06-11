@@ -110,7 +110,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     companion object {
         val EMPTY = 27383
-        val PLANTED = intArrayOf(27384, 27395)
+        val PLANTED = intArrayOf(27384, 27395, 27406)
         val WATERED_1 = PLANTED.map { it + 1 }.toIntArray()
         val GROWN_1 = PLANTED.map { it + 3 }.toIntArray()
         val WATERED_2 = PLANTED.map { it + 4 }.toIntArray()
@@ -119,18 +119,11 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         val DONE = PLANTED.map { it + 9 }.toIntArray()
         val BLIGHTED = intArrayOf(27386, 27389, 27392, 27394, 27397, 27400, 27403, 27405)
 
-        fun GameObject.isPatch(): Boolean =
-            id() in intArrayOf(
-                EMPTY,
-                *PLANTED,
-                *WATERED_1,
-                *GROWN_1,
-                *WATERED_2,
-                *GROWN_2,
-                *WATERED_3,
-                *DONE,
-                *BLIGHTED
-            )
+        fun GameObject.isPatch(): Boolean {
+            val name = name()
+            return listOf("Logavano", "Bologano", "Golovanova", "Tithe patch").any { it in name }
+        }
+
 
         fun List<Patch>.hasEmpty(): Boolean = any { it.isEmpty() }
 
