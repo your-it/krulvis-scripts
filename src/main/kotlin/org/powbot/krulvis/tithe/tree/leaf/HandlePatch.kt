@@ -3,12 +3,14 @@ package org.powbot.krulvis.tithe.tree.leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.closeOpenHUD
 import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Patch
 import org.powbot.krulvis.tithe.TitheFarmer
+import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Game
 import org.powerbot.script.rt4.Menu
 import java.util.logging.Logger
@@ -30,8 +32,7 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         logger.info("Handling patch: $patch")
         if (patch.needsWatering()) {
             val waterCount = script.getWaterCount()
-            if (patch.walkBetween(script.patches) && patch.water()) {
-                waitFor { patch.go.distance() <= 3 }
+            if (patch.walkBetween(script.patches) && patch.water() && waitFor(2500) { patch.go.distance() < 3 }) {
                 prepareNextInteraction(patch)
                 val doneDidIt = waitFor(2500) {
                     script.getWaterCount() < waterCount
@@ -39,8 +40,7 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
                 logger.info("Watered on $patch: $doneDidIt")
             }
         } else if (patch.isDone()) {
-            if (patch.walkBetween(script.patches) && patch.harvest()) {
-                waitFor { patch.go.distance() <= 3 }
+            if (patch.walkBetween(script.patches) && patch.harvest() && waitFor(2500) { patch.go.distance() < 3 }) {
                 prepareNextInteraction(patch)
                 val doneDidIt = waitFor(2500) {
                     patch.isEmpty(true)
@@ -48,8 +48,7 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
                 logger.info("Harvested on $patch: $doneDidIt")
             }
         } else if (patch.blighted()) {
-            if (patch.walkBetween(script.patches) && patch.clear()) {
-                waitFor { patch.go.distance() <= 3 }
+            if (patch.walkBetween(script.patches) && patch.clear() && waitFor(2500) { patch.go.distance() < 3 }) {
                 prepareNextInteraction(patch)
                 val doneDidIt = waitFor(2500) {
                     patch.isEmpty(true)
@@ -60,10 +59,11 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
     }
 
     fun prepareNextInteraction(patch: Patch) {
-        val index = script.patches.indexOf(patch)
-        val nextPatch =
-            if (index == script.patches.size - 1) null else script.patches[index + 1]
-        if (nextPatch?.needsAction(true) == true) {
+        val facingTile = me.facingTile()
+        if (facingTile == Tile.NIL) return
+        val current = script.patches.minByOrNull { it.tile.distanceTo(facingTile) } ?: return
+        val nextPatch = script.patches.minusElement(current).firstOrNull { it.needsAction(true) }
+        if (nextPatch != null) {
             println("Preparing next patch interaction...")
             if (ctx.client().isMobile) {
                 nextPatch.go.click()
