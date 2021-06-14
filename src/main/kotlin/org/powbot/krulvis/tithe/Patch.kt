@@ -41,7 +41,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         if (refresh) {
             refresh()
         }
-        return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2)
+        return id in PLANTED || id in GROWN_1 || id in GROWN_2
     }
 
     fun blighted(refresh: Boolean = false): Boolean {
@@ -56,7 +56,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         if (refresh) {
             refresh()
         }
-        return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2, *DONE)
+        return id in PLANTED || id in GROWN_1 || id in GROWN_2 || id in DONE
     }
 
     fun clear(): Boolean = interact("Clear")
@@ -73,7 +73,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 it.interact("Use")
             }
         }
-        return waitFor(Utils.short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
+        return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
     }
 
     fun walkBetween(patches: List<Patch>): Boolean {
