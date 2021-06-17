@@ -12,7 +12,7 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "ShouldBank") {
     }
 
     override val successComponent: TreeComponent<Fighter> = IsBankOpen(script)
-    override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
+    override val failedComponent: TreeComponent<Fighter> = AtSpot(script)
 }
 
 class IsBankOpen(script: Fighter) : Branch<Fighter>(script, "IsBankOpen") {

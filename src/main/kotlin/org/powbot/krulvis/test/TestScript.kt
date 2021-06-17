@@ -30,8 +30,7 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            val test = intArrayOf(123, 12)
-            println(intArrayOf(1, *test, 1))
+
         }
     }
 
@@ -76,8 +75,8 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        drawSplitText(g, "Distance: ", script.tile.distance().toString(), x, y)
-        script.tile.drawOnScreen(g)
+        drawShadowedText(g, "Target: ${me.interacting()}", x, y)
+//        script.tile.drawOnScreen(g)
     }
 
 

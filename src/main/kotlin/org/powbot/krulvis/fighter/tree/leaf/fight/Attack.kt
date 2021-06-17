@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.leaf.fight
 
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.tree.Leaf
@@ -19,8 +20,12 @@ class Attack(script: Fighter) : Leaf<Fighter>(script, "Attacking") {
     }
 
     fun getTarget(): Optional<Npc> {
-        return ctx.npcs.toStream().name(*script.profile.names.toTypedArray()).filter { it.interacting() == Npc.NIL }
-            .nearest()
-            .findFirst()
+        return ctx.npcs.toStream().within(script.profile.centerLocation, script.profile.radius.toDouble())
+            .name(*script.profile.names.toTypedArray()).filter { !it.isInteracting() || it.interacting() == me }
+            .nearest().findFirst()
+    }
+
+    fun Npc.isInteracting(): Boolean {
+        return interactingIndex() != -1
     }
 }
