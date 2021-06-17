@@ -38,8 +38,8 @@ object ATContext {
         if (ctx.movement.running()) {
             return true
         }
-        if (ctx.client().runPercentage >= Random.nextInt(1, 5) && ctx.movement.running(true)) {
-            return true
+        if (ctx.client().runPercentage >= Random.nextInt(1, 5)) {
+            return ctx.movement.running(true)
         }
         return false
     }
@@ -50,8 +50,10 @@ object ATContext {
         if (position == null || position == Tile.NIL) {
             return true
         }
-        val position = position.getWalkableNeighbor() ?: return false
+        val flags = ctx.client().collisionMaps[position.floor()].flags
+        val position = if (!position.blocked(flags)) position else position.getWalkableNeighbor() ?: return false
         if (ctx.players.local().tile() == position) {
+            debug("Already on tile: $position")
             return true
         }
         if (enableRun && !ctx.movement.running() && ctx.client().runPercentage > nextRun) {
@@ -65,6 +67,7 @@ object ATContext {
             } else {
                 val localPath = LocalPathFinder.findPath(position)
                 if (localPath.isNotEmpty()) {
+                    debug("Using localwalker")
                     localPath.traverse()
                 } else {
                     debug("Using powbot method to walk")
@@ -193,7 +196,7 @@ object ATContext {
     fun Locatable.mapPoint(): Point = ctx.game.tileToMap(tile())
 
     /**
-     * Returns: [Tile] nearest neighbor or self as  which is walkable
+     * Returns: [Tile] nearest neighbor or self as which is walkable
      */
     fun Locatable.getWalkableNeighbor(
         diagonalTiles: Boolean = false,

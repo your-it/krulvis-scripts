@@ -1,4 +1,4 @@
-# AIO Miner
+# Tithe Farming Minigame
 
 **Does the Tithe Farming mini-game in Zeah.**
 <br>

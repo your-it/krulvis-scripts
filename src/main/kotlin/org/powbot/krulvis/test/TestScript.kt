@@ -30,8 +30,7 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            val patch = ctx.objects.toStream().name("Tithe patch").nearest().findFirst()
-            println("Nearest patch: ${patch.get().tile()}")
+
         }
     }
 
@@ -64,7 +63,7 @@ class TestScript : ATScript(), GameActionListener {
     override fun onAction(evt: GameActionEvent) {
         val tithe = ctx.objects.toStream().id(evt.id).nearest().findFirst()
 
-        println("Var0: ${evt.var0}, Interaction: ${evt.interaction}, ID: ${evt.id}, Name: ${evt.rawEntityName}, OpCode: ${evt.rawOpcode}")
+        println("Var0: ${evt.var0}, WidgetId: ${evt.widgetId}, Interaction: ${evt.interaction}, ID: ${evt.id}, Name: ${evt.rawEntityName}, OpCode: ${evt.rawOpcode}")
         if (tithe.isPresent) {
             val localTile = tithe.get().tile().toRegionTile()
             println("Nearest ${evt.rawEntityName} farm: Local X: ${localTile.x()}, Y: ${localTile.y()}")
@@ -76,8 +75,8 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        drawSplitText(g, "Distance: ", script.tile.distance().toString(), x, y)
-        script.tile.drawOnScreen(g)
+        drawShadowedText(g, "Target: ${me.interacting()}", x, y)
+//        script.tile.drawOnScreen(g)
     }
 
 

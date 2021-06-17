@@ -22,7 +22,7 @@ class Refill(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Refilling") {
 
     override fun execute() {
         val waterBarrel = getWaterBarrel()
-
+        println("Barrel: present=${waterBarrel.isPresent}")
         waterBarrel.ifPresent {
             if (!stoppedMaking(WATER_CAN_FULL)) {
                 println("Already filling water...")

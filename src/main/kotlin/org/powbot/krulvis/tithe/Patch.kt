@@ -14,8 +14,9 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     constructor(go: GameObject, index: Int) : this(go, go.tile(), index)
 
-    fun refresh() {
-        go = ctx.objects.toStream(35).at(tile).filter { it.name().isNotEmpty() && it.name() != "null" }.findFirst()
+    fun refresh(gameObject: GameObject? = null) {
+        go = gameObject ?: ctx.objects.toStream(35).at(tile).filter { it.name().isNotEmpty() && it.name() != "null" }
+            .findFirst()
             .get()
     }
 
@@ -41,14 +42,14 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         if (refresh) {
             refresh()
         }
-        return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2)
+        return id in PLANTED || id in GROWN_1 || id in GROWN_2
     }
 
     fun blighted(refresh: Boolean = false): Boolean {
         if (refresh) {
             refresh()
         }
-        return id in BLIGHTED
+        return go.name().contains("Blighted", true)
     }
 
 
@@ -56,7 +57,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         if (refresh) {
             refresh()
         }
-        return id in intArrayOf(*PLANTED, *GROWN_1, *GROWN_2, *DONE)
+        return id in PLANTED || id in GROWN_1 || id in GROWN_2 || id in DONE
     }
 
     fun clear(): Boolean = interact("Clear")
@@ -73,7 +74,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 it.interact("Use")
             }
         }
-        return waitFor(Utils.short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
+        return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
     }
 
     fun walkBetween(patches: List<Patch>): Boolean {
@@ -130,6 +131,16 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         fun List<Patch>.hasDone(): Boolean = any { it.isDone() }
 
         fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.NIL, -1)
+
+        fun List<Patch>.tiles(): List<Tile> = map { it.tile }
+
+        fun List<Patch>.refresh(): List<Patch> {
+            val tiles = tiles()
+            val gameObjects =
+                ctx.objects.toStream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+                    .list()
+            return onEach { patch -> patch.refresh(gameObjects.firstOrNull { go -> go.tile() == patch.tile }) }
+        }
 
     }
 
