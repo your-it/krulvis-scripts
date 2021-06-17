@@ -10,7 +10,8 @@ object Data {
 
     val GOLOVANOVA = 13426
     val BOLOGANO = 13427
-    val HARVEST = intArrayOf(GOLOVANOVA, BOLOGANO)
+    val LOGAVANO = 13428
+    val HARVEST = intArrayOf(GOLOVANOVA, BOLOGANO, LOGAVANO)
 
 }
 
