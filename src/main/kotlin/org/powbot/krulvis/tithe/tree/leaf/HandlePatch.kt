@@ -16,6 +16,7 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
     val logger = Logger.getLogger("HandlingPlant")
 
     override fun execute() {
+        if (script.lock) return
         script.getPatchTiles()
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0

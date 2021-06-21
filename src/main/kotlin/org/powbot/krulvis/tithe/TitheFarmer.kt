@@ -33,6 +33,7 @@ class TitheFarmer : ATScript(), GameActionListener {
         skillTracker.addSkill(Skill.FARMING)
     }
 
+    var lock = false
     var profile = TitheProfile()
     var startPoints = -1
     var gainedPoints = 0
@@ -113,27 +114,21 @@ class TitheFarmer : ATScript(), GameActionListener {
     }
 
     fun prepareNextInteraction(current: Patch) {
+        lock = true
         patches = patches.refresh()
         val nextPatch = patches.minusElement(current)
             .sortedWith(compareBy(Patch::id, Patch::index))
             .firstOrNull { it.needsAction() }
         if (nextPatch != null) {
-            println("Preparing next patch interaction...")
             waitFor { current.tile.distance() < 2.5 }
             if (ctx.client().isMobile) {
                 nextPatch.go.click()
             } else {
                 nextPatch.go.click(false)
             }
-            if (Utils.waitFor(Utils.short()) { ctx.menu.opened() } && !ctx.menu.contains {
-                    it.action in listOf(
-                        "Harvest",
-                        "Water"
-                    )
-                }) {
-                ATContext.clickMenu(Menu.filter("Cancel"))
-            }
+            println("Prepared next patch interaction...")
         }
+        lock = false
     }
 
 
