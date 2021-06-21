@@ -27,8 +27,8 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "AtSpot") {
 class IsKilling(script: Fighter) : Branch<Fighter>(script, "IsKilling") {
     override fun validate(): Boolean {
         val target = me.interacting()
-        debug("Currently interacting with: ${target.name()}")
-        debug("Full debug: $target")
+//        debug("Currently interacting with: ${target.name()}")
+//        debug("Full debug: $target")
         return target is Npc && script.validTarget(target)
     }
 

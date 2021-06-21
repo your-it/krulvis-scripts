@@ -38,7 +38,7 @@ object ATContext {
         if (ctx.movement.running()) {
             return true
         }
-        if (ctx.client().runPercentage >= Random.nextInt(1, 5)) {
+        if (ctx.movement.energyLevel() >= Random.nextInt(1, 5)) {
             return ctx.movement.running(true)
         }
         return false
@@ -170,10 +170,10 @@ object ATContext {
             itemOffset
         )
         val point = Point(
-            Random.nextInt(rectangle.x, rectangle.x + rectangle.width),
-            Random.nextInt(rectangle.y, rectangle.y + rectangle.height)
+            Random.nextInt(rectangle.x + 3, rectangle.x + rectangle.width - 3),
+            Random.nextInt(rectangle.y + 2, rectangle.y + rectangle.height - 2)
         )
-        Condition.sleep(org.powerbot.script.Random.hicks(slot))
+        Condition.sleep(org.powerbot.script.Random.hicks(slot) / 2)
 //        if (!ctx.input.move(
 //                org.powerbot.script.Random.nextInt(rectangle.x, rectangle.x + rectangle.width),
 //                org.powerbot.script.Random.nextInt(rectangle.y, rectangle.y + rectangle.height)
