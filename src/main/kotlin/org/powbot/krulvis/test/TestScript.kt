@@ -1,5 +1,6 @@
 package org.powbot.krulvis.test
 
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
@@ -12,6 +13,7 @@ import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
 import org.powbot.krulvis.tithe.Data
 import org.powbot.krulvis.tithe.Patch
+import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powerbot.bot.rt4.client.internal.IActor
 import org.powerbot.script.*
 import org.powerbot.script.rt4.*
@@ -30,8 +32,15 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-
+            ATContext.turnRunOn()
         }
+    }
+
+    fun getCornerPatchTile(): Tile {
+        val allPatches = ctx.objects.toStream(25).filter { it.isPatch() }.list()
+        val maxX = allPatches.minOf { it.tile().x() }
+        val maxY = allPatches.maxOf { it.tile().y() }
+        return Tile(maxX + 5, maxY, 0)
     }
 
     val inputTexts = listOf(
@@ -75,7 +84,7 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        drawShadowedText(g, "Target: ${me.interacting()}", x, y)
+        drawShadowedText(g, "Distance: ${script.getCornerPatchTile().distance()}", x, y)
 //        script.tile.drawOnScreen(g)
     }
 

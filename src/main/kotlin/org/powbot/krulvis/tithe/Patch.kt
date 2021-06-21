@@ -74,7 +74,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 it.interact("Use")
             }
         }
-        return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.click()
+        return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.interact("Use")
     }
 
     fun walkBetween(patches: List<Patch>): Boolean {
