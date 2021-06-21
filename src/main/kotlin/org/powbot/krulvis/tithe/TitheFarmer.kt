@@ -20,7 +20,7 @@ import org.powerbot.script.rt4.Menu
 @Script.Manifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
-    version = "1.0",
+    version = "1.0.1",
     markdownFileName = "Tithe.md",
     properties = "category=Farming;",
     mobileReady = true
