@@ -1,12 +1,10 @@
 package org.powbot.krulvis.tithe
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
@@ -15,12 +13,11 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powerbot.script.*
 import org.powerbot.script.rt4.ClientContext
 import org.powerbot.script.rt4.GameObject
-import org.powerbot.script.rt4.Menu
 
 @Script.Manifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
-    version = "1.0.1",
+    version = "1.0.2",
     markdownFileName = "Tithe.md",
     properties = "category=Farming;",
     mobileReady = true
@@ -91,7 +88,9 @@ class TitheFarmer : ATScript(), GameActionListener {
     fun hasEnoughWater(): Boolean = getWaterCount() >= profile.patchCount * 3.5
 
     override fun startGUI() {
-        if (System.getenv("LOCAL") != "true") {
+        if (System.getenv("LOCAL") == "true") {
+            started = true
+        } else {
             TitheGUI(this)
         }
     }

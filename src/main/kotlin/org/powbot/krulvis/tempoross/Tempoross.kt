@@ -1,5 +1,6 @@
 package org.powbot.krulvis.tempoross
 
+import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.distance
@@ -109,10 +110,11 @@ class Tempoross : ATScript(), MessageListener {
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { blockedTiles.contains(it.destination) }
         val fireOptional =
-            if (blockedTile != null) ctx.objects.toStream().name("Fire").filter {
-                it.tile().distanceTo(blockedTile.destination) <= 2
-            }.nearest().findFirst() else Optional.empty()
-        if (fireOptional.isPresent && ctx.inventory.contains(BUCKET_OF_WATER)) {
+            if (blockedTile != null) ctx.objects.toStream().name("Fire").within(blockedTile.destination, 2.5).nearest()
+                .findFirst() else Optional.empty()
+        val hasBucket = ctx.inventory.containsOneOf(BUCKET_OF_WATER)
+        println("Blockedtile: $blockedTile foundFire: ${fireOptional.isPresent}, Bucket: $hasBucket")
+        if (fireOptional.isPresent && hasBucket) {
             val fire = fireOptional.get()
             debug("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
@@ -170,9 +172,9 @@ class Tempoross : ATScript(), MessageListener {
             return
         }
         val txt = me.text()
-        if (txt.contains("You gained ") && txt.contains("points")) {
-            println(txt)
-            val points = txt.substring(23, txt.indexOf("</col>")).toInt()
+        println(txt)
+        if (txt.contains("Points: ") && txt.contains("Personal best", true)) {
+            val points = txt.substring(20, txt.indexOf("</col>")).replace(",", "").toInt()
             println("Finished round, gained: $points points")
             pointsObtained += points
             rounds++
@@ -184,7 +186,7 @@ class Tempoross : ATScript(), MessageListener {
             if (profile.shootAfterTethering && (fish >= profile.minFishToForceShoot || fish >= getHealth())) {
                 forcedShooting = true
             }
-        } else if (txt.contains("You have earned ") && txt.contains("You now have")) {
+        } else if (txt.contains("Reward permits: ") && txt.contains("Total permits:")) {
             val reward = txt.substring(28, txt.indexOf("</col>")).toInt()
             println("Gained $reward points")
             rewardGained += reward
@@ -206,7 +208,7 @@ class Tempoross : ATScript(), MessageListener {
             Tile(mastLocation.x() + 4, mastLocation.y() + 25, 0)
         else Tile(mastLocation.x() - 22, mastLocation.y() - 21, 0)
 
-    val northCookSpot: Tile get() = Tile(cookLocation.x() + 1, cookLocation.y() - 1, 0)
+    val northCookSpot: Tile get() = Tile(cookLocation.x() + 1, cookLocation.y() - 3, 0)
 
     val bossPoolLocation: Tile
         get() = if (side == Side.NORTH)
@@ -242,7 +244,7 @@ class Tempoross : ATScript(), MessageListener {
      * Detect and add blocked tiles.
      */
     fun detectDangerousTiles() {
-        ctx.npcs.toStream().name("Lightning cloud").filter { it.animation() > 0 }.forEach {
+        ctx.npcs.toStream().name("Lightning cloud").nearest().filter { it.animation() > 0 }.forEach {
             addTile(it.tile())
         }
 

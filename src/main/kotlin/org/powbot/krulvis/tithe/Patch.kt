@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.Game
 import org.powerbot.script.rt4.GameObject
+import org.powerbot.script.rt4.Menu
 
 class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
@@ -93,7 +94,6 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     }
 
     private fun interact(action: String): Boolean {
-        val name = go.name()
         if (!ctx.client().isMenuOpen) {
             if (ctx.client().isMobile) {
                 go.click()
@@ -102,7 +102,15 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             }
         }
         if (waitFor(short()) { ctx.client().isMenuOpen }) {
-            return ATContext.handleMenu(action, name)
+            if (ctx.menu.contains { it.action.equals(action, true) }) {
+                return ATContext.clickMenu(
+                    Menu.filter(
+                        action
+                    )
+                )
+            } else {
+                ATContext.clickMenu(Menu.filter("Cancel"))
+            }
         }
         return false
     }
