@@ -25,7 +25,6 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
             it.needsAction() && (hasEnoughWater || it.isDone())
         } ?: return
         logger.warning("Handling patch: $patch")
-        turnRunOn()
         if (patch.needsWatering()) {
             val waterCount = script.getWaterCount()
             if (patch.walkBetween(script.patches) && patch.water()) {

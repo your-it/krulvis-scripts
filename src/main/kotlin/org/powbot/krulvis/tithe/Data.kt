@@ -19,7 +19,7 @@ object Data {
 
 }
 
-data class TitheProfile(val patchCount: Int = 12) : ScriptProfile
+data class TitheProfile(val patchCount: Int = 13) : ScriptProfile
 
 
 fun main() {

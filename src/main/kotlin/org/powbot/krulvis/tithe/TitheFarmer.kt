@@ -17,7 +17,7 @@ import org.powerbot.script.rt4.GameObject
 @Script.Manifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
-    version = "1.0.2",
+    version = "1.0.3",
     markdownFileName = "Tithe.md",
     properties = "category=Farming;",
     mobileReady = true

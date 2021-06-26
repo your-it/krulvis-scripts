@@ -103,11 +103,13 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         }
         if (waitFor(short()) { ctx.client().isMenuOpen }) {
             if (ctx.menu.contains { it.action.equals(action, true) }) {
-                return ATContext.clickMenu(
+                val interaction = ATContext.clickMenu(
                     Menu.filter(
                         action
                     )
                 )
+                ATContext.turnRunOn()
+                return interaction
             } else {
                 ATContext.clickMenu(Menu.filter("Cancel"))
             }

@@ -39,7 +39,7 @@ object ATContext {
             return true
         }
         if (ctx.movement.energyLevel() >= Random.nextInt(1, 5)) {
-            return ctx.movement.running(true)
+            return ctx.widgets.widget(Constants.MOVEMENT_MAP).component(Constants.MOVEMENT_RUN_ENERGY - 1).click(true)
         }
         return false
     }
