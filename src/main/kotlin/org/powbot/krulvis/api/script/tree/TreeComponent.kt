@@ -18,4 +18,8 @@ abstract class TreeComponent<S : ATScript> {
      * Name of the TreeComponent for debugging purposes
      */
     abstract val name: String
+
+    override fun toString(): String {
+        return name
+    }
 }

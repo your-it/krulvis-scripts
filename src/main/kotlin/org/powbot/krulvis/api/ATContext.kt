@@ -145,7 +145,7 @@ object ATContext {
                     true
                 )
             }) {
-            debug("Closing menu")
+            debug("Closing menu in: handleMenu()")
             clickMenu(Menu.filter("Cancel"))
             waitFor { !ctx.client().isMenuOpen }
             return false

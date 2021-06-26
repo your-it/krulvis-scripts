@@ -21,3 +21,13 @@ object Data {
 
 data class TitheProfile(val patchCount: Int = 12) : ScriptProfile
 
+
+fun main() {
+    val total = 100
+    val cycles = intArrayOf(8, 9, 10, 11, 12, 13, 14, 15)
+
+    cycles.forEach {
+        val leftOver = 100 % it
+        println("cycle=$it, leftOver=$leftOver")
+    }
+}

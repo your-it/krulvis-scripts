@@ -15,7 +15,7 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
         val paths = script.triedPaths.toList()
         val spot = me.interacting()
 
-        drawSplitText(g, "Leaf: ", "${script.lastLeaf}", x, y)
+        drawSplitText(g, "Leaf: ", "${script.lastLeaf.name}", x, y)
         y += yy
         if (debugComponents) {
             drawSplitText(g, "My Animation: ", "${me.animation()}", x, y)
