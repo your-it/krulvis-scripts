@@ -40,7 +40,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
         val safeTile = poleTiles.filterNot { script.blockedTiles.contains(it) }.minByOrNull { it.distance() }
         if (safeTile == nearestTile) {
             if (interact(pole, "Tether")) {
-                waitFor(5000) { script.isTethering() }
+                waitFor(2500) { script.isTethering() }
             }
         } else {
             walk(safeTile)

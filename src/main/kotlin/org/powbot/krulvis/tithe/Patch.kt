@@ -39,6 +39,20 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return id in DONE
     }
 
+    fun handle(patches: List<Patch>): Boolean {
+        return when {
+            needsWatering() -> {
+                walkBetween(patches) && water()
+            }
+            isDone() -> {
+                walkBetween(patches) && harvest()
+            }
+            else -> {
+                false
+            }
+        }
+    }
+
     fun needsWatering(refresh: Boolean = false): Boolean {
         if (refresh) {
             refresh()
@@ -79,7 +93,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     }
 
     fun walkBetween(patches: List<Patch>): Boolean {
-        if (!go.inViewport() || go.distance() > 12) {
+        if (!go.inViewport() || go.distance() > 6) {
             val minX = patches.minOf { tile.x() } + 2
             val t = tile
             val tile = Tile(minX, t.y(), 0)
@@ -103,11 +117,13 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         }
         if (waitFor(short()) { ctx.client().isMenuOpen }) {
             if (ctx.menu.contains { it.action.equals(action, true) }) {
-                return ATContext.clickMenu(
+                val interaction = ATContext.clickMenu(
                     Menu.filter(
                         action
                     )
                 )
+                ATContext.turnRunOn()
+                return interaction
             } else {
                 ATContext.clickMenu(Menu.filter("Cancel"))
             }

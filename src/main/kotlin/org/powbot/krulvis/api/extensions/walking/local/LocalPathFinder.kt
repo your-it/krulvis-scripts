@@ -4,12 +4,10 @@ package org.powbot.krulvis.api.extensions.walking.local
 import org.powbot.krulvis.api.extensions.walking.Flag
 import org.powbot.krulvis.api.extensions.walking.Flag.Rotation
 import org.powbot.krulvis.api.extensions.walking.PathFinder
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorEdge
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalTileEdge
-import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
-import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powerbot.bot.rt4.client.internal.ICollisionMap
+import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.getPassableObject
+import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.rockfallBlock
+import org.powbot.krulvis.api.extensions.walking.local.nodes.*
 import org.powerbot.script.ClientContext
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -95,7 +93,6 @@ object LocalPathFinder : PathFinder {
         return any { it.destination == destination }
     }
 
-
     enum class NeighBors(val currentFlag: Int, val currentRotation: Int, val nextRotation: Int) {
         NORTH(Flag.W_N, Rotation.NORTH, Rotation.SOUTH),
         EAST(Flag.W_E, Rotation.EAST, Rotation.WEST),
@@ -111,7 +108,11 @@ object LocalPathFinder : PathFinder {
                 WEST -> Tile(current.x() - 1, current.y(), current.floor())
             }
             if (!neighbor.blocked(flags)) {
-                if (!current.blocked(flags, currentFlag)) {
+                /**
+                 * Tiles are not blocked with a door, they have a special block flag that
+                 * is dependent on the `currentFlag` which represents a side
+                 */
+                if (!current.blocked(flags, currentFlag) || current.rockfallBlock(flags)) {
                     return Optional.of(
                         LocalTileEdge(
                             currentEdge,
@@ -120,8 +121,8 @@ object LocalPathFinder : PathFinder {
                         )
                     )
                 } else {
-                    var door = getDoor(current, currentRotation)
-                    if (door == GameObject.NIL) door = getDoor(neighbor, nextRotation)
+                    var door = current.getPassableObject(currentRotation)
+                    if (door == GameObject.NIL) door = neighbor.getPassableObject(nextRotation)
                     if (door != GameObject.NIL) {
                         return Optional.of(
                             LocalDoorEdge(
@@ -132,6 +133,16 @@ object LocalPathFinder : PathFinder {
                             )
                         )
                     }
+                }
+            } else if (neighbor.rockfallBlock(flags)) {
+                if (!current.blocked(flags, currentFlag)) {
+                    return Optional.of(
+                        LocalRockfallEdge(
+                            currentEdge,
+                            neighbor,
+                            currentEdge.finalDestination
+                        )
+                    )
                 }
             }
             return Optional.empty()
@@ -150,6 +161,9 @@ object LocalPathFinder : PathFinder {
         val current = destination
         val p = current.floor()
 
+        /**
+         * Straight neighbors get added here
+         */
         NeighBors.values().forEach {
             val edge = it.getEdge(this, flags)
             if (edge.isPresent) {
@@ -158,6 +172,9 @@ object LocalPathFinder : PathFinder {
             }
         }
 
+        /**
+         * Now we build additional diagonal neighbors
+         */
         val n = Tile(current.x(), current.y() + 1, p)
         val e = Tile(current.x() + 1, current.y(), p)
         val s = Tile(current.x(), current.y() - 1, p)
@@ -180,7 +197,7 @@ object LocalPathFinder : PathFinder {
                     )
                 )
             } else {
-                val door = getDoor(ne, Rotation.DIAGONAL)
+                val door = ne.getPassableObject(Rotation.DIAGONAL)
                 if (door != GameObject.NIL) {
                     neighbors.add(
                         LocalDoorEdge(
@@ -206,7 +223,7 @@ object LocalPathFinder : PathFinder {
                     )
                 )
             } else {
-                val door = getDoor(se, Rotation.DIAGONAL)
+                val door = se.getPassableObject(Rotation.DIAGONAL)
                 if (door != GameObject.NIL) {
                     neighbors.add(
                         LocalDoorEdge(
@@ -232,7 +249,7 @@ object LocalPathFinder : PathFinder {
                     )
                 )
             } else {
-                val door = getDoor(sw, Rotation.DIAGONAL)
+                val door = sw.getPassableObject(Rotation.DIAGONAL)
                 if (door != GameObject.NIL) {
                     neighbors.add(
                         LocalDoorEdge(
@@ -258,7 +275,7 @@ object LocalPathFinder : PathFinder {
                     )
                 )
             } else {
-                val door = getDoor(nw, Rotation.DIAGONAL)
+                val door = nw.getPassableObject(Rotation.DIAGONAL)
                 if (door != GameObject.NIL) {
                     neighbors.add(
                         LocalDoorEdge(

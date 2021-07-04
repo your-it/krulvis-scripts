@@ -7,7 +7,7 @@ import org.powbot.krulvis.orbcrafter.tree.branch.ShouldBank
 import org.powerbot.script.Script
 
 @Script.Manifest(
-    name = "krul Trawler",
+    name = "krul Orbs",
     description = "Fishing trawler minigame",
     version = "1.0",
     markdownFileName = "Orb.md",

@@ -5,6 +5,7 @@ import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.walking.Flag
+import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.rockfallBlock
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.resources.ATFont
@@ -272,10 +273,12 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
 
         fun Tile.drawCollisions(g: Graphics2D, flags: Array<IntArray>) {
             val bounds = matrix(ClientContext.ctx()).bounds() ?: return
-            if (blocked(flags)) {
-                drawOnScreen(g, null, Color.RED)
+            val flag = collisionFlag(flags)
+            if (rockfallBlock(flags)) {
+                drawOnScreen(g, flag.toString(), Color.LIGHT_GRAY)
+            } else if (blocked(flags)) {
+                drawOnScreen(g, flag.toString(), Color.RED)
             } else {
-                val flag = collisionFlag(flags)
                 g.drawString(flag.toString(), bounds.bounds.centerX.toInt(), bounds.bounds.centerY.toInt())
                 val south = Line2D.Double(
                     Point(bounds.xpoints[0], bounds.ypoints[0]),

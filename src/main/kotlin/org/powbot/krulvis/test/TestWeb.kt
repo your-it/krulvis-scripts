@@ -1,11 +1,12 @@
 package org.powbot.krulvis.test
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.toRegionTile
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath
 import org.powbot.krulvis.api.extensions.walking.local.LocalPath.Companion.getNext
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.StartEdge
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -14,7 +15,6 @@ import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.walking.PBWebWalkingService
 import org.powbot.krulvis.walking.Walking
-import org.powerbot.bot.rt4.client.internal.ICollisionMap
 import org.powerbot.script.Script
 import org.powerbot.script.Tile
 import org.powerbot.script.rt4.GameObject
@@ -24,12 +24,16 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val from = Tile(3010, 3242, 0)
-    val tile = Tile(3152, 3289, 0)
+    val motherload1 = Tile(3734, 5679, 0)
+    val motherload2 = Tile(3729, 5678, 0)
+    val doors1 = Tile(2615, 3304, 0)
+    val doors2 = Tile(2610, 3305, 0)
     val debugFence = Tile(3143, 3291, 0)
     var path = LocalPath(emptyList())
     var doors = emptyList<GameObject>()
-    var collisionMap: Array<IntArray>? = null
+    var collisionMap: Array<IntArray> = emptyArray()
+    var localEdge: LocalEdge = StartEdge(Tile(3731, 5682), motherload2)
+    var neighbors = emptyList<LocalEdge>()
 
     val draynor = Tile(3281, 3191, 0)
     val b = Tile(3244, 3209, 0)
@@ -41,20 +45,20 @@ class TestWeb : ATScript() {
         get() = WebPainter(this)
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
-            collisionMap = ctx.client().collisionMaps[ATContext.me.tile().floor()].flags
-            doors = ctx.objects.toStream().name("Door").list()
-//            println("Is blocked: ${tile.blocked(collisionMap)}, Is loaded: ${tile.loaded()}")
-//            walk(tile)
-//            PBWebWalkingService.walkTo(tile, false)
-//            walkToTanner()
-            testPathFinder()
+            collisionMap = ctx.client().collisionMaps[me.tile().floor()].flags
+            path = LocalPathFinder.findPath(doors1, doors2)
+            LocalPathFinder.cachedFlags = collisionMap
+//            neighbors = StartEdge(Tile(3731, 5682, 0), tile).getNeighbors()
+            if (path.isNotEmpty() && motherload2.distance() > 1) {
+//                path.traverse()
+            }
         }
     }
 
     fun testPathFinder() {
-        Walking.logger.info("Distance: ${tile.distance()}")
+        Walking.logger.info("Distance: ${motherload2.distance()}")
         val start = System.currentTimeMillis()
-        path = LocalPathFinder.findPath(tile)
+        path = LocalPathFinder.findPath(motherload2)
         Walking.logger.info("LocalPathFinder took: ${Timer.formatTime(System.currentTimeMillis() - start)}")
         val next = path.actions.getNext() ?: return
         Walking.logger.info("LocalTraverse next: $next")
@@ -95,19 +99,23 @@ class WebPainter(script: TestWeb) : ATPainter<TestWeb>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
 //        debugTilesAroundMe(g)
-        if (script.collisionMap != null) {
-            drawSplitText(g, "Tile loaded: ", script.tile.loaded().toString(), x, y)
+        if (script.collisionMap.isNotEmpty()) {
+            drawSplitText(g, "Tile loaded: ", script.motherload2.loaded().toString(), x, y)
             y += yy
-            drawSplitText(g, "RegionTile: ", script.tile.toRegionTile().toString(), x, y)
-            script.tile.drawOnMap(g, Color.CYAN)
-            script.tile.drawOnScreen(
+            drawSplitText(g, "RegionTile: ", script.motherload2.toRegionTile().toString(), x, y)
+            script.motherload2.drawOnMap(g, Color.CYAN)
+            script.motherload2.drawOnScreen(
                 g,
                 null,
-                fillColor = if (script.tile.blocked(script.collisionMap)) Color.RED else Color.GREEN
+                fillColor = if (script.motherload2.blocked(script.collisionMap)) Color.RED else Color.GREEN
             )
             val path = script.path
             if (path.isNotEmpty()) {
                 path.draw(g)
+            }
+            val neighbors = script.neighbors
+            if (neighbors.isNotEmpty()) {
+                neighbors.forEach { it.destination.drawOnScreen(g, null, Color.ORANGE) }
             }
         }
 

@@ -7,6 +7,7 @@ import java.util.*
 
 enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors: Int) : Item {
     AMETHYST(intArrayOf(21347), 92, 6705),
+    PAY_DIRT(intArrayOf(12011), 45, 6705),
     RUNITE(intArrayOf(451), 85, -31437),
     ADAMANTITE(intArrayOf(449), 70, 21662),
     MITHRIL(intArrayOf(447), 55, -22239),
@@ -34,11 +35,20 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
     }
 
     companion object {
-        fun GameObject.hasOre(vararg ores: Ore): Boolean {
-            return name() == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
+        fun GameObject.hasOre(vararg ores: Ore = values()): Boolean {
+            val name = name()
+            return name == "Ore vein" || name == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
         }
 
         fun GameObject.getOre(): Ore? {
+            val name = name()
+            //Amethyst crystals can always be mined, ore veins are static but can only be mined if called
+            // "Ore vein"
+            if (name.contains("vein")) {
+                return PAY_DIRT
+            } else if (name == "Crystals") {
+                return AMETHYST
+            }
             return values().firstOrNull { ore ->
                 hasOre(ore)
             }

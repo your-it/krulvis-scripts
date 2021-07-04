@@ -14,7 +14,7 @@ fun Tile.distanceM(dest: Tile): Int {
 }
 
 enum class LocalEdgeType {
-    WALKING, DOOR
+    WALKING, DOOR, ROCKFALL
 }
 
 

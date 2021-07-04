@@ -1,6 +1,7 @@
 package org.powbot.krulvis.tithe.tree.branch
 
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.script.tree.Branch
 import org.powbot.krulvis.api.script.tree.SimpleLeaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
@@ -34,7 +35,7 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
         if (script.lastLeaf.name != "Waiting...") {
             script.chillTimer.reset()
         }
-        println("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
+        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
         return ctx.inventory.toStream().list()
             .none { it.id() in Data.WATER_CANS } || !stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })

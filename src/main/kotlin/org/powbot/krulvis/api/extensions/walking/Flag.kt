@@ -11,6 +11,7 @@ object Flag {
     const val W_SW = 0x1000000
     const val W_W = 128
 
+    const val ROCKFALL = 131328
     const val BLOCKED = 256
     const val BLOCKED2 = 2097152
     const val BLOCKED4 = 262144

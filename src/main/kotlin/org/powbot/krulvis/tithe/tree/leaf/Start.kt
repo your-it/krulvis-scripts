@@ -11,19 +11,23 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
 
     override fun execute() {
         if (!script.hasSeeds()) {
-            if (!ctx.chat.chatting()) {
-                ctx.objects.toStream(25).name("Seed table").findFirst().ifPresent {
+            debug("Getting seeds")
+            if (!chatting()) {
+                val table = ctx.objects.toStream(25).name("Seed table").findFirst()
+                debug("Interacting with seed table=${table.isPresent}")
+                table.ifPresent {
                     if (interact(it, "Search")) {
-                        waitFor { ctx.chat.chatting() }
+                        waitFor { chatting() }
                     }
                 }
             }
             val seed = getSeedInput()
             debug("Selecting seed: $seed")
-            if (ctx.chat.chatting() && ctx.chat.continueChat(seed)) {
+            if (chatting() && ctx.chat.continueChat(seed)) {
                 waitFor { script.hasSeeds() }
             }
         } else {
+            debug("Interacting with door")
             ctx.objects.toStream(25).name("Farm door").findFirst().ifPresent {
                 if (interact(it, "Open")) {
                     waitFor(10000) { script.getPoints() >= 0 }
@@ -31,6 +35,8 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
             }
         }
     }
+
+    fun chatting() = ctx.widgets.component(Constants.CHAT_WIDGET, 0).visible()
 
     fun getSeedInput(): String {
         val farming = ctx.skills.level(Constants.SKILLS_FARMING)
