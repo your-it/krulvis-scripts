@@ -1,6 +1,7 @@
 package org.powbot.krulvis.miner
 
 import org.powbot.krulvis.api.extensions.Skill
+import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -35,6 +36,18 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
         SwingUtilities.invokeLater { gui = MinerGUI(this) }
         skillTracker.addSkill(Skill.MINING)
     }
+
+    /**
+     * Used to get the amount of loot in the motherload sack
+     */
+    fun getMotherloadCount(): Int = ctx.varpbits.varpbit(375) / 256
+
+    var shouldEmptySack = false
+
+    /**
+     * Get the sack in the motherload mine
+     */
+    fun getSack() = ctx.objects.toStream().name("Sack").action("Search").findFirst()
 
     override fun mouseClicked(p0: MouseEvent?) {
         if (!started) {
@@ -80,7 +93,7 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
     override fun onChange(evt: InventoryChangeEvent) {
         val item = evt.itemId
-        if ((item.getOre() != null || item == 21341) && !ctx.bank.opened() && !ctx.depositBox.opened()) {
+        if (item != Ore.PAY_DIRT.id && (item.getOre() != null || item == 21341) && !ctx.bank.opened() && !ctx.depositBox.opened()) {
             lootTracker.addLoot(item, evt.quantityChange)
         }
     }

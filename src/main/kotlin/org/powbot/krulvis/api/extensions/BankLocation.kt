@@ -74,6 +74,10 @@ enum class BankLocation(
     PORT_SARIM_DB(
         Tile(3045, 3235, 0), BankType.DEPOSIT_BOX,
         ObjectInteraction("Bank deposit box", "Deposit", Tile(3045, 3234, 0))
+    ),
+    MOTHERLOAD_MINE(
+        Tile(3760, 5666, 0), BankType.CHEST,
+        ObjectInteraction("Bank chest", "Use", Tile(3761, 5666, 0)),
     )
     ;
 

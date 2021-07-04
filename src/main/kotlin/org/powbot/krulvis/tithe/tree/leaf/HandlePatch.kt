@@ -4,6 +4,8 @@ import org.powbot.krulvis.api.ATContext.closeOpenHUD
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.turnRunOn
 import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Utils.mid
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data
 import org.powbot.krulvis.tithe.Patch
@@ -16,7 +18,11 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
     val logger = Logger.getLogger("HandlingPlant")
 
     override fun execute() {
-        if (script.lock) return
+        if (script.lock) {
+            logger.warning("Handle patch locked")
+            return
+        }
+
         script.getPatchTiles()
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0
@@ -25,29 +31,9 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
             it.needsAction() && (hasEnoughWater || it.isDone())
         } ?: return
         logger.warning("Handling patch: $patch")
-        if (patch.needsWatering()) {
-            val waterCount = script.getWaterCount()
-            if (patch.walkBetween(script.patches) && patch.water()) {
-                val doneDidIt = waitFor(2500) {
-                    script.getWaterCount() < waterCount
-                }
-                logger.info("Watered on $patch: $doneDidIt")
-            }
-        } else if (patch.isDone()) {
-            val harvestCount = ctx.inventory.getCount(*Data.HARVEST)
-            if (patch.walkBetween(script.patches) && patch.harvest()) {
-                val doneDidIt = waitFor(2500) {
-                    ctx.inventory.getCount(*Data.HARVEST) > harvestCount
-                }
-                logger.info("Harvested on $patch: $doneDidIt")
-            }
-        } else if (patch.blighted()) {
-            if (patch.walkBetween(script.patches) && patch.clear()) {
-                val doneDidIt = waitFor(2500) {
-                    patch.isEmpty(true)
-                }
-                logger.info("Cleared on $patch: $doneDidIt")
-            }
+        if (patch.handle(script.patches)) {
+            sleep(1000)
+            logger.warning("Handling patch interaction was successful")
         }
     }
 

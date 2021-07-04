@@ -12,7 +12,7 @@ object Prices {
 
     fun getPrice(id: Int): Int {
         when (id) {
-            995 -> return 1
+            995, 12011 -> return 1
             3985, 3987, 3989, 3991 -> return 1000
         }
         if (priceMap.containsKey(id)) {
@@ -27,10 +27,10 @@ object Prices {
     }
 
     private fun getExchangePrice(id: Int): Double {
+        val conn = URL(GE_API_URL_BASE + id).openConnection()
+        val parser = JsonParser()
+        val ipr = InputStreamReader(conn.getInputStream())
         try {
-            val conn = URL(GE_API_URL_BASE + id).openConnection()
-            val parser = JsonParser()
-            val ipr = InputStreamReader(conn.getInputStream())
             val parsed = parser.parse(ipr)
             if (parsed != null) {
                 val el = parsed.asJsonObject.get("item")
@@ -67,6 +67,8 @@ object Prices {
         } catch (fnfe: FileNotFoundException) {
             println("Untradable: $id?")
             return -1.0
+        } finally {
+            ipr.close()
         }
     }
 }

@@ -68,20 +68,15 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
         return Tile.NIL
     }
 
-    fun facingRock(): Optional<GameObject> {
-        return ctx.objects.toStream().at(facingTile()).name("Rocks").findFirst()
-    }
 
     override fun validate(): Boolean {
-        val facingRocks = facingRock()
-        return me.animation() > 0 && facingRocks.isPresent && facingRocks.get().getOre() != null
+        return me.animation() > 0 && ctx.objects.toStream().at(facingTile()).anyMatch { it.hasOre() }
     }
 
     override val successComponent: TreeComponent<Miner> =
         SimpleLeaf(script, "Chilling") {
             waitFor(1500) {
-                val rock = facingRock()
-                !rock.isPresent || facingRock().get().getOre() == null
+                ctx.objects.toStream().at(facingTile()).noneMatch { it.hasOre() }
             }
         }
     override val failedComponent: TreeComponent<Miner> = Mine(script)

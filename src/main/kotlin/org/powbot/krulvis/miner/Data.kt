@@ -1,10 +1,11 @@
 package org.powbot.krulvis.miner
 
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.script.ScriptProfile
 import org.powerbot.script.Tile
 
 object Data {
-    val TOOLS = intArrayOf(1265, 1267, 1269, 1271, 1273, 1275, 12297)
+    val TOOLS = intArrayOf(1265, 1267, 1269, 1271, 1273, 1275, 12297, Item.HAMMER)
 }
 
 

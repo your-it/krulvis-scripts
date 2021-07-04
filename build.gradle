@@ -7,8 +7,8 @@ plugins {
 
 group 'org.powbot.krulvis'
 version '1.0-SNAPSHOT'
-//String clientName = "PowBot"
-String clientName = "powbot-client"
+String clientName = "PowBot"
+//String clientName = "powbot-client"
 
 
 File powRoot = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), ".powbot")

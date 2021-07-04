@@ -2,6 +2,7 @@ package org.powbot.krulvis.test
 
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.toRegionTile
@@ -32,7 +33,14 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            ATContext.turnRunOn()
+            val chatWidget = ctx.widgets.component(Constants.CHAT_WIDGET, 0)
+            debug("Chatwidget valid=${chatWidget.valid()}, visible=${chatWidget.visible()}")
+            for (arr in Constants.CHAT_CONTINUES) {
+                val continueChat = ctx.widgets.component(arr[0], 0)
+                if (continueChat.valid()) {
+                    debug("${arr[0]} is valid, visible=${continueChat.visible()}")
+                }
+            }
         }
     }
 

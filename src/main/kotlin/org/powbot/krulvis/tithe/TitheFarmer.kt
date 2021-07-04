@@ -1,5 +1,7 @@
 package org.powbot.krulvis.tithe
 
+import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -13,6 +15,7 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powerbot.script.*
 import org.powerbot.script.rt4.ClientContext
 import org.powerbot.script.rt4.GameObject
+import java.util.logging.Logger
 
 @Script.Manifest(
     name = "krul Tithe",
@@ -26,7 +29,10 @@ class TitheFarmer : ATScript(), GameActionListener {
     override val painter: ATPainter<*> = TithePainter(this)
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
+    val logger = Logger.getLogger("TitheFarmer")
+
     init {
+        debugComponents = false
         skillTracker.addSkill(Skill.FARMING)
     }
 
@@ -98,11 +104,11 @@ class TitheFarmer : ATScript(), GameActionListener {
     override fun onAction(evt: GameActionEvent) {
         if (evt.rawOpcode == 4 || evt.opcode() == GameActionOpcode.InteractObject) {
             val tile = Tile(evt.var0 + 1, evt.widgetId + 1, 0).globalTile()
-            println("Interacted with ${evt.rawEntityName}: at: $tile")
+            logger.warning("Interacted with ${evt.rawEntityName}: at: $tile")
             if (NAMES.any { evt.rawEntityName.contains(it, true) }) {
                 val patch = patches.first { it.tile == tile }
 //                Utils.waitFor(2500) { tile.distance() < 3 }
-                prepareNextInteraction(patch)
+                prepareNextInteraction(patch, evt.interaction)
             }
         }
     }
@@ -112,20 +118,28 @@ class TitheFarmer : ATScript(), GameActionListener {
         return this.derive(+a.x(), +a.y())
     }
 
-    fun prepareNextInteraction(current: Patch) {
+    fun prepareNextInteraction(current: Patch, action: String) {
+        val waterCount = getWaterCount()
+        val harvestCount = ctx.inventory.getCount(*Data.HARVEST)
         lock = true
         patches = patches.refresh()
         val nextPatch = patches.minusElement(current)
             .sortedWith(compareBy(Patch::id, Patch::index))
             .firstOrNull { it.needsAction() }
         if (nextPatch != null) {
-            waitFor { current.tile.distance() < 2.5 }
             if (ctx.client().isMobile) {
                 nextPatch.go.click()
             } else {
                 nextPatch.go.click(false)
             }
-            println("Prepared next patch interaction...")
+            logger.warning("Prepared next patch interaction...")
+            if (waitFor(2000) {
+                    if (action.contains("water", true)) waterCount > getWaterCount()
+                    else harvestCount < ctx.inventory.getCount(*Data.HARVEST)
+                })
+                logger.warning("Done with watering / harvesting")
+        } else {
+            logger.warning("No next patch or Faulty interaction... distance=${current.tile.distance()}")
         }
         lock = false
     }

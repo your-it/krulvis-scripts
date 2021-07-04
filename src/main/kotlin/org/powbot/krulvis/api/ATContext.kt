@@ -245,7 +245,7 @@ object ATContext {
     fun Inventory.emptyExcept(vararg ids: Int): Boolean = !toStream().filter { it.id() !in ids }.findFirst().isPresent
 
     fun Inventory.emptySlots(): Int = (28 - toStream().count()).toInt()
-    fun Inventory.getCount(vararg ids: Int): Int = getCount(false, *ids)
+    fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
     fun Inventory.getCount(countStacks: Boolean, vararg ids: Int): Int {
         val items = toStream().id(*ids)
         return if (countStacks) items.count(true).toInt() else items.count().toInt()

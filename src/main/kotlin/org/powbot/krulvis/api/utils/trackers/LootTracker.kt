@@ -6,6 +6,7 @@ import org.powbot.krulvis.api.utils.Prices
 import org.powbot.krulvis.api.utils.Timer
 import org.powerbot.script.rt4.CacheItemConfig
 import java.awt.Graphics2D
+import java.lang.IllegalStateException
 import kotlin.math.absoluteValue
 
 class LootTracker(val script: ATScript) {
@@ -99,7 +100,12 @@ class LootTracker(val script: ATScript) {
 
         fun price(): Int {
             if (price == -1 && !getPriceThread.isAlive) {
-                getPriceThread.start()
+                try {
+                    getPriceThread.start()
+                } catch (e: IllegalStateException) {
+                    println("Found illegal state exception in Price getter")
+                    e.printStackTrace()
+                }
             }
             return price
         }
