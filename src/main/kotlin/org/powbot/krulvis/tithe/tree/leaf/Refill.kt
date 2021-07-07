@@ -28,7 +28,7 @@ class Refill(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Refilling") {
                 println("Already filling water...")
                 waitFor(long()) { ctx.inventory.toStream().noneMatch { item -> item.id() in Data.WATER_CANS } }
             } else if (ctx.game.tab(Game.Tab.INVENTORY) && interact(it, "Use", selectItem = EMPTY_CAN)) {
-                waitFor(long()) { !stoppedMaking(WATER_CAN_FULL) }
+                waitFor(5000) { !stoppedMaking(WATER_CAN_FULL) }
             }
         }
     }

@@ -32,7 +32,7 @@ class TitheFarmer : ATScript(), GameActionListener {
     val logger = Logger.getLogger("TitheFarmer")
 
     init {
-        debugComponents = false
+        debugComponents = true
         skillTracker.addSkill(Skill.FARMING)
     }
 
@@ -110,6 +110,7 @@ class TitheFarmer : ATScript(), GameActionListener {
 //                Utils.waitFor(2500) { tile.distance() < 3 }
                 prepareNextInteraction(patch, evt.interaction)
             }
+            lock = false
         }
     }
 
@@ -141,7 +142,6 @@ class TitheFarmer : ATScript(), GameActionListener {
         } else {
             logger.warning("No next patch or Faulty interaction... distance=${current.tile.distance()}")
         }
-        lock = false
     }
 
 

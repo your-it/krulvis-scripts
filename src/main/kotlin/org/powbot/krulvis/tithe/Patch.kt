@@ -42,10 +42,10 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     fun handle(patches: List<Patch>): Boolean {
         return when {
             needsWatering() -> {
-                walkBetween(patches) && water()
+                walkBetween("Water", patches) && water()
             }
             isDone() -> {
-                walkBetween(patches) && harvest()
+                walkBetween("Harvest", patches) && harvest()
             }
             else -> {
                 false
@@ -92,7 +92,8 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.interact("Use")
     }
 
-    fun walkBetween(patches: List<Patch>): Boolean {
+    fun walkBetween(action: String, patches: List<Patch>): Boolean {
+        if (rightMenuOpen(action)) return true
         if (!go.inViewport() || go.distance() > 6) {
             val minX = patches.minOf { tile.x() } + 2
             val t = tile
@@ -107,6 +108,9 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return true
     }
 
+    private fun rightMenuOpen(action: String): Boolean =
+        ctx.menu.opened() && ctx.menu.contains { it.action.equals(action, true) }
+
     private fun interact(action: String): Boolean {
         if (!ctx.client().isMenuOpen) {
             if (ctx.client().isMobile) {
@@ -116,7 +120,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             }
         }
         if (waitFor(short()) { ctx.client().isMenuOpen }) {
-            if (ctx.menu.contains { it.action.equals(action, true) }) {
+            if (rightMenuOpen(action)) {
                 val interaction = ATContext.clickMenu(
                     Menu.filter(
                         action

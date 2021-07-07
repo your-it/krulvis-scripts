@@ -34,6 +34,7 @@ class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill")
                 script.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
                 script.mastLocation = mast.tile()
             } else {
+                println("Couldn't find ammunition crate")
                 return true
             }
         }

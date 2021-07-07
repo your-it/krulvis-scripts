@@ -1,9 +1,13 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.krulvis.api.ATContext.closeOpenHUD
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.ATContext.turnRunOn
 import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -22,6 +26,10 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
             logger.warning("Handle patch locked")
             return
         }
+//        if (!waitFor(long()) { !ctx.movement.moving() }) {
+//            debug("Not interacting yet because still moving")
+//            return
+//        }
 
         script.getPatchTiles()
         closeOpenHUD()

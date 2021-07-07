@@ -20,6 +20,7 @@ import org.powerbot.script.*
 import org.powerbot.script.rt4.*
 import java.awt.Graphics2D
 import java.awt.Rectangle
+import java.util.*
 
 @Script.Manifest(name = "TestScript", description = "Some testing", version = "1.0")
 class TestScript : ATScript(), GameActionListener {
@@ -30,17 +31,16 @@ class TestScript : ATScript(), GameActionListener {
     override val painter: ATPainter<*>
         get() = Painter(this)
 
+    var fire: Optional<Npc> = Optional.empty()
+    var crate: Optional<Npc> = Optional.empty()
+
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            val chatWidget = ctx.widgets.component(Constants.CHAT_WIDGET, 0)
-            debug("Chatwidget valid=${chatWidget.valid()}, visible=${chatWidget.visible()}")
-            for (arr in Constants.CHAT_CONTINUES) {
-                val continueChat = ctx.widgets.component(arr[0], 0)
-                if (continueChat.valid()) {
-                    debug("${arr[0]} is valid, visible=${continueChat.visible()}")
-                }
-            }
+            fire = ctx.npcs.toStream().name("Fire").nearest().findFirst()
+            crate = ctx.npcs.toStream().name("Ammunition crate").nearest().findFirst()
+            println("Fire object present=${fire.isPresent}")
+            println("Crate npc present=${crate.isPresent}")
         }
     }
 
@@ -92,8 +92,15 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        drawShadowedText(g, "Distance: ${script.getCornerPatchTile().distance()}", x, y)
-//        script.tile.drawOnScreen(g)
+        val fire = script.fire
+        val crate = script.crate
+        fire.ifPresent {
+            it.tile().drawOnScreen(g, "Fire")
+        }
+
+        crate.ifPresent {
+            it.tile().drawOnScreen(g, "Crate")
+        }
     }
 
 

@@ -32,12 +32,12 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 val blockedTile =
                     script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }.first().second.actions.last()
                 val fireOptional =
-                    ctx.objects.toStream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
+                    ctx.npcs.toStream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
                 if (fireOptional.isPresent) {
                     debug("Dousing nearby fire...")
                     val fire = fireOptional.get()
                     if (interact(fire, "Douse")) {
-                        waitFor { ctx.objects.toStream().at(fire.tile()).name("Fire").isEmpty() }
+                        waitFor { ctx.npcs.toStream().at(fire.tile()).name("Fire").isEmpty() }
                     }
                 }
             } else {
