@@ -35,7 +35,7 @@ import java.util.stream.Stream
 @Script.Manifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.0.1",
+    version = "1.1.0",
     markdownFileName = "Tempoross.md",
     properties = "category=Fishing;",
     mobileReady = true
@@ -110,7 +110,7 @@ class Tempoross : ATScript(), MessageListener {
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { blockedTiles.contains(it.destination) }
         val fireOptional =
-            if (blockedTile != null) ctx.objects.toStream().name("Fire").within(blockedTile.destination, 2.5).nearest()
+            if (blockedTile != null) ctx.npcs.toStream().name("Fire").within(blockedTile.destination, 2.5).nearest()
                 .findFirst() else Optional.empty()
         val hasBucket = ctx.inventory.containsOneOf(BUCKET_OF_WATER)
         println("Blockedtile: $blockedTile foundFire: ${fireOptional.isPresent}, Bucket: $hasBucket")
@@ -126,7 +126,7 @@ class Tempoross : ATScript(), MessageListener {
                 ctx.camera.turnTo(fire)
                 waitFor(long()) { fire.inViewport() }
             } else if (fire.interact("Douse")) {
-                return waitFor(long()) { ctx.objects.toStream().at(fire).name("Fire").isEmpty() }
+                return waitFor(long()) { ctx.npcs.toStream().at(fire).name("Fire").isEmpty() }
             }
         } else if (!fireOptional.isPresent || allowCrossing) {
             debug("No fire on the way")
@@ -248,7 +248,7 @@ class Tempoross : ATScript(), MessageListener {
             addTile(it.tile())
         }
 
-        val fires = ctx.objects.toStream().name("Fire")
+        val fires = ctx.npcs.toStream().name("Fire")
         fires.forEach { fire ->
             addTile(fire.tile())
         }

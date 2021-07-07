@@ -43,6 +43,7 @@ task jarScriptsOutput(type: Jar) {
 }
 
 task copyScriptJar(type: Copy) {
+    dependsOn(jarScriptsOutput)
     from("build/libs")
     include "*.jar"
     into(powScripts)
