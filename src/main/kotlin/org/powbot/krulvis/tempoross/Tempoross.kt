@@ -35,7 +35,7 @@ import java.util.stream.Stream
 @Script.Manifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.0.1",
+    version = "1.1.0",
     markdownFileName = "Tempoross.md",
     properties = "category=Fishing;",
     mobileReady = true
