@@ -23,6 +23,7 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
                 println("Walking to hopper first! pathLength=${path.size}")
                 path.traverse()
             } else if (interact(it, "Deposit")) {
+                script.lastPayDirtDrop = System.currentTimeMillis()
                 waitFor(long()) { deposited() }
             }
         }

@@ -6,6 +6,7 @@
 
 ## Features
 
+- **Supports Motherload mine.**
 - **Select ores by clicking on them.**
 - **Bank or powermine, fast or slow.**
 - **Recognizes if others have mined your rock.**

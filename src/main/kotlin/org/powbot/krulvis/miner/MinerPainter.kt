@@ -38,6 +38,8 @@ class MinerPainter(script: Miner) : ATPainter<Miner>(script, 10, 250) {
         } else {
             drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
             y += yy
+            drawSplitText(g, "Should empty sack: ", script.shouldEmptySack.toString(), x, y)
+            y += yy
             y = script.skillTracker.draw(g, x, y)
             y = script.lootTracker.drawLoot(g, x, y)
 

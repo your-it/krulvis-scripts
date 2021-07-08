@@ -11,9 +11,6 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
             ctx.bank.depositAllExcept(*Data.TOOLS)
             ctx.depositBox.depositAllExcept(*Data.TOOLS)
         } else {
-            if (script.getMotherloadCount() == 0) {
-                script.shouldEmptySack = true
-            }
             ctx.bank.close()
             ctx.depositBox.close()
         }

@@ -31,16 +31,16 @@ class TestScript : ATScript(), GameActionListener {
     override val painter: ATPainter<*>
         get() = Painter(this)
 
-    var fire: Optional<Npc> = Optional.empty()
-    var crate: Optional<Npc> = Optional.empty()
+    var crate: Optional<GameObject> = Optional.empty()
 
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            fire = ctx.npcs.toStream().name("Fire").nearest().findFirst()
-            crate = ctx.npcs.toStream().name("Ammunition crate").nearest().findFirst()
-            println("Fire object present=${fire.isPresent}")
-            println("Crate npc present=${crate.isPresent}")
+            ctx.objects.toStream().at(Tile(3752, 5674, 0)).list().forEach {
+                println("${it.name()}, actions=${it.actions().joinToString()}")
+            }
+            crate = ctx.objects.toStream().at(Tile(3752, 5674, 0)).name("Crate").findFirst()
+            println("Crate object present=${crate.isPresent}")
         }
     }
 
@@ -92,11 +92,7 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        val fire = script.fire
         val crate = script.crate
-        fire.ifPresent {
-            it.tile().drawOnScreen(g, "Fire")
-        }
 
         crate.ifPresent {
             it.tile().drawOnScreen(g, "Crate")

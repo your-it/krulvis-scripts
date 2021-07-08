@@ -13,7 +13,7 @@ class EmptySack(script: Miner) : Leaf<Miner>(script, "Emptying sack") {
         val sack = script.getSack()
         sack.ifPresent {
             if (interact(it, "Search")) {
-                waitFor(mid() + it.distance() * 400) { script.getMotherloadCount() == 0 || ctx.inventory.isFull }
+                waitFor(mid() + it.distance() * 400) { ctx.inventory.isFull }
             }
         }
     }
