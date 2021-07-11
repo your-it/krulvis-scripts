@@ -6,18 +6,24 @@ import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.utils.resources.ATGson
+import org.powbot.krulvis.api.utils.resources.ATGson.Gson
 import org.powbot.krulvis.miner.tree.branch.ShouldBank
+import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
+import org.powbot.krulvis.tithe.TitheGUI
 import org.powerbot.script.InventoryChangeEvent
 import org.powerbot.script.InventoryChangeListener
 import org.powerbot.script.Script
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
+import java.io.File
+import java.io.FileReader
 import javax.swing.SwingUtilities
 
 @Script.Manifest(
     name = "krul Miner",
     description = "Mines & banks anything, anywhere",
-    version = "1.1.2",
+    version = "1.2.0",
     markdownFileName = "Miner.md",
     properties = "category=Mining;",
     mobileReady = true
@@ -26,15 +32,23 @@ class Miner : ATScript(), MouseListener, InventoryChangeListener {
 
     var profile = MinerProfile()
     var gui: MinerGUI? = null
+    var lastPayDirtDrop = 0L
 
-    override val rootComponent: TreeComponent<*> = ShouldBank(this)
+    override val rootComponent: TreeComponent<*> = ShouldFixStrut(this)
 
     override val painter: ATPainter<*> = MinerPainter(this)
 
     override fun startGUI() {
-        ctx.objects.toStream().name("Rock").nearest().findFirst()
-        SwingUtilities.invokeLater { gui = MinerGUI(this) }
         skillTracker.addSkill(Skill.MINING)
+        ctx.objects.toStream().name("Rock").nearest().findFirst()
+        if (System.getenv("LOCAL") == "true") {
+            val settingsFile =
+                File(settingsFolder().absolutePath + File.separator + "motherload.json")
+            profile = Gson().fromJson(FileReader(settingsFile).readText(), MinerProfile::class.java)
+            started = true
+        } else {
+            SwingUtilities.invokeLater { gui = MinerGUI(this) }
+        }
     }
 
     /**

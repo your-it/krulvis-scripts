@@ -3,20 +3,40 @@ package org.powbot.krulvis.miner.tree.branch
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.script.tree.Branch
 import org.powbot.krulvis.api.script.tree.SimpleLeaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
 import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.miner.Miner
-import org.powbot.krulvis.miner.tree.leaf.Drop
-import org.powbot.krulvis.miner.tree.leaf.DropPayDirt
-import org.powbot.krulvis.miner.tree.leaf.EmptySack
-import org.powbot.krulvis.miner.tree.leaf.HandleBank
+import org.powbot.krulvis.miner.tree.leaf.*
+import org.powerbot.script.Tile
+import org.powerbot.script.rt4.Game
+
+class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
+
+    override fun validate(): Boolean {
+        val hasHammer = ctx.inventory.containsOneOf(Item.HAMMER)
+        val strutCount = ctx.objects.toStream(15).name("Broken strut").count().toInt()
+        return !ctx.inventory.isFull
+                && Tile(3746, 5667, 0).distance() <= 10
+                && ctx.npcs.toStream().name("Pay-dirt").isNotEmpty()
+                && (strutCount == 2 || (hasHammer && strutCount >= 1))
+    }
+
+    override val successComponent: TreeComponent<Miner> = FixStrut(script)
+    override val failedComponent: TreeComponent<Miner> = ShouldBank(script)
+}
 
 class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 
     override fun validate(): Boolean {
+        //Some dirty hammer dropping
+        val hammer = ctx.inventory.toStream().id(Item.HAMMER).findFirst()
+        hammer.ifPresent { ctx.game.tab(Game.Tab.INVENTORY) && it.interact("Drop") }
+
+        //Actual should bank
         return ctx.inventory.isFull || ctx.bank.opened() || ctx.depositBox.opened()
                 || (script.shouldEmptySack && !ctx.inventory.emptyExcept(*Data.TOOLS))
     }
@@ -31,7 +51,8 @@ class ShouldEmptySack(script: Miner) : Branch<Miner>(script, "Should empty sack"
         val count = script.getMotherloadCount()
         if (count >= 81) {
             script.shouldEmptySack = true
-        } else if (count <= 0) {
+        } else if (count == 0 && ctx.inventory.emptyExcept(*Data.TOOLS)) {
+            println("Sack is empty and inventory contains only tools")
             script.shouldEmptySack = false
         }
         return script.shouldEmptySack && script.getSack().isPresent
