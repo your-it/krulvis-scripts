@@ -195,6 +195,11 @@ object ATContext {
 
     fun Locatable.mapPoint(): Point = ctx.game.tileToMap(tile())
 
+    fun Locatable.reachable(): Boolean {
+        val path = LocalPathFinder.findPath(tile())
+        return path.isNotEmpty() && !path.containsSpecialNode()
+    }
+
     /**
      * Returns: [Tile] nearest neighbor or self as which is walkable
      */

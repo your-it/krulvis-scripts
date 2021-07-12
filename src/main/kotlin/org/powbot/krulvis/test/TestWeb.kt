@@ -24,8 +24,8 @@ import java.awt.Graphics2D
 @Script.Manifest(name = "TestWeb", description = "Some testing", version = "1.0")
 class TestWeb : ATScript() {
 
-    val motherload1 = Tile(3734, 5679, 0)
-    val motherload2 = Tile(3729, 5678, 0)
+    val motherload1 = Tile(3731, 5652, 0)
+    val motherload2 = Tile(3726, 5659, 0)
     val doors1 = Tile(2615, 3304, 0)
     val doors2 = Tile(2610, 3305, 0)
     val debugFence = Tile(3143, 3291, 0)
@@ -46,7 +46,7 @@ class TestWeb : ATScript() {
     override val rootComponent: TreeComponent<*> = object : Leaf<TestWeb>(this, "TestLeaf") {
         override fun execute() {
             collisionMap = ctx.client().collisionMaps[me.tile().floor()].flags
-            path = LocalPathFinder.findPath(doors1, doors2)
+            path = LocalPathFinder.findPath(motherload1, motherload2)
             LocalPathFinder.cachedFlags = collisionMap
 //            neighbors = StartEdge(Tile(3731, 5682, 0), tile).getNeighbors()
             if (path.isNotEmpty() && motherload2.distance() > 1) {

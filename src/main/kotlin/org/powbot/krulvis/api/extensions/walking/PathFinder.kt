@@ -49,7 +49,7 @@ interface PathFinder {
         }
 
         fun Tile.rockfallBlock(flags: Array<IntArray>): Boolean {
-            return Flag.ROCKFALL == collisionFlag(flags)
+            return collisionFlag(flags) in intArrayOf(Flag.ROCKFALL, Flag.ROCKFALL2)
         }
     }
 
