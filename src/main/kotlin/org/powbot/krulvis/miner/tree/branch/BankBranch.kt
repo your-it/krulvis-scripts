@@ -37,8 +37,11 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
         hammer.ifPresent { ctx.game.tab(Game.Tab.INVENTORY) && it.interact("Drop") }
 
         //Actual should bank
-        return ctx.inventory.isFull || ctx.bank.opened() || ctx.depositBox.opened()
-                || (script.shouldEmptySack && !ctx.inventory.emptyExcept(*Data.TOOLS))
+        val full = ctx.inventory.isFull
+        return full || ctx.bank.opened() || ctx.depositBox.opened()
+                || (script.shouldEmptySack
+                && !ctx.inventory.emptyExcept(*Data.TOOLS)
+                && (full || script.getMotherloadCount() == 0))
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldDrop(script)

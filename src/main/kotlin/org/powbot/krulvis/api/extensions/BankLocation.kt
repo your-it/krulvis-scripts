@@ -78,6 +78,10 @@ enum class BankLocation(
     MOTHERLOAD_MINE(
         Tile(3760, 5666, 0), BankType.CHEST,
         ObjectInteraction("Bank chest", "Use", Tile(3761, 5666, 0)),
+    ),
+    MOTHERLOAD_MINE_DEPOSIT(
+        Tile(3758, 5664, 0), BankType.DEPOSIT_BOX,
+        ObjectInteraction("Bank deposit box", "Deposit", Tile(3759, 5664, 0)),
     )
     ;
 

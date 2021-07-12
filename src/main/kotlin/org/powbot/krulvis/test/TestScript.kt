@@ -1,25 +1,22 @@
 package org.powbot.krulvis.test
 
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.ctx
-import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.toRegionTile
-import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.script.tree.Leaf
 import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
-import org.powbot.krulvis.tithe.Data
 import org.powbot.krulvis.tithe.Patch
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
-import org.powerbot.bot.rt4.client.internal.IActor
-import org.powerbot.script.*
-import org.powerbot.script.rt4.*
+import org.powerbot.script.GameActionEvent
+import org.powerbot.script.GameActionListener
+import org.powerbot.script.Script
+import org.powerbot.script.Tile
+import org.powerbot.script.rt4.Component
+import org.powerbot.script.rt4.Constants.*
+import org.powerbot.script.rt4.GameObject
 import java.awt.Graphics2D
-import java.awt.Rectangle
 import java.util.*
 
 @Script.Manifest(name = "TestScript", description = "Some testing", version = "1.0")
@@ -36,11 +33,11 @@ class TestScript : ATScript(), GameActionListener {
     var patches = listOf<Patch>()
     override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
         override fun execute() {
-            ctx.objects.toStream().at(Tile(3752, 5674, 0)).list().forEach {
-                println("${it.name()}, actions=${it.actions().joinToString()}")
-            }
-            crate = ctx.objects.toStream().at(Tile(3752, 5674, 0)).name("Crate").findFirst()
-            println("Crate object present=${crate.isPresent}")
+//            ctx.objects.toStream().at(Tile(3752, 5674, 0)).list().forEach {
+//                println("${it.name()}, actions=${it.actions().joinToString()}")
+//            }
+//            crate = ctx.objects.toStream().at(Tile(3752, 5674, 0)).name("Crate").findFirst()
+//            println("Crate object present=${crate.isPresent}")
         }
     }
 
@@ -92,11 +89,16 @@ class TestScript : ATScript(), GameActionListener {
 class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
     override fun paint(g: Graphics2D) {
         var y = this.y
-        val crate = script.crate
+//        val crate = script.crate
+//
+//        crate.ifPresent {
+//            it.tile().drawOnScreen(g, "Crate")
+//        }
 
-        crate.ifPresent {
-            it.tile().drawOnScreen(g, "Crate")
-        }
+        val comp = ctx.widgets.component(MOBILE_TAB_WINDOW_WIDGET_ID, MOBILE_TAB_WINDOW_COMPONENT_ID)
+        val viewport = comp.boundingRect()
+        g.draw(viewport)
+
     }
 
 
