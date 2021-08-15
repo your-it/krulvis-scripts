@@ -30,7 +30,7 @@ object Imgur {
             conn.setRequestProperty(
                 "User-Agent",
                 "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2"
-            );
+            )
             conn.addRequestProperty("Authorization", "Client-ID $clientId")
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
             conn.doOutput = true
@@ -53,7 +53,7 @@ object Imgur {
             wr.flush()
 
             //Get response
-            val inputStream = if ((conn as HttpURLConnection).responseCode != 200) {
+            val inputStream = if (conn.responseCode != 200) {
                 println("Got error HTTP CODE: ${conn.responseCode}")
                 conn.errorStream
             } else {
@@ -63,7 +63,7 @@ object Imgur {
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
             var decodedString: String?
             while (bufferedReader.readLine().also { decodedString = it } != null) {
-                println(decodedString);
+                println(decodedString)
                 if (decodedString?.contains("link") == true) {
                     val output = decodedString!!
                     println("Link received from imgur: $output")

@@ -1,7 +1,8 @@
 package org.powbot.krulvis.tempoross
 
-import org.powerbot.script.Area
-import org.powerbot.script.Tile
+import org.powbot.api.Area
+import org.powbot.api.Tile
+
 
 object Data {
 

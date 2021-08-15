@@ -1,7 +1,8 @@
 package org.powbot.krulvis.api.utils.interactions
 
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import java.util.*
 
 open class ObjectInteraction(
@@ -11,11 +12,11 @@ open class ObjectInteraction(
 ) :
     Interaction<GameObject> {
 
-    constructor(name: String, action: String) : this(name, action, Tile.NIL)
+    constructor(name: String, action: String) : this(name, action, Tile.Nil)
 
     override fun getEntity(): Optional<GameObject> {
-        return if (tile != Tile.NIL) ctx.objects.toStream().at(tile).name(name).action(action).findFirst()
-        else ctx.objects.toStream().name(name).action(action).nearest().findFirst()
+        return if (tile != Tile.Nil) Objects.stream().at(tile).name(name).action(action).findFirst()
+        else Objects.stream().name(name).action(action).nearest().findFirst()
     }
 
 }

@@ -2,19 +2,21 @@ package org.powbot.krulvis.miner.tree.branch
 
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
-import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.Mine
 import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Players
+import org.powbot.api.rt4.Worlds
+import org.powbot.api.rt4.stream.widget.WorldStream
+import org.powbot.krulvis.api.utils.Utils.sleep
 import java.util.*
 
 class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
@@ -34,8 +36,8 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
         if (!script.profile.hopFromPlayers) {
             return false
         }
-        val nearByPlayers = ctx.players.filter {
-            it.name() != ctx.players.local().name() && it.tile()
+        val nearByPlayers = Players.stream().filter {
+            it.name() != Players.local().name() && it.tile()
                 .distanceTo(script.profile.center) <= script.profile.radius
         }
         if (nearByPlayers.isNotEmpty()) {
@@ -49,7 +51,7 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
     }
 
     override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Hopping") {
-        val worlds = ctx.worlds.joinable().get()
+        val worlds = Worlds.get()
         worlds[Random.nextInt(0, worlds.size)].hop()
     }
     override val failedComponent: TreeComponent<Miner> = IsMining(script)
@@ -58,27 +60,30 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
 class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
 
     fun facingTile(): Tile {
-        val orientation: Int = ctx.players.local().orientation()
-        val t: Tile = ctx.players.local().tile()
+        val orientation: Int = Players.local().orientation()
+        val t: Tile = Players.local().tile()
         when (orientation) {
             4 -> return Tile(t.x(), t.y() + 1, t.floor())
             6 -> return Tile(t.x() + 1, t.y(), t.floor())
             0 -> return Tile(t.x(), t.y() - 1, t.floor())
             2 -> return Tile(t.x() - 1, t.y(), t.floor())
         }
-        return Tile.NIL
+        return Tile.Nil
     }
 
 
     override fun validate(): Boolean {
-        return me.animation() > 0 && ctx.objects.toStream().at(facingTile()).anyMatch { it.hasOre() }
+        return me.animation() > 0 && org.powbot.api.rt4.Objects.stream().at(facingTile()).anyMatch { it.hasOre() }
     }
 
     override val successComponent: TreeComponent<Miner> =
         SimpleLeaf(script, "Chilling") {
-            waitFor(1500) {
-                ctx.objects.toStream().at(facingTile()).noneMatch { it.hasOre() }
-            }
+            if (Random.nextBoolean())
+                sleep(Random.nextInt(1000, 5000))
+            else
+                waitFor(1500) {
+                    org.powbot.api.rt4.Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
+                }
         }
     override val failedComponent: TreeComponent<Miner> = Mine(script)
 }

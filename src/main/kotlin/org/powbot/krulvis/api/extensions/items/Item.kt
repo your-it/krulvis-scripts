@@ -1,8 +1,10 @@
 package org.powbot.krulvis.api.extensions.items
 
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powerbot.script.rt4.CacheItemConfig
-import org.powerbot.script.rt4.Item
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.CacheItemConfig
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Item
+import org.powbot.mobile.BotManager
 import java.awt.image.BufferedImage
 import java.util.*
 import java.util.stream.Collectors
@@ -22,27 +24,27 @@ interface Item {
 
     fun getNotedIds(): IntArray = ids.map { it + 1 }.toIntArray()
 
-    fun notedInBank(): Boolean = ctx.bank.toStream().id(*getNotedIds()).isNotEmpty()
+    fun notedInBank(): Boolean = Bank.stream().id(*getNotedIds()).isNotEmpty()
 
-    fun inInventory(): Boolean = ctx.inventory.toStream().id(*ids).isNotEmpty()
+    fun inInventory(): Boolean = Inventory.stream().id(*ids).isNotEmpty()
 
     fun hasWith(): Boolean
 
-    fun inBank(): Boolean = ctx.bank.toStream().id(*ids).isNotEmpty()
+    fun inBank(): Boolean = Bank.stream().id(*ids).isNotEmpty()
 
     fun getBankId(worse: Boolean = false): Int {
         val ids = if (worse) ids.reversed().toIntArray() else ids
-        val bankItem = ctx.bank.toStream().filter { it.id() in ids }.findFirst()
+        val bankItem = Bank.stream().filter { it.id() in ids }.findFirst()
         return if (bankItem.isPresent) bankItem.get().id() else -1
     }
 
-    fun getInvItem(): Optional<Item> = ctx.inventory.toStream().id(*ids).findFirst()
+    fun getInvItem(): Optional<Item> = Inventory.stream().id(*ids).findFirst()
 
     fun getInventoryCount(countNoted: Boolean = true): Int {
-        return if (countNoted) ctx.inventory.toStream()
+        return if (countNoted) Inventory.stream()
             .filter { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
             .collect(Collectors.summingInt(Item::stackSize))
-        else ctx.inventory.toStream().id(*ids).count().toInt()
+        else Inventory.stream().id(*ids).count().toInt()
     }
 
     fun getCount(countNoted: Boolean = true): Int
@@ -52,7 +54,7 @@ interface Item {
         TODO("Not implemented yet")
     }
 
-    fun itemName(): String = CacheItemConfig.load(ctx.bot().cacheWorker, id).name
+    fun itemName(): String = CacheItemConfig.load(id).name
 
     companion object {
         val HAMMER = 2347

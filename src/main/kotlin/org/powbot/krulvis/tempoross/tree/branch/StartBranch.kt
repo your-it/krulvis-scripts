@@ -1,9 +1,12 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
+import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.Npcs
+import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
 import org.powbot.krulvis.tempoross.Tempoross
@@ -12,12 +15,12 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
-        if (ctx.game.clientState() != 30) {
+        if (Game.clientState() != 30) {
             return !waitFor(10000) { script.getEnergy() > -1 }
         }
         return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
-                && !ctx.npcs.toStream().name("Ammunition crate").findFirst().isPresent
-                && ctx.npcs.toStream().noneMatch { it.actions().contains("Leave") }
+                && !Npcs.stream().name("Ammunition crate").findFirst().isPresent
+                && Npcs.stream().noneMatch { it.actions().contains("Leave") }
     }
 
     override val successComponent: TreeComponent<Tempoross> = EnterBoat(script)
@@ -27,9 +30,9 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
 class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill") {
     override fun validate(): Boolean {
         if (script.side == Tempoross.Side.UNKNOWN) {
-            if (ctx.npcs.toStream().name("Ammunition crate").findFirst().isPresent) {
+            if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                 println("Getting Side of minigame")
-                val mast = ctx.objects.toStream().name("Mast").nearest().first()
+                val mast = Objects.stream().name("Mast").nearest().first()
                 println("Mast found: $mast, orientation: ${mast.orientation()}")
                 script.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
                 script.mastLocation = mast.tile()
@@ -51,7 +54,7 @@ class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill")
 
 class ShouldLeave(script: Tempoross) : Branch<Tempoross>(script, "Should leave") {
     override fun validate(): Boolean {
-        return ctx.npcs.toStream().anyMatch { it.actions().contains("Leave") }
+        return Npcs.stream().anyMatch { it.actions().contains("Leave") }
     }
 
     override val successComponent: TreeComponent<Tempoross> = Leave(script)

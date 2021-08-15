@@ -1,7 +1,7 @@
 package org.powbot.krulvis.runecrafter
 
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.script.ScriptProfile
-import org.powerbot.script.Tile
 
 data class RunecrafterProfile(val type: RuneType = RuneType.COSMIC) : ScriptProfile
 

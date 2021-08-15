@@ -1,32 +1,35 @@
 package org.powbot.krulvis.tithe
 
+import com.google.common.eventbus.Subscribe
+import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.rt4.*
+import org.powbot.api.script.ScriptCategory
+import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.Patch.Companion.refresh
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
-import org.powerbot.script.*
-import org.powerbot.script.rt4.ClientContext
-import org.powerbot.script.rt4.GameObject
 import java.util.logging.Logger
 
-@Script.Manifest(
+@ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     version = "1.0.3",
     markdownFileName = "Tithe.md",
-    properties = "category=Farming;",
-    mobileReady = true
+    category = ScriptCategory.Farming
 )
-class TitheFarmer : ATScript(), GameActionListener {
-    override val painter: ATPainter<*> = TithePainter(this)
+class TitheFarmer : ATScript() {
+
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
     val logger = Logger.getLogger("TitheFarmer")
@@ -45,7 +48,7 @@ class TitheFarmer : ATScript(), GameActionListener {
     var planting = false
 
     fun getCornerPatchTile(): Tile {
-        val allPatches = ctx.objects.toStream(30).filter { it.isPatch() }.list()
+        val allPatches = Objects.stream(30).filter { it.isPatch() }.list()
         val maxX = allPatches.minOf { it.tile().x() }
         val maxY = allPatches.maxOf { it.tile().y() }
         return Tile(maxX, maxY, 0)
@@ -68,10 +71,10 @@ class TitheFarmer : ATScript(), GameActionListener {
     fun refreshPatches() {
         val tiles = getPatchTiles()
         val onorderedPatches =
-            ctx.objects.toStream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+            Objects.stream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
                 .list()
         patches = tiles.mapIndexed { index, tile ->
-            Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.NIL, tile, index)
+            Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.Nil, tile, index)
         }
 
     }
@@ -79,29 +82,22 @@ class TitheFarmer : ATScript(), GameActionListener {
     fun hasSeeds(): Boolean = getSeed() > 0
 
     fun getSeed(): Int {
-        val seed = ctx.inventory.toStream().id(*Data.SEEDS).findFirst()
+        val seed = Inventory.stream().id(*Data.SEEDS).findFirst()
         return if (seed.isPresent) seed.get().id() else -1
     }
 
     fun getPoints(): Int {
         val widget =
-            ctx.widgets.widget(241).components().filter { it.text().contains("Points:") }.firstOrNull() ?: return -1
+            Widgets.widget(241).components().firstOrNull { it.text().contains("Points:") } ?: return -1
         return widget.text().substring(8).toInt()
     }
 
-    fun getWaterCount(): Int = ctx.inventory.toStream().id(*Data.WATER_CANS).list().sumBy { it.id() - 5332 }
+    fun getWaterCount(): Int = Inventory.stream().id(*Data.WATER_CANS).list().sumOf { it.id() - 5332 }
 
     fun hasEnoughWater(): Boolean = getWaterCount() >= profile.patchCount * 3.5
 
-    override fun startGUI() {
-        if (System.getenv("LOCAL") == "true") {
-            started = true
-        } else {
-            TitheGUI(this)
-        }
-    }
-
-    override fun onAction(evt: GameActionEvent) {
+    @Subscribe
+    fun onGameActionEvent(evt: GameActionEvent) {
         if (evt.rawOpcode == 4 || evt.opcode() == GameActionOpcode.InteractObject) {
             val tile = Tile(evt.var0 + 1, evt.widgetId + 1, 0).globalTile()
             logger.warning("Interacted with ${evt.rawEntityName}: at: $tile")
@@ -115,28 +111,24 @@ class TitheFarmer : ATScript(), GameActionListener {
     }
 
     private fun Tile.globalTile(): Tile {
-        val a = ClientContext.ctx().game.mapOffset()
+        val a = Game.mapOffset()
         return this.derive(+a.x(), +a.y())
     }
 
     fun prepareNextInteraction(current: Patch, action: String) {
         val waterCount = getWaterCount()
-        val harvestCount = ctx.inventory.getCount(*Data.HARVEST)
+        val harvestCount = Inventory.getCount(*Data.HARVEST)
         lock = true
         patches = patches.refresh()
         val nextPatch = patches.minusElement(current)
             .sortedWith(compareBy(Patch::id, Patch::index))
             .firstOrNull { it.needsAction() }
         if (nextPatch != null) {
-            if (ctx.client().isMobile) {
-                nextPatch.go.click()
-            } else {
-                nextPatch.go.click(false)
-            }
+            nextPatch.go.click()
             logger.warning("Prepared next patch interaction...")
             if (waitFor(2000) {
                     if (action.contains("water", true)) waterCount > getWaterCount()
-                    else harvestCount < ctx.inventory.getCount(*Data.HARVEST)
+                    else harvestCount < Inventory.getCount(*Data.HARVEST)
                 })
                 logger.warning("Done with watering / harvesting")
         } else {

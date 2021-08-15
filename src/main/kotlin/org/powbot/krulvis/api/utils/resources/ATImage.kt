@@ -11,16 +11,16 @@ class ATImage(relativeFile: File, url: String) : ATResource(relativeFile, url) {
 
     override fun getFileLocation(): File = getResourceFolder().resolve("imgs").resolve(relativeFile)
 
-    fun getAnimatedImage(): Image? {
-        if (image == null) {
-            try {
-                image = AnimatedImg.readImgFromFile(getFile().inputStream())
-            } catch (fnfe: FileNotFoundException) {
-                fnfe.printStackTrace()
-            }
-        }
-        return image
-    }
+//    fun getAnimatedImage(): Image? {
+//        if (image == null) {
+//            try {
+//                image = AnimatedImg.readImgFromFile(getFile().inputStream())
+//            } catch (fnfe: FileNotFoundException) {
+//                fnfe.printStackTrace()
+//            }
+//        }
+//        return image
+//    }
 
     fun getImage(): Image? {
         if (image == null) {

@@ -1,18 +1,19 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Tether
 import org.powbot.krulvis.tempoross.tree.leaf.Untether
-import org.powerbot.script.rt4.GameObject
 
 class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Untether") {
     override fun validate(): Boolean {
         return script.waveTimer.isFinished()
-                && ctx.objects.toStream().action("Untether").within(2.0).first() != GameObject.NIL
+                && Objects.stream().action("Untether").within(2.0).firstOrNull() != null
     }
 
     override val successComponent: TreeComponent<Tempoross> = Untether(script)
@@ -21,9 +22,9 @@ class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Unte
 
 class ShouldTether(script: Tempoross) : Branch<Tempoross>(script, "Should Tether") {
     override fun validate(): Boolean {
-        return !script.waveTimer.isFinished() && ctx.inventory.containsOneOf(ROPE)
+        return !script.waveTimer.isFinished() && Inventory.containsOneOf(ROPE)
     }
-    
+
     override val successComponent: TreeComponent<Tempoross> = Tether(script)
     override val failedComponent: TreeComponent<Tempoross> = ShouldSpec(script)
 }

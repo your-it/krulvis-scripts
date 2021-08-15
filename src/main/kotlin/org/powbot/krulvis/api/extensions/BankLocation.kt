@@ -3,15 +3,15 @@ package org.powbot.krulvis.api.extensions
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.interactions.Interaction
 import org.powbot.krulvis.api.utils.interactions.NpcInteraction
 import org.powbot.krulvis.api.utils.interactions.ObjectInteraction
 import org.powbot.krulvis.api.utils.requirements.Requirement
-import org.powbot.krulvis.walking.PBWebWalkingService
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Bank
-import org.powerbot.script.rt4.ClientContext
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
 
 
 enum class BankType {
@@ -52,7 +52,7 @@ enum class BankLocation(
     ),
     CATHERBY_BANK(Tile(2809, 3441, 0), BankType.BOOTH),
     YANILLE_BANK(Tile(2613, 3094, 0), BankType.BOOTH),
-    ARDOUGNE_NORTH_BANK(Tile(2615, 3332), BankType.BOOTH),
+    ARDOUGNE_NORTH_BANK(Tile(2615, 3332, 0), BankType.BOOTH),
     ARDOUGNE_SOUTH_BANK(Tile(2655, 3283, 0), BankType.BOOTH),
     MISCELLANIA_BANK(
         Tile(2618, 3895, 0), BankType.NPC,
@@ -82,6 +82,14 @@ enum class BankLocation(
     MOTHERLOAD_MINE_DEPOSIT(
         Tile(3758, 5664, 0), BankType.DEPOSIT_BOX,
         ObjectInteraction("Bank deposit box", "Deposit", Tile(3759, 5664, 0)),
+    ),
+    FARMING_GUILD_85(
+        Tile(1248, 3758, 0), BankType.BOOTH,
+        ObjectInteraction("Bank booth", "Bank", Tile(1248, 3759, 0)),
+    ),
+    FARMING_GUILD_65(
+        Tile(1253, 3741, 0), BankType.CHEST,
+        ObjectInteraction("Bank chest", "Use", Tile(1253, 3742, 0)),
     )
     ;
 
@@ -89,20 +97,24 @@ enum class BankLocation(
      * Opens the bank at the location
      */
     fun open(): Boolean {
-        val ctx = ClientContext.ctx()
-        if (ctx.bank.opened()) {
+        if (Bank.opened()) {
             return true
-        } else if (ctx.collectionBox.opened()) {
-            ctx.collectionBox.close()
+        } else if (CollectionBox.opened()) {
+            CollectionBox.close()
         } else if (tile.distanceM(me) >= 20) {
             debug("Using web to walk to bank")
-            PBWebWalkingService.move(tile, false, {
+            WebWalking.moveTo(tile, false, false, {
                 val b = interaction.getEntity()
                 b.isPresent && b.get().inViewport()
             }, 1, 100)
             return false
         }
-        return interaction.execute() && waitFor { ctx.bank.opened() }
+        return interaction.execute() && waitFor(
+            Random.nextInt(
+                3000,
+                5000
+            )
+        ) { Bank.opened() || DepositBox.opened() }
     }
 
     /**
@@ -119,7 +131,7 @@ enum class BankLocation(
          * @return the nearest bank according to the geographical distance
          */
         fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
-            val me = ClientContext.ctx().players.local()
+            val me = Players.local()
             return values()
                 .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
                 .minByOrNull { it.tile.distanceM(me) }!!

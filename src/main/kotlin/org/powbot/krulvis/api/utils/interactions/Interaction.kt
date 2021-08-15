@@ -1,21 +1,15 @@
 package org.powbot.krulvis.api.utils.interactions
 
+import org.powbot.api.Locatable
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.walking.PBWebWalkingService
-import org.powerbot.script.ClientContext
-import org.powerbot.script.Locatable
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
-import org.powerbot.script.rt4.Interactive
-import org.powerbot.script.rt4.Npc
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
 import java.util.*
 
 /**
  *
  */
 interface Interaction<E : Interactive> {
-
-    val ctx: org.powerbot.script.rt4.ClientContext get() = ClientContext.ctx()
 
     /**
      * Return the InteractiveEntity to interact with
@@ -45,22 +39,22 @@ interface Interaction<E : Interactive> {
         val o = getEntity()
         if (!o.isPresent) {
             debug("Didn't get interaction entity...")
-            PBWebWalkingService.walkTo(tile, false)
+            WebWalking.walkTo(tile, false)
             return false
         }
 
         val entity = o.get()
         debug("Entity: $entity")
-        val t = if (tile == Tile.NIL) (entity as Locatable).tile() else tile
-        val destination = ctx.movement.destination() ?: Tile.NIL
+        val t = if (tile == Tile.Nil) (entity as Locatable).tile() else tile
+        val destination = Movement.destination() ?: Tile.Nil
 
         if (!entity.inViewport()
-            || (destination != tile && tile.distanceTo(if (destination == Tile.NIL) ctx.players.local() else destination) > walkDistance)
+            || (destination != tile && tile.distanceTo(if (destination == Tile.Nil) Players.local() else destination) > walkDistance)
         ) {
-            if (tile.matrix(ctx).onMap()) {
-                ctx.movement.step(tile)
+            if (tile.matrix()?.onMap() == true) {
+                Movement.step(tile)
             } else {
-                PBWebWalkingService.walkTo(t, false)
+                WebWalking.walkTo(t, false)
             }
         }
         return entity.interact(action)

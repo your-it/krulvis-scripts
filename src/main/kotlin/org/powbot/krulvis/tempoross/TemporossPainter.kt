@@ -1,15 +1,15 @@
 package org.powbot.krulvis.tempoross
 
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powerbot.script.Tile
+import org.powbot.mobile.drawing.Graphics
 import java.awt.Color
-import java.awt.Graphics2D
 
 class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250) {
 
-    override fun paint(g: Graphics2D) {
+    override fun paint(g: Graphics) {
         var y = this.y
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
@@ -30,7 +30,7 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
             y += yy
             blockedTiles.forEach {
                 val t = it
-                if (t != Tile.NIL) {
+                if (t != Tile.Nil) {
                     it.drawOnScreen(g, null, Color.RED)
                 }
             }
@@ -74,11 +74,11 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
         script.skillTracker.draw(g, x, y)
     }
 
-    override fun drawTitle(g: Graphics2D, x: Int, y: Int) {
+    override fun drawTitle(g: Graphics, x: Int, y: Int) {
         drawTitle(g, "Tempoross", x - 10, y - 4)
     }
 
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
+    override fun drawProgressImage(g: Graphics, startY: Int) {
         var y = startY
         drawSplitText(
             g,

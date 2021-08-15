@@ -8,30 +8,37 @@ import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.getPassableObject
 import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.rockfallBlock
 import org.powbot.krulvis.api.extensions.walking.local.nodes.*
-import org.powerbot.script.ClientContext
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Movement
+import org.powbot.api.rt4.Players
+import org.powbot.mobile.BotManager
 import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
 
-object LocalPathFinder : PathFinder {
+object LocalPathFinder : PathFinder<LocalPath> {
 
     val maxAttempts = 2500
     lateinit var cachedFlags: Array<IntArray>
     val logger = Logger.getLogger("LocalPathFinder")
 
-    fun findPath(end: Tile?): LocalPath {
+    override fun findPath(end: Tile?): LocalPath {
         return if (end != null) {
-            findPath(ClientContext.ctx().players.local().tile(), end)
+            findPath(Players.local().tile(), end)
         } else {
             LocalPath(emptyList())
         }
     }
 
-    fun findPath(begin: Tile, end: Tile): LocalPath {
-        this.cachedFlags = ClientContext.ctx().client().collisionMaps[begin.floor()].flags
+    fun findWalkablePath(end: Tile) = findWalkablePath(Players.local().tile(), end)
+
+    fun findWalkablePath(begin: Tile, end: Tile) = findPath(begin, end, onlyWalk = true)
+
+    fun findPath(begin: Tile, end: Tile, onlyWalk: Boolean = false, refreshFlags: Boolean = true): LocalPath {
+        if (refreshFlags) {
+            this.cachedFlags = Movement.collisionMap(begin.floor()).flags()
+        }
         val end = if (end.blocked(cachedFlags)) end.getWalkableNeighbor() else end
 
         if (end == null || !end.loaded()) {
@@ -50,7 +57,7 @@ object LocalPathFinder : PathFinder {
         logger.log(Level.INFO, "FIND LOCAL PATH: $begin -> $end, distance: ${begin.distanceTo(end)}")
         var attempts = 0
 
-        val open = startAction.getLocalNeighbors(end)
+        val open = startAction.getLocalNeighbors(onlyWalk = true)
         val searched = mutableListOf<LocalEdge>()
 
         while (open.isNotEmpty() && attempts < maxAttempts) {
@@ -61,7 +68,7 @@ object LocalPathFinder : PathFinder {
             if (next.destination == end) {
                 return buildPath(next)
             }
-            val neighbors = next.getNeighbors().filterNot {
+            val neighbors = next.getNeighbors(onlyWalk).filterNot {
                 open.contains(it.destination) || searched.contains(it.destination)
             }
 //            println("Found ${neighbors.size} neighbors")
@@ -99,7 +106,11 @@ object LocalPathFinder : PathFinder {
         SOUTH(Flag.W_S, Rotation.SOUTH, Rotation.NORTH),
         WEST(Flag.W_W, Rotation.WEST, Rotation.EAST);
 
-        fun getEdge(currentEdge: LocalEdge, flags: Array<IntArray>): Optional<LocalEdge> {
+        fun getEdge(
+            currentEdge: LocalEdge,
+            flags: Array<IntArray>,
+            onlyWalk: Boolean = false
+        ): Optional<LocalEdge> {
             val current = currentEdge.destination
             val neighbor = when (this) {
                 NORTH -> Tile(current.x(), current.y() + 1, current.floor())
@@ -116,31 +127,28 @@ object LocalPathFinder : PathFinder {
                     return Optional.of(
                         LocalTileEdge(
                             currentEdge,
-                            neighbor,
-                            currentEdge.finalDestination
+                            neighbor
                         )
                     )
-                } else {
+                } else if (!onlyWalk) {
                     var door = current.getPassableObject(currentRotation)
-                    if (door == GameObject.NIL) door = neighbor.getPassableObject(nextRotation)
-                    if (door != GameObject.NIL) {
+                    if (!door.isPresent) door = neighbor.getPassableObject(nextRotation)
+                    if (door.isPresent) {
                         return Optional.of(
                             LocalDoorEdge(
-                                door,
+                                door.get(),
                                 currentEdge,
-                                neighbor,
-                                currentEdge.finalDestination
+                                neighbor
                             )
                         )
                     }
                 }
-            } else if (neighbor.rockfallBlock(flags)) {
+            } else if (!onlyWalk && neighbor.rockfallBlock(flags)) {
                 if (!current.blocked(flags, currentFlag)) {
                     return Optional.of(
                         LocalRockfallEdge(
                             currentEdge,
-                            neighbor,
-                            currentEdge.finalDestination
+                            neighbor
                         )
                     )
                 }
@@ -153,8 +161,8 @@ object LocalPathFinder : PathFinder {
      * Used to find neighbors of LocalEdge
      */
     fun LocalEdge.getLocalNeighbors(
-        finalDesination: Tile,
-        flags: Array<IntArray> = cachedFlags
+        flags: Array<IntArray> = cachedFlags,
+        onlyWalk: Boolean = false
     ): MutableList<LocalEdge> {
         val neighbors = mutableListOf<LocalEdge>()
 
@@ -165,11 +173,15 @@ object LocalPathFinder : PathFinder {
          * Straight neighbors get added here
          */
         NeighBors.values().forEach {
-            val edge = it.getEdge(this, flags)
+            val edge = it.getEdge(this, flags, onlyWalk)
             if (edge.isPresent) {
 //                logger.info("Found neighbor ${it.name}: ${edge.get()}")
                 neighbors.add(edge.get())
             }
+        }
+
+        if (onlyWalk) {
+            return neighbors
         }
 
         /**
@@ -184,111 +196,64 @@ object LocalPathFinder : PathFinder {
         val sw = Tile(current.x() - 1, current.y() - 1, p)
         val nw = Tile(current.x() - 1, current.y() + 1, p)
 
+        /**
+         * Get diagonal edges
+         */
         if (!current.blocked(flags, Flag.W_NE or Flag.W_N or Flag.W_E)
             && !n.blocked(flags, Flag.W_E)
             && !e.blocked(flags, Flag.W_N)
         ) {
-            if (!ne.blocked(flags)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        ne,
-                        finalDesination
-                    )
-                )
-            } else {
-                val door = ne.getPassableObject(Rotation.DIAGONAL)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            ne,
-                            finalDesination
-                        )
-                    )
-                }
-            }
+            getEdgeForDiagonalNeighbor(ne, flags).ifPresent { neighbors.add(it) }
         }
         if (!current.blocked(flags, Flag.W_SE or Flag.W_S or Flag.W_E)
             && !s.blocked(flags, Flag.W_E)
             && !e.blocked(flags, Flag.W_S)
         ) {
-            if (!se.blocked(flags)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        se,
-                        finalDesination
-                    )
-                )
-            } else {
-                val door = se.getPassableObject(Rotation.DIAGONAL)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            se,
-                            finalDesination
-                        )
-                    )
-                }
-            }
+            getEdgeForDiagonalNeighbor(se, flags).ifPresent { neighbors.add(it) }
         }
         if (!current.blocked(flags, Flag.W_SW or Flag.W_S or Flag.W_W)
             && !s.blocked(flags, Flag.W_W)
             && !w.blocked(flags, Flag.W_S)
         ) {
-            if (!sw.blocked(flags)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        sw,
-                        finalDesination
-                    )
-                )
-            } else {
-                val door = sw.getPassableObject(Rotation.DIAGONAL)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            sw,
-                            finalDesination
-                        )
-                    )
-                }
-            }
+            getEdgeForDiagonalNeighbor(sw, flags).ifPresent { neighbors.add(it) }
         }
         if (!current.blocked(flags, Flag.W_NW or Flag.W_N or Flag.W_W)
             && !n.blocked(flags, Flag.W_W)
             && !w.blocked(flags, Flag.W_N)
         ) {
-            if (!nw.blocked(flags)) {
-                neighbors.add(
-                    LocalTileEdge(
-                        this,
-                        nw,
-                        finalDesination
-                    )
-                )
-            } else {
-                val door = nw.getPassableObject(Rotation.DIAGONAL)
-                if (door != GameObject.NIL) {
-                    neighbors.add(
-                        LocalDoorEdge(
-                            door,
-                            this,
-                            nw,
-                            finalDesination
-                        )
-                    )
-                }
-            }
+            getEdgeForDiagonalNeighbor(nw, flags).ifPresent { neighbors.add(it) }
         }
 
         return neighbors
+    }
+
+    /**
+     * If the given tile (diagonal neighbor) is not blocked, it gets added to the neighbors.
+     * If it is blocked, we check if there is a door that has a diagonal rotation [Flag.Rotation.DIAGONAL]
+     */
+    fun LocalEdge.getEdgeForDiagonalNeighbor(
+        neighbor: Tile,
+        flags: Array<IntArray>
+    ): Optional<LocalEdge> {
+        if (!neighbor.blocked(flags)) {
+            return Optional.of(
+                LocalTileEdge(
+                    this,
+                    neighbor
+                )
+            )
+        } else {
+            val door = neighbor.getPassableObject(Rotation.DIAGONAL)
+            if (door.isPresent) {
+                return Optional.of(
+                    LocalDoorEdge(
+                        door.get(),
+                        this,
+                        neighbor
+                    )
+                )
+            }
+        }
+        return Optional.empty()
     }
 }

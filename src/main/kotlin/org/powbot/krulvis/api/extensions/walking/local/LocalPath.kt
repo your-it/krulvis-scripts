@@ -6,15 +6,16 @@ import org.powbot.krulvis.api.extensions.walking.Path
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalDoorEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdge
 import org.powbot.krulvis.api.extensions.walking.local.nodes.LocalEdgeType
-import org.powbot.krulvis.api.script.painter.ATPainter.Companion.drawCollisions
 import org.powbot.krulvis.api.script.painter.ATPainter.Companion.drawOnScreen
-import org.powerbot.script.ClientContext
-import org.powerbot.script.Tile
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Movement
+import org.powbot.mobile.BotManager
+import org.powbot.mobile.drawing.Graphics
 import java.awt.Color
 import java.awt.Graphics2D
 import java.util.logging.Logger
 
-class LocalPath(val actions: List<LocalEdge>) : Path() {
+class LocalPath(val actions: List<LocalEdge>) : Path {
 
     override fun traverse(): Boolean = actions.traverse()
 
@@ -68,15 +69,15 @@ class LocalPath(val actions: List<LocalEdge>) : Path() {
 
     override fun finalDestination(): Tile = actions.last().destination
 
-    fun draw(g: Graphics2D) = actions.draw(g)
+    fun draw(g: Graphics) = actions.draw(g)
 
-    private fun List<LocalEdge>.draw(g: Graphics2D) {
-        val flags = ClientContext.ctx().client().collisionMaps[me.tile().floor()].flags
+    private fun List<LocalEdge>.draw(g: Graphics) {
+        val flags = Movement.collisionMap(me.tile().floor()).flags()
         forEach {
             if (it is LocalDoorEdge) {
                 it.destination.drawOnScreen(g, null, Color.CYAN, null)
             } else {
-                it.destination.drawCollisions(g, flags)
+//                it.destination.drawCollisions(g, flags)
             }
         }
     }

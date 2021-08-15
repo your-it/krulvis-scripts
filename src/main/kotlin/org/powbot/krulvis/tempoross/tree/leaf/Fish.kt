@@ -1,5 +1,10 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Camera
+import org.powbot.api.rt4.Movement
+import org.powbot.api.rt4.Npc
+import org.powbot.api.rt4.Npcs
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
@@ -7,13 +12,11 @@ import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
-import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Npc
 
 class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
@@ -24,7 +27,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             if (script.blockedTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
                 debug("We are standing on a dangerous tile! Walking to $safeTile")
-                if (safeTile != null && ctx.movement.step(safeTile)) {
+                if (safeTile != null && Movement.step(safeTile)) {
                     waitFor { me.tile() == safeTile }
                 }
             } else if (script.fishSpots.any { it.second.actions.last().destination.distance() <= 1 }) {
@@ -32,12 +35,12 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 val blockedTile =
                     script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }.first().second.actions.last()
                 val fireOptional =
-                    ctx.npcs.toStream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
+                    Npcs.stream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
                 if (fireOptional.isPresent) {
                     debug("Dousing nearby fire...")
                     val fire = fireOptional.get()
                     if (interact(fire, "Douse")) {
-                        waitFor { ctx.npcs.toStream().at(fire.tile()).name("Fire").isEmpty() }
+                        waitFor { Npcs.stream().at(fire.tile()).name("Fire").isEmpty() }
                     }
                 }
             } else {
@@ -62,9 +65,9 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 if (tetherPole.isPresent && tetherPole.get().inViewport()) {
                     if (script.oddFishingSpot.distance() <= 1) {
                         println("Fishing at weird spot so using unique camera rotation")
-                        ctx.camera.pitch(Random.nextInt(1200, 1300))
+                        Camera.pitch(Random.nextInt(1200, 1300))
                     } else {
-                        ctx.camera.turnTo(tetherPole.get())
+                        Camera.turnTo(tetherPole.get())
                     }
                 }
             }
@@ -82,8 +85,8 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     fun fishAtSpot(spot: Npc) {
         if (interact(spot, "Harpoon")) {
-            waitFor { me.animation() != -1 && me.interacting().name() == "Fishing spot" }
-        } else if (ctx.movement.moving()) {
+            waitFor { me.animation() != -1 && me.interacting()?.name() == "Fishing spot" }
+        } else if (Movement.moving()) {
             waitFor { spot.distance() <= 2 }
         }
     }

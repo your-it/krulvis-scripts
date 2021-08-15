@@ -1,17 +1,17 @@
 package org.powbot.krulvis.api.extensions.walking.local.nodes
 
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.Random
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.isRockfall
-import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import java.util.*
 
 
-class LocalRockfallEdge(parent: LocalEdge, destination: Tile, finalDestination: Tile) :
-    LocalTileEdge(parent, destination, finalDestination) {
+class LocalRockfallEdge(parent: LocalEdge, destination: Tile) :
+    LocalTileEdge(parent, destination) {
 
     override val type: LocalEdgeType =
         LocalEdgeType.ROCKFALL
@@ -25,18 +25,18 @@ class LocalRockfallEdge(parent: LocalEdge, destination: Tile, finalDestination: 
 
     override fun execute(): Boolean {
         val rocks = getRockfall()
-        return if (rocks.isPresent && interact(rocks.get(), "Mine")) {
-            val minedDoor = waitFor(long()) { getRockfall().isEmpty }
-            println("Mined rock: $minedDoor")
+        return if (rocks != null && interact(rocks, "Mine")) {
+            val minedDoor = waitFor(Random.nextInt(4000, 6000)) { getRockfall() == null }
+            println("Mined rock: ${getRockfall() == null}")
             minedDoor
         } else {
+            println("Failed to mine rockfall...")
             false
         }
 
     }
 
-    fun getRockfall(): Optional<GameObject> =
-        ctx.objects.toStream().at(destination).filter { it.isRockfall() }.findFirst()
+    fun getRockfall() = Objects.stream(10).at(destination).filter { it.isRockfall() }.firstOrNull()
 
     override fun toString(): String {
         return "LocalRockfallEdge: @ ${destination.tile()}"

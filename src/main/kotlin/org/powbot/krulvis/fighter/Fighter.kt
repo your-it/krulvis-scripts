@@ -1,38 +1,40 @@
 package org.powbot.krulvis.fighter
 
-import org.powbot.krulvis.api.extensions.Skill
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptCategory
+import org.powbot.api.script.ScriptConfiguration
+import org.powbot.api.script.ScriptManifest
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.fighter.tree.branch.ShouldBank
-import org.powerbot.script.Script
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Npc
 
-@Script.Manifest(
+@ScriptManifest(
     name = "krul Fighter",
-    description = "AIO Fighting script",
-    version = "1.0",
-    markdownFileName = "Fighter.md",
-    properties = "category=Combat;",
-    mobileReady = true
+    description = "Fights anything, anywhere",
+    version = "1.0.0",
+    category = ScriptCategory.Combat
+)
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            "food", "Choose your food", defaultValue = "TUNA",
+            allowedValues = ["TROUT", "SALMON", "TUNA", "WINE", "LOBSTER", "BASS", "SWORDFISH", "MONKFISH", "SHARK", "KARAMBWAN"]
+        ),
+        ScriptConfiguration(
+            "monster", "Name of enemy to kill. Split with ',' without space", defaultValue = "Goblin,Cow"
+        ),
+        ScriptConfiguration(
+            "max_level", "Max enemy level to attack", defaultValue = "999",
+            optionType = OptionType.INTEGER
+        )
+    ]
 )
 class Fighter : ATScript() {
+    override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
-    init {
-        skillTracker.addSkill(Skill.HITPOINTS, Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE, Skill.RANGED, Skill.MAGIC)
-    }
+    val food get() = Food.valueOf(getOption<String>("food")!!)
 
-    var forcedBanking = false
-    var profile = FighterProfile()
-
-    fun validTarget(npc: Npc): Boolean {
-        return profile.names.contains(npc.name())
-    }
-
-    override val painter: ATPainter<*> = FighterPainter(this)
-    override val rootComponent = ShouldBank(this)
-
-    override fun startGUI() {
-        started = true
-    }
+    val monsters get() = getOption<String>("monster")!!.split(",")
+    val maxLevel get() = getOption<Int>("max_level")!!
 }

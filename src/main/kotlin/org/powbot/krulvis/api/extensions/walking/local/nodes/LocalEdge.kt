@@ -1,8 +1,8 @@
 package org.powbot.krulvis.api.extensions.walking.local.nodes
 
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder.getLocalNeighbors
-import org.powerbot.script.ClientContext
-import org.powerbot.script.Tile
+import org.powbot.api.rt4.Movement
 import java.io.Serializable
 import kotlin.math.abs
 
@@ -28,8 +28,10 @@ abstract class LocalEdge(val destination: Tile, val finalDestination: Tile) : Se
 
     abstract fun getCost(): Double
 
-    abstract fun getNeighbors(): MutableList<LocalEdge>
-
+    open fun getNeighbors(onlyWalk: Boolean): MutableList<LocalEdge> {
+        return this.getLocalNeighbors(onlyWalk = onlyWalk)
+    }
+    
     abstract fun execute(): Boolean
 
     fun getPathCost(): Double {
@@ -55,12 +57,8 @@ class StartEdge(startTile: Tile, finalDestination: Tile) : LocalEdge(startTile, 
 
     override fun getCost(): Double = 1.0
 
-    override fun getNeighbors(): MutableList<LocalEdge> {
-        return this.getLocalNeighbors(finalDestination)
-    }
-
     override fun execute(): Boolean {
-        return ClientContext.ctx().movement.step(destination)
+        return Movement.step(destination)
     }
 
     override fun toString(): String {
