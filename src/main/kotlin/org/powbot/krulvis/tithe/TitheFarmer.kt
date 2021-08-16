@@ -29,6 +29,7 @@ import java.util.logging.Logger
     category = ScriptCategory.Farming
 )
 class TitheFarmer : ATScript() {
+    override val painter: ATPainter<*> = TithePainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 

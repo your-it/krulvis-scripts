@@ -1,5 +1,10 @@
 package org.powbot.krulvis.test
 
+import org.powbot.api.Color.BLACK
+import org.powbot.api.Color.CYAN
+import org.powbot.api.Color.GREEN
+import org.powbot.api.Color.ORANGE
+import org.powbot.api.Color.RED
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Nameable
 import org.powbot.api.Tile
@@ -18,8 +23,6 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
-import java.awt.Color
-import java.awt.Graphics2D
 import java.util.*
 
 @ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
@@ -41,6 +44,8 @@ class TemporossDebug : ATScript() {
             }
         }
     }
+
+    override val painter: ATPainter<*> = TemporossDebugPainter(this)
 
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
@@ -123,12 +128,12 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString("TP", mm.x, mm.y)
             }
 
-            script.cookSpot.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.anchorLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.bossPoolLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.totemLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.bossWalkLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.mastLocation.drawOnScreen(g, null, Color.CYAN)
+            script.cookSpot.drawOnScreen(g, null, CYAN)
+            script.tempoross.anchorLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.bossPoolLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.totemLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.bossWalkLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.mastLocation.drawOnScreen(g, null, CYAN)
 
             val blockedTiles = script.tempoross.blockedTiles.toList()
             val paths = script.tempoross.triedPaths.toList()
@@ -136,18 +141,18 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {
-                    it.drawOnScreen(g, null, Color.RED)
+                    it.drawOnScreen(g, null, RED)
                 }
             }
             if (paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
                     val containsBadTile = tiles.any { blockedTiles.contains(it) }
-                    val color = if (containsBadTile) Color.ORANGE else Color.GREEN
+                    val color = if (containsBadTile) ORANGE else GREEN
                     tiles.forEach { tile ->
                         tile.drawOnScreen(
                             g,
                             null,
-                            if (blockedTiles.contains(tile)) Color.BLACK else color
+                            if (blockedTiles.contains(tile)) BLACK else color
                         )
                     }
                 }
@@ -164,10 +169,6 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString((e as Nameable).name(), matrix.getBounds().centerX, matrix.getBounds().centerY)
             }
         }
-    }
-
-    override fun drawProgressImage(g: Graphics, startY: Int) {
-        TODO("Not yet implemented")
     }
 
 }

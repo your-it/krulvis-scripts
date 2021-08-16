@@ -27,18 +27,4 @@ class TithePainter(script: TitheFarmer) : ATPainter<TitheFarmer>(script, 10, 250
 //            }
 //        }
     }
-
-    override fun drawProgressImage(g: Graphics, startY: Int) {
-        var y = startY
-        drawSplitText(
-            g,
-            "Gained Points: ",
-            "${script.gainedPoints}, (${script.timer.getPerHour(script.gainedPoints)}/hr)",
-            x,
-            y
-        )
-        y += yy
-        y = script.skillTracker.draw(g, x, y)
-        y = script.lootTracker.drawLoot(g, x, y)
-    }
 }

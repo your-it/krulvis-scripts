@@ -11,7 +11,7 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
 
     override fun execute() {
         if (script.lock) {
-            logger.warning("Handle patch locked")
+            script.log.warning("Handle patch locked")
             return
         }
 //        if (!waitFor(long()) { !ctx.movement.moving() }) {
@@ -26,10 +26,10 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         val patch = patches.firstOrNull {
             it.needsAction() && (hasEnoughWater || it.isDone())
         } ?: return
-        logger.warning("Handling patch: $patch")
+        script.log.warning("Handling patch: $patch")
         if (patch.handle(script.patches)) {
             sleep(1000)
-            logger.warning("Handling patch interaction was successful")
+            script.log.warning("Handling patch interaction was successful")
         }
     }
 

@@ -6,7 +6,6 @@ import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
-import java.awt.image.BufferedImage
 import java.io.Serializable
 
 interface EquipmentItem : Item {
@@ -14,9 +13,6 @@ interface EquipmentItem : Item {
     val requirements: List<Requirement>
 
     val slot: Equipment.Slot?
-        get() = null
-
-    override val image: BufferedImage?
         get() = null
 
     override fun hasWith(): Boolean = inInventory() || inEquipment()
@@ -70,6 +66,5 @@ interface EquipmentItem : Item {
 class Equipment(
     override val requirements: List<Requirement>,
     override vararg val ids: Int,
-    override val slot: org.powbot.api.rt4.Equipment.Slot? = null,
-    override val image: BufferedImage? = null
+    override val slot: org.powbot.api.rt4.Equipment.Slot? = null
 ) : EquipmentItem, Serializable

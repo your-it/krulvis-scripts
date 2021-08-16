@@ -7,6 +7,7 @@ import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
@@ -37,6 +38,7 @@ class BlastFurnace : ATScript() {
     }
 
     val bar get() = Bar.valueOf(getOption<String>("bar")!!)
+    override val painter: ATPainter<*> = BFPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldPay(this)
 

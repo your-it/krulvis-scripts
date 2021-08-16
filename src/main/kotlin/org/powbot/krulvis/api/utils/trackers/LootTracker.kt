@@ -5,7 +5,6 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Prices
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.mobile.drawing.Graphics
-import java.awt.Graphics2D
 import java.lang.IllegalStateException
 import kotlin.math.absoluteValue
 

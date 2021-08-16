@@ -4,20 +4,12 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.CacheItemConfig
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
-import org.powbot.mobile.BotManager
-import java.awt.image.BufferedImage
 import java.util.*
 import java.util.stream.Collectors
 
 interface Item {
 
     val ids: IntArray
-
-    /**
-     * Only used in GUI
-     */
-    val image: BufferedImage?
-        get() = null
 
     val id: Int
         get() = ids[0]

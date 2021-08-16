@@ -1,7 +1,6 @@
 package org.powbot.krulvis.api.utils
 
 import com.google.gson.JsonParser
-import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.InputStreamReader

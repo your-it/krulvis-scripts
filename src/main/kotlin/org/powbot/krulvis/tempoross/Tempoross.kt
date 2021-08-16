@@ -42,6 +42,7 @@ import java.util.*
     category = ScriptCategory.Fishing
 )
 class Tempoross : ATScript() {
+    override val painter: ATPainter<*> = TemporossPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 

@@ -1,13 +1,11 @@
 package org.powbot.krulvis.api.script.painter
 
-import java.awt.Color
-
 class DynamicColor(val min: Float, val max: Float, val step: Float = 0.01f, val interval: Int = 100) {
 
     private var lastColorUpdate: Long = 0
     private var bgHue = min
     private var hueUp = true
-    private var custom: Color = Color(HSBtoRGB(bgHue, 1.0f, 1.0f, 0xff), true)
+    private var custom: Int = HSBtoRGB(bgHue, 1.0f, 1.0f, 0xff)
 
     init {
         bgHue = min
@@ -16,7 +14,7 @@ class DynamicColor(val min: Float, val max: Float, val step: Float = 0.01f, val 
     }
 
     @JvmOverloads
-    operator fun get(update: Boolean = true): Color {
+    operator fun get(update: Boolean = true): Int {
         if (update) {
             updateColor()
         }
@@ -28,7 +26,7 @@ class DynamicColor(val min: Float, val max: Float, val step: Float = 0.01f, val 
             return
         }
         lastColorUpdate = System.currentTimeMillis()
-        custom = Color(HSBtoRGB(bgHue, 1.0f, 1.0f, 0xff), true)
+        custom = HSBtoRGB(bgHue, 1.0f, 1.0f, 0xff)
         bgHue += if (hueUp) step else -step
         if (hueUp && bgHue >= max || !hueUp && bgHue <= min) {
             hueUp = !hueUp

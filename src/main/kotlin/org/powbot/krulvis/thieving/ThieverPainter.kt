@@ -8,8 +8,4 @@ class ThieverPainter(script: Thiever) : ATPainter<Thiever>(script, 10, 250) {
         var y = this.y
         y = script.skillTracker.draw(g, x, y)
     }
-
-    override fun drawProgressImage(g: Graphics, startY: Int) {
-        TODO("Not yet implemented")
-    }
 }

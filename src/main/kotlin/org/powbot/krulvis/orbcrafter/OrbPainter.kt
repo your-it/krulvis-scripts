@@ -9,7 +9,4 @@ class OrbPainter(script: OrbCrafter) : ATPainter<OrbCrafter>(script) {
         var y = this.y
     }
 
-    override fun drawProgressImage(g: Graphics, startY: Int) {
-
-    }
 }

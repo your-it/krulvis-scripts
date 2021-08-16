@@ -8,8 +8,6 @@ import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.mobile.BotManager
-import java.awt.Color
 import kotlin.math.abs
 
 
@@ -28,10 +26,6 @@ object ATContext {
         if (debugComponents) {
             println(msg)
         }
-    }
-
-    fun Color.int(): Int {
-        return org.powbot.api.Color.argb(alpha, red, green, blue)
     }
 
     fun turnRunOn(): Boolean {

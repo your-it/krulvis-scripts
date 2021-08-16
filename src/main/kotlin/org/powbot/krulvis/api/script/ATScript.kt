@@ -1,24 +1,28 @@
 package org.powbot.krulvis.api.script
 
+import com.google.common.eventbus.Subscribe
+import org.powbot.api.Color.WHITE
+import org.powbot.api.event.RenderEvent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
+import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.trackers.LootTracker
 import org.powbot.krulvis.api.utils.trackers.SkillTracker
+import org.powbot.mobile.script.ScriptManager
 import java.io.File
 
 
 abstract class ATScript : TreeScript() {
 
     override fun onStart() {
-        println("Starting..")
+        log.info("Starting..")
         startTracking()
     }
 
-//    abstract val painter: ATPainter<*>
+    abstract val painter: ATPainter<*>
     val timer = Timer()
     val skillTracker = SkillTracker(this)
     val lootTracker = LootTracker(this)
@@ -27,15 +31,15 @@ abstract class ATScript : TreeScript() {
     var nextRun: Int = Random.nextInt(1, 6)
 
     fun startTracking() {
-        println("Started tracking thread")
-//        Thread {
-//            while (!ScriptManager.isStopping()) {
-//                skillTracker.track()
-////            inventoryWatcher.watch()
-////            animationWatcher.watch()
-//                Thread.sleep(500)
-//            }
-//        }.start()
+        log.info("Started tracking thread")
+        Thread {
+            while (!ScriptManager.isStopping()) {
+                skillTracker.track()
+//            inventoryWatcher.watch()
+//            animationWatcher.watch()
+                Thread.sleep(500)
+            }
+        }.start()
     }
 
 
@@ -61,6 +65,12 @@ abstract class ATScript : TreeScript() {
     fun settingsFolder(): File {
         val pb = powbotFolder()
         return File(pb + File.separator + "ScriptSettings" + File.separator + (manifest?.name ?: "EmptyScript"))
+    }
+
+    @Subscribe
+    fun onRender(e: RenderEvent) {
+        val g = e.graphics
+        painter.onRepaint(g)
     }
 
     /**

@@ -11,10 +11,6 @@ class RunecrafterPainter(script: Runecrafter) : ATPainter<Runecrafter>(script, 1
         y = script.skillTracker.draw(g, x, y)
     }
 
-    override fun drawProgressImage(g: Graphics, startY: Int) {
-        TODO("Not yet implemented")
-    }
-
     override fun drawTitle(g: Graphics, x: Int, y: Int) {
         drawTitle(g, "krul Runes", x, y)
 

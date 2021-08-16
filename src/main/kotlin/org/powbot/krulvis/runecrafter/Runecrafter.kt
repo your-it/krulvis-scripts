@@ -27,6 +27,8 @@ class Runecrafter : ATScript() {
         skillTracker.addSkill(Skill.RUNECRAFTING)
     }
 
+    override val painter: ATPainter<*> = RunecrafterPainter(this)
+
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
 

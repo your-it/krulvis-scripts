@@ -24,6 +24,7 @@ import java.util.*
     category = ScriptCategory.Thieving
 )
 class Thiever : ATScript() {
+    override val painter: ATPainter<*> = ThieverPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 

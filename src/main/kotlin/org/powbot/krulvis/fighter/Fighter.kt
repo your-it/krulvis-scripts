@@ -7,7 +7,9 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.fighter.tree.branch.ShouldBank
+import org.powbot.mobile.drawing.Graphics
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -31,10 +33,17 @@ import org.powbot.krulvis.fighter.tree.branch.ShouldBank
     ]
 )
 class Fighter : ATScript() {
+    override val painter: ATPainter<*> = FighterPainter(this)
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
     val food get() = Food.valueOf(getOption<String>("food")!!)
 
     val monsters get() = getOption<String>("monster")!!.split(",")
     val maxLevel get() = getOption<Int>("max_level")!!
+}
+
+class FighterPainter(script: Fighter) : ATPainter<Fighter>(script, 10) {
+    override fun paint(g: Graphics) {
+        TODO("Not yet implemented")
+    }
 }

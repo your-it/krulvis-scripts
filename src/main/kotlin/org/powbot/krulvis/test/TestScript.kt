@@ -7,11 +7,14 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.mobile.drawing.Graphics
 import java.util.concurrent.atomic.AtomicInteger
 
 @ScriptManifest(name = "testscript", version = "1.0d", description = "")
 class TestScript : ATScript() {
+    override val painter: ATPainter<*> = TestPainter(this)
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
         val coins = Bank.stream().id(995).first()
@@ -67,6 +70,14 @@ class TestScript : ATScript() {
         }
     }
 
+}
+
+class TestPainter(script: TestScript) : ATPainter<TestScript>(script) {
+    override fun paint(g: Graphics) {
+        var y = this.y
+        drawSplitText(g, "Hi there", "Test", x, y)
+        y += yy
+    }
 }
 
 fun main() {

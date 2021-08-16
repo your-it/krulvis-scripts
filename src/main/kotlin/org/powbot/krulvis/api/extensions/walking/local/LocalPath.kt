@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.walking.local
 
+import org.powbot.api.Color.CYAN
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.extensions.walking.Path
@@ -11,8 +12,6 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.Movement
 import org.powbot.mobile.BotManager
 import org.powbot.mobile.drawing.Graphics
-import java.awt.Color
-import java.awt.Graphics2D
 import java.util.logging.Logger
 
 class LocalPath(val actions: List<LocalEdge>) : Path {
@@ -75,7 +74,7 @@ class LocalPath(val actions: List<LocalEdge>) : Path {
         val flags = Movement.collisionMap(me.tile().floor()).flags()
         forEach {
             if (it is LocalDoorEdge) {
-                it.destination.drawOnScreen(g, null, Color.CYAN, null)
+                it.destination.drawOnScreen(g, null, CYAN, null)
             } else {
 //                it.destination.drawCollisions(g, flags)
             }

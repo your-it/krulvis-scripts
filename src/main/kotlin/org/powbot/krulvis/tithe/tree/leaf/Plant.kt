@@ -25,7 +25,7 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
                 val doneDidIt = waitFor(2500) {
                     !patch.isEmpty(true)
                 }
-                logger.info("Planted on $patch: $doneDidIt")
+                script.log.info("Planted on $patch: $doneDidIt")
             }
         }
     }
