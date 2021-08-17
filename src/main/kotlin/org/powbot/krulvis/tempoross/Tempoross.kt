@@ -137,6 +137,10 @@ class Tempoross : ATScript() {
     }
 
     fun walkPath(path: LocalPath): Boolean {
+        if (path.isEmpty()) {
+            return false
+        }
+        
         val finalTile = path.actions.last().destination
         return if (finalTile.matrix().onMap() && finalTile.distance() > 5) {
             Movement.step(finalTile)
