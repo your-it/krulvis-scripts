@@ -53,8 +53,8 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             }
             return
         }
-        val currentSpot = me.interacting() as Npc
-        if (currentSpot.name() == "Fishing spot") {
+        val currentSpot = me.interacting()
+        if (currentSpot is Npc && currentSpot.name() == "Fishing spot") {
             if (script.blockedTiles.contains(me.tile())
                 || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
             ) {
