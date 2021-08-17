@@ -1,8 +1,8 @@
 package org.powbot.krulvis.api.extensions.items
 
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import java.util.*
 
 enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors: Int) : Item {
@@ -29,7 +29,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
     }
 
     fun getNearestRock(): Optional<GameObject> {
-        return ctx.objects.toStream().filter {
+        return Objects.stream().filter {
             it.hasOre(this)
         }.nearest().findFirst()
     }
@@ -55,7 +55,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
         }
 
         fun Tile.getOre(): Ore? {
-            val rock = ctx.objects.toStream().at(this).name("Rock").findFirst()
+            val rock = Objects.stream().at(this).name("Rock").findFirst()
             return if (rock.isPresent) {
                 values().firstOrNull { ore ->
                     rock.get().hasOre(ore)

@@ -1,15 +1,18 @@
 package org.powbot.krulvis.tempoross
 
+import org.powbot.api.Color.BLACK
+import org.powbot.api.Color.GREEN
+import org.powbot.api.Color.ORANGE
+import org.powbot.api.Color.RED
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powerbot.script.Tile
-import java.awt.Color
-import java.awt.Graphics2D
+import org.powbot.mobile.drawing.Graphics
 
 class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250) {
 
-    override fun paint(g: Graphics2D) {
+    override fun paint(g: Graphics) {
         var y = this.y
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
@@ -30,8 +33,8 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
             y += yy
             blockedTiles.forEach {
                 val t = it
-                if (t != Tile.NIL) {
-                    it.drawOnScreen(g, null, Color.RED)
+                if (t != Tile.Nil) {
+                    it.drawOnScreen(g, null, RED)
                 }
             }
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
@@ -41,7 +44,7 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
                         tile.drawOnScreen(
                             g,
                             null,
-                            if (blockedTiles.contains(tile)) Color.BLACK else if (dangerous) Color.ORANGE else Color.GREEN
+                            if (blockedTiles.contains(tile)) BLACK else if (dangerous) ORANGE else GREEN
                         )
                     }
                 }
@@ -74,29 +77,7 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250
         script.skillTracker.draw(g, x, y)
     }
 
-    override fun drawTitle(g: Graphics2D, x: Int, y: Int) {
+    override fun drawTitle(g: Graphics, x: Int, y: Int) {
         drawTitle(g, "Tempoross", x - 10, y - 4)
-    }
-
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
-        var y = startY
-        drawSplitText(
-            g,
-            "Reward credits: ",
-            "${script.rewardGained}, ${script.timer.getPerHour(script.rewardGained)}/hr",
-            x,
-            y
-        )
-        y += yy
-        if (script.rounds > 0) {
-            drawSplitText(
-                g,
-                "Points obtained: ",
-                "${script.pointsObtained / script.rounds}/round",
-                x,
-                y
-            )
-        }
-        y = script.skillTracker.draw(g, x, y)
     }
 }

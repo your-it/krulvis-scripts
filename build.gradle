@@ -1,41 +1,57 @@
 import javax.swing.filechooser.FileSystemView
 
-plugins {
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+
+buildscript {
+    dependencies {
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.17"
+    }
 }
 
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+}
+
+ext.grpc_version = "1.38.0"
+ext.grpc_kt_version = "1.1.0"
 group 'org.powbot.krulvis'
+ext.clientName = "mobile-client-v2"
 version '1.0-SNAPSHOT'
-String clientName = "PowBot"
-//String clientName = "powbot-client"
 
-
-File powRoot = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), ".powbot")
-File powDeps = new File(powRoot, "/client")
-File powScripts = new File(powRoot, "/scripts")
+def powRoot = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), ".powbot")
+def powDeps = new File(powRoot, "/client")
+def powScripts = new File(powRoot, "/scripts")
+def mobileClient = new File("/home/krulvis/Nextcloud/RSFarm")
 
 repositories {
     mavenCentral()
     flatDir {
         dirs(powDeps)
+        dirs("/home/krulvis/IdeaProjects/mobile-v2/mobile-client/release")
     }
 }
 
+
 dependencies {
-//    runtime fileTree(dir: powDeps, include: "${clientName}.jar")
-    implementation name: clientName
-//    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
-//    implementation project(":api")
+    implementation name: "mobile-client"
+    implementation name: "scriptloader-all"
+//    implementation 'com.google.guava:guava:30.1.1-android'
+    implementation 'com.google.code.gson:gson:2.8.7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+}
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 compileKotlin {
     kotlinOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
         jvmTarget = "1.8"
     }
 }
-
 
 task jarScriptsOutput(type: Jar) {
     println(powScripts)
@@ -43,8 +59,31 @@ task jarScriptsOutput(type: Jar) {
 }
 
 task copyScriptJar(type: Copy) {
+    group = "extras"
     dependsOn(jarScriptsOutput)
     from("build/libs")
     include "*.jar"
-    into(powScripts)
+    into(mobileClient)
+//    into(powScripts)
+}
+
+task dexifyScripts(type: Exec) {
+    group = "extras"
+    dependsOn(copyScriptJar)
+    workingDir "/home/krulvis/Nextcloud/RSFarm"
+    commandLine '/home/krulvis/.powbot/android/build-tools/30.0.3/d8', 'powbotscripts-mobile-1.0-SNAPSHOT.jar', '--intermediate',
+            '--output', 'dexified_scripts.jar'
+//            '--lib', '/home/krulvis/Android/Sdk/platforms/android-29/android.jar'
+    doLast {
+        commandLine("echo \$(java -version)")
+        println "Dexified scripts!"
+    }
+}
+
+task placeDexedJarInResources(type: Copy) {
+    group = "extras"
+    dependsOn(dexifyScripts)
+    from("/home/krulvis/Nextcloud/RSFarm")
+    include "dexified_scripts.jar"
+    into("src/main/resources/org/powbot/krulvis")
 }

@@ -1,18 +1,17 @@
 package org.powbot.krulvis.api.extensions.walking.local.nodes
 
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.Condition
+import org.powbot.api.Input
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Movement
 import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder.getLocalNeighbors
-import org.powerbot.script.Condition
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.ClientContext
 
 
 open class LocalTileEdge(
     override val parent: LocalEdge,
-    destination: Tile,
-    finalDestination: Tile
+    destination: Tile
 ) :
-    LocalEdge(destination, finalDestination) {
+    LocalEdge(destination, parent.finalDestination) {
 
     override val type: LocalEdgeType =
         LocalEdgeType.WALKING
@@ -24,15 +23,10 @@ open class LocalTileEdge(
         return 1.0
     }
 
-    override fun getNeighbors(): MutableList<LocalEdge> {
-        return getLocalNeighbors(finalDestination)
-    }
-
     override fun execute(): Boolean {
         if (destination.distance() <= 2) {
-            val matrix = destination.matrix(org.powerbot.script.ClientContext.ctx())
-            return if (ctx.input.move(matrix.nextPoint())) {
-                ctx.input.click(true)
+            val matrix = destination.matrix()
+            return if (matrix?.click() == true) {
                 Condition.wait({
                     destination.distance() == 0.0
                 }, 500, 5)
@@ -40,7 +34,7 @@ open class LocalTileEdge(
                 false
             }
         }
-        return ctx.movement.step(destination)
+        return Movement.step(destination)
     }
 
     override fun toString(): String {

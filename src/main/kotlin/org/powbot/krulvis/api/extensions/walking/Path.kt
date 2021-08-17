@@ -1,10 +1,10 @@
 package org.powbot.krulvis.api.extensions.walking
 
-import org.powerbot.script.Tile
+import org.powbot.api.Tile
 
-abstract class Path {
+interface Path {
 
-    abstract fun traverse(): Boolean
+    fun traverse(): Boolean
 
-    abstract fun finalDestination(): Tile
+    fun finalDestination(): Tile
 }

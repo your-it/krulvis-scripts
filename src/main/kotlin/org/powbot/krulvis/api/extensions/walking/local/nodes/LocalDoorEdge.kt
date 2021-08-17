@@ -1,16 +1,16 @@
 package org.powbot.krulvis.api.extensions.walking.local.nodes
 
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.extensions.walking.PathFinder
 import org.powbot.krulvis.api.extensions.walking.PathFinder.Companion.isDoor
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
 
 
-class LocalDoorEdge(val door: GameObject, parent: LocalEdge, destination: Tile, finalDestination: Tile) :
-    LocalTileEdge(parent, destination, finalDestination) {
+class LocalDoorEdge(val door: GameObject, parent: LocalEdge, destination: Tile) :
+    LocalTileEdge(parent, destination) {
 
     override val type: LocalEdgeType =
         LocalEdgeType.DOOR
@@ -27,7 +27,7 @@ class LocalDoorEdge(val door: GameObject, parent: LocalEdge, destination: Tile, 
     }
 
     fun openedDoor(): Boolean {
-        return ctx.objects.toStream().at(door)
+        return Objects.stream().at(door)
             .noneMatch { it.isDoor() && it.orientation() == door.orientation() }
     }
 

@@ -1,25 +1,31 @@
 package org.powbot.krulvis.test
 
+import org.powbot.api.Color.BLACK
+import org.powbot.api.Color.CYAN
+import org.powbot.api.Color.GREEN
+import org.powbot.api.Color.ORANGE
+import org.powbot.api.Color.RED
+import org.powbot.api.InteractableEntity
+import org.powbot.api.Nameable
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Objects
+import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Leaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powerbot.script.*
-import org.powerbot.script.rt4.Game
-import org.powerbot.script.rt4.GameObject
-import org.powerbot.script.rt4.Npc
-import java.awt.Color
-import java.awt.Graphics2D
+import org.powbot.mobile.drawing.Graphics
 import java.util.*
 
-@Script.Manifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
+@ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
 class TemporossDebug : ATScript() {
 
     lateinit var tempoross: Tempoross
@@ -28,10 +34,10 @@ class TemporossDebug : ATScript() {
     var bossPool = Optional.empty<Npc>()
     var ammo = Optional.empty<Npc>()
     var tether = Optional.empty<GameObject>()
-    var cookSpot = Tile.NIL
+    var cookSpot = Tile.Nil
 
 
-    fun <E : InteractiveEntity> checkPaths(vararg entities: Optional<E>) {
+    fun <E : InteractableEntity> checkPaths(vararg entities: Optional<E>) {
         entities.forEach {
             if (it.isPresent) {
                 tempoross.hasDangerousPath(it.get().tile())
@@ -44,8 +50,8 @@ class TemporossDebug : ATScript() {
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
             if (tempoross.side == Tempoross.Side.UNKNOWN) {
-                if (ctx.npcs.toStream().name("Ammunition crate").findFirst().isPresent) {
-                    val mast = ctx.objects.toStream().name("Mast").nearest().first()
+                if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
+                    val mast = Objects.stream().name("Mast").nearest().first()
                     println("Mast found: $mast, orientation: ${mast.orientation()}")
                     tempoross.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
                     tempoross.mastLocation = mast.tile()
@@ -59,10 +65,10 @@ class TemporossDebug : ATScript() {
                 tempoross.detectDangerousTiles()
 
 
-                val dest = ctx.movement.destination()
-                val destination = if (dest != null && dest != Tile.NIL) dest else me.tile()
+                val dest = Movement.destination()
+                val destination = if (dest != Tile.Nil) dest else me.tile()
                 val validTiles = listOf(tempoross.totemLocation, tempoross.mastLocation)
-                val tetherpoles = ctx.objects.toStream().filter {
+                val tetherpoles = Objects.stream().filter {
                     validTiles.contains(it.tile())
                 }.forEach { println("Found ${it.name()}: ${it.actions().joinToString()}") }
                 println(tetherpoles)
@@ -85,28 +91,26 @@ class TemporossDebug : ATScript() {
         }
     }
 
-    override fun startGUI() {
+    init {
         skillTracker.addSkill(Skill.FISHING)
-        debugComponents = true
-        started = true
         tempoross = Tempoross()
     }
 
 }
 
 class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(script, 10) {
-    override fun paint(g: Graphics2D) {
+    override fun paint(g: Graphics) {
         var y = this.y
         drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
         y += yy
         drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
         y += yy
-        drawSplitText(g, "Destination: ", "${script.ctx.movement.destination()}", x, y)
+        drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
         y += yy
-        val clicked = script.ctx.game.crosshair() == Game.Crosshair.ACTION
-        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
-        drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
-        y += yy
+//        val clicked = Ga.crosshair() == Game.Crosshair.ACTION
+//        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
+//        drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
+//        y += yy
 
         if (script.tether.isPresent) {
             val tether = script.tether.get()
@@ -124,31 +128,31 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString("TP", mm.x, mm.y)
             }
 
-            script.cookSpot.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.anchorLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.bossPoolLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.totemLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.bossWalkLocation.drawOnScreen(g, null, Color.CYAN)
-            script.tempoross.mastLocation.drawOnScreen(g, null, Color.CYAN)
+            script.cookSpot.drawOnScreen(g, null, CYAN)
+            script.tempoross.anchorLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.bossPoolLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.totemLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.bossWalkLocation.drawOnScreen(g, null, CYAN)
+            script.tempoross.mastLocation.drawOnScreen(g, null, CYAN)
 
             val blockedTiles = script.tempoross.blockedTiles.toList()
             val paths = script.tempoross.triedPaths.toList()
 
             blockedTiles.forEach {
                 val t = it
-                if (t != Tile.NIL) {
-                    it.drawOnScreen(g, null, Color.RED)
+                if (t != Tile.Nil) {
+                    it.drawOnScreen(g, null, RED)
                 }
             }
             if (paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
                     val containsBadTile = tiles.any { blockedTiles.contains(it) }
-                    val color = if (containsBadTile) Color.ORANGE else Color.GREEN
+                    val color = if (containsBadTile) ORANGE else GREEN
                     tiles.forEach { tile ->
                         tile.drawOnScreen(
                             g,
                             null,
-                            if (blockedTiles.contains(tile)) Color.BLACK else color
+                            if (blockedTiles.contains(tile)) BLACK else color
                         )
                     }
                 }
@@ -156,19 +160,15 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         }
     }
 
-    fun <E : InteractiveEntity> drawEntity(g: Graphics2D, entity: Optional<E>) {
+    fun <E : InteractableEntity> drawEntity(g: Graphics, entity: Optional<E>) {
         if (entity.isPresent) {
             val e = entity.get()
             if (e.inViewport()) {
-                val matrix = e.tile().matrix(script.ctx).bounds()
-                g.draw(matrix)
-                g.drawString((e as Nameable).name(), matrix.bounds.centerX.toInt(), matrix.bounds.centerY.toInt())
+                val matrix = e.tile().matrix().bounds()
+                g.drawPolygon(matrix)
+                g.drawString((e as Nameable).name(), matrix.getBounds().centerX, matrix.getBounds().centerY)
             }
         }
-    }
-
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
-
     }
 
 }

@@ -1,52 +1,28 @@
 package org.powbot.krulvis.api.script
 
+import com.google.common.eventbus.Subscribe
+import org.powbot.api.Color.WHITE
+import org.powbot.api.event.RenderEvent
+import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.gui.ATGUI
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Discord
-import org.powbot.krulvis.api.utils.Imgur
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.trackers.LootTracker
 import org.powbot.krulvis.api.utils.trackers.SkillTracker
-import org.powerbot.script.PaintListener
-import org.powerbot.script.PollingScript
-import org.powerbot.script.rt4.ClientContext
-import java.awt.Graphics
-import java.awt.Graphics2D
+import org.powbot.mobile.script.ScriptManager
 import java.io.File
 
 
-abstract class ATScript : PollingScript<ClientContext>(), PaintListener {
+abstract class ATScript : TreeScript() {
 
-    override fun start() {
-        println("Starting..")
-        startGUI()
+    override fun onStart() {
+        log.info("Starting..")
         startTracking()
     }
 
-    override fun poll() {
-        if (started) {
-            rootComponent.execute()
-        }
-        sleep(Random.nextInt(100, 200))
-    }
-
     abstract val painter: ATPainter<*>
-
-    /**
-     * Variables used throughout script
-     */
-    val ctx: ClientContext = super.ctx
-
-    var started = false
-    abstract val rootComponent: TreeComponent<*>
-    var lastLeaf: Leaf<*> = SimpleLeaf(this, "Init") {}
     val timer = Timer()
     val skillTracker = SkillTracker(this)
     val lootTracker = LootTracker(this)
@@ -54,13 +30,10 @@ abstract class ATScript : PollingScript<ClientContext>(), PaintListener {
     val walkDelay = DelayHandler(500, 700, oddsModifier, "Walk Delay")
     var nextRun: Int = Random.nextInt(1, 6)
 
-
-    abstract fun startGUI()
-
     fun startTracking() {
-        println("Started tracking thread")
+        log.info("Started tracking thread")
         Thread {
-            while (!ctx.controller.isStopping) {
+            while (!ScriptManager.isStopping()) {
                 skillTracker.track()
 //            inventoryWatcher.watch()
 //            animationWatcher.watch()
@@ -69,10 +42,6 @@ abstract class ATScript : PollingScript<ClientContext>(), PaintListener {
         }.start()
     }
 
-
-    override fun repaint(g: Graphics?) {
-        painter.onRepaint(g as Graphics2D)
-    }
 
     /**
      * Returns the actual script's settings files
@@ -98,16 +67,22 @@ abstract class ATScript : PollingScript<ClientContext>(), PaintListener {
         return File(pb + File.separator + "ScriptSettings" + File.separator + (manifest?.name ?: "EmptyScript"))
     }
 
+    @Subscribe
+    fun onRender(e: RenderEvent) {
+        val g = e.graphics
+        painter.onRepaint(g)
+    }
+
     /**
      * Called whenever the script is stopped, This doesn't actually stop the script
      */
-    override fun stop() {
-        if (timer.getElapsedTime() > 50 * 60 * 1000) {
-            val img = painter.saveProgressImage()
-            val link = Imgur.upload(img)
-            println("Uploaded proggy to imgur: $link")
-            Discord.upload(link)
-        }
+    override fun onStop() {
+//        if (timer.getElapsedTime() > 50 * 60 * 1000) {
+//            val img = painter.saveProgressImage()
+//            val link = Imgur.upload(img)
+//            println("Uploaded proggy to imgur: $link")
+//            Discord.upload(link)
+//        }
     }
 
 }

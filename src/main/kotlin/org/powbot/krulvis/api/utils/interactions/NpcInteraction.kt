@@ -1,8 +1,9 @@
 package org.powbot.krulvis.api.utils.interactions
 
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Interactive
-import org.powerbot.script.rt4.Npc
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Npc
+import org.powbot.api.rt4.Npcs
+import org.powbot.api.rt4.Players
 import java.util.*
 
 class NpcInteraction(
@@ -12,11 +13,11 @@ class NpcInteraction(
 ) :
     Interaction<Npc> {
 
-    constructor(name: String, action: String) : this(name, action, Tile.NIL)
+    constructor(name: String, action: String) : this(name, action, Tile.Nil)
 
     override fun getEntity(): Optional<Npc> =
-        ctx.npcs.toStream().name(name).action(action)
-            .nearest(if (tile == Tile.NIL) ctx.players.local() else tile)
+        Npcs.stream().name(name).action(action)
+            .nearest(if (tile == Tile.Nil) Players.local() else tile)
             .findFirst()
 
 }

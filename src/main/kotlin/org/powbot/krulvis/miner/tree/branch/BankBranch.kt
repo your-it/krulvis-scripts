@@ -5,23 +5,23 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.*
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Game
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
 
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
     override fun validate(): Boolean {
-        val hasHammer = ctx.inventory.containsOneOf(Item.HAMMER)
-        val strutCount = ctx.objects.toStream(15).name("Broken strut").count().toInt()
-        return !ctx.inventory.isFull
+        val hasHammer = Inventory.containsOneOf(Item.HAMMER)
+        val strutCount = Objects.stream(15).name("Broken strut").count().toInt()
+        return !Inventory.isFull()
                 && Tile(3746, 5667, 0).distance() <= 10
-                && ctx.npcs.toStream().name("Pay-dirt").isNotEmpty()
+                && Npcs.stream().name("Pay-dirt").isNotEmpty()
                 && (strutCount == 2 || (hasHammer && strutCount >= 1))
     }
 
@@ -33,14 +33,14 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 
     override fun validate(): Boolean {
         //Some dirty hammer dropping
-        val hammer = ctx.inventory.toStream().id(Item.HAMMER).findFirst()
-        hammer.ifPresent { ctx.game.tab(Game.Tab.INVENTORY) && it.interact("Drop") }
+        val hammer = Inventory.stream().id(Item.HAMMER).findFirst()
+        hammer.ifPresent { Game.tab(Game.Tab.INVENTORY) && it.interact("Drop") }
 
         //Actual should bank
-        val full = ctx.inventory.isFull
-        return full || ctx.bank.opened() || ctx.depositBox.opened()
+        val full = Inventory.isFull()
+        return full || Bank.opened() || DepositBox.opened()
                 || (script.shouldEmptySack
-                && !ctx.inventory.emptyExcept(*Data.TOOLS)
+                && !Inventory.emptyExcept(*Data.TOOLS)
                 && (full || script.getMotherloadCount() == 0))
     }
 
@@ -54,9 +54,12 @@ class ShouldEmptySack(script: Miner) : Branch<Miner>(script, "Should empty sack"
         val count = script.getMotherloadCount()
         if (count >= 81) {
             script.shouldEmptySack = true
-        } else if (count == 0 && ctx.inventory.emptyExcept(*Data.TOOLS)) {
+        } else if (count == 0 && Inventory.emptyExcept(*Data.TOOLS)) {
             println("Sack is empty and inventory contains only tools")
             script.shouldEmptySack = false
+        }
+        if (script.shouldEmptySack) {
+            println("Sack contains: $count pay-dirt")
         }
         return script.shouldEmptySack && script.getSack().isPresent
     }
@@ -78,7 +81,7 @@ class ShouldDrop(script: Miner) : Branch<Miner>(script, "Should Drop") {
 class HasPayDirt(script: Miner) : Branch<Miner>(script, "Has pay-dirt") {
 
     override fun validate(): Boolean {
-        return ctx.inventory.containsOneOf(*Ore.PAY_DIRT.ids)
+        return Inventory.containsOneOf(*Ore.PAY_DIRT.ids)
     }
 
     override val successComponent: TreeComponent<Miner> = DropPayDirt(script)
@@ -88,12 +91,12 @@ class HasPayDirt(script: Miner) : Branch<Miner>(script, "Has pay-dirt") {
 class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
 
     override fun validate(): Boolean {
-        return ctx.bank.opened() || ctx.depositBox.opened()
+        return Bank.opened() || DepositBox.opened()
     }
 
     override val successComponent: TreeComponent<Miner> = HandleBank(script)
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
-        val nearestBank = ctx.bank.getNearestBank(true)
+        val nearestBank = Bank.getNearestBank(true)
         println("Opening: ${nearestBank.name}")
         nearestBank.open()
     }

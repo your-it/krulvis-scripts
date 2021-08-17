@@ -1,9 +1,11 @@
 package org.powbot.krulvis.api.utils.trackers
 
+import org.powbot.api.rt4.Skills
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Timer
+import org.powbot.mobile.drawing.Graphics
 import java.awt.Graphics2D
 
 class SkillTracker(val script: ATScript) {
@@ -25,13 +27,13 @@ class SkillTracker(val script: ATScript) {
     fun track() {
         if (started) {
             skills.forEachIndexed { index, skill ->
-                currentLvl[index] = script.ctx.skills.realLevel(skill.index)
-                currentXp[index] = script.ctx.skills.experience(skill.index)
+                currentLvl[index] = Skills.realLevel(skill.index)
+                currentXp[index] = Skills.experience(skill.index)
 
                 gainedLvl[index] = currentLvl[index] - startLvl[index]
                 gainedXp[index] = currentXp[index] - startXp[index]
             }
-        } else if (skills.sumBy { script.ctx.skills.experience(it.index) } > 0) {
+        } else if (skills.sumBy { Skills.experience(it.index) } > 0) {
             startTracker()
             started = true
         }
@@ -54,12 +56,12 @@ class SkillTracker(val script: ATScript) {
 
     private fun startTracker() {
         skills.forEachIndexed { index, skill ->
-            startLvl[index] = script.ctx.skills.realLevel(skill.index)
-            startXp[index] = script.ctx.skills.experience(skill.index)
+            startLvl[index] = Skills.realLevel(skill.index)
+            startXp[index] = Skills.experience(skill.index)
         }
     }
 
-    fun draw(g: Graphics2D, x: Int, y: Int, t: Timer = script.timer): Int {
+    fun draw(g: Graphics, x: Int, y: Int, t: Timer = script.timer): Int {
         var y = y
         skills.forEachIndexed { index, skill ->
             val gainedXp = this.gainedXp[index]
@@ -69,26 +71,26 @@ class SkillTracker(val script: ATScript) {
                 val gains = if (gainedXp > 10000) ATPainter.formatAmount(gainedXp) else "" + gainedXp
                 val gainshr = if (gainedHr > 10000) ATPainter.formatAmount(gainedHr) else "" + gainedHr
                 y += 13
-                script.painter!!.drawSplitText(
-                    g,
-                    "$skill XP: ",
-                    "$gains, $gainshr/hr",
-                    x,
-                    y
-                )
-                y += 13
-                val ttnl = t.getTimeToNextLevel(
-                    gainedHr,
-                    currentLvl[index],
-                    currentXp[index].toLong()
-                )
-                script.painter.drawSplitText(
-                    g,
-                    "$skill Lvl: ",
-                    "${currentLvl[index]}, ($gainedLvl) TTNL: $ttnl",
-                    x,
-                    y
-                )
+//                script.painter.drawSplitText(
+//                    g,
+//                    "$skill XP: ",
+//                    "$gains, $gainshr/hr",
+//                    x,
+//                    y
+//                )
+//                y += 13
+//                val ttnl = t.getTimeToNextLevel(
+//                    gainedHr,
+//                    currentLvl[index],
+//                    currentXp[index].toLong()
+//                )
+//                script.painter.drawSplitText(
+//                    g,
+//                    "$skill Lvl: ",
+//                    "${currentLvl[index]}, ($gainedLvl) TTNL: $ttnl",
+//                    x,
+//                    y
+//                )
             }
         }
         return y + 13

@@ -1,11 +1,11 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.ATContext.walk
-import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.TitheFarmer
-import org.powerbot.script.Tile
 
 class WalkBack(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Walking back") {
     override fun execute() {

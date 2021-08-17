@@ -1,6 +1,6 @@
 package org.powbot.krulvis.api.utils
 
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.getCount
 
 object LastMade {
@@ -39,10 +39,10 @@ object LastMade {
     class LastMadeTracker(val id: Int, var lastMadeAmount: Int, var lastMadeTime: Long) {
 
         fun getCurrentAmount(): Int {
-            return ctx.inventory.getCount(true, id)
+            return Inventory.getCount(true, id)
         }
 
-        constructor(id: Int) : this(id, ctx.inventory.getCount(true, id), 0)
+        constructor(id: Int) : this(id, Inventory.getCount(true, id), 0)
 
         fun stoppedMaking(time: Long = 4000): Boolean {
             val amount = getCurrentAmount()

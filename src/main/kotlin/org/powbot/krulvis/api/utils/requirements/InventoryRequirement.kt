@@ -1,11 +1,10 @@
 package org.powbot.krulvis.api.utils.requirements
 
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powerbot.script.rt4.Bank
 
 
 class InventoryRequirement(
@@ -25,12 +24,12 @@ class InventoryRequirement(
         }
 
         override fun getCount(countNoted: Boolean): Int {
-            return ctx.inventory.toStream().id(this.id).count().toInt()
+            return Inventory.stream().id(this.id).count().toInt()
         }
     }, amount, false, allowMore, countNoted)
 
     fun getCount(): Int {
-        return (if (onlyBest) ctx.inventory.toStream().id(item.id).count(true).toInt()
+        return (if (onlyBest) Inventory.stream().id(item.id).count(true).toInt()
         else item.getInventoryCount(countNoted))
     }
 
@@ -49,11 +48,11 @@ class InventoryRequirement(
             return withdrawExact(item.id, amount, wait)
         } else {
             if (count > amount) {
-                item.ids.forEach { ctx.bank.deposit(it, Bank.Amount.ALL) }
+                item.ids.forEach { Bank.deposit(it, Bank.Amount.ALL) }
                 if (wait) waitFor { !item.inInventory() }
             } else if (count < amount) {
                 return if (allowMore && amount == 99) {
-                    ctx.bank.withdraw(id, Bank.Amount.ALL)
+                    Bank.withdraw(id, Bank.Amount.ALL)
                 } else
                     item.withdrawExact(amount, false, wait)
             }

@@ -1,10 +1,12 @@
 package org.powbot.krulvis.tithe.tree.branch
 
+import org.powbot.api.rt4.Camera
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -36,7 +38,7 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
             script.chillTimer.reset()
         }
         debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
-        return ctx.inventory.toStream().list()
+        return Inventory.stream().list()
             .none { it.id() in Data.WATER_CANS } || !stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })
     }
@@ -56,21 +58,21 @@ class ShouldDeposit(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should d
     override val failedComponent: TreeComponent<TitheFarmer> = Leave(script)
 
     override fun validate(): Boolean {
-        return ctx.inventory.containsOneOf(*Data.HARVEST)
+        return Inventory.containsOneOf(*Data.HARVEST)
     }
 }
 
 class ShouldMoveCamera(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should turn camera") {
     override val successComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Moving camera") {
-        ctx.camera.angle(Random.nextInt(255, 290))
-        ctx.camera.pitch(Random.nextInt(95, 99))
+        Camera.angle(Random.nextInt(255, 290))
+        Camera.pitch(Random.nextInt(95, 99))
         waitFor { !validate() }
     }
 
     override val failedComponent: TreeComponent<TitheFarmer> = ShouldPlant(script)
 
     override fun validate(): Boolean {
-        return !ctx.client().isMobile && (ctx.camera.yaw() !in 255..290 || ctx.camera.pitch() < 95)
+        return Camera.yaw() !in 255..290 || Camera.pitch() < 95
     }
 }
 

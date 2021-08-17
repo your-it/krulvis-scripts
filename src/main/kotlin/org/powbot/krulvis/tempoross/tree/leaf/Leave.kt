@@ -1,10 +1,11 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
+import org.powbot.api.rt4.Npc
+import org.powbot.api.rt4.Npcs
 import org.powbot.krulvis.api.ATContext.interact
-import org.powbot.krulvis.api.script.tree.Leaf
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powerbot.script.rt4.Npc
 
 
 class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
@@ -12,14 +13,11 @@ class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
         script.blockedTiles.clear()
         script.triedPaths.clear()
         val leaveNpc = getLeaveNpc()
-        if (leaveNpc != Npc.NIL) {
-            println("Leaving island first..")
-            if (interact(leaveNpc, "Leave")) {
-                waitFor(5000) { getLeaveNpc() == Npc.NIL }
-            }
+        if (leaveNpc != null && interact(leaveNpc, "Leave")) {
+            waitFor(5000) { getLeaveNpc() == null }
         }
     }
 
-    fun getLeaveNpc(): Npc = ctx.npcs.toStream().action("Leave").nearest().first()
+    fun getLeaveNpc(): Npc? = Npcs.stream().action("Leave").nearest().firstOrNull()
 
 }

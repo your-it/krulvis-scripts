@@ -1,110 +1,85 @@
 package org.powbot.krulvis.test
 
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.toRegionTile
+import org.powbot.api.*
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.stream.widget.ComponentStream
+import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.script.ATScript
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.tithe.Patch
-import org.powbot.krulvis.tithe.Patch.Companion.isPatch
-import org.powerbot.script.GameActionEvent
-import org.powerbot.script.GameActionListener
-import org.powerbot.script.Script
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Component
-import org.powerbot.script.rt4.Constants.*
-import org.powerbot.script.rt4.GameObject
-import java.awt.Graphics2D
-import java.util.*
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.mobile.drawing.Graphics
+import java.util.concurrent.atomic.AtomicInteger
 
-@Script.Manifest(name = "TestScript", description = "Some testing", version = "1.0")
-class TestScript : ATScript(), GameActionListener {
+@ScriptManifest(name = "testscript", version = "1.0d", description = "")
+class TestScript : ATScript() {
+    override val painter: ATPainter<*> = TestPainter(this)
 
-
-    val tile = Tile(7075, 3761, 0)
-
-    override val painter: ATPainter<*>
-        get() = Painter(this)
-
-    var crate: Optional<GameObject> = Optional.empty()
-
-    var patches = listOf<Patch>()
-    override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
-        override fun execute() {
-//            ctx.objects.toStream().at(Tile(3752, 5674, 0)).list().forEach {
-//                println("${it.name()}, actions=${it.actions().joinToString()}")
-//            }
-//            crate = ctx.objects.toStream().at(Tile(3752, 5674, 0)).name("Crate").findFirst()
-//            println("Crate object present=${crate.isPresent}")
-        }
+    override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+        val coins = Bank.stream().id(995).first()
+        val inventoryCount: Int = Inventory.stream().count(true).toInt()
+        val count = AtomicInteger(0)
+//        val w = Widgets.widget(162)
+//        println("Widget=$w")
+//        val children = w.components()
+//        println("Children count=${children.size}")
+        println("Found continue: ${getContinue()}")
+        sleep(Random.nextInt(2000, 5000))
     }
 
-    fun getCornerPatchTile(): Tile {
-        val allPatches = ctx.objects.toStream(25).filter { it.isPatch() }.list()
-        val maxX = allPatches.minOf { it.tile().x() }
-        val maxY = allPatches.maxOf { it.tile().y() }
-        return Tile(maxX + 5, maxY, 0)
-    }
-
-    val inputTexts = listOf(
-        "enter message to", "enter amount", "set a price for each item",
-        "enter name", "how many do you wish to buy", "please pick a unique display name",
-        "how many charges would you like to add", "enter the player name",
-        "what would you like to buy"
-    )
-
-    fun waitingForInput(): Boolean {
-        val widget = ctx.widgets.widget(162).takeIf { w ->
-            w.any { wc ->
-                val text = wc.text().toLowerCase()
-                wc.visible() && inputTexts.any { it in text }
+    fun getContinue(): Component? {
+        for (a in Constants.CHAT_CONTINUES) {
+            println("Checking continue component for widget: ${a[0]}")
+            val c: Component =
+                ComponentStream(get(true, listOf(Widgets.widget(a[0]))).stream()).textContains(" here to continue")
+                    .first()
+            if (!c.valid()) {
+                continue
             }
+            return c
         }
-        return widget?.any { it.visible() && it.text().endsWith("*") } ?: false
+        return null
     }
 
-    override fun startGUI() {
-        debugComponents = true
-        started = true
+    private fun get(children: Boolean, widgets: Iterable<Widget?>): List<Component> {
+        return widgets.filterNotNull().flatMap {
+            getComponents(children, it)
+        }
     }
 
-    override fun stop() {
-        painter.saveProgressImage()
+    private fun getComponents(children: Boolean, w: Widget): List<Component> {
+        return w.components().flatMap {
+            val l = mutableListOf(it)
+            if (children && it.components().isNotEmpty()) {
+                l.addAll(getComponents(children, it))
+            }
+
+            l
+        }
     }
 
-    override fun onAction(evt: GameActionEvent) {
-        val tithe = ctx.objects.toStream().id(evt.id).nearest().findFirst()
+    private fun getComponents(children: Boolean, w: Component): List<Component> {
+        return w.components().flatMap {
+            val l = mutableListOf(it)
+            if (children && it.components().isNotEmpty()) {
+                l.addAll(getComponents(children, it))
+            }
 
-        println("Var0: ${evt.var0}, WidgetId: ${evt.widgetId}, Interaction: ${evt.interaction}, ID: ${evt.id}, Name: ${evt.rawEntityName}, OpCode: ${evt.rawOpcode}")
-        if (tithe.isPresent) {
-            val localTile = tithe.get().tile().toRegionTile()
-            println("Nearest ${evt.rawEntityName} farm: Local X: ${localTile.x()}, Y: ${localTile.y()}")
+            l
         }
     }
 
 }
 
-class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
-    override fun paint(g: Graphics2D) {
+class TestPainter(script: TestScript) : ATPainter<TestScript>(script) {
+    override fun paint(g: Graphics) {
         var y = this.y
-//        val crate = script.crate
-//
-//        crate.ifPresent {
-//            it.tile().drawOnScreen(g, "Crate")
-//        }
-
-        val comp = ctx.widgets.component(MOBILE_TAB_WINDOW_WIDGET_ID, MOBILE_TAB_WINDOW_COMPONENT_ID)
-        val viewport = comp.boundingRect()
-        g.draw(viewport)
-
-    }
-
-
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
-        var y = startY
-        g.drawString("Test string", x, y)
+        drawSplitText(g, "Hi there", "Test", x, y)
         y += yy
     }
+}
+
+fun main() {
+    TestScript().startScript()
 }

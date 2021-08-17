@@ -1,7 +1,7 @@
 package org.powbot.krulvis.orbcrafter.tree.branch
 
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.orbcrafter.OrbCrafter
 
 class ShouldBank(script: OrbCrafter) : Branch<OrbCrafter>(script, "ShouldBank") {

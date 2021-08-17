@@ -1,11 +1,15 @@
 package org.powbot.krulvis.api.extensions.walking
 
-import org.powerbot.script.ClientContext
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Constants
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Constants
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Skills
+import java.util.*
 
-interface PathFinder {
+interface PathFinder<P : Path> {
+
+    fun findPath(end: Tile?): P
 
     companion object {
         val actions = listOf("Open", "Use", "Enter", "Pay")
@@ -27,7 +31,7 @@ interface PathFinder {
 
         fun GameObject.canUseDoor(): Boolean {
             if (tile() == Tile(2611, 3394, 0)) {
-                return ClientContext.ctx().skills.level(Constants.SKILLS_ATTACK) >= 68
+                return Skills.level(Constants.SKILLS_ATTACK) >= 68
             }
             return !blockedDoors.contains(tile())
         }
@@ -40,12 +44,12 @@ interface PathFinder {
             return name() == "Rockfall" && actions().contains("Mine")
         }
 
-        fun Tile.getPassableObject(orientation: Int): GameObject {
-            return ClientContext.ctx().objects.toStream().at(this).action(actions).filter {
+        fun Tile.getPassableObject(orientation: Int): Optional<GameObject> {
+            return Objects.stream().at(this).action(actions).filter {
                 it.name().isNotEmpty() &&
                         ((it.isRockfall()) || (it.isDoor() && it.orientation() == orientation && it.canUseDoor()))
 
-            }.first()
+            }.findFirst()
         }
 
         fun Tile.rockfallBlock(flags: Array<IntArray>): Boolean {
