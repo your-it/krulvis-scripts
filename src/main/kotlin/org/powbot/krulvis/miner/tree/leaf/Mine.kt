@@ -19,16 +19,15 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
 
     override fun execute() {
         val rock = Objects.stream()
-            .within(script.profile.center, script.profile.radius.toDouble())
             .filter {
-                it.tile() in script.profile.oreLocations && it.hasOre()
+                it.tile() in script.rockLocations && it.hasOre()
             }.nearest().findFirst()
         rock.ifPresent {
             val path = LocalPathFinder.findPath(it.tile().getWalkableNeighbor())
             if (path.containsSpecialNode()) {
                 path.traverse()
             } else {
-                if ((mineDelay.isFinished() || script.profile.fastMining)
+                if ((mineDelay.isFinished() || !script.bankOres)
                     && interact(rock.get(), "Mine")
                 ) {
                     debug("Interacted with")

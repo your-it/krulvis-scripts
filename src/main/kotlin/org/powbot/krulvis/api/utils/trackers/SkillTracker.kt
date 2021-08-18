@@ -33,7 +33,7 @@ class SkillTracker(val script: ATScript) {
                 gainedLvl[index] = currentLvl[index] - startLvl[index]
                 gainedXp[index] = currentXp[index] - startXp[index]
             }
-        } else if (skills.sumBy { Skills.experience(it.index) } > 0) {
+        } else if (skills.sumOf { Skills.experience(it.index) } > 0) {
             startTracker()
             started = true
         }
@@ -70,37 +70,36 @@ class SkillTracker(val script: ATScript) {
                 val gainedHr = t.getPerHour(gainedXp)
                 val gains = if (gainedXp > 10000) ATPainter.formatAmount(gainedXp) else "" + gainedXp
                 val gainshr = if (gainedHr > 10000) ATPainter.formatAmount(gainedHr) else "" + gainedHr
-                y += 13
-//                script.painter.drawSplitText(
-//                    g,
-//                    "$skill XP: ",
-//                    "$gains, $gainshr/hr",
-//                    x,
-//                    y
-//                )
-//                y += 13
-//                val ttnl = t.getTimeToNextLevel(
-//                    gainedHr,
-//                    currentLvl[index],
-//                    currentXp[index].toLong()
-//                )
-//                script.painter.drawSplitText(
-//                    g,
-//                    "$skill Lvl: ",
-//                    "${currentLvl[index]}, ($gainedLvl) TTNL: $ttnl",
-//                    x,
-//                    y
-//                )
+                y = script.painter.drawSplitText(
+                    g,
+                    "$skill XP: ",
+                    "$gains, $gainshr/hr",
+                    x,
+                    y
+                )
+                val ttnl = t.getTimeToNextLevel(
+                    gainedHr,
+                    currentLvl[index],
+                    currentXp[index].toLong()
+                )
+                y = script.painter.drawSplitText(g, "TTNL:", ttnl, x, y)
+                y = script.painter.drawSplitText(
+                    g,
+                    "$skill Lvl: ",
+                    "${currentLvl[index]}, ($gainedLvl)",
+                    x,
+                    y
+                )
             }
         }
-        return y + 13
+        return y
     }
 
     /**
      * For ProgressHandler
      */
     fun getProgress(): Map<String, Int> {
-        return skills.map { Pair(it.name + "xp", gainedXp[skills.indexOf(it)]) }.toMap()
+        return skills.associate { Pair(it.name + "xp", gainedXp[skills.indexOf(it)]) }
     }
 
     /**
@@ -115,7 +114,7 @@ class SkillTracker(val script: ATScript) {
      * For Activity tracker
      */
     fun getTotalXPGained(): Int {
-        return gainedXp.sumBy { it }
+        return gainedXp.sumOf { it }
     }
 
 }

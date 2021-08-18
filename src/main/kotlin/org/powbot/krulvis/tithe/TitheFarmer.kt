@@ -19,6 +19,7 @@ import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.Patch.Companion.refresh
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
+import org.powbot.mobile.script.ScriptManager
 import java.util.logging.Logger
 
 @ScriptManifest(

@@ -3,10 +3,10 @@ package org.powbot.krulvis.tempoross.tree.branch
 import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.rt4.Objects
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
 import org.powbot.krulvis.tempoross.Tempoross
@@ -19,7 +19,7 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
             return !waitFor(10000) { script.getEnergy() > -1 }
         }
         return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
-                && !Npcs.stream().name("Ammunition crate").findFirst().isPresent
+                && Npcs.stream().name("Ammunition crate").firstOrNull() == null
                 && Npcs.stream().noneMatch { it.actions().contains("Leave") }
     }
 

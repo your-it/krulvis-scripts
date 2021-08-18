@@ -17,7 +17,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 300) {
+abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 350) {
 
     val useLayout = lines > 0
     private var username: String? = null
@@ -44,7 +44,7 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         }
     }
 
-    fun getLayoutHeight(): Int = 51 + lines * 10
+    fun getLayoutHeight(): Int = 51 + lines * 20
 
     fun drawLayout(g: Graphics, lowestY: Int = this.lowestY): Int {
 

@@ -22,7 +22,7 @@ import java.util.*
 class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
-        return script.profile.center.distance() < script.profile.radius
+        return script.rockLocations.any { it.distance() < 5 }
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)
@@ -33,12 +33,12 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
 
     val hopDelay = DelayHandler(2000, script.oddsModifier, "Hop delay")
     override fun validate(): Boolean {
-        if (!script.profile.hopFromPlayers) {
+        if (!script.hopFromPlayers) {
             return false
         }
         val nearByPlayers = Players.stream().filter {
             it.name() != Players.local().name() && it.tile()
-                .distanceTo(script.profile.center) <= script.profile.radius
+                .distanceTo(script.rockLocations[Random.nextInt(0, script.rockLocations.size)]) <= 5
         }
         if (nearByPlayers.isNotEmpty()) {
             if (hopDelay.isFinished()) {

@@ -10,7 +10,7 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
-class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 12, 250) {
+class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 10, 350) {
 
     override fun paint(g: Graphics) {
         var y = this.y

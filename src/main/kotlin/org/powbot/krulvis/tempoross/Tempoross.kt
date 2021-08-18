@@ -140,7 +140,7 @@ class Tempoross : ATScript() {
         if (path.isEmpty()) {
             return false
         }
-        
+
         val finalTile = path.actions.last().destination
         return if (finalTile.matrix().onMap() && finalTile.distance() > 5) {
             Movement.step(finalTile)
@@ -316,4 +316,8 @@ class Tempoross : ATScript() {
     }
 
     fun getLadder(): Optional<GameObject> = Objects.stream().name("Rope ladder").action("Climb").findFirst()
+}
+
+fun main() {
+    Tempoross().startScript()
 }

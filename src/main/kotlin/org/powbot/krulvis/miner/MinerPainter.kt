@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner
 
+import org.powbot.api.rt4.Varpbits
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
