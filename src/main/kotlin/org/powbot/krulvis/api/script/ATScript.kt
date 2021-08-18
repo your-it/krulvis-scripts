@@ -16,7 +16,6 @@ import org.powbot.krulvis.api.utils.trackers.SkillTracker
 import org.powbot.mobile.script.ScriptManager
 import java.io.File
 
-
 abstract class ATScript : TreeScript() {
 
     override fun onStart() {
