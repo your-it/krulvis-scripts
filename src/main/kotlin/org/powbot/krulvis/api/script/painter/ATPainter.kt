@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.script.painter
 
+import org.powbot.api.Color
 import org.powbot.api.Color.BLACK
 import org.powbot.api.Color.BLACK_A
 import org.powbot.api.Color.GREEN
@@ -21,8 +22,8 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
 
     val useLayout = lines > 0
     private var username: String? = null
-    val x = 15
-    val lowestY = 335
+    var x = 15
+    var lowestY = 335
     var y = 20
     val custom = DynamicColor(0.40f, 0.75f, 0.01f)
 
@@ -48,12 +49,12 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
 
     fun drawLayout(g: Graphics, lowestY: Int = this.lowestY): Int {
 
-        var x = 10
+        var x = this.x - 5
         val h = getLayoutHeight()
         var y = lowestY - h
         val mid = (x + width / 2.0).toInt()
 
-        g.setColor(BLACK_A)
+        g.setColor(bgColor())
         g.fillRect(x, y, width, h)
         val dynColor = custom[true]
         g.setColor(dynColor)
@@ -73,6 +74,8 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         )
         return y
     }
+
+    open fun bgColor(): Int = BLACK_A
 
     open fun drawTitle(g: Graphics, x: Int, y: Int) {
         drawTitle(g, script.manifest.name, x, y)

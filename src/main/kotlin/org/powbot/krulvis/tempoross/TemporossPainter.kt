@@ -1,5 +1,6 @@
 package org.powbot.krulvis.tempoross
 
+import org.powbot.api.Color
 import org.powbot.api.Color.BLACK
 import org.powbot.api.Color.GREEN
 import org.powbot.api.Color.ORANGE
@@ -12,13 +13,20 @@ import org.powbot.mobile.drawing.Graphics
 
 class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 10, 350) {
 
+    init {
+        x = 1425
+        lowestY = 320
+    }
+
+    override fun bgColor(): Int = Color.argb(150, 0, 0,0)
+
     override fun paint(g: Graphics) {
         var y = this.y
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
         val spot = me.interacting()
 
-        drawSplitText(g, "Leaf: ", "${script.lastLeaf.name}", x, y)
+        drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
         y += yy
         if (debugComponents) {
             drawSplitText(g, "My Animation: ", "${me.animation()}", x, y)

@@ -23,6 +23,7 @@ import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -48,9 +49,8 @@ class Tempoross : ATScript() {
 
     init {
         skillTracker.addSkill(Skill.FISHING)
+        debugComponents = false
     }
-
-//    override val painter: ATPainter<*> = TemporossPainter(this)
 
     val waveTimer = Timer(0)
     var side: Side = Side.UNKNOWN

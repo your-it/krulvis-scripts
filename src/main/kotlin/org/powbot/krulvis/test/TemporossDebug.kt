@@ -11,7 +11,6 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
@@ -19,9 +18,8 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
+import org.powbot.krulvis.tempoross.Data
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.input.Touchscreen
@@ -49,14 +47,21 @@ class TemporossDebug : ATScript() {
 
     override val painter: ATPainter<*> = TemporossDebugPainter(this)
 
+    fun debugComp(c: Component?) {
+        if (c == null) {
+            log.info("Comp == null")
+            return
+        }
+        val parent = c.parent()
+        log.info("Widget=[${c.widgetId()}], Parent=[${parent} id=${c.parentId()}], $c, Hidden=${c.hidden()}, Valid=${c.valid()}, Text=${c.text()}, Boundsindex=${c.boundsIndex()}")
+        if (parent != null) debugComp(parent)
+    }
+
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
-            val wi =
-                Components.stream().filter { it.text().contains("Players Ready") }.firstOrNull()
-            if (wi != null) {
-                val loc = wi.screenPoint()
-                log.info("Parent: ${wi.widgetId()}, Wi: $wi, visible: ${wi.visible()}, hidden: ${wi.hidden()}, text: ${wi.text()}, loc=$loc")
-            }
+            val c =
+                Components.stream(Data.PARENT_WIDGET).filter { it.text().contains("Energy") }.firstOrNull()
+            debugComp(c)
             if (tempoross.side == Tempoross.Side.UNKNOWN) {
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                     val mast = Objects.stream().name("Mast").nearest().first()
@@ -107,6 +112,10 @@ class TemporossDebug : ATScript() {
 }
 
 class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(script, 10, 350) {
+    init {
+        x = 400
+    }
+
     override fun paint(g: Graphics) {
         var y = this.y
         drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
