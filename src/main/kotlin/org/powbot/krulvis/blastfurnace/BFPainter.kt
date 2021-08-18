@@ -5,8 +5,8 @@ import org.powbot.mobile.drawing.Graphics
 import java.awt.Graphics2D
 
 class BFPainter(script: BlastFurnace) : ATPainter<BlastFurnace>(script, 12, 250) {
-    override fun paint(g: Graphics) {
-        var y = this.y
+    override fun paint(g: Graphics, startY: Int) {
+        var y = startY
         val bar = script.bar
         val prim = bar.primary
         val coal = bar.secondary

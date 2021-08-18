@@ -43,14 +43,14 @@ import java.util.*
     category = ScriptCategory.Fishing
 )
 class Tempoross : ATScript() {
-    override val painter: ATPainter<*> = TemporossPainter(this)
-
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 
     init {
         skillTracker.addSkill(Skill.FISHING)
         debugComponents = false
     }
+
+    override val painter: ATPainter<*> = TemporossPainter(this, if (debugComponents) 10 else 6)
 
     val waveTimer = Timer(0)
     var side: Side = Side.UNKNOWN
