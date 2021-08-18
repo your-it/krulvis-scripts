@@ -31,14 +31,15 @@ abstract class ATScript : TreeScript() {
     var nextRun: Int = Random.nextInt(1, 6)
 
     fun startTracking() {
-        log.info("Started tracking thread")
         Thread {
+            log.info("Started tracking thread")
             while (!ScriptManager.isStopping()) {
                 skillTracker.track()
 //            inventoryWatcher.watch()
 //            animationWatcher.watch()
                 Thread.sleep(500)
             }
+            log.info("Ended tracking thread")
         }.start()
     }
 

@@ -71,7 +71,7 @@ class ShouldEmptySack(script: Miner) : Branch<Miner>(script, "Should empty sack"
 class ShouldDrop(script: Miner) : Branch<Miner>(script, "Should Drop") {
 
     override fun validate(): Boolean {
-        return script.profile.dropOres
+        return !script.bankOres
     }
 
     override val successComponent: TreeComponent<Miner> = Drop(script)

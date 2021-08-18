@@ -21,8 +21,10 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.input.Touchscreen
 import java.util.*
 
 @ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
@@ -49,6 +51,12 @@ class TemporossDebug : ATScript() {
 
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
+            val wi =
+                Components.stream().filter { it.text().contains("Players Ready") }.firstOrNull()
+            if (wi != null) {
+                val loc = wi.screenPoint()
+                log.info("Parent: ${wi.widgetId()}, Wi: $wi, visible: ${wi.visible()}, hidden: ${wi.hidden()}, text: ${wi.text()}, loc=$loc")
+            }
             if (tempoross.side == Tempoross.Side.UNKNOWN) {
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                     val mast = Objects.stream().name("Mast").nearest().first()
@@ -98,7 +106,7 @@ class TemporossDebug : ATScript() {
 
 }
 
-class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(script, 10) {
+class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(script, 10, 350) {
     override fun paint(g: Graphics) {
         var y = this.y
         drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
@@ -106,6 +114,8 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
         y += yy
         drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
+        y += yy
+        drawSplitText(g, "Energy: ${script.tempoross.getEnergy()}", "Health: ${script.tempoross.getHealth()}: ", x, y)
         y += yy
 //        val clicked = Ga.crosshair() == Game.Crosshair.ACTION
 //        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
@@ -164,11 +174,15 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         if (entity.isPresent) {
             val e = entity.get()
             if (e.inViewport()) {
-                val matrix = e.tile().matrix().bounds()
+                val matrix = Touchscreen.scaleFromGame(e.tile().matrix().bounds())
                 g.drawPolygon(matrix)
                 g.drawString((e as Nameable).name(), matrix.getBounds().centerX, matrix.getBounds().centerY)
             }
         }
     }
 
+}
+
+fun main() {
+    TemporossDebug().startScript()
 }
