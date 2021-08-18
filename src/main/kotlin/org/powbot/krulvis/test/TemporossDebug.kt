@@ -116,8 +116,8 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         x = 400
     }
 
-    override fun paint(g: Graphics) {
-        var y = this.y
+    override fun paint(g: Graphics, startY: Int) {
+        var y = startY
         drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
         y += yy
         drawSplitText(g, "Animation: ", "${me.animation()}", x, y)

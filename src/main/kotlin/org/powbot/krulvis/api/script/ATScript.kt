@@ -6,6 +6,8 @@ import org.powbot.api.event.RenderEvent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
+import org.powbot.krulvis.api.extensions.randoms.BondPouch
+import org.powbot.krulvis.api.extensions.randoms.RandomHandler
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Timer
@@ -29,6 +31,7 @@ abstract class ATScript : TreeScript() {
     val oddsModifier = OddsModifier()
     val walkDelay = DelayHandler(500, 700, oddsModifier, "Walk Delay")
     var nextRun: Int = Random.nextInt(1, 6)
+    val randomHandlers = mutableListOf<RandomHandler>(BondPouch())
 
     fun startTracking() {
         Thread {
@@ -41,6 +44,11 @@ abstract class ATScript : TreeScript() {
             }
             log.info("Ended tracking thread")
         }.start()
+    }
+
+    override fun poll() {
+        val rh = randomHandlers.firstOrNull { it.validate() }
+        if (rh != null) rh.execute() else super.poll()
     }
 
 

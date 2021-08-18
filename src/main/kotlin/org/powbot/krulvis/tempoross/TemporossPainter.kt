@@ -11,17 +11,17 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
-class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 10, 350) {
+class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(script, lines, 350) {
 
     init {
         x = 1425
-        lowestY = 320
+        y = 40
     }
 
-    override fun bgColor(): Int = Color.argb(150, 0, 0,0)
+    override fun bgColor(): Int = Color.argb(150, 0, 0, 0)
 
-    override fun paint(g: Graphics) {
-        var y = this.y
+    override fun paint(g: Graphics, startY: Int) {
+        var y = startY
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
         val spot = me.interacting()
@@ -65,16 +65,15 @@ class TemporossPainter(script: Tempoross) : ATPainter<Tempoross>(script, 10, 350
 
 
 
-        drawSplitText(
+        y = drawSplitText(
             g,
             "Reward credits: ",
             "${script.rewardGained}, ${script.timer.getPerHour(script.rewardGained)}/hr",
             x,
             y
         )
-        y += yy
         if (script.rounds > 0) {
-            drawSplitText(
+            y = drawSplitText(
                 g,
                 "Points obtained: ",
                 "${script.pointsObtained / script.rounds}/round",

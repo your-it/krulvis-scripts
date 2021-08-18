@@ -23,23 +23,19 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
     val useLayout = lines > 0
     private var username: String? = null
     var x = 15
-    var lowestY = 335
     var y = 20
     val custom = DynamicColor(0.40f, 0.75f, 0.01f)
 
-    abstract fun paint(g: Graphics)
+    abstract fun paint(g: Graphics, startY: Int)
 
     fun onRepaint(g: Graphics) {
         try {
             if (useLayout) {
-                y = drawLayout(g)
-            }
-            //AntiBan.paintBreak(g);
-            g.setColor(ORANGE)
-            paint(g)
-            if (debugComponents) {
-//                drawMouse(g)
-            }
+                val y = drawLayout(g)
+                g.setColor(ORANGE)
+                paint(g, y)
+            } else
+                paint(g, y)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -47,11 +43,11 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
 
     fun getLayoutHeight(): Int = 51 + lines * 20
 
-    fun drawLayout(g: Graphics, lowestY: Int = this.lowestY): Int {
+    fun drawLayout(g: Graphics): Int {
 
         var x = this.x - 5
         val h = getLayoutHeight()
-        var y = lowestY - h
+        var y = this.y
         val mid = (x + width / 2.0).toInt()
 
         g.setColor(bgColor())
