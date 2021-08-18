@@ -3,7 +3,7 @@ package org.powbot.krulvis.miner.tree.leaf
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.waitFor

@@ -23,7 +23,7 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
     val useLayout = lines > 0
     private var username: String? = null
     var x = 15
-    var y = 20
+    var y = 90
     val custom = DynamicColor(0.40f, 0.75f, 0.01f)
 
     abstract fun paint(g: Graphics, startY: Int)

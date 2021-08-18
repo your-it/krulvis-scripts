@@ -9,7 +9,7 @@ import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -26,7 +26,7 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
             if (hopper.distance() > 3) {
                 val path = LocalPathFinder.findPath(nearHopper)
                 if (path.isNotEmpty()) {
-                    println("Walking to hopper first! pathLength=${path.size}")
+                    println("Walking to hopper first! pathLength=${path.actions.size}")
                     path.traverse()
                 } else {
                     walkWeb()
