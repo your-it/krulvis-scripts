@@ -53,27 +53,31 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             }
             return
         }
-        val currentSpot = me.interacting() as Npc
-        if (currentSpot.name() == "Fishing spot") {
-            if (script.blockedTiles.contains(me.tile())
-                || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
-            ) {
-                println("Moving to double/save fish spot!")
-                fishAtSpot(fishSpot.get())
-            } else {
-                val tetherPole = script.getTetherPole()
-                if (tetherPole.isPresent && tetherPole.get().inViewport()) {
-                    if (script.oddFishingSpot.distance() <= 1) {
-                        println("Fishing at weird spot so using unique camera rotation")
-                        Camera.pitch(Random.nextInt(1200, 1300))
-                    } else {
-                        Camera.turnTo(tetherPole.get())
+        val interacting = me.interacting()
+        if (interacting is Npc) {
+            val currentSpot = interacting as Npc
+            
+            if (currentSpot.name() == "Fishing spot") {
+                if (script.blockedTiles.contains(me.tile())
+                    || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
+                ) {
+                    println("Moving to double/save fish spot!")
+                    fishAtSpot(fishSpot.get())
+                } else {
+                    val tetherPole = script.getTetherPole()
+                    if (tetherPole.isPresent && tetherPole.get().inViewport()) {
+                        if (script.oddFishingSpot.distance() <= 1) {
+                            println("Fishing at weird spot so using unique camera rotation")
+                            Camera.pitch(Random.nextInt(1200, 1300))
+                        } else {
+                            Camera.turnTo(tetherPole.get())
+                        }
                     }
                 }
+            } else {
+                println("Fishing at first spot")
+                fishAtSpot(fishSpot.get())
             }
-        } else {
-            println("Fishing at first spot")
-            fishAtSpot(fishSpot.get())
         }
     }
 
