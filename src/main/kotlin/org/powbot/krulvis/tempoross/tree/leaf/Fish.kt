@@ -23,7 +23,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
     override fun execute() {
         val fishSpot = script.bestFishSpot
         if (!fishSpot.isPresent) {
-            debug("No safe fishing spot found!")
+            script.log.info("No safe fishing spot found!")
             if (script.blockedTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
                 debug("We are standing on a dangerous tile! Walking to $safeTile")
@@ -33,7 +33,8 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             } else if (script.fishSpots.any { it.second.actions.last().destination.distance() <= 1 }) {
                 debug("Nearby blocked fishing spot found that is blocked")
                 val blockedTile =
-                    script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }.first().second.actions.last()
+                    script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }
+                        .first().second.actions.last()
                 val fireOptional =
                     Npcs.stream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
                 if (fireOptional.isPresent) {
@@ -54,30 +55,28 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             return
         }
         val interacting = me.interacting()
-        if (interacting is Npc) {
-            val currentSpot = interacting as Npc
-            
-            if (currentSpot.name() == "Fishing spot") {
-                if (script.blockedTiles.contains(me.tile())
-                    || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
-                ) {
-                    println("Moving to double/save fish spot!")
-                    fishAtSpot(fishSpot.get())
-                } else {
-                    val tetherPole = script.getTetherPole()
-                    if (tetherPole.isPresent && tetherPole.get().inViewport()) {
-                        if (script.oddFishingSpot.distance() <= 1) {
-                            println("Fishing at weird spot so using unique camera rotation")
-                            Camera.pitch(Random.nextInt(1200, 1300))
-                        } else {
-                            Camera.turnTo(tetherPole.get())
-                        }
+        val currentSpot = if (interacting is Npc) interacting else null
+
+        if (currentSpot?.name() == "Fishing spot") {
+            if (script.blockedTiles.contains(me.tile())
+                || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
+            ) {
+                println("Moving to double/save fish spot!")
+                fishAtSpot(fishSpot.get())
+            } else {
+                val tetherPole = script.getTetherPole()
+                if (tetherPole.isPresent && tetherPole.get().inViewport()) {
+                    if (script.oddFishingSpot.distance() <= 1) {
+                        println("Fishing at weird spot so using unique camera rotation")
+                        Camera.pitch(Random.nextInt(1200, 1300))
+                    } else {
+                        Camera.turnTo(tetherPole.get())
                     }
                 }
-            } else {
-                println("Fishing at first spot")
-                fishAtSpot(fishSpot.get())
             }
+        } else {
+            println("Fishing at first spot")
+            fishAtSpot(fishSpot.get())
         }
     }
 
