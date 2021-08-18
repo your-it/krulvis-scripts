@@ -59,12 +59,6 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
             }
         }
 
-        if (spot != null && spot.name() == "Fishing spot") {
-            drawTile(g, spot.tile())
-        }
-
-
-
         y = drawSplitText(
             g,
             "Reward credits: ",
@@ -82,6 +76,9 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
             )
         }
         script.skillTracker.draw(g, x, y)
+        if (spot != null && spot.name() == "Fishing spot") {
+            drawTile(g, spot.tile())
+        }
     }
 
     override fun drawTitle(g: Graphics, x: Int, y: Int) {
