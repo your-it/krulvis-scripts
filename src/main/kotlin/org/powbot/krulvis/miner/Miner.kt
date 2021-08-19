@@ -47,6 +47,12 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
             optionType = OptionType.BOOLEAN,
             defaultValue = "false"
         ),
+        ScriptConfiguration(
+            "Fast mine",
+            "Don't sleep",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
+        ),
     ]
 )
 class Miner : ATScript() {
@@ -61,7 +67,9 @@ class Miner : ATScript() {
         o?.map { it.tile } ?: emptyList()
     }
     val bankOres by lazy { getOption<Boolean>("Bank ores") ?: true }
+    val fastMine by lazy { getOption<Boolean>("Fast mine") ?: true }
     val hopFromPlayers by lazy { getOption<Boolean>("Hop") ?: false }
+
     val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
     override val painter: ATPainter<*> = MinerPainter(this)
@@ -93,5 +101,5 @@ class Miner : ATScript() {
 }
 
 fun main() {
-    Miner().startScript()
+    Miner().startScript(true)
 }

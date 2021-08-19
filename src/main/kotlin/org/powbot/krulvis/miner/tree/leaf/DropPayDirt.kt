@@ -11,6 +11,7 @@ import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.miner.Data.TOP_CENTER_ML
 import org.powbot.krulvis.miner.Miner
 
 class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
@@ -55,12 +56,11 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
                 || Npcs.stream().name("Pay-dirt").isNotEmpty()
     }
 
-    val topCenter = Tile(3757, 5679, 0)
     val northOfLadder = Tile(3755, 5675, 0)
     val ladderTile = Tile(3755, 5674, 0)
     fun escapeTopFloor(destination: Tile): Boolean {
         val pos = Players.local().tile()
-        if (topCenter.distance() <= 8 && LocalPathFinder.findPath(pos, destination, true).isEmpty()) {
+        if (TOP_CENTER_ML.distance() <= 8 && LocalPathFinder.findPath(pos, destination, true).isEmpty()) {
             if (northOfLadder.distance() <= 6 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
                 if (ladderTile.matrix().interact("Climb")) {
                     return waitFor { LocalPathFinder.findPath(Players.local().tile(), destination, true).isNotEmpty() }

@@ -106,7 +106,7 @@ enum class BankLocation(
             WebWalking.moveTo(tile, false, {
                 val b = interaction.getEntity()
                 b.isPresent && b.get().inViewport()
-            }, 1, 100)
+            }, 1, 100, false)
             return false
         }
         return interaction.execute() && waitFor(
