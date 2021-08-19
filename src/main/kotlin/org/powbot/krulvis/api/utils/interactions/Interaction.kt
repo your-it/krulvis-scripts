@@ -44,20 +44,21 @@ interface Interaction<E : Interactive> {
         }
 
         val entity = o.get()
-        debug("Entity: $entity")
         val t = if (tile == Tile.Nil) (entity as Locatable).tile() else tile
         val destination = Movement.destination() ?: Tile.Nil
 
         if (!entity.inViewport()
             || (destination != tile && tile.distanceTo(if (destination == Tile.Nil) Players.local() else destination) > walkDistance)
         ) {
-            if (tile.matrix()?.onMap() == true) {
+            if (tile.matrix().onMap()) {
                 Movement.step(tile)
             } else {
                 WebWalking.walkTo(t, false)
             }
+        } else {
+            return entity.interact(action)
         }
-        return entity.interact(action)
+        return false
     }
 
 }

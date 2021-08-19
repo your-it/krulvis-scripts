@@ -15,13 +15,11 @@ import org.powbot.api.rt4.Objects
 class FixStrut(script: Miner) : Leaf<Miner>(script, "Fixing strut") {
     override fun execute() {
         if (Inventory.containsOneOf(Item.HAMMER)) {
-            val sack = Objects.stream().name("Broken strut").nearest().findFirst()
-            sack.ifPresent {
-                val brokenStruts = Objects.stream(10).name("Broken strut").count()
-                if (interact(it, "Hammer")) {
-                    waitFor(mid() + it.distance() * 400) {
-                        Objects.stream(10).name("Broken strut").count() < brokenStruts
-                    }
+            val strut = script.getBrokenStrut()
+            val brokenStruts = Objects.stream(10).name("Broken strut").count()
+            if (strut != null && interact(strut, "Hammer")) {
+                waitFor(mid() + strut.distance() * 400) {
+                    Objects.stream(10).name("Broken strut").count() < brokenStruts
                 }
             }
         } else {

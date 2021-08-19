@@ -17,6 +17,14 @@ class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier) {
     private val max: Int = (max * oddsModifier.maxModifier).toInt()
     var name: String = " "
 
+
+    fun forceFinish() {
+        if (timer == null) {
+            restartTimer()
+        }
+        timer!!.end = 0L
+    }
+
     /**
      * Also starts the timer
      */
