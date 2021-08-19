@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.script.ScriptManager
 import kotlin.math.abs
 
 
@@ -56,19 +57,12 @@ object ATContext {
             nextRun = Random.nextInt(1, 5)
         }
         if (!Movement.moving() || walkDelay.isFinished()) {
-            if (forceMinimap && position.onMap()) {
-                //PowBot single tile interaction method (map)
+            if (forceMinimap && position.onMap()
+                && LocalPathFinder.findPath(Players.local().tile(), position, true).isNotEmpty()
+            ) {
                 Movement.step(position)
             } else {
-                val localPath = LocalPathFinder.findPath(position)
-                if (localPath.isNotEmpty()) {
-                    debug("Using localwalker")
-                    localPath.traverse()
-                } else {
-                    debug("Using powbot method to walk")
-                    //Powbot method
-                    WebWalking.walkTo(position, false)
-                }
+                Movement.walkTo(position)
             }
             walkDelay.resetTimer()
         }

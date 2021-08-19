@@ -101,9 +101,9 @@ enum class BankLocation(
             return true
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
-        } else if (tile.distanceM(me) >= 20) {
+        } else if (me.floor() != tile.floor || tile.distanceM(me) >= 20) {
             debug("Using web to walk to bank")
-            WebWalking.moveTo(tile, false, false, {
+            WebWalking.moveTo(tile, false, {
                 val b = interaction.getEntity()
                 b.isPresent && b.get().inViewport()
             }, 1, 100)

@@ -19,6 +19,7 @@ class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") 
     override fun validate(): Boolean {
         val hasHammer = Inventory.containsOneOf(Item.HAMMER)
         val strutCount = Objects.stream(15).name("Broken strut").count().toInt()
+        script.rockLocations
         return (!Inventory.isFull() || hasHammer)
                 && Tile(3746, 5667, 0).distance() <= 10
                 && Npcs.stream().name("Pay-dirt").isNotEmpty()

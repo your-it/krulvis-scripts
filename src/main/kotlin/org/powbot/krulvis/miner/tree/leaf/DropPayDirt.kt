@@ -1,9 +1,7 @@
 package org.powbot.krulvis.miner.tree.leaf
 
 import org.powbot.api.Tile
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.WebWalking
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getCount
@@ -45,7 +43,28 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
     }
 
     fun walkWeb() {
-        WebWalking.walkTo(nearHopper, false)
+        if (escapeTopFloor(nearHopper)) {
+            Movement.moveTo(nearHopper)
+        }
+    }
+
+    val topCenter = Tile(3757, 5679, 0)
+    val northOfLadder = Tile(3755, 5675, 0)
+    val ladderTile = Tile(3755, 5674, 0)
+    fun escapeTopFloor(destination: Tile): Boolean {
+        val pos = Players.local().tile()
+        if (topCenter.distance() <= 8 && LocalPathFinder.findPath(pos, destination, true).isEmpty()) {
+            if (northOfLadder.distance() <= 6 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
+                if (ladderTile.matrix().interact("Climb")) {
+                    return waitFor { LocalPathFinder.findPath(Players.local().tile(), destination, true).isNotEmpty() }
+                }
+            } else {
+                script.log.info("Walking to ladder first...")
+                Movement.walkTo(northOfLadder)
+            }
+            return false
+        }
+        return true
     }
 
     fun deposited() = Inventory.getCount(Ore.PAY_DIRT.id) == 0
