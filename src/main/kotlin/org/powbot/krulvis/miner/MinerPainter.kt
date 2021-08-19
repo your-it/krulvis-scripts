@@ -7,7 +7,7 @@ import org.powbot.mobile.drawing.Graphics
 
 class MinerPainter(script: Miner) : ATPainter<Miner>(script, 10, 350) {
     override fun paint(g: Graphics, startY: Int) {
-        var y = this.y
+        var y = startY
 
         y = drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
         y = drawSplitText(g, "Should empty sack: ", script.shouldEmptySack.toString(), x, y)

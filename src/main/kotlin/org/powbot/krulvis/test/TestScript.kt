@@ -1,10 +1,14 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.rt4.Components
-import org.powbot.api.rt4.Varpbits
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Flag
+import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.LocalPathFinder.isRockfall
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
@@ -12,41 +16,40 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 @ScriptManifest(name = "testscript", version = "1.0d", description = "")
-//@ScriptConfiguration.List(
-//    [
-//        ScriptConfiguration(
-//            "Rocks",
-//            "Which rocks do you want to mine?",
-//            optionType = OptionType.GAMEOBJECTS,
-//        ),
-//        ScriptConfiguration(
-//            "Npcs",
-//            "Which Npcs do you want to kill?",
-//            optionType = OptionType.NPCS,
-//        )
-//    ]
-//)
 class TestScript : ATScript() {
     override val painter: ATPainter<*> = TestPainter(this)
 
+    val dest = Tile(3208, 3221, 2) //Lummy top bank
+    val oddRockfall = Tile(x = 3216, y = 3210, floor = 0)
+    var flags = emptyArray<IntArray>()
+
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val c = Components.stream().filter { it.visible() && it.text().contains("Bond Pouch") }.firstOrNull()
-        if (c != null) {
-            log.info("WidgetId=${c.widgetId()}, $c, text=${c.text()}")
-            val close = c.parent()?.firstOrNull { it != null && it.actions().contains("Close") }
-            log.info(close?.toString() ?: "close not found")
-        }
+//        flags = Movement.collisionMap(Players.local().floor()).flags()
+        WebWalking.walkTo(dest, false)
     }
 }
 
-class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10) {
+class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
     override fun paint(g: Graphics, startY: Int) {
         var y = startY
-        val paydirtraw = Varpbits.varpbit(375)
+        y = drawSplitText(g, "Destination loaded: ", script.dest.loaded().toString(), x, y)
+        val regionTile = script.dest.regionTile()
+        y = drawSplitText(g, "Destination regionTile: ", regionTile.toString(), x, y)
 
-        y = drawSplitText(g, "Pay-dirt raw:", paydirtraw.toString(), x, y)
-        y = drawSplitText(g, "Actual: ", "${(paydirtraw and 65535) / 256}", x, y)
+        script.oddRockfall.drawOnScreen(g)
+        y = drawSplitText(g, "Rockfall:", script.oddRockfall.rockfallBlock(script.flags).toString(), x, y)
     }
+
+    fun Tile.rockfallBlock(flags: Array<IntArray>): Boolean {
+        return collisionFlag(flags) in intArrayOf(Flag.ROCKFALL, Flag.ROCKFALL2)
+                && Objects.stream().at(this).filter { it.isRockfall() }.isNotEmpty()
+    }
+
+    fun Tile.regionTile(): Tile {
+        val (x1, y1) = Game.mapOffset()
+        return derive(-x1, -y1)
+    }
+
 }
 
 fun main() {

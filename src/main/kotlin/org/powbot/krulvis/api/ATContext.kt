@@ -2,9 +2,10 @@ package org.powbot.krulvis.api
 
 import org.powbot.api.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -159,15 +160,6 @@ object ATContext {
 
     fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
 
-    fun List<Locatable>.reachable(): List<Locatable> {
-        val start = me.tile()
-        LocalPathFinder.cachedFlags =
-            Movement.collisionMap(start.floor).flags()
-        return filter {
-            LocalPathFinder.findPath(start, it.tile(), onlyWalk = true, refreshFlags = false).isNotEmpty()
-        }
-    }
-
     /**
      * Returns: [Tile] nearest neighbor or self as which is walkable
      */
@@ -214,7 +206,9 @@ object ATContext {
         return Tile(x() - mos.x(), y() - mos.y(), floor())
     }
 
-    fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream()?.anyMatch { it?.id() in ids }
+    fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Inventory.emptyExcept(vararg ids: Int): Boolean = !stream().filter { it.id() !in ids }.findFirst().isPresent
 
     fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()

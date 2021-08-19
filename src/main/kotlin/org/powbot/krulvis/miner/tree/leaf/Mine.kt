@@ -7,7 +7,7 @@ import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor

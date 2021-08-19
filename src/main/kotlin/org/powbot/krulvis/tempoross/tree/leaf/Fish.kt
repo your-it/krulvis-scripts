@@ -11,7 +11,7 @@ import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.moving
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
