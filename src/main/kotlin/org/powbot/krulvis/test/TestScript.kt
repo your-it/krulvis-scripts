@@ -1,14 +1,13 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.Condition
+import org.powbot.api.*
 import org.powbot.api.Condition.wait
-import org.powbot.api.Filter
-import org.powbot.api.MenuCommand
-import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Constants.MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID
+import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_COMPONENT_ID
+import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_WIDGET_ID
 import org.powbot.api.rt4.Game.Tab
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder.isRockfall
@@ -30,57 +29,53 @@ class TestScript : ATScript() {
     var flags = emptyArray<IntArray>()
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        log.info(getCompletedQuests(399, 6).joinToString())
-    }
+        val depositBox = Objects.stream().name("Bank deposit box").firstOrNull()
 
-    fun tab(tab: Tab): Boolean {
-        if (tab == tab()) {
-            return true
+        val openTab = Components.stream(601).texture(MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID).firstOrNull()
+        if (openTab != null) {
+            val actions = openTab.actions()
+            val tab = Tab.values().firstOrNull { tab -> actions.any { a -> a in tab.actions } } ?: Tab.NONE
+            log.info("There is a tab open: ${tab.name}")
+            val point = depositBox?.nextPoint()!!
+            val tabComp = Widgets.component(
+                MOBILE_TAB_WINDOW_WIDGET_ID,
+                MOBILE_TAB_WINDOW_COMPONENT_ID
+            )
+            log.info("Game.InViewport: ${depositBox.inViewport()}")
+            log.info("InViewport: ${pointInViewport(point.x, point.y)}")
+            log.info("Point in rect: ${tabComp.contains(point)}")
         }
 
-        val c = tab.getByTexture()
-        val interacted = c != null && c.click()
-        return interacted && wait({ tab() == tab }, 200, 10)
     }
 
-    fun tab(): Tab {
-        val openTabButton =
-            Components.stream(601).texture(MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID).firstOrNull() ?: return Tab.NONE
-        val actions = openTabButton.actions()
-        return Tab.values().firstOrNull { tab -> actions.any { a -> a in tab.actions } } ?: Tab.NONE
-    }
+    private var mobileViewport: Rectangle = Rectangle(-1, -1, -1, -1)
 
-    val CompleteQuestColor = 901389
+    fun pointInViewport(x: Int, y: Int, checkIfObstructed: Boolean = true): Boolean {
+        val point = Point(x, y)
+        if (checkIfObstructed) {
 
-    private fun getCompletedQuests(parent: Int, child: Int, tries: Int = 5): Set<String> {
-        val component = Widgets.component(parent, child)
-        if (component.valid() && component.componentCount() > 0) {
-            return component.components().toList()
-                .filter { it.valid() && it.textColor() == CompleteQuestColor }
-                .map { it.text() }
-                .toSet()
-        } else {
-            tab(Tab.QUESTS)
-            !openQuestTab(parent, child)
-            return getCompletedQuests(parent, child, tries - 1)
-        }
-    }
+            //If there is one tab open get the component's bounds and check if point is in there
+            if (Components.stream(601).texture(MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID).firstOrNull() != null) {
+                val tabComponent: Component = Widgets.component(
+                    MOBILE_TAB_WINDOW_WIDGET_ID,
+                    MOBILE_TAB_WINDOW_COMPONENT_ID
+                )
+                if (tabComponent.valid() && tabComponent.contains(point)) {
+                    return false
+                }
+            }
 
-    fun questTabOpen(parent: Int, child: Int) =
-        Varpbits.varpbit(1141) == 16
-                && Widgets.component(parent, child).componentCount() > 0
-
-    fun openQuestTab(parent: Int, child: Int): Boolean {
-        if (questTabOpen(parent, child)) {
-            return true
-        } else {
-            val tabButton =
-                Components.stream().filter { it.actions().contains("Quest List") }.firstOrNull()
-            if (tabButton?.click() == true && wait { questTabOpen(parent, child) }) {
-                return true
+            val optionBar = Chat.optionBarComponent();
+            if (optionBar.valid() && optionBar.contains(point)) {
+                return false
             }
         }
-        return false
+
+        if (mobileViewport.isEmpty()) {
+            mobileViewport.setBounds(Game.viewport().boundingRect())
+        }
+
+        return mobileViewport.contains(point)
     }
 
     @com.google.common.eventbus.Subscribe
@@ -109,16 +104,6 @@ class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
             y = drawSplitText(g, "Widget: ${qc.widgetId()}", "$qc", x, y)
 
         }
-    }
-
-    fun Tile.rockfallBlock(flags: Array<IntArray>): Boolean {
-        return collisionFlag(flags) in intArrayOf(Flag.ROCKFALL, Flag.ROCKFALL2)
-                && Objects.stream().at(this).filter { it.isRockfall() }.isNotEmpty()
-    }
-
-    fun Tile.regionTile(): Tile {
-        val (x1, y1) = Game.mapOffset()
-        return derive(-x1, -y1)
     }
 
 }

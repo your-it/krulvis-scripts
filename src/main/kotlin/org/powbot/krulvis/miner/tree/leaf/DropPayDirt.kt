@@ -32,7 +32,9 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
             } else if (interact(hopper, "Deposit")) {
                 script.lastPayDirtDrop = System.currentTimeMillis()
                 sleep(600)
-                waitFor(long()) { deposited() }
+                waitFor(long()) {
+                    deposited() && canWalkAway()
+                }
             }
         } else {
             walkWeb()
@@ -46,6 +48,11 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
         if (escapeTopFloor(nearHopper)) {
             Movement.moveTo(nearHopper)
         }
+    }
+
+    fun canWalkAway(): Boolean {
+        return script.getBrokenStrut() == null
+                || Npcs.stream().name("Pay-dirt").isNotEmpty()
     }
 
     val topCenter = Tile(3757, 5679, 0)

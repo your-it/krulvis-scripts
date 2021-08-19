@@ -10,6 +10,7 @@ import org.powbot.mobile.script.ScriptManager
 class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
     override fun execute() {
         val locs = script.rockLocations
+        script.mineDelay.forceFinish()
         if (locs.isEmpty()) {
             script.log.warning("Script requires at least 1 rock location set in the Configuration")
             ScriptManager.stop()
