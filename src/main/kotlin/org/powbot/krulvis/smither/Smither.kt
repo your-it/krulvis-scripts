@@ -11,7 +11,7 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.smither.tree.branch.ShouldBank
 
 @ScriptManifest(
-    name = "Smither",
+    name = "krul Smither",
     description = "Smiths stuff from bars",
     version = "1.0.0",
     category = ScriptCategory.Smithing
