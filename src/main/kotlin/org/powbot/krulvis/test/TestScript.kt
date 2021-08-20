@@ -11,7 +11,10 @@ import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_WIDGET_ID
 import org.powbot.api.rt4.Game.Tab
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder.isRockfall
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
@@ -19,6 +22,35 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 @ScriptManifest(name = "testscript", version = "1.0d", description = "")
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            name = "rocks",
+            description = "Click som rocks",
+            optionType = OptionType.GAMEOBJECTS,
+            defaultValue = "[{\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3756,\"y\":5678,\"z\":0},\"x\":3756,\"y\":5678}}]"
+        ),
+        ScriptConfiguration(
+            name = "rocks1",
+            description = "Want to have rocks?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
+        ),
+        ScriptConfiguration(
+            name = "rocks2",
+            description = "Want to have 0?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
+        ),
+        ScriptConfiguration(
+            name = "rocks3",
+            description = "Select",
+            optionType = OptionType.STRING,
+            defaultValue = "2",
+            allowedValues = ["1", "2", "3"]
+        ),
+    ]
+)
 class TestScript : ATScript() {
     override val painter: ATPainter<*> = TestPainter(this)
 
@@ -28,24 +60,14 @@ class TestScript : ATScript() {
     val oddRockfall = Tile(x = 3216, y = 3210, floor = 0)
     var flags = emptyArray<IntArray>()
 
+    val rocks by lazy { getOption<List<GameObjectOption>>("rocks") ?: emptyList() }
+
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val depositBox = Objects.stream().name("Bank deposit box").firstOrNull()
-
-        val openTab = Components.stream(601).texture(MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID).firstOrNull()
-        if (openTab != null) {
-            val actions = openTab.actions()
-            val tab = Tab.values().firstOrNull { tab -> actions.any { a -> a in tab.actions } } ?: Tab.NONE
-            log.info("There is a tab open: ${tab.name}")
-            val point = depositBox?.nextPoint()!!
-            val tabComp = Widgets.component(
-                MOBILE_TAB_WINDOW_WIDGET_ID,
-                MOBILE_TAB_WINDOW_COMPONENT_ID
-            )
-            log.info("Game.InViewport: ${depositBox.inViewport()}")
-            log.info("InViewport: ${pointInViewport(point.x, point.y)}")
-            log.info("Point in rect: ${tabComp.contains(point)}")
+        if (rocks.isEmpty()) {
+            log.info("Did not set rocks..")
+        } else {
+            log.info(rocks.joinToString())
         }
-
     }
 
     private var mobileViewport: Rectangle = Rectangle(-1, -1, -1, -1)
@@ -98,16 +120,11 @@ class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
     override fun paint(g: Graphics, startY: Int) {
         var y = startY
         y = drawSplitText(g, "Tab: ", Game.tab().toString(), x, y)
-        val qc = Components.stream(399).text("Quest Points").firstOrNull()
-        if (qc != null) {
-            y = drawSplitText(g, "Quests loaded: ", "${qc.visible()}", x, y)
-            y = drawSplitText(g, "Widget: ${qc.widgetId()}", "$qc", x, y)
 
-        }
     }
 
 }
 
 fun main() {
-    TestScript().startScript()
+    TestScript().startScript(false)
 }

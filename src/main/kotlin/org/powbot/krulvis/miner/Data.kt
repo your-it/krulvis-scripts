@@ -9,6 +9,8 @@ import com.google.gson.reflect.TypeToken
 
 object Data {
     val TOOLS = intArrayOf(1265, 1267, 1269, 1271, 1273, 1275, 12297, Item.HAMMER)
+    //Motherlode topcenter tile
+    val TOP_CENTER_ML = Tile(3757, 5679, 0)
 }
 
 

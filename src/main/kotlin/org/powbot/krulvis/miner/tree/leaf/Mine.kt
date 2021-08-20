@@ -23,7 +23,7 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
             if (path.containsSpecialNode()) {
                 path.traverse()
             } else {
-                if ((script.mineDelay.isFinished() || !script.bankOres)
+                if ((script.fastMine || script.mineDelay.isFinished())
                     && interact(rock.get(), "Mine")
                 ) {
                     if (waitFor(long()) { me.animation() > 0 }) {

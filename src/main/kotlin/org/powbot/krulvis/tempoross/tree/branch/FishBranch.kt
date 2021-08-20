@@ -26,11 +26,11 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
             return script.forcedShooting
         }
         val ammoCrate = script.getAmmoCrate()
-        if (Inventory.containsOneOf(if (script.profile.cook) COOKED else RAW)
+        if (Inventory.containsOneOf(if (script.cookFish) COOKED else RAW)
             && ammoCrate.isPresent && ammoCrate.get().distance() < 7
         ) {
             return true
-        } else if (Inventory.isFull() && (!script.profile.cook || !Inventory.containsOneOf(RAW))) {
+        } else if (Inventory.isFull() && (!script.cookFish || !Inventory.containsOneOf(RAW))) {
             return true
         }
         val energy = script.getEnergy()
@@ -71,7 +71,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val energy = script.getEnergy()
         val lowEnergy = energy / 4 < Inventory.getCount(true, RAW, COOKED)
         val fullHealth = script.getHealth() == 100
-        return script.profile.cook && rawCount > 0
+        return script.cookFish && rawCount > 0
                 && (Inventory.isFull() || (lowEnergy && !fullHealth) || !script.bestFishSpot.isPresent)
     }
 
