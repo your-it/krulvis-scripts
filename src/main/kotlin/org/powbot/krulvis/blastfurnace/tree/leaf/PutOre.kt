@@ -7,12 +7,12 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
-import org.powbot.krulvis.blastfurnace.Ore
 
 class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt") {
 
@@ -33,11 +33,11 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
         } else {
             val hasSpecialOres =
                 Inventory.containsOneOf(
-                    Ore.ADAMANT.itemId,
-                    Ore.RUNE.itemId,
-                    Ore.IRON.itemId,
-                    Ore.MITH.itemId,
-                    Ore.GOLD.itemId
+                    Ore.ADAMANTITE.id,
+                    Ore.RUNITE.id,
+                    Ore.IRON.id,
+                    Ore.MITHRIL.id,
+                    Ore.GOLD.id
                 )
             Objects.stream().name("Conveyor belt").action("Put-ore-on").findFirst().ifPresent {
                 if (interact(it, "Put-ore-on") && waitFor(Random.nextInt(5000, 7500)) { !Inventory.isFull() }) {
@@ -53,9 +53,9 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
     }
 
     fun emptyCoalBag() = Inventory.stream().id(COAL_BAG).findFirst().ifPresent {
-        if (it.interact("Empty") && waitFor { Inventory.containsOneOf(Ore.COAL.itemId) }) {
+        if (it.interact("Empty") && waitFor { Inventory.containsOneOf(Ore.COAL.id) }) {
             script.filledCoalBag = false
-            waitFor { Inventory.containsOneOf(Ore.COAL.itemId) }
+            waitFor { Inventory.containsOneOf(Ore.COAL.id) }
         }
     }
 }

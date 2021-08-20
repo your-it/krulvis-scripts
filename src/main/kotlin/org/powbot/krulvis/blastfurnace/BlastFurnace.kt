@@ -9,6 +9,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.Skill
+import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils
@@ -28,7 +29,7 @@ import java.util.function.Consumer
             "bar",
             "Which bar do you want to smelt?",
             allowedValues = ["IRON", "STEEL", "MITHRIL", "ADAMANTITE", "RUNITE", "GOLD"],
-            defaultValue = "GOLD"
+            defaultValue = "MITHRIL"
         )
     ]
 )
@@ -72,12 +73,12 @@ class BlastFurnace : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryChangeEvent(ic: InventoryChangeEvent) {
-        if (ic.itemId == bar.itemId && ic.quantityChange > 0) {
+        if (ic.itemId == bar.id && ic.quantityChange > 0) {
             lootTracker.addLoot(ic.itemId, ic.quantityChange)
         }
     }
 }
 
 fun main() {
-    BlastFurnace().startScript()
+    BlastFurnace().startScript(true)
 }

@@ -10,6 +10,8 @@ import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_COMPONENT_ID
 import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_WIDGET_ID
 import org.powbot.api.rt4.Game.Tab
 import org.powbot.api.rt4.walking.local.Flag
+import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.LocalPathFinder.isRockfall
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -19,6 +21,9 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.miner.Data
+import org.powbot.krulvis.smither.Smithable
 import org.powbot.mobile.drawing.Graphics
 
 @ScriptManifest(name = "testscript", version = "1.0d", description = "")
@@ -61,43 +66,49 @@ class TestScript : ATScript() {
     var flags = emptyArray<IntArray>()
 
     val rocks by lazy { getOption<List<GameObjectOption>>("rocks") ?: emptyList() }
+    var path: LocalPath = LocalPath(emptyList())
+
+    val parent = 312
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        if (rocks.isEmpty()) {
-            log.info("Did not set rocks..")
-        } else {
-            log.info(rocks.joinToString())
+        val widget = Widgets.widget(parent)
+        val items = Smithable.values().map { it.toString() }
+        log.info("All items: ${items.joinToString()}")
+        widget.components().forEach {
+            if (it.text().isNotEmpty()) {
+                log.info("Comp for ${it.text()}: $it")
+            } else if (it.actions().contains("Smith")) {
+                log.info("Comp for interacting: $it")
+            }
+        }
+        Smithable.values().forEach { item ->
+            val c = Components.stream(parent).text(item.toString()).firstOrNull()
+            if (c != null) {
+                val r = Rectangle(c.x(), c.y(), c.width(), c.height())
+                log.info("Comp ${c.parent()}, size=[${r.width}, ${r.height}] Text=[${c.text()}]")
+            } else {
+                log.info("Couldn't find comp for $item")
+            }
         }
     }
 
-    private var mobileViewport: Rectangle = Rectangle(-1, -1, -1, -1)
-
-    fun pointInViewport(x: Int, y: Int, checkIfObstructed: Boolean = true): Boolean {
-        val point = Point(x, y)
-        if (checkIfObstructed) {
-
-            //If there is one tab open get the component's bounds and check if point is in there
-            if (Components.stream(601).texture(MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID).firstOrNull() != null) {
-                val tabComponent: Component = Widgets.component(
-                    MOBILE_TAB_WINDOW_WIDGET_ID,
-                    MOBILE_TAB_WINDOW_COMPONENT_ID
-                )
-                if (tabComponent.valid() && tabComponent.contains(point)) {
-                    return false
+    val northOfLadder = Tile(3755, 5675, 0)
+    val ladderTile = Tile(3755, 5674, 0)
+    fun escapeTopFloor(destination: Tile): Boolean {
+        val pos = Players.local().tile()
+        if (Data.TOP_CENTER_ML.distance() <= 8 && LocalPathFinder.findPath(pos, destination, true).isEmpty()) {
+            if (northOfLadder.distance() <= 6 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
+                if (ladderTile.matrix().interact("Climb")) {
+                    return Utils.waitFor {
+                        LocalPathFinder.findPath(Players.local().tile(), destination, true).isNotEmpty()
+                    }
                 }
+            } else {
+                Movement.walkTo(northOfLadder)
             }
-
-            val optionBar = Chat.optionBarComponent();
-            if (optionBar.valid() && optionBar.contains(point)) {
-                return false
-            }
+            return false
         }
-
-        if (mobileViewport.isEmpty()) {
-            mobileViewport.setBounds(Game.viewport().boundingRect())
-        }
-
-        return mobileViewport.contains(point)
+        return true
     }
 
     @com.google.common.eventbus.Subscribe
@@ -120,11 +131,11 @@ class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
     override fun paint(g: Graphics, startY: Int) {
         var y = startY
         y = drawSplitText(g, "Tab: ", Game.tab().toString(), x, y)
-
+        script.path.draw(g)
     }
 
 }
 
 fun main() {
-    TestScript().startScript(false)
+    TestScript().startScript(true)
 }

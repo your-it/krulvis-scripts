@@ -3,22 +3,35 @@ package org.powbot.krulvis.api.extensions.items
 import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Varpbits
 import java.util.*
 
-enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors: Int) : Item {
-    AMETHYST(intArrayOf(21347), 92, 6705),
-    PAY_DIRT(intArrayOf(12011), 45, 6705),
-    RUNITE(intArrayOf(451), 85, -31437),
-    ADAMANTITE(intArrayOf(449), 70, 21662),
-    MITHRIL(intArrayOf(447), 55, -22239),
-    GOLD(intArrayOf(444), 40, 8885),
-    COAL(intArrayOf(453), 30, 10508),
-    SILVER(intArrayOf(442), 20, 74),
-    IRON(intArrayOf(440), 15, 2576),
-    COPPER(intArrayOf(436), 1, 4510, 4645, 8889),
-    TIN(intArrayOf(438), 1, 53),
-    CLAY(intArrayOf(434), 1, 6705);
 
+enum class Ore(
+    override val ids: IntArray,
+    val miningLvl: Int,
+    //settingId & shiftAmount are used in Blast furnace
+    val settingId: Int,
+    val shiftAmount: Int,
+    vararg val colors: Int
+) : Item {
+    AMETHYST(intArrayOf(21347), 92, -1, -1, 6705),
+    PAY_DIRT(intArrayOf(12011), 45, -1, -1, 6705),
+    RUNITE(intArrayOf(451), 85, 548, 8, -31437),
+    ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
+    MITHRIL(intArrayOf(447), 55, 547, 24, -22239),
+    GOLD(intArrayOf(444), 40, 548, 16, 8885),
+    COAL(intArrayOf(453), 30, 547, 0, 10508),
+    SILVER(intArrayOf(442), 20, -1, -1, 74),
+    IRON(intArrayOf(440), 15, 547, 16, 2576),
+    COPPER(intArrayOf(436), 1, -1, -1, 4510, 4645, 8889),
+    TIN(intArrayOf(438), 1, -1, -1, 53),
+    CLAY(intArrayOf(434), 1, -1, -1, 6705);
+
+    private val mask = 255
+
+    val blastFurnaceCount: Int
+        get() = Varpbits.varpbit(settingId) shr shiftAmount and mask
 
     override fun hasWith(): Boolean {
         return getInventoryCount(false) > 0

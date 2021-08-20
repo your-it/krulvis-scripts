@@ -137,8 +137,8 @@ enum class BankLocation(
                 .minByOrNull { it.tile.distanceM(me) }!!
         }
 
-        fun Bank.openNearestBank(): Boolean {
-            return getNearestBank().open()
+        fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
+            return getNearestBank(includeDepositBox).open()
         }
     }
 }
