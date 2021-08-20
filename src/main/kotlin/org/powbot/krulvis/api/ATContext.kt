@@ -58,7 +58,7 @@ object ATContext {
         }
         if (!Movement.moving() || walkDelay.isFinished()) {
             if (forceMinimap && position.onMap()
-                && LocalPathFinder.findPath(Players.local().tile(), position, true).isNotEmpty()
+                && LocalPathFinder.findWalkablePath(Players.local().tile(), position).isNotEmpty()
             ) {
                 Movement.step(position)
             } else {

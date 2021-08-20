@@ -4,8 +4,11 @@ import com.google.gson.JsonParser
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.URL
+import java.util.logging.Logger
 
 object Prices {
+
+    val logger = Logger.getLogger("Prices")
 
     val GE_API_URL_BASE = "https://secure.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
     val priceMap = mutableMapOf<Int, Int>()
@@ -30,6 +33,7 @@ object Prices {
         val conn = URL(GE_API_URL_BASE + id).openConnection()
         val parser = JsonParser()
         val ipr = InputStreamReader(conn.getInputStream())
+        logger.info("Get exchange price for id=$id")
         try {
             val parsed = parser.parse(ipr)
             if (parsed != null) {
@@ -55,7 +59,6 @@ object Prices {
                                     )).toDouble() * 1000
                                     else -> priceString.toDouble()
                                 }
-//                                println("RSGE Price: $p")
                                 return p
                             }
                         }
@@ -65,7 +68,7 @@ object Prices {
             ipr.close()
             return -1.0
         } catch (fnfe: FileNotFoundException) {
-            println("Untradable: $id?")
+            logger.info("Untradable: $id?")
             return -1.0
         } finally {
             ipr.close()

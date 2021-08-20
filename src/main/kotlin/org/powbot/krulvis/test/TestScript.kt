@@ -4,6 +4,7 @@ import org.powbot.api.*
 import org.powbot.api.Condition.wait
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Constants.MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID
 import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_COMPONENT_ID
@@ -72,11 +73,11 @@ class TestScript : ATScript() {
     val parent = 270
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val tile = Tile(3094, 3491, 0)
-        path = LocalPathFinder.findPath(tile)
-        if (path.isNotEmpty()) {
-            Walking.traverseLocally(tile, { false }, runOn = false, finalTile = true, startPath = path)
-        }
+//        val tile = Tile(3094, 3491, 0)
+//        path = LocalPathFinder.findPath(tile)
+//        if (path.isNotEmpty()) {
+//            Walking.traverseLocally(tile, { false }, runOn = false, finalTile = true, startPath = path)
+//        }
     }
 
     val northOfLadder = Tile(3755, 5675, 0)
@@ -106,6 +107,11 @@ class TestScript : ATScript() {
         } else {
             log.info("GameActionEvent $e")
         }
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onInventoryChangeEvent(e: InventoryChangeEvent) {
+        log.info("Inv change event for id=${e.itemId}, change=${e.quantityChange}")
     }
 
     fun Tile.globalTile(): Tile {

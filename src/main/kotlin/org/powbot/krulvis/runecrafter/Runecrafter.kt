@@ -33,17 +33,15 @@ class Runecrafter : ATScript() {
 
 
     fun hasTalisman(): Boolean {
-        return Equipment.stream().id(profile.type.tiara)
-            .isNotEmpty() || Inventory.containsOneOf(profile.type.talisman)
+        return Equipment.containsOneOf(profile.type.tiara) || Inventory.containsOneOf(profile.type.talisman)
     }
 
     fun atAltar(): Boolean {
         return Objects.stream(25).name("Altar", "Portal").isNotEmpty()
     }
 
-//    override fun onChange(evt: InventoryChangeEvent) {
-//        if (evt.itemId == profile.type.rune && evt.quantityChange > 0) {
-//            lootTracker.addLoot(evt.itemId, evt.quantityChange)
-//        }
-//    }
+}
+
+fun main() {
+    Runecrafter().startScript()
 }
