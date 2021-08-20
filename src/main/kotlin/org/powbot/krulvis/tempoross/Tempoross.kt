@@ -20,6 +20,8 @@ import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptConfiguration
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.TreeComponent
@@ -42,6 +44,16 @@ import java.util.*
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
 )
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            name = "Cook fish",
+            description = "Cooking the fish gives more points at the cost of XP",
+            defaultValue = "true",
+            optionType = OptionType.BOOLEAN
+        )
+    ]
+)
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 
@@ -63,6 +75,8 @@ class Tempoross : ATScript() {
     var rounds = 0
     var bestFishSpot: Optional<Npc> = Optional.empty()
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
+
+    val cookFish by lazy { getOption<Boolean>("Cook fish") ?: true }
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
@@ -114,10 +128,10 @@ class Tempoross : ATScript() {
             if (blockedTile != null) Npcs.stream().name("Fire").within(blockedTile.destination, 2.5).nearest()
                 .findFirst() else Optional.empty()
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
-        println("Blockedtile: $blockedTile foundFire: ${fireOptional.isPresent}, Bucket: $hasBucket")
+        log.info("Blockedtile: $blockedTile foundFire: ${fireOptional.isPresent}, Bucket: $hasBucket")
         if (fireOptional.isPresent && hasBucket) {
             val fire = fireOptional.get()
-            debug("Found fire on the way to: ${path.finalDestination()}")
+            log.info("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
                 if (fire.distance() > 8) {
                     val blockedIndex = path.actions.indexOf(blockedTile)
@@ -130,7 +144,7 @@ class Tempoross : ATScript() {
                 return waitFor(long()) { Npcs.stream().at(fire).name("Fire").isEmpty() }
             }
         } else if (!fireOptional.isPresent || allowCrossing) {
-            debug("No fire on the way")
+            log.info("No fire on the way")
             return true
         }
         return false
@@ -147,7 +161,6 @@ class Tempoross : ATScript() {
         } else if (path.isNotEmpty()) {
             path.traverse()
         } else {
-            println("Trying walkPath but got empty path...")
             false
         }
     }
@@ -189,7 +202,7 @@ class Tempoross : ATScript() {
         } else if (txt.contains("A colossal wave closes in...")) {
             println("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
-            val fishId = if (profile.cook) COOKED else RAW
+            val fishId = if (cookFish) COOKED else RAW
             val fish = Inventory.stream().id(fishId).count()
             if (profile.shootAfterTethering && (fish >= profile.minFishToForceShoot || fish >= getHealth())) {
                 forcedShooting = true
