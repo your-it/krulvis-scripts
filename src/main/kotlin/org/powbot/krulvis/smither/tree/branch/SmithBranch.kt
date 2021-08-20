@@ -12,7 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smither.Smither
 import org.powbot.krulvis.smither.tree.leaf.ClickWidget
 
-class ShouldSmith(script: Smither) : Branch<Smither>(script, "IsSmithing") {
+class ShouldSmith(script: Smither) : Branch<Smither>(script, "Should Smith") {
     override val failedComponent: TreeComponent<Smither> = SimpleLeaf(script, "Chilling") {}
     override val successComponent: TreeComponent<Smither> = IsWidgetOpen(script)
 

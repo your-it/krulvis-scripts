@@ -26,7 +26,8 @@ enum class Ore(
     IRON(intArrayOf(440), 15, 547, 16, 2576),
     COPPER(intArrayOf(436), 1, -1, -1, 4510, 4645, 8889),
     TIN(intArrayOf(438), 1, -1, -1, 53),
-    CLAY(intArrayOf(434), 1, -1, -1, 6705);
+    CLAY(intArrayOf(434), 1, -1, -1, 6705),
+    BLURITE(intArrayOf(668), 1, -1, -1, 696969);
 
     private val mask = 255
 

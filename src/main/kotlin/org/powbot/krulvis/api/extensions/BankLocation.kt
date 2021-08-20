@@ -12,6 +12,7 @@ import org.powbot.krulvis.api.utils.interactions.ObjectInteraction
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.mobile.script.ScriptManager
 
 
 enum class BankType {
@@ -97,12 +98,13 @@ enum class BankLocation(
      * Opens the bank at the location
      */
     fun open(): Boolean {
+        ScriptManager.script()!!.log.info("Opening bank: $this")
         if (Bank.opened()) {
             return true
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
-        } else if (me.floor() != tile.floor || tile.distanceM(me) >= 20) {
-            debug("Using web to walk to bank")
+        } else if (me.floor() != tile.floor || tile.distance() >= 20) {
+            ScriptManager.script()!!.log.info("Walking before interacting: $this")
             WebWalking.moveTo(tile, false, {
                 val b = interaction.getEntity()
                 b.isPresent && b.get().inViewport()
@@ -111,8 +113,8 @@ enum class BankLocation(
         }
         return interaction.execute() && waitFor(
             Random.nextInt(
-                3000,
-                5000
+                5000,
+                7000
             )
         ) { Bank.opened() || DepositBox.opened() }
     }

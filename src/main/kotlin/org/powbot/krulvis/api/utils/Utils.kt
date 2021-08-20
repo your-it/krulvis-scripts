@@ -26,7 +26,7 @@ object Utils {
 
     fun mid(): Int = Random.nextInt(1000, 2500)
 
-    fun long(): Int = Random.nextInt(2500, 5000)
+    fun long(): Int = Random.nextInt(5000, 8000)
 
     fun waitFor(min: Int, max: Int, condition: () -> Boolean): Boolean {
         return waitFor(

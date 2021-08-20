@@ -9,6 +9,7 @@ import org.powbot.api.rt4.Constants.MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID
 import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_COMPONENT_ID
 import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_WIDGET_ID
 import org.powbot.api.rt4.Game.Tab
+import org.powbot.api.rt4.walking.Walking
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
@@ -68,27 +69,13 @@ class TestScript : ATScript() {
     val rocks by lazy { getOption<List<GameObjectOption>>("rocks") ?: emptyList() }
     var path: LocalPath = LocalPath(emptyList())
 
-    val parent = 312
+    val parent = 270
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val widget = Widgets.widget(parent)
-        val items = Smithable.values().map { it.toString() }
-        log.info("All items: ${items.joinToString()}")
-        widget.components().forEach {
-            if (it.text().isNotEmpty()) {
-                log.info("Comp for ${it.text()}: $it")
-            } else if (it.actions().contains("Smith")) {
-                log.info("Comp for interacting: $it")
-            }
-        }
-        Smithable.values().forEach { item ->
-            val c = Components.stream(parent).text(item.toString()).firstOrNull()
-            if (c != null) {
-                val r = Rectangle(c.x(), c.y(), c.width(), c.height())
-                log.info("Comp ${c.parent()}, size=[${r.width}, ${r.height}] Text=[${c.text()}]")
-            } else {
-                log.info("Couldn't find comp for $item")
-            }
+        val tile = Tile(3094, 3491, 0)
+        path = LocalPathFinder.findPath(tile)
+        if (path.isNotEmpty()) {
+            Walking.traverseLocally(tile, { false }, runOn = false, finalTile = true, startPath = path)
         }
     }
 
@@ -130,7 +117,6 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
     override fun paint(g: Graphics, startY: Int) {
         var y = startY
-        y = drawSplitText(g, "Tab: ", Game.tab().toString(), x, y)
         script.path.draw(g)
     }
 

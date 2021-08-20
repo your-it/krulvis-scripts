@@ -1,9 +1,11 @@
 package org.powbot.krulvis.api.utils.interactions
 
+import org.powbot.api.InteractableEntity
 import org.powbot.api.Locatable
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Utils
 import java.util.*
 
 /**
@@ -38,26 +40,12 @@ interface Interaction<E : Interactive> {
     fun execute(): Boolean {
         val o = getEntity()
         if (!o.isPresent) {
-            debug("Didn't get interaction entity...")
             WebWalking.walkTo(tile, false)
             return false
         }
-
         val entity = o.get()
-        val t = if (tile == Tile.Nil) (entity as Locatable).tile() else tile
-        val destination = Movement.destination() ?: Tile.Nil
 
-        if (!entity.inViewport()
-            || (destination != tile && tile.distanceTo(if (destination == Tile.Nil) Players.local() else destination) > walkDistance)
-        ) {
-            if (tile.matrix().onMap()) {
-                Movement.step(tile)
-            } else {
-                WebWalking.walkTo(t, false)
-            }
-        } else {
-            return entity.interact(action)
-        }
+        Utils.walkAndInteract(entity as InteractableEntity, action)
         return false
     }
 

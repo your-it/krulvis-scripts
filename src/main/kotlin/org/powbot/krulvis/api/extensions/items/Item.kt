@@ -50,6 +50,7 @@ interface Item {
 
     companion object {
         val HAMMER = 2347
+        val AMMO_MOULD = 4
         val SAW = 8794
         val BOND_CHARGED = 13190
         val BOND_UNCHARGED = 13192
