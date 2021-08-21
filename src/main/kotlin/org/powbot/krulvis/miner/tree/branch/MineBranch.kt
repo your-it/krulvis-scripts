@@ -13,6 +13,7 @@ import org.powbot.krulvis.miner.tree.leaf.Mine
 import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
 import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.Worlds
 import org.powbot.api.rt4.stream.widget.WorldStream
@@ -73,16 +74,26 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
 
 
     override fun validate(): Boolean {
-        return me.animation() > 0 && org.powbot.api.rt4.Objects.stream().at(facingTile()).anyMatch { it.hasOre() }
+        if (!Objects.stream().at(facingTile()).anyMatch { it.hasOre() }) {
+            return false
+        }
+        return if (me.animation() > 0) {
+            lastAnim = System.currentTimeMillis()
+            true
+        } else {
+            System.currentTimeMillis() - lastAnim < 2000
+        }
     }
+
+    var lastAnim: Long = 0
 
     override val successComponent: TreeComponent<Miner> =
         SimpleLeaf(script, "Chilling") {
             if (Random.nextBoolean())
-                sleep(Random.nextInt(1000, 5000))
+                sleep(Random.nextInt(1000, 2000))
             else
                 waitFor(1500) {
-                    org.powbot.api.rt4.Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
+                    Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
                 }
         }
     override val failedComponent: TreeComponent<Miner> = Mine(script)

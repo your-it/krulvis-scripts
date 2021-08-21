@@ -7,7 +7,7 @@ class SmelterPainter(script: Smelter) : ATPainter<Smelter>(script, 6, 350) {
     override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         y = drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
-        if (script.hasOptionsConfigured()) {
+        if (script.options.all { it.configured }) {
             y = drawSplitText(g, "Bar: ", script.bar.toString(), x, y)
             y = drawSplitText(g, "SmeltableCount: ", script.bar.getSmeltableCount().toString(), x, y)
         }
