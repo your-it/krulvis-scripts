@@ -51,7 +51,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
             "Fast mine",
             "Don't sleep",
             optionType = OptionType.BOOLEAN,
-            defaultValue = "false"
+            defaultValue = "true"
         ),
     ]
 )
@@ -103,5 +103,5 @@ class Miner : ATScript() {
 }
 
 fun main() {
-    Miner().startScript(true)
+    Miner().startScript(false)
 }

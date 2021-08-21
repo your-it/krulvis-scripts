@@ -20,7 +20,7 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
 
     override fun bgColor(): Int = Color.argb(150, 0, 0, 0)
 
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
@@ -79,6 +79,7 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
         if (spot != null && spot.name() == "Fishing spot") {
             drawTile(g, spot.tile())
         }
+        return y
     }
 
     override fun drawTitle(g: Graphics, x: Int, y: Int) {

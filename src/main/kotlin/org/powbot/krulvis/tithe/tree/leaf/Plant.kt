@@ -19,7 +19,7 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
             script.planting = true
             val seed = script.getSeed()
             if (patch.walkBetween("None", script.patches) && patch.plant(seed)) {
-                if (patch.index < script.profile.patchCount - 1) {
+                if (patch.index < script.patchCount - 1) {
                     Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use") }
                 }
                 val doneDidIt = waitFor(2500) {

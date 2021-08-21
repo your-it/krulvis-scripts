@@ -5,7 +5,7 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 class BFPainter(script: BlastFurnace) : ATPainter<BlastFurnace>(script, 8, 300) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         val bar = script.bar
         val prim = bar.primary
@@ -18,6 +18,7 @@ class BFPainter(script: BlastFurnace) : ATPainter<BlastFurnace>(script, 8, 300) 
         }
         y = script.skillTracker.draw(g, x, y)
         y = script.lootTracker.drawLoot(g, x, y)
+        return y
     }
 
     override fun drawTitle(g: Graphics, x: Int, y: Int) {

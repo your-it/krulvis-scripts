@@ -4,7 +4,7 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 class SmelterPainter(script: Smelter) : ATPainter<Smelter>(script, 6, 350) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         y = drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
         if (script.hasOptionsConfigured()) {
@@ -12,5 +12,6 @@ class SmelterPainter(script: Smelter) : ATPainter<Smelter>(script, 6, 350) {
             y = drawSplitText(g, "SmeltableCount: ", script.bar.getSmeltableCount().toString(), x, y)
         }
         y = script.skillTracker.draw(g, x, y)
+        return y
     }
 }

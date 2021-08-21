@@ -116,7 +116,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         x = 400
     }
 
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
         y += yy
@@ -177,6 +177,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 }
             }
         }
+        return y
     }
 
     fun <E : InteractableEntity> drawEntity(g: Graphics, entity: Optional<E>) {

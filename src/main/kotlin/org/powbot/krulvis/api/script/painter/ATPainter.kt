@@ -15,10 +15,11 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.mobile.drawing.Graphics
 import java.text.DecimalFormat
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 
-abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 350) {
+abstract class ATPainter<S : ATScript>(val script: S, var lines: Int = 0, val width: Int = 350) {
 
     val useLayout = lines > 0
     private var username: String? = null
@@ -26,22 +27,23 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
     var y = 90
     val custom = DynamicColor(0.40f, 0.75f, 0.01f)
 
-    abstract fun paint(g: Graphics, startY: Int)
+    abstract fun paint(g: Graphics, startY: Int): Int
 
     fun onRepaint(g: Graphics) {
         try {
             if (useLayout) {
                 val y = drawLayout(g)
                 g.setColor(ORANGE)
+                lines = (paint(g, y) - y) / yy
+            } else {
                 paint(g, y)
-            } else
-                paint(g, y)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun getLayoutHeight(): Int = 51 + lines * 20
+    fun getLayoutHeight(): Int = 51 + lines * yy
 
     fun drawLayout(g: Graphics): Int {
 

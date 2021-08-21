@@ -21,6 +21,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Utils
@@ -61,7 +62,8 @@ import org.powbot.mobile.drawing.Graphics
 class TestScript : ATScript() {
     override val painter: ATPainter<*> = TestPainter(this)
 
-    val dest = Tile(3208, 3221, 2) //Lummy top bank
+    val origin = Tile(3287, 3204, 0)
+    val dest = Tile(3293, 3228, 0) //Lummy top bank
     val nearHopper = Tile(3748, 5673, 0) //Hopper in Motherlode
     val topMineFloor = Tile(3757, 5680, 0) //Hopper in Motherlode
     val oddRockfall = Tile(x = 3216, y = 3210, floor = 0)
@@ -73,11 +75,9 @@ class TestScript : ATScript() {
     val parent = 270
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        val tile = Tile(3094, 3491, 0)
-//        path = LocalPathFinder.findPath(tile)
-//        if (path.isNotEmpty()) {
-//            Walking.traverseLocally(tile, { false }, runOn = false, finalTile = true, startPath = path)
-//        }
+        val nearestBank = Bank.getNearestBank(true)
+        println("Opening: ${nearestBank.name}")
+        nearestBank.open()
     }
 
     val northOfLadder = Tile(3755, 5675, 0)
@@ -121,9 +121,12 @@ class TestScript : ATScript() {
 }
 
 class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
+        script.dest.drawOnScreen(g)
         script.path.draw(g)
+
+        return y
     }
 
 }

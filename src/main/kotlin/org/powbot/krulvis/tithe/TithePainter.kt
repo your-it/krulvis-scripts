@@ -4,7 +4,7 @@ import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 class TithePainter(script: TitheFarmer) : ATPainter<TitheFarmer>(script, 10, 250) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         drawSplitText(g, "Last leaf: ", script.lastLeaf.name, x, y)
         y += yy
@@ -26,5 +26,6 @@ class TithePainter(script: TitheFarmer) : ATPainter<TitheFarmer>(script, 10, 250
 //                drawTile(g, it.go.tile(), text = it.toString(), lineColor = color, mapColor = color)
 //            }
 //        }
+        return y
     }
 }

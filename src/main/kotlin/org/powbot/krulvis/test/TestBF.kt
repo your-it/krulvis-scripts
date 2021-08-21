@@ -31,7 +31,7 @@ class TestBF : ATScript() {
 }
 
 class TestBFPainter(script: TestBF) : ATPainter<TestBF>(script) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         TODO("Not yet implemented")
     }
 }

@@ -5,7 +5,9 @@ import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.rt4.*
+import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
+import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getCount
@@ -29,6 +31,16 @@ import java.util.logging.Logger
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            name = "Patches",
+            description = "How many patches do you want to use?",
+            optionType = OptionType.INTEGER,
+            defaultValue = "14"
+        )
+    ]
+)
 class TitheFarmer : ATScript() {
     override val painter: ATPainter<*> = TithePainter(this)
 
@@ -41,8 +53,8 @@ class TitheFarmer : ATScript() {
         skillTracker.addSkill(Skill.FARMING)
     }
 
+    val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
     var lock = false
-    var profile = TitheProfile()
     var startPoints = -1
     var gainedPoints = 0
     var patches = listOf<Patch>()
@@ -67,7 +79,7 @@ class TitheFarmer : ATScript() {
             }
         }
 
-        return columns.toList().subList(0, profile.patchCount)
+        return columns.toList().subList(0, patchCount)
     }
 
     fun refreshPatches() {
@@ -96,7 +108,7 @@ class TitheFarmer : ATScript() {
 
     fun getWaterCount(): Int = Inventory.stream().id(*Data.WATER_CANS).list().sumOf { it.id() - 5332 }
 
-    fun hasEnoughWater(): Boolean = getWaterCount() >= profile.patchCount * 3.5
+    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3.5
 
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {
@@ -139,4 +151,8 @@ class TitheFarmer : ATScript() {
     }
 
 
+}
+
+fun main() {
+    TitheFarmer().startScript(true)
 }

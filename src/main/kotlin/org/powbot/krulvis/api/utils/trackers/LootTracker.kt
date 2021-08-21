@@ -55,7 +55,7 @@ class LootTracker(val script: ATScript) {
                 if (worth != it.amount) {
                     y = script.painter.drawSplitText(
                         g,
-                        "Worth: ",
+                        "  - Worth: ",
                         "${formatAmount(worth)} (${formatAmount(timer.getPerHour(worth))}/hr)",
                         x,
                         y
