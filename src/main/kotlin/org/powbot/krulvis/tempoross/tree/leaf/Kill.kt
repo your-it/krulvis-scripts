@@ -4,6 +4,7 @@ import org.powbot.api.rt4.Chat
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.KILLING_ANIM
 import org.powbot.krulvis.tempoross.Tempoross
@@ -18,7 +19,7 @@ class Kill(script: Tempoross) : Leaf<Tempoross>(script, "Killing") {
 
         Chat.canContinue()
         if (!killing && script.interactWhileDousing(spirit, "Harpoon", script.bossWalkLocation, true)) {
-            waitFor { me.animation() == KILLING_ANIM }
+            waitFor(long()) { me.animation() == KILLING_ANIM }
         }
     }
 }

@@ -31,7 +31,7 @@ import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.smither.Smithable
 import org.powbot.mobile.drawing.Graphics
 
-@ScriptManifest(name = "testscript", version = "1.0d", description = "")
+@ScriptManifest(name = "testscript", version = "1.0.1", description = "")
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
