@@ -6,6 +6,7 @@ import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.WATER_ANIM
@@ -24,7 +25,7 @@ class Water(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
         } else if (!hasBucket) {
             val bucketCrate = script.getBucketCrate()
             if (bucketCrate.isPresent && interact(bucketCrate.get(), "Take-5")) {
-                waitFor { Inventory.containsOneOf(EMPTY_BUCKET) }
+                waitFor(Random.nextInt(6500, 10000)) { Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         }
     }

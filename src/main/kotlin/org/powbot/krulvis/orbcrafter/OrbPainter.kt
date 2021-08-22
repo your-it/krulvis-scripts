@@ -5,8 +5,9 @@ import org.powbot.mobile.drawing.Graphics
 import java.awt.Graphics2D
 
 class OrbPainter(script: OrbCrafter) : ATPainter<OrbCrafter>(script) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
+        return y
     }
 
 }

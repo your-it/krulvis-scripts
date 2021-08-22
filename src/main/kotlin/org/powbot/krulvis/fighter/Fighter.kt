@@ -43,7 +43,7 @@ class Fighter : ATScript() {
 }
 
 class FighterPainter(script: Fighter) : ATPainter<Fighter>(script, 10) {
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         TODO("Not yet implemented")
     }
 }

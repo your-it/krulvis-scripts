@@ -14,14 +14,14 @@ import org.powbot.krulvis.tempoross.Tempoross
 class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
     override fun execute() {
         if (script.isTethering()) {
-            println("Waiting for wave to pass..")
-            if (waitFor {
+            script.log.info("Waiting for wave to pass..")
+            if (waitFor(script.waveTimer.getRemainder().toInt()) {
                     val tetherMast =
                         Objects.stream().filter { it.tile() in listOf(script.mastLocation, script.totemLocation) }
                             .nearest().first()
                     script.waveTimer.isFinished() && !tetherMast.actions().contains("Untether")
                 }) {
-                println("Done tethering...")
+                script.log.info("Done tethering...")
                 script.waveTimer.stop()
                 sleep(Random.nextInt(1000, 1200))
             }
@@ -29,7 +29,6 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
         }
         val poleO = script.getTetherPole()
         if (!poleO.isPresent) {
-            println("Can't find tetherpole")
             return
         }
         val pole = poleO.get()

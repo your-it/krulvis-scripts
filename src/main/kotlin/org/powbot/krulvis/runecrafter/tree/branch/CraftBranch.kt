@@ -1,5 +1,6 @@
 package org.powbot.krulvis.runecrafter.tree.branch
 
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Branch
@@ -21,7 +22,7 @@ class AtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "At Altar") {
 class AtRuins(script: Runecrafter) : Branch<Runecrafter>(script, "At Ruins") {
     override val successComponent: TreeComponent<Runecrafter> = EnterRuins(script)
     override val failedComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Walking to ruins") {
-        walk(script.profile.type.ruins)
+        Movement.walkTo(script.profile.type.ruins)
     }
 
     override fun validate(): Boolean {

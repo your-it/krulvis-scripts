@@ -2,10 +2,13 @@ package org.powbot.krulvis.api.utils.trackers
 
 import org.powbot.api.rt4.CacheItemConfig
 import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Prices
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.script.ScriptManager
 import java.lang.IllegalStateException
+import java.util.logging.Logger
 import kotlin.math.absoluteValue
 
 class LootTracker(val script: ATScript) {
@@ -34,7 +37,6 @@ class LootTracker(val script: ATScript) {
         timer: Timer = script.timer,
         onlyTotal: Boolean = false
     ): Int {
-        val yy = 11
         var y = y
         var totalWorth = 0
         val loots = this.loots
@@ -43,27 +45,32 @@ class LootTracker(val script: ATScript) {
             totalWorth += worth
             val amount = formatAmount(it.amount)
             if (!onlyTotal) {
-//                script.painter.drawSplitText(
-//                    g,
-//                    "${it.name}: ",
-//                    "$amount (${formatAmount(timer.getPerHour(it.amount))}/hr)"
-//                            + (if (worth != it.amount) ", ${formatAmount(worth)} (${formatAmount(timer.getPerHour(worth))}/hr)" else ""),
-//                    x,
-//                    y
-////                    font = g.font.deriveFont(it.fontSize.toFloat())
-//                )
-                y += yy
+                y = script.painter.drawSplitText(
+                    g,
+                    "${it.name}: ",
+                    "$amount (${formatAmount(timer.getPerHour(it.amount))}/hr)",
+                    x,
+                    y
+                )
+                if (worth != it.amount) {
+                    y = script.painter.drawSplitText(
+                        g,
+                        "  - Worth: ",
+                        "${formatAmount(worth)} (${formatAmount(timer.getPerHour(worth))}/hr)",
+                        x,
+                        y
+                    )
+                }
             }
         }
         if (loots.size > 1) {
-            y += 5
-//            script.painter.drawSplitText(
-//                g,
-//                "Total Loot: ",
-//                "${formatAmount(totalWorth)} (${formatAmount(timer.getPerHour(totalWorth))}/hr)",
-//                x,
-//                y
-//            )
+            y = script.painter.drawSplitText(
+                g,
+                "Total Loot: ",
+                "${formatAmount(totalWorth)} (${formatAmount(timer.getPerHour(totalWorth))}/hr)",
+                x,
+                y
+            )
         }
         return y
     }
@@ -93,6 +100,7 @@ class LootTracker(val script: ATScript) {
         private var price = -1
 
         private val getPriceThread = Thread {
+            logger.info("Getting price for id=$id")
             val def = CacheItemConfig.load(id)
             price = Prices.getPrice(if (def.noted) id - 1 else id)
         }
@@ -102,7 +110,7 @@ class LootTracker(val script: ATScript) {
                 try {
                     getPriceThread.start()
                 } catch (e: IllegalStateException) {
-                    println("Found illegal state exception in Price getter")
+                    logger.warning("Found illegal state exception in Price getter")
                     e.printStackTrace()
                 }
             }
@@ -118,5 +126,9 @@ class LootTracker(val script: ATScript) {
         }
 
         fun getWorth(): Int = amount * price()
+    }
+
+    companion object {
+        val logger = Logger.getLogger("LootTracker")
     }
 }

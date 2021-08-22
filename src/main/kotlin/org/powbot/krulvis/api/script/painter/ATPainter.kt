@@ -1,6 +1,5 @@
 package org.powbot.krulvis.api.script.painter
 
-import org.powbot.api.Color
 import org.powbot.api.Color.BLACK
 import org.powbot.api.Color.BLACK_A
 import org.powbot.api.Color.GREEN
@@ -8,7 +7,6 @@ import org.powbot.api.Color.ORANGE
 import org.powbot.api.Color.WHITE
 import org.powbot.api.Rectangle
 import org.powbot.api.Tile
-import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.mapPoint
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Timer
@@ -18,7 +16,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val width: Int = 350) {
+abstract class ATPainter<S : ATScript>(val script: S, var lines: Int = 0, val width: Int = 350) {
 
     val useLayout = lines > 0
     private var username: String? = null
@@ -26,22 +24,25 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
     var y = 90
     val custom = DynamicColor(0.40f, 0.75f, 0.01f)
 
-    abstract fun paint(g: Graphics, startY: Int)
+    abstract fun paint(g: Graphics, startY: Int): Int
 
     fun onRepaint(g: Graphics) {
         try {
             if (useLayout) {
                 val y = drawLayout(g)
                 g.setColor(ORANGE)
+                val bottomY = paint(g, y)
+                drawVersion(g, bottomY + 10)
+                lines = (bottomY - y) / yy
+            } else {
                 paint(g, y)
-            } else
-                paint(g, y)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun getLayoutHeight(): Int = 51 + lines * 20
+    fun getLayoutHeight(): Int = 51 + lines * yy
 
     fun drawLayout(g: Graphics): Int {
 
@@ -77,7 +78,19 @@ abstract class ATPainter<S : ATScript>(val script: S, val lines: Int = 0, val wi
         drawTitle(g, script.manifest.name, x, y)
     }
 
-    private var chatBoxUsernameBox: org.powbot.api.Point? = null
+    fun drawVersion(g: Graphics, y: Int) {
+        val textSize = g.getTextSize()
+        val color = g.getColor()
+        g.setTextSize(9f)
+        val text = "v${script.manifest.version}"
+        val textWidth = g.getTextWidth(text)
+        val x = this.x + width - textWidth.toInt() - 10
+        g.setColor(WHITE)
+        g.drawString(text, x, y)
+
+        g.setTextSize(textSize)
+        g.setColor(color)
+    }
 
     fun drawTile(
         g: Graphics,

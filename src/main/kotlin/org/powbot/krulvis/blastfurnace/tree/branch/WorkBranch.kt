@@ -7,7 +7,6 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.blastfurnace.Bar
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.tree.leaf.HandleBank
 import org.powbot.krulvis.blastfurnace.tree.leaf.PutOre
@@ -18,10 +17,10 @@ class ShouldTake(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should ta
     override val failedComponent: TreeComponent<BlastFurnace> = ShouldPutOre(script)
 
     override fun validate(): Boolean {
-        return script.bar.amount > 0
+        return script.bar.blastFurnaceCount > 0
                 && !Inventory.containsOneOf(
-            script.bar.primary.itemId,
-            script.bar.secondary.itemId
+            script.bar.primary.id,
+            script.bar.secondary.id
         )
     }
 }
@@ -31,7 +30,7 @@ class ShouldPutOre(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should 
     override val failedComponent: TreeComponent<BlastFurnace> = ShouldWaitAtDispenser(script)
 
     override fun validate(): Boolean {
-        return Inventory.containsOneOf(script.bar.primary.itemId, script.bar.secondary.itemId)
+        return Inventory.containsOneOf(script.bar.primary.id, script.bar.secondary.id)
     }
 }
 
@@ -45,7 +44,7 @@ class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script,
     override val failedComponent: TreeComponent<BlastFurnace> = HandleBank(script)
 
     override fun validate(): Boolean {
-        if (Inventory.containsOneOf(script.bar.itemId)) {
+        if (Inventory.containsOneOf(script.bar.id)) {
             script.waitForBars = false
         }
         return !Inventory.isFull() && script.waitForBars

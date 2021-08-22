@@ -20,25 +20,21 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
 
     override fun bgColor(): Int = Color.argb(150, 0, 0, 0)
 
-    override fun paint(g: Graphics, startY: Int) {
+    override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
         val spot = me.interacting()
 
-        drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
-        y += yy
+        y = drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
+        if (!script.waveTimer.isFinished()) {
+            y = drawSplitText(g, "Wave timer: ", script.waveTimer.getRemainderString(), x, y)
+        }
         if (debugComponents) {
-            drawSplitText(g, "My Animation: ", "${me.animation()}", x, y)
-            y += yy
-            drawSplitText(g, "Interacting Anim: ", "${spot?.animation() ?: -1}", x, y)
-            y += yy
-            drawSplitText(g, "Side: ", "${script.side}", x, y)
-            y += yy
-            drawSplitText(g, "Energy: ${script.getEnergy()}", "Health: ${script.getHealth()}: ", x, y)
-            y += yy
-            drawSplitText(g, "Wave timer: ", script.waveTimer.getRemainderString(), x, y)
-            y += yy
+            y = drawSplitText(g, "My Animation: ", "${me.animation()}", x, y)
+            y = drawSplitText(g, "Interacting Anim: ", "${spot?.animation() ?: -1}", x, y)
+            y = drawSplitText(g, "Side: ", "${script.side}", x, y)
+            y = drawSplitText(g, "Energy: ${script.getEnergy()}", "Health: ${script.getHealth()}: ", x, y)
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {
@@ -75,10 +71,11 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
                 y
             )
         }
-        script.skillTracker.draw(g, x, y)
+        y = script.skillTracker.draw(g, x, y)
         if (spot != null && spot.name() == "Fishing spot") {
             drawTile(g, spot.tile())
         }
+        return y
     }
 
     override fun drawTitle(g: Graphics, x: Int, y: Int) {

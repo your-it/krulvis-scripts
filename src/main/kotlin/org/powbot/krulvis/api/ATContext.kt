@@ -58,7 +58,7 @@ object ATContext {
         }
         if (!Movement.moving() || walkDelay.isFinished()) {
             if (forceMinimap && position.onMap()
-                && LocalPathFinder.findPath(Players.local().tile(), position, true).isNotEmpty()
+                && LocalPathFinder.findWalkablePath(Players.local().tile(), position).isNotEmpty()
             ) {
                 Movement.step(position)
             } else {
@@ -116,7 +116,7 @@ object ATContext {
             }
 
         }
-        val interactBool = if (name == "null") t.interact(action) else t.interact(action, name)
+        val interactBool = if (name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
         return waitFor(short()) {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         } && interactBool

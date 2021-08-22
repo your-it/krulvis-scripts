@@ -11,14 +11,16 @@ import org.powbot.krulvis.miner.Miner
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.walking.local.Utils
+import kotlin.random.Random
 
 class FixStrut(script: Miner) : Leaf<Miner>(script, "Fixing strut") {
     override fun execute() {
         if (Inventory.containsOneOf(Item.HAMMER)) {
             val strut = script.getBrokenStrut()
             val brokenStruts = Objects.stream(10).name("Broken strut").count()
-            if (strut != null && interact(strut, "Hammer")) {
-                waitFor(mid() + strut.distance() * 400) {
+            if (strut != null && Utils.walkAndInteract(strut, "Hammer")) {
+                waitFor(Random.nextInt(9900, 12000)) {
                     Objects.stream(10).name("Broken strut").count() < brokenStruts
                 }
             }
