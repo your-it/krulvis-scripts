@@ -22,6 +22,8 @@ import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
+import org.powbot.krulvis.api.extensions.items.Bar
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.krulvis.api.utils.Utils
@@ -75,9 +77,7 @@ class TestScript : ATScript() {
     val parent = 270
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val nearestBank = Bank.getNearestBank(true)
-        println("Opening: ${nearestBank.name}")
-        nearestBank.open()
+        log.info("Depositing=${Bank.depositAllExcept(HAMMER, Bar.MITHRIL.id)}")
     }
 
     val northOfLadder = Tile(3755, 5675, 0)

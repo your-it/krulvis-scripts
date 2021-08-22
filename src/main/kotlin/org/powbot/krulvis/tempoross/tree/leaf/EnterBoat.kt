@@ -22,7 +22,7 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
         if (!ropeLadder.isPresent || ropeLadder.get().distance() > 5) {
             debug("Walking first")
             walk(Tile(3137, 2841, 0))
-        } else if (interact(ropeLadder.get(), "Climb")) {
+        } else if (interact(ropeLadder.get(), "Quick-climb")) {
             waitFor(long()) { BOAT_AREA.contains(ATContext.me.tile()) }
         }
 

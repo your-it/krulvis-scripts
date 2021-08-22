@@ -65,7 +65,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 fishAtSpot(fishSpot.get())
             } else {
                 val tetherPole = script.getTetherPole()
-                if (tetherPole.isPresent && tetherPole.get().inViewport()) {
+                if (tetherPole.isPresent && !tetherPole.get().inViewport()) {
                     if (script.oddFishingSpot.distance() <= 1) {
                         println("Fishing at weird spot so using unique camera rotation")
                         Camera.pitch(Random.nextInt(1200, 1300))

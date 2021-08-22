@@ -7,7 +7,7 @@ import org.powbot.api.Tile
 object Data {
 
 
-    val WAVE_TIMER = 8000
+    val WAVE_TIMER = 7500
     val PARENT_WIDGET = 437
 
     var DOUBLE_FISH_ID = 10569

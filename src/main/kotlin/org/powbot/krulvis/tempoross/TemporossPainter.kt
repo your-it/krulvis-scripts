@@ -75,7 +75,7 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
                 y
             )
         }
-        script.skillTracker.draw(g, x, y)
+        y = script.skillTracker.draw(g, x, y)
         if (spot != null && spot.name() == "Fishing spot") {
             drawTile(g, spot.tile())
         }
