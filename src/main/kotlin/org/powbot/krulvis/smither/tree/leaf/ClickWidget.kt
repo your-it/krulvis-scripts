@@ -12,11 +12,8 @@ class ClickWidget(script: Smither) : Leaf<Smither>(script, "Click Widget") {
         val comp = Components.stream(312).text(script.item.toString()).firstOrNull()
         val clickable = comp?.parent() ?: return
         script.log.info("Found widget with text: ${comp.text()}, parent: $clickable")
-        if (clickable.interact("Smith")) {
-            val notStoppedMaking = waitFor(long()) { !LastMade.stoppedUsing(script.bar.id) }
-            script.log.info("After widget click notStoppedMaking=$notStoppedMaking")
-        } else {
-            script.log.info("Failed to click on widget...")
-        }
+        clickable.interact("Smith")
+        val notStoppedMaking = waitFor(long()) { !LastMade.stoppedUsing(script.bar.id) }
+        script.log.info("After widget click notStoppedMaking=$notStoppedMaking")
     }
 }

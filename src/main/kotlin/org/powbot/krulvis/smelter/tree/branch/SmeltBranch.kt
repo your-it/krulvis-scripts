@@ -30,9 +30,8 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
 
     override val successComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Clicking Widget") {
         val comp = script.bar.getSmeltComponent()
-        if (comp?.interact("Smelt") == true) {
-            waitFor(long()) { !LastMade.stoppedMaking(script.bar.id) }
-        }
+        comp?.interact("Smelt")
+        waitFor(long()) { !LastMade.stoppedMaking(script.bar.id) }
     }
 
     override fun validate(): Boolean {
