@@ -13,17 +13,17 @@ object LastMade {
     /**
      * @return true if last made is longer than [time] milliseconds ago
      */
-    fun stoppedMaking(id: Int, time: Long = 4000): Boolean {
+    fun stoppedMaking(id: Int, time: Long = 5000): Boolean {
         val lastMadeTracker = lastMadeTrackers.getForId(id)
-        return lastMadeTracker.stoppedMaking(time, false)
+        return lastMadeTracker.stoppedMaking(time, true)
     }
 
     /**
      * @return true if last use is longer than [time] milliseconds ago
      */
-    fun stoppedUsing(id: Int, time: Long = 4000): Boolean {
+    fun stoppedUsing(id: Int, time: Long = 5000): Boolean {
         val lastMadeTracker = lastMadeTrackers.getForId(id)
-        return lastMadeTracker.stoppedMaking(time, true)
+        return lastMadeTracker.stoppedMaking(time, false)
     }
 
     /**
@@ -52,9 +52,9 @@ object LastMade {
 
         constructor(id: Int) : this(id, Inventory.getCount(true, id), 0)
 
-        fun stoppedMaking(time: Long = 4000, use: Boolean = false): Boolean {
+        fun stoppedMaking(time: Long = 5000, make: Boolean = false): Boolean {
             val amount = getCurrentAmount()
-            val changed = if (use) amount < lastAmount else amount > lastAmount
+            val changed = if (!make) amount < lastAmount else amount > lastAmount
             lastAmount = amount
             if (changed) {
                 lastMadeTime = System.currentTimeMillis()
