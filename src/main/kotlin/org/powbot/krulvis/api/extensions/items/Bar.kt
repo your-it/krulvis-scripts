@@ -39,7 +39,7 @@ enum class Bar(
 
     fun getSmeltComponent(): Component? {
         val comps = Components.stream().action("Smelt").list()
-        return if (comps.size >= ordinal) comps[ordinal] else null
+        return if (comps.size > ordinal) comps[ordinal] else null
     }
 
     fun getOptimalSmelInventory(): Pair<Int, Int> {

@@ -1,6 +1,9 @@
 package org.powbot.krulvis.smelter
 
 import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.utils.LastMade
+import org.powbot.krulvis.api.utils.LastMade.getForId
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.mobile.drawing.Graphics
 
 class SmelterPainter(script: Smelter) : ATPainter<Smelter>(script, 6, 350) {
@@ -10,6 +13,15 @@ class SmelterPainter(script: Smelter) : ATPainter<Smelter>(script, 6, 350) {
         if (script.options.all { it.configured }) {
             y = drawSplitText(g, "Bar: ", script.bar.toString(), x, y)
             y = drawSplitText(g, "SmeltableCount: ", script.bar.getSmeltableCount().toString(), x, y)
+            val lastMade = LastMade.lastMadeTrackers.getForId(script.bar.id)
+            y = drawSplitText(g, "Stopped smelting:", lastMade.stoppedMaking(4000, true).toString(), x, y)
+            y = drawSplitText(
+                g,
+                "Last made:",
+                Timer.formatTime(System.currentTimeMillis() - lastMade.lastMadeTime),
+                x,
+                y
+            )
         }
         y = script.skillTracker.draw(g, x, y)
         return y
