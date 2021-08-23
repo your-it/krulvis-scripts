@@ -20,7 +20,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
         }
         val primCount = script.bar.primary.getCount()
         val split = script.bar.getOptimalSmelInventory()
-        val hasSecondary = script.bar.secondaryMultiplier > 1
+        val hasSecondary = script.bar.secondaryMultiplier >= 1
 
         if (script.cannonballs) {
             if (!Inventory.containsOneOf(AMMO_MOULD)) {
