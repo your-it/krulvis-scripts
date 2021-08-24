@@ -11,8 +11,11 @@ import org.powbot.krulvis.miner.Miner
 class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
     override fun execute() {
         if (!Inventory.emptyExcept(*Data.TOOLS)) {
-            Bank.depositAllExcept(*Data.TOOLS)
-            DepositBox.depositAllExcept(*Data.TOOLS)
+            if (Bank.opened()) {
+                Bank.depositAllExcept(*Data.TOOLS)
+            } else {
+                DepositBox.depositAllExcept(*Data.TOOLS)
+            }
         } else {
             Bank.close()
             DepositBox.close()
