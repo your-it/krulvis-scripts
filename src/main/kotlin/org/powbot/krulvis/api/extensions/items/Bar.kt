@@ -19,7 +19,6 @@ enum class Bar(
     val secondaryMultiplier: Int
 ) : Item {
     BRONZE(intArrayOf(2349), 109, -1, -1, Ore.TIN, Ore.COPPER, 1),
-    BLURITE(intArrayOf(9467), 109, -1, -1, Ore.BLURITE, Ore.COAL, 0),
     IRON(intArrayOf(2351), 109, 545, 8, Ore.IRON, Ore.COAL, 0),
     SILVER(intArrayOf(2355), 113, -1, -1, Ore.SILVER, Ore.COAL, 0),
     STEEL(intArrayOf(2353), 110, 545, 16, Ore.IRON, Ore.COAL, 2),
@@ -39,7 +38,8 @@ enum class Bar(
 
     fun getSmeltComponent(): Component? {
         val comps = Components.stream().action("Smelt").list()
-        return if (comps.size > ordinal) comps[ordinal] else null
+        val blurite = comps.size == 9
+        return if (comps.size > ordinal) comps[if (blurite && ordinal > 0) ordinal + 1 else ordinal] else null
     }
 
     fun getOptimalSmelInventory(): Pair<Int, Int> {
