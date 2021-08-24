@@ -97,13 +97,11 @@ enum class BankLocation(
      */
     fun open(): Boolean {
         val log = ScriptManager.script()!!.log
-        log.info("Opening bank: $this")
         if (Bank.opened()) {
             return true
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
         } else if (me.floor() != tile.floor || tile.distance() >= 20) {
-            log.info("Walking before interacting: $this")
             WebWalking.moveTo(tile, false, {
                 val b = interaction.findEntity()
                 b != null && b.inViewport()
@@ -111,7 +109,6 @@ enum class BankLocation(
             return false
         }
         val interaction = interaction.handle()
-        log.info("Bank interaction successful=$interaction")
         return interaction && waitFor(
             Random.nextInt(
                 5000,
