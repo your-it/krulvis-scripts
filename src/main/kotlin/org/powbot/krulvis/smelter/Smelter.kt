@@ -14,7 +14,7 @@ import org.powbot.krulvis.smelter.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Smelter",
     description = "Smelt bars or cannonballs",
-    version = "1.0.0",
+    version = "1.0.1",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(
