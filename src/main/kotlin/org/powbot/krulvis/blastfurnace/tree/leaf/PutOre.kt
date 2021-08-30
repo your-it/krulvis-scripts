@@ -7,8 +7,10 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG
@@ -40,9 +42,14 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
                     Ore.GOLD.id
                 )
             Objects.stream().name("Conveyor belt").action("Put-ore-on").findFirst().ifPresent {
-                if (interact(it, "Put-ore-on") && waitFor(Random.nextInt(5000, 7500)) { !Inventory.isFull() }) {
-                    if (script.filledCoalBag)
+                val waitForTime = if (it.distance() > 1)
+                    Random.nextInt(7500, 8000)
+                else 2000
+                if (interact(it, "Put-ore-on") && waitFor(waitForTime) { !Inventory.isFull() }) {
+                    if (script.filledCoalBag) {
+                        sleep(600)
                         emptyCoalBag()
+                    }
                     if (hasSpecialOres) {
                         script.waitForBars = true
                     }
