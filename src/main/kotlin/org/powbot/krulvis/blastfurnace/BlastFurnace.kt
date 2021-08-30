@@ -29,7 +29,7 @@ import java.util.function.Consumer
             "bar",
             "Which bar do you want to smelt?",
             allowedValues = ["IRON", "STEEL", "MITHRIL", "ADAMANTITE", "RUNITE", "GOLD"],
-            defaultValue = "MITHRIL"
+            defaultValue = "STEEL"
         )
     ]
 )
@@ -80,5 +80,5 @@ class BlastFurnace : ATScript() {
 }
 
 fun main() {
-    BlastFurnace().startScript(true)
+    BlastFurnace().startScript("127.0.0.1", "Krullieman", true)
 }
