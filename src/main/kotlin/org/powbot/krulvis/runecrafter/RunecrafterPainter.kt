@@ -7,7 +7,7 @@ class RunecrafterPainter(script: Runecrafter) : ATPainter<Runecrafter>(script, 1
     override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
         drawSplitText(g, "Leaf: ", script.lastLeaf.toString(), x, y)
-        y = script.lootTracker.drawLoot(g, x, y)
+        y = script.lootTracker.draw(g, x, y)
         y = script.skillTracker.draw(g, x, y)
         return y
     }

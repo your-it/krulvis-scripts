@@ -30,7 +30,7 @@ class LootTracker(val script: ATScript) {
     }
 
 
-    fun drawLoot(
+    fun draw(
         g: Graphics,
         x: Int,
         y: Int,

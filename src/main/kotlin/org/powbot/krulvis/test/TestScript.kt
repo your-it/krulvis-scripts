@@ -7,12 +7,16 @@ import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.event.VarpbitChangedEvent
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.Walking
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
@@ -53,61 +57,13 @@ class TestScript : ATScript() {
 
     //    val origin = Tile(3290, 3358, 0) //varrock mine
 //    val dest = Tile(3253, 3420, 0) //Varrock bank
-    var newDest = Tile(3283, 3428, 0)
+    var newDest = Tile(x = 3094, y = 3491, floor = 0)
     var path: LocalPath = LocalPath(emptyList())
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        val b = Bank.getNearestBank()
-//        log.info("Bank=$b")
-//        log.info("Open=${b.open()}")
-        if (!Bank.opened()) {
-            val b = Objects.stream().name("Bank booth").nearest().first()
-            log.info("Interact: ${interact(b, "Bank")}")
-            wait { Bank.opened() }
-        }
-    }
-
-    fun interact(go: GameObject, action: String): Boolean {
-        return interact(go, Menu.filter(action, go.name), true)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    fun interact(go: GameObject, f: Filter<MenuCommand>, hasMenu: Boolean): Boolean {
-        if (!go.valid()) {
-            println("${javaClass.simpleName} is not valid ")
-            return false
-        }
-
-        val actionWaiter = if (f !is Menu.TextFilter) null else ActionWaiter(f.action!!, f.option)
-
-        return try {
-            if (click(go, f, hasMenu)) {
-                actionWaiter == null || actionWaiter.waitForAction(2, TimeUnit.SECONDS)
-            } else {
-                log.info("Click failed...")
-                false
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            false
-        } finally {
-            actionWaiter?.unregister()
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    fun click(go: GameObject, f: Filter<MenuCommand>, hasMenu: Boolean): Boolean {
-        val point = go.calculateScreenPosition().call()
-        val action = if (f !is Menu.TextFilter) "null" else f.action
-        val skipMenu = !hasMenu || (!Game.singleTapEnabled() && go.actions().indexOf(action) == 0)
-        if (point.valid() && Input.tap(point)) {
-            return skipMenu || (wait({ Menu.opened() }, 10, 60) && Menu.click(f))
-        }
-        return false
+        path = LocalPathFinder.findPath(newDest)
+//        Walking.traverseLocally(newDest, { false }, runOn = false, finalTile = true, startPath = path)
+        Bank.openNearestBank()
     }
 
 

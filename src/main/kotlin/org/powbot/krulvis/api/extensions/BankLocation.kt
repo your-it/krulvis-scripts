@@ -97,15 +97,13 @@ enum class BankLocation(
      */
     fun open(): Boolean {
         val log = ScriptManager.script()!!.log
+        log.info("Banking at: $this")
         if (Bank.opened()) {
             return true
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
         } else if (me.floor() != tile.floor || tile.distance() >= 14) {
-            WebWalking.moveTo(tile, false, {
-                val b = interaction.findEntity()
-                b != null && b.inViewport()
-            }, 1, 100, false)
+            WebWalking.moveTo(tile, false, { false }, 1, 100, false)
             return false
         }
         val interaction = interaction.handle()

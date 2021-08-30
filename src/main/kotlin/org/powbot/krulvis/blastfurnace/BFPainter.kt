@@ -17,7 +17,7 @@ class BFPainter(script: BlastFurnace) : ATPainter<BlastFurnace>(script, 8, 300) 
             y = drawSplitText(g, "Coal: ", coal.blastFurnaceCount.toString(), x, y)
         }
         y = script.skillTracker.draw(g, x, y)
-        y = script.lootTracker.drawLoot(g, x, y)
+        y = script.lootTracker.draw(g, x, y)
         return y
     }
 
