@@ -19,18 +19,12 @@ class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
         if (!Inventory.emptyExcept(*script.food.ids)) {
             Bank.depositInventory()
             waitFor { !Inventory.isFull() }
-        } else if (currentHP() < maxHP()) {
-            if (script.food.inInventory()) {
-                val hp = currentHP()
-                if (script.food.eat()) {
-                    waitFor(long()) { hp < currentHP() }
-                }
-            } else {
-                val extra = ceil(missingHP() / script.food.healing.toDouble()).toInt()
-                val toTake = min(28, script.foodAmount + extra)
-                if (Bank.withdraw(script.food.getBankId(), toTake)) {
-                    waitFor { script.food.inInventory() }
-                }
+        } else {
+            val extra = ceil(missingHP() / script.food.healing.toDouble()).toInt()
+            val toTake = min(28, script.foodAmount + extra)
+            script.log.info("Taking out: $toTake, extra=$extra")
+            if (Bank.withdraw(script.food.getBankId(), toTake)) {
+                waitFor { script.food.inInventory() }
             }
         }
     }

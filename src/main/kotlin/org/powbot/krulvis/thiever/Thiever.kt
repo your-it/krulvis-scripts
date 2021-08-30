@@ -3,6 +3,7 @@ package org.powbot.krulvis.thiever
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.OptionType
@@ -19,8 +20,8 @@ import java.util.*
 
 @ScriptManifest(
     name = "krul Thiever",
-    description = "Thieves master farmer @ Farming guild",
-    version = "1.0.1",
+    description = "Pickpockets any NPC",
+    version = "1.0.2",
     markdownFileName = "Thiever.md",
     category = ScriptCategory.Thieving
 )
@@ -42,6 +43,12 @@ import java.util.*
             description = "How much food to take from bank?",
             defaultValue = "5",
             optionType = OptionType.INTEGER
+        ),
+        ScriptConfiguration(
+            name = "Prepare menu",
+            description = "Open menu right after pickpocketing?",
+            defaultValue = "true",
+            optionType = OptionType.BOOLEAN
         )
     ]
 )
@@ -53,6 +60,7 @@ class Thiever : ATScript() {
     val food by lazy { Food.valueOf(getOption<String>("Food") ?: "TUNA") }
     val target by lazy { getOption<String>("Target Name") ?: "Master farmer" }
     val foodAmount by lazy { (getOption<Int>("Food amount") ?: 10) }
+    val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
 
     var mobile = false
 
@@ -67,12 +75,12 @@ class Thiever : ATScript() {
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {
         if (evt.rawOpcode == 11 || evt.opcode() == GameActionOpcode.InteractNpc) {
-            println("Prepping next interaction")
-            getTarget()?.click()
+            if (prepare && Game.singleTapEnabled())
+                getTarget()?.click()
         }
     }
 }
 
 fun main() {
-    Thiever().startScript(false)
+    Thiever().startScript(true)
 }

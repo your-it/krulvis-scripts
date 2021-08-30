@@ -2,42 +2,21 @@ package org.powbot.krulvis.test
 
 import org.powbot.api.*
 import org.powbot.api.Condition.wait
+import org.powbot.api.action.ActionWaiter
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.VarpbitChangedEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Constants.MOBILE_TAB_OPEN_BUTTON_TEXTURE_ID
-import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_COMPONENT_ID
-import org.powbot.api.rt4.Constants.MOBILE_TAB_WINDOW_WIDGET_ID
-import org.powbot.api.rt4.Game.Tab
-import org.powbot.api.rt4.walking.Walking
-import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
-import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.local.LocalPathFinder.isRockfall
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.toRegionTile
-import org.powbot.krulvis.api.extensions.BankLocation
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
-import org.powbot.krulvis.api.extensions.items.Bar
-import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.utils.Utils
-import org.powbot.krulvis.miner.Data
-import org.powbot.krulvis.miner.Data.TOOLS
-import org.powbot.krulvis.smither.Smithable
-import org.powbot.mobile.BotManager
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.input.Touchscreen
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 @ScriptManifest(name = "testscript", version = "1.0.1", description = "")
 @ScriptConfiguration.List(
@@ -78,9 +57,57 @@ class TestScript : ATScript() {
     var path: LocalPath = LocalPath(emptyList())
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val b = Bank.getNearestBank()
-        log.info("Bank=$b")
-        log.info("Open=${b.open()}")
+//        val b = Bank.getNearestBank()
+//        log.info("Bank=$b")
+//        log.info("Open=${b.open()}")
+        if (!Bank.opened()) {
+            val b = Objects.stream().name("Bank booth").nearest().first()
+            log.info("Interact: ${interact(b, "Bank")}")
+            wait { Bank.opened() }
+        }
+    }
+
+    fun interact(go: GameObject, action: String): Boolean {
+        return interact(go, Menu.filter(action, go.name), true)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    fun interact(go: GameObject, f: Filter<MenuCommand>, hasMenu: Boolean): Boolean {
+        if (!go.valid()) {
+            println("${javaClass.simpleName} is not valid ")
+            return false
+        }
+
+        val actionWaiter = if (f !is Menu.TextFilter) null else ActionWaiter(f.action!!, f.option)
+
+        return try {
+            if (click(go, f, hasMenu)) {
+                actionWaiter == null || actionWaiter.waitForAction(2, TimeUnit.SECONDS)
+            } else {
+                log.info("Click failed...")
+                false
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            false
+        } finally {
+            actionWaiter?.unregister()
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    fun click(go: GameObject, f: Filter<MenuCommand>, hasMenu: Boolean): Boolean {
+        val point = go.calculateScreenPosition().call()
+        val action = if (f !is Menu.TextFilter) "null" else f.action
+        val skipMenu = !hasMenu || (!Game.singleTapEnabled() && go.actions().indexOf(action) == 0)
+        if (point.valid() && Input.tap(point)) {
+            return skipMenu || (wait({ Menu.opened() }, 10, 60) && Menu.click(f))
+        }
+        return false
     }
 
 
@@ -108,13 +135,15 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
     override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
+        y = drawSplitText(g, "Single-tab", Game.singleTapEnabled().toString(), x, y)
         script.newDest.drawOnScreen(g)
         script.path.draw(g)
+
         return y
     }
 
 }
 
 fun main() {
-    TestScript().startScript(false)
+    TestScript().startScript(true)
 }

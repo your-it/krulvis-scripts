@@ -15,7 +15,7 @@ import org.powbot.krulvis.thiever.tree.leaf.Pickpocket
 
 class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
     override val successComponent: TreeComponent<Thiever> = Eat(script)
-    override val failedComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script)
+    override val failedComponent: TreeComponent<Thiever> = ShouldBank(script)
 
     override fun validate(): Boolean {
         val food = script.food
