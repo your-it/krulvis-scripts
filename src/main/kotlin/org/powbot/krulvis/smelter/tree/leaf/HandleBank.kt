@@ -68,7 +68,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
             requirements.add(script.bar.secondary.id)
         }
         if (script.cannonballs) {
-            requirements.add(AMMO_MOULD, Bar.STEEL.id)
+            requirements.addAll(arrayOf(AMMO_MOULD, Bar.STEEL.id))
         }
         return requirements.toIntArray()
     }
