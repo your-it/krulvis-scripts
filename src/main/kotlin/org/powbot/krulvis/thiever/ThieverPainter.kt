@@ -1,4 +1,4 @@
-package org.powbot.krulvis.thieving
+package org.powbot.krulvis.thiever
 
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics

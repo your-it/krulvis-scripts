@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.smither.Smithable
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.abs
 

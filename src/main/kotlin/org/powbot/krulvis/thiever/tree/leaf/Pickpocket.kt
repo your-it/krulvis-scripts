@@ -1,4 +1,4 @@
-package org.powbot.krulvis.thieving.tree.leaf
+package org.powbot.krulvis.thiever.tree.leaf
 
 import org.powbot.api.rt4.Constants
 import org.powbot.api.rt4.Skills
@@ -6,8 +6,7 @@ import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.thieving.Thiever
-import java.util.*
+import org.powbot.krulvis.thiever.Thiever
 
 class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
     override fun execute() {
