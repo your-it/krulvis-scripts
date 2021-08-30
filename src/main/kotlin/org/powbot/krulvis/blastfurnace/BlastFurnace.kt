@@ -19,7 +19,7 @@ import java.util.function.Consumer
 @ScriptManifest(
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
-    version = "1.0.0",
+    version = "1.0.1",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )

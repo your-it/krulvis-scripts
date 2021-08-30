@@ -67,7 +67,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
         val hasCoalBag = Inventory.containsOneOf(COAL_BAG)
         return when (script.bar) {
             Bar.GOLD -> Ore.GOLD.id
-            Bar.STEEL -> if (hasCoalBag || coal >= 28) Ore.IRON.id else Ore.COAL.id
+            Bar.STEEL -> if (coal >= if (hasCoalBag) 27 else 28) Ore.IRON.id else Ore.COAL.id
             Bar.MITHRIL -> if (coal >= if (hasCoalBag) 27 else 56) Ore.MITHRIL.id else Ore.COAL.id
             Bar.ADAMANTITE -> if (coal >= if (hasCoalBag) 54 else 84) Ore.ADAMANTITE.id else Ore.COAL.id
             Bar.RUNITE -> if (coal >= if (hasCoalBag) 108 else 112) Ore.RUNITE.id else Ore.COAL.id
