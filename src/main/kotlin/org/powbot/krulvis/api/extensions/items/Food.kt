@@ -5,6 +5,7 @@ import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.smither.Smithable
 import java.io.Serializable
 import kotlin.math.ceil
 
@@ -68,4 +69,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
         }
     }
 
+}
+
+fun main() {
+    println("[\"${Food.values().map { it.name }.joinToString("\", \"")}\"]")
 }

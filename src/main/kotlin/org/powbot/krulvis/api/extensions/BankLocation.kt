@@ -101,7 +101,7 @@ enum class BankLocation(
             return true
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
-        } else if (me.floor() != tile.floor || tile.distance() >= 20) {
+        } else if (me.floor() != tile.floor || tile.distance() >= 14) {
             WebWalking.moveTo(tile, false, {
                 val b = interaction.findEntity()
                 b != null && b.inViewport()
@@ -124,6 +124,8 @@ enum class BankLocation(
     fun canUse(): Boolean {
         return requirements.all { it.hasRequirement() }
     }
+
+    override fun toString(): String = "$name, tile=$tile, type=$type"
 
     companion object {
 

@@ -74,7 +74,7 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
 
 
     override fun validate(): Boolean {
-        if (!Objects.stream().at(facingTile()).anyMatch { it.hasOre() }) {
+        if (Objects.stream().at(facingTile()).noneMatch { it.hasOre() }) {
             return false
         }
         return if (me.animation() > 0) {
