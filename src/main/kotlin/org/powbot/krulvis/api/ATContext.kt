@@ -27,7 +27,7 @@ object ATContext {
 
     fun debug(msg: String) {
         if (debugComponents) {
-            println(msg)
+            ScriptManager.script()!!.log.info(msg)
         }
     }
 
@@ -209,8 +209,8 @@ object ATContext {
     fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()
     fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
     fun Inventory.getCount(countStacks: Boolean, vararg ids: Int): Int {
-        val items = stream().id(*ids)
-        return if (countStacks) items.count(true).toInt() else items.count().toInt()
+        val items = stream().id(*ids).list()
+        return if (countStacks) items.sumOf { it.stack } else items.count()
     }
 
     fun Int.getItemDef() = CacheItemConfig.load(this)

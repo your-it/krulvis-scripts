@@ -18,6 +18,6 @@ class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
         }
     }
 
-    fun getLeaveNpc(): Npc? = Npcs.stream().action("Leave").nearest().firstOrNull()
+    fun getLeaveNpc(): Npc? = Npcs.stream().action("Leave").nearest(script.totemLocation).firstOrNull()
 
 }

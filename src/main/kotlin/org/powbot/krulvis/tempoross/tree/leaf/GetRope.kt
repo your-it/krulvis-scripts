@@ -13,7 +13,7 @@ import org.powbot.krulvis.tempoross.Tempoross
 class GetRope(script: Tempoross) : Leaf<Tempoross>(script, "Getting rope") {
     override fun execute() {
         val ropes =
-            Objects.stream().name("Ropes").filter { it.tile().distanceTo(script.mastLocation) <= 6 }.findFirst()
+            Objects.stream().name("Ropes").filter { it.tile().distanceTo(script.mastLocation) <= 6 }.firstOrNull()
         if (script.interactWhileDousing(ropes, "Take", script.mastLocation, true)) {
             waitFor(long()) { Inventory.containsOneOf(ROPE) }
         }

@@ -14,16 +14,16 @@ class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
 
     override fun execute() {
         val walkSpot = if (script.side == Tempoross.Side.NORTH) script.northCookSpot else script.cookLocation
-        val cookShrine = Objects.stream().at(script.cookLocation).name("Shrine").findFirst()
+        val cookShrine = Objects.stream().at(script.cookLocation).name("Shrine").firstOrNull()
 
         if (me.animation() != FILLING_ANIM) {
             if (script.interactWhileDousing(cookShrine, "Cook-at", walkSpot, false)) {
-                waitFor(long()) { me.animation() == FILLING_ANIM }
+                waitFor(long()) { me.animation() != -1 }
             }
         } else if (me.animation() == FILLING_ANIM) {
             val tetherPole = script.getTetherPole()
-            if (tetherPole.isPresent && !tetherPole.get().inViewport()) {
-                Camera.turnTo(tetherPole.get())
+            if (tetherPole != null && !tetherPole.inViewport()) {
+                Camera.turnTo(tetherPole)
             }
         }
     }

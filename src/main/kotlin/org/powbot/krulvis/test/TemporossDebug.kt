@@ -30,17 +30,17 @@ class TemporossDebug : ATScript() {
 
     lateinit var tempoross: Tempoross
 
-    var bucket = Optional.empty<GameObject>()
-    var bossPool = Optional.empty<Npc>()
-    var ammo = Optional.empty<Npc>()
-    var tether = Optional.empty<GameObject>()
+    var bucket: GameObject? = null
+    var bossPool: Npc? = null
+    var ammo: Npc? = null
+    var tether: GameObject? = null
     var cookSpot = Tile.Nil
 
 
-    fun <E : InteractableEntity> checkPaths(vararg entities: Optional<E>) {
+    fun checkPaths(vararg entities: InteractableEntity?) {
         entities.forEach {
-            if (it.isPresent) {
-                tempoross.hasDangerousPath(it.get().tile())
+            if (it != null) {
+                tempoross.hasDangerousPath(it.tile())
             }
         }
     }
@@ -118,23 +118,24 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
 
     override fun paint(g: Graphics, startY: Int): Int {
         var y = startY
-        drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
-        y += yy
-        drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
-        y += yy
-        drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
-        y += yy
-        drawSplitText(g, "Energy: ${script.tempoross.getEnergy()}", "Health: ${script.tempoross.getHealth()}: ", x, y)
-        y += yy
+        y = drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
+        y = drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
+        y = drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
+        y = drawSplitText(
+            g,
+            "Energy: ${script.tempoross.getEnergy()}",
+            "Health: ${script.tempoross.getHealth()}: ",
+            x,
+            y
+        )
+        val tether = script.tether
 //        val clicked = Ga.crosshair() == Game.Crosshair.ACTION
 //        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
 //        drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
 //        y += yy
 
-        if (script.tether.isPresent) {
-            val tether = script.tether.get()
-            drawSplitText(g, "Tether visible: ", tether.inViewport().toString(), x, y)
-            y += yy
+        if (tether != null) {
+            y = drawSplitText(g, "Tether visible: ", tether.inViewport().toString(), x, y)
         }
         if (script.tempoross.side != Tempoross.Side.UNKNOWN) {
             drawEntity(g, script.bucket)
@@ -142,8 +143,9 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
             drawEntity(g, script.ammo)
             drawEntity(g, script.tether)
             drawEntity(g, script.tempoross.bestFishSpot)
-            if (script.tether.isPresent) {
-                val mm = script.tether.get().tile().mapPoint()
+
+            if (tether != null) {
+                val mm = tether.tile().mapPoint()
                 g.drawString("TP", mm.x, mm.y)
             }
 
@@ -180,9 +182,8 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         return y
     }
 
-    fun <E : InteractableEntity> drawEntity(g: Graphics, entity: Optional<E>) {
-        if (entity.isPresent) {
-            val e = entity.get()
+    fun drawEntity(g: Graphics, e: InteractableEntity?) {
+        if (e != null) {
             if (e.inViewport()) {
                 val matrix = Touchscreen.scaleFromGame(e.tile().matrix().bounds())
                 g.drawPolygon(matrix)

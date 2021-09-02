@@ -19,10 +19,10 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
         script.side = Tempoross.Side.UNKNOWN
 
         val ropeLadder = script.getLadder()
-        if (!ropeLadder.isPresent || ropeLadder.get().distance() > 5) {
+        if ((ropeLadder?.distance() ?: 6) > 5) {
             debug("Walking first")
             walk(Tile(3137, 2841, 0))
-        } else if (interact(ropeLadder.get(), "Quick-climb")) {
+        } else if (interact(ropeLadder, "Quick-climb")) {
             waitFor(long()) { BOAT_AREA.contains(ATContext.me.tile()) }
         }
 

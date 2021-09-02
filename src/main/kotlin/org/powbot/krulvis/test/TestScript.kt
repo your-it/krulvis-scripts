@@ -16,6 +16,7 @@ import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
@@ -61,9 +62,29 @@ class TestScript : ATScript() {
     var path: LocalPath = LocalPath(emptyList())
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        path = LocalPathFinder.findPath(newDest)
-//        Walking.traverseLocally(newDest, { false }, runOn = false, finalTile = true, startPath = path)
-        Bank.openNearestBank()
+        val ruins = Objects.stream(25).name("Mysterious ruins").firstOrNull()
+        log.info("Found portal: $ruins, distance=${ruins?.distance()}")
+        get(25)
+    }
+
+    fun get(radius: Int) {
+        val ourPosition = Players.local()
+        log.info("Local[${ourPosition.localX()}, ${ourPosition.localY()}]")
+        log.info("LocalSHR[${ourPosition.localX() shr 7}, ${ourPosition.localY() shr 7}]")
+        var minX = (ourPosition.localX() shr 7) - radius
+        var minY = (ourPosition.localY() shr 7) - radius
+        if (minX < 0 || minY < 0 || minX > 103 || minY > 103) {
+            minX = 0
+            minY = 0
+        }
+        var maxX = (ourPosition.localX() shr 7) + radius
+        var maxY = (ourPosition.localY() shr 7) + radius
+        if (maxX <= 0 || maxY < 0 || maxX > 103 || maxY > 103) {
+
+            maxX = 103
+            maxY = 103
+        }
+        log.info("min[$minX, $minY], max[$maxX, $maxY]")
     }
 
 
