@@ -22,7 +22,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     override fun execute() {
         val fishSpot = script.bestFishSpot
-        if (!fishSpot.isPresent) {
+        if (fishSpot == null) {
             script.log.info("No safe fishing spot found!")
             if (script.blockedTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
@@ -59,24 +59,24 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
         if (currentSpot?.name() == "Fishing spot") {
             if (script.blockedTiles.contains(me.tile())
-                || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.get().id() == DOUBLE_FISH_ID)
+                || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.id() == DOUBLE_FISH_ID)
             ) {
                 println("Moving to double/save fish spot!")
-                fishAtSpot(fishSpot.get())
+                fishAtSpot(fishSpot)
             } else {
                 val tetherPole = script.getTetherPole()
-                if (tetherPole.isPresent && !tetherPole.get().inViewport()) {
+                if (tetherPole != null && !tetherPole.inViewport()) {
                     if (script.oddFishingSpot.distance() <= 1) {
                         println("Fishing at weird spot so using unique camera rotation")
                         Camera.pitch(Random.nextInt(1200, 1300))
                     } else {
-                        Camera.turnTo(tetherPole.get())
+                        Camera.turnTo(tetherPole)
                     }
                 }
             }
         } else {
             println("Fishing at first spot")
-            fishAtSpot(fishSpot.get())
+            fishAtSpot(fishSpot)
         }
     }
 

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.smelter.tree.branch
 
+import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Objects

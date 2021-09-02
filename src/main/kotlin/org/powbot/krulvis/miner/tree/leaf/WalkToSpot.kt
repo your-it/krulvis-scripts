@@ -18,7 +18,14 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
             ScriptManager.stop()
         } else {
             val loc = locs.minByOrNull { it.distance() }!!.getWalkableNeighbor()!!
-            WebWalking.walkTo(loc, false, loc.distanceTo(TOP_CENTER_ML) <= 5)
+            WebWalking.moveTo(
+                loc,
+                false,
+                { script.getMotherloadCount() >= 82 },
+                5,
+                90,
+                loc.distanceTo(TOP_CENTER_ML) <= 5
+            )
         }
     }
 }

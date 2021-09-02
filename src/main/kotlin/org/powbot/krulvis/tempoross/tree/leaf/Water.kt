@@ -12,19 +12,19 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.WATER_ANIM
 import org.powbot.krulvis.tempoross.Tempoross
 
-class Water(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
+class Water(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
     override fun execute() {
         val hasBucket = Inventory.containsOneOf(EMPTY_BUCKET)
         if (hasBucket && me.animation() != WATER_ANIM) {
             val waterPump = script.getWaterpump()
-            if (waterPump.isPresent && interact(waterPump.get(), "Use")
+            if (waterPump != null && interact(waterPump, "Use")
                 && waitFor(long()) { me.animation() == WATER_ANIM }
             ) {
                 waitFor(long()) { !Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         } else if (!hasBucket) {
             val bucketCrate = script.getBucketCrate()
-            if (bucketCrate.isPresent && interact(bucketCrate.get(), "Take-5")) {
+            if (interact(bucketCrate, "Take-5")) {
                 waitFor(Random.nextInt(6500, 10000)) { Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         }

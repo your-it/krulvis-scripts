@@ -27,11 +27,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
             }
             return
         }
-        val poleO = script.getTetherPole()
-        if (!poleO.isPresent) {
-            return
-        }
-        val pole = poleO.get()
+        val pole = script.getTetherPole() ?: return
         val poleTiles = pole.tile().getWalkableNeighbors(true)
         val nearestTile = poleTiles.minByOrNull { it.distance() }
         val safeTile = poleTiles.filterNot { script.blockedTiles.contains(it) }.minByOrNull { it.distance() }

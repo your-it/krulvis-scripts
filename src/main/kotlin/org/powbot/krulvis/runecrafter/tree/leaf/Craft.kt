@@ -6,6 +6,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafter.PURE_ESSENCE
 import org.powbot.krulvis.runecrafter.Runecrafter
@@ -19,6 +20,7 @@ class Craft(script: Runecrafter) : Leaf<Runecrafter>(script, "Craft runes") {
             altar.ifPresent {
                 if (interact(it, "Craft")) {
                     waitFor { !Inventory.containsOneOf(PURE_ESSENCE) }
+                    sleep(1000, 1500)
                 }
             }
         }

@@ -24,9 +24,12 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
         var y = startY
         val blockedTiles = script.blockedTiles.toList()
         val paths = script.triedPaths.toList()
+        val fishSpots = script.fishSpots
+        val bestSpot = script.bestFishSpot
         val spot = me.interacting()
 
         y = drawSplitText(g, "Leaf: ", script.lastLeaf.name, x, y)
+        y = drawSplitText(g, "Energy: ${script.getEnergy()}", "Health: ${script.getHealth()}: ", x, y)
         if (!script.waveTimer.isFinished()) {
             y = drawSplitText(g, "Wave timer: ", script.waveTimer.getRemainderString(), x, y)
         }
@@ -34,7 +37,6 @@ class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(scr
             y = drawSplitText(g, "My Animation: ", "${me.animation()}", x, y)
             y = drawSplitText(g, "Interacting Anim: ", "${spot?.animation() ?: -1}", x, y)
             y = drawSplitText(g, "Side: ", "${script.side}", x, y)
-            y = drawSplitText(g, "Energy: ${script.getEnergy()}", "Health: ${script.getHealth()}: ", x, y)
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {

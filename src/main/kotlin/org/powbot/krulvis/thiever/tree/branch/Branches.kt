@@ -15,7 +15,7 @@ import org.powbot.krulvis.thiever.tree.leaf.Pickpocket
 
 class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
     override val successComponent: TreeComponent<Thiever> = Eat(script)
-    override val failedComponent: TreeComponent<Thiever> = ShouldBank(script)
+    override val failedComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script)
 
     override fun validate(): Boolean {
         val food = script.food
@@ -23,8 +23,17 @@ class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
     }
 }
 
+class ShouldOpenCoinPouch(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
+    override val successComponent: TreeComponent<Thiever> = OpenPouch(script)
+    override val failedComponent: TreeComponent<Thiever> = ShouldBank(script)
+
+    override fun validate(): Boolean {
+        return (Inventory.stream().name("Coin pouch").firstOrNull()?.stack ?: 0) >= 28
+    }
+}
+
 class ShouldBank(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
-    override val successComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script)
+    override val successComponent: TreeComponent<Thiever> = IsBankOpen(script)
     override val failedComponent: TreeComponent<Thiever> = Pickpocket(script)
 
     override fun validate(): Boolean {
@@ -32,16 +41,8 @@ class ShouldBank(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
     }
 }
 
-class ShouldOpenCoinPouch(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
-    override val successComponent: TreeComponent<Thiever> = OpenPouch(script)
-    override val failedComponent: TreeComponent<Thiever> = BankOpen(script)
 
-    override fun validate(): Boolean {
-        return Inventory.stream().name("Coin pouch").isNotEmpty()
-    }
-}
-
-class BankOpen(script: Thiever) : Branch<Thiever>(script, "Should Open Bank") {
+class IsBankOpen(script: Thiever) : Branch<Thiever>(script, "Should Open Bank") {
     override val successComponent: TreeComponent<Thiever> = HandleBank(script)
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Open bank") {
         Bank.openNearestBank()

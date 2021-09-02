@@ -47,7 +47,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 
     fun atAmmoCrate(): Boolean {
         val ammoCrate = script.getAmmoCrate()
-        return ammoCrate.isPresent && ammoCrate.get().distance() <= 2
+        return (ammoCrate?.distance() ?: 3) <= 2
     }
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
@@ -67,7 +67,7 @@ class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get 
             return false
         }
         val bucketCrate = script.getBucketCrate()
-        return bucketCrate.isPresent && bucketCrate.get().distance() <= 5
+        return (bucketCrate?.distance() ?: 6) <= 5
     }
 
     override val successComponent: TreeComponent<Tempoross> = Water(script)

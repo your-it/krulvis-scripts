@@ -15,7 +15,7 @@ class Kill(script: Tempoross) : Leaf<Tempoross>(script, "Killing") {
     override fun execute() {
         script.forcedShooting = false
         val spirit = script.getBossPool()
-        val killing = me.animation() != -1 && spirit.isPresent && spirit.get().distance() <= 3
+        val killing = me.animation() != -1 && (spirit?.distance() ?: 4) <= 3
 
         Chat.canContinue()
         if (!killing && script.interactWhileDousing(spirit, "Harpoon", script.bossWalkLocation, true)) {

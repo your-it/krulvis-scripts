@@ -26,6 +26,6 @@ class AtRuins(script: Runecrafter) : Branch<Runecrafter>(script, "At Ruins") {
     }
 
     override fun validate(): Boolean {
-        return Objects.stream(25).name("Mysterious ruins").isNotEmpty()
+        return Objects.stream(25).name("Mysterious ruins").within(25.0).isNotEmpty()
     }
 }

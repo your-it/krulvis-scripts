@@ -2,7 +2,6 @@ package org.powbot.krulvis.tempoross
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.InteractableEntity
-import org.powbot.api.Nameable
 import org.powbot.api.Tile
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.rt4.*
@@ -73,7 +72,7 @@ class Tempoross : ATScript() {
     var rewardGained = 0
     var pointsObtained = 0
     var rounds = 0
-    var bestFishSpot: Optional<Npc> = Optional.empty()
+    var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
 
     val cookFish by lazy { getOption<Boolean>("Cook fish") ?: true }
@@ -88,14 +87,14 @@ class Tempoross : ATScript() {
         return path.actions.any { blockedTiles.contains(it.destination) }
     }
 
-    fun <E : InteractableEntity> interactWhileDousing(
-        optional: Optional<E>,
+    fun interactWhileDousing(
+        e: InteractableEntity?,
         action: String,
         destinationWhenNil: Tile,
         allowCrossing: Boolean
     ): Boolean {
-        if (!optional.isPresent) {
-            debug("Can't find: ${if (!optional.isPresent) action else (optional.get() as Nameable).name()}")
+        if (e == null) {
+            debug("Can't find: $action")
             if (destinationWhenNil != Tile.Nil) {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
@@ -105,7 +104,6 @@ class Tempoross : ATScript() {
                 }
             }
         } else {
-            val e = optional.get()
             var path = LocalPathFinder.findPath(e.tile())
             if (path.isEmpty()) path = LocalPathFinder.findPath(destinationWhenNil)
             if (douseIfNecessary(path, allowCrossing)) {
@@ -122,15 +120,17 @@ class Tempoross : ATScript() {
         return true
     }
 
+    /**
+     * @param allowCrossing
+     */
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { blockedTiles.contains(it.destination) }
-        val fireOptional =
+        val fire =
             if (blockedTile != null) Npcs.stream().name("Fire").within(blockedTile.destination, 2.5).nearest()
-                .findFirst() else Optional.empty()
+                .firstOrNull() else null
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
-        log.info("Blockedtile: $blockedTile foundFire: ${fireOptional.isPresent}, Bucket: $hasBucket")
-        if (fireOptional.isPresent && hasBucket) {
-            val fire = fireOptional.get()
+        log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
+        if (fire != null && hasBucket) {
             log.info("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
                 if (fire.distance() > 8) {
@@ -143,7 +143,7 @@ class Tempoross : ATScript() {
             } else if (fire.interact("Douse")) {
                 return waitFor(long()) { Npcs.stream().at(fire).name("Fire").isEmpty() }
             }
-        } else if (!fireOptional.isPresent || allowCrossing) {
+        } else if (fire == null || allowCrossing) {
             log.info("No fire on the way")
             return true
         }
@@ -165,7 +165,7 @@ class Tempoross : ATScript() {
         }
     }
 
-    fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool().isPresent
+    fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
 
     fun isTethering(): Boolean =
         Objects.stream().action("Untether").isNotEmpty() || me.animation() == Data.TETHER_ANIM
@@ -288,47 +288,45 @@ class Tempoross : ATScript() {
         }.list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
-    fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Optional<Npc> {
+    fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
         val paths = spots.filter { !containsDangerousTile(it.second) }
         val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
         if (doublePath != null) {
-            return Optional.of(doublePath.first)
+            return doublePath.first
         }
 
         if (paths.isNotEmpty()) {
-            return Optional.of(
-                paths.minByOrNull { it.second.actions.size }!!.first
-            )
+            return paths.minByOrNull { it.second.actions.size }!!.first
         }
-        return Optional.empty()
+        return null
     }
 
     fun getBossPool() =
-        Npcs.stream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").findFirst()
+        Npcs.stream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
-    fun getAmmoCrate(): Optional<Npc> =
-        Npcs.stream().name("Ammunition crate").filter { it.tile().distanceTo(mastLocation) <= 5 }.findFirst()
+    fun getAmmoCrate(): Npc? =
+        Npcs.stream().name("Ammunition crate").filter { it.tile().distanceTo(mastLocation) <= 5 }.firstOrNull()
 
-    fun getBucketCrate(): Optional<GameObject> =
+    fun getBucketCrate(): GameObject? =
         Objects.stream().name("Buckets").filter {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
-        }.nearest().findFirst()
+        }.nearest().firstOrNull()
 
-    fun getWaterpump(): Optional<GameObject> =
+    fun getWaterpump(): GameObject? =
         Objects.stream().name("Water pump").filter {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
-        }.nearest().findFirst()
+        }.nearest().firstOrNull()
 
-    fun getTetherPole(): Optional<GameObject> {
+    fun getTetherPole(): GameObject? {
         val dest = Movement.destination()
         val destination = if (dest != Tile.Nil) dest else me.tile()
         val validTiles = listOf(totemLocation, mastLocation)
         return Objects.stream().filter {
             validTiles.contains(it.tile())
-        }.action("Repair", "Tether").nearest(destination).findFirst()
+        }.action("Repair", "Tether").nearest(destination).firstOrNull()
     }
 
-    fun getLadder(): Optional<GameObject> = Objects.stream().name("Rope ladder").action("Climb").findFirst()
+    fun getLadder(): GameObject? = Objects.stream().name("Rope ladder").action("Climb").firstOrNull()
 }
 
 fun main() {
