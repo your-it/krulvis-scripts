@@ -35,7 +35,8 @@ interface Item {
     fun getInventoryCount(countNoted: Boolean = true): Int {
         return if (countNoted) Inventory.stream()
             .filtered { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
-            .collect(Collectors.summingInt(Item::stackSize))
+            .map { if (it.stack <= 0) 1 else it.stack }
+            .sum()
         else Inventory.stream().id(*ids).count().toInt()
     }
 
