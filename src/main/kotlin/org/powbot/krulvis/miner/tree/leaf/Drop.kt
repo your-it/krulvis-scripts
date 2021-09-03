@@ -17,7 +17,7 @@ class Drop(script: Miner) : Leaf<Miner>(script, "Drop") {
         if (!Game.tab(Game.Tab.INVENTORY)) {
             return false
         }
-        if (stream().filter { it.id() !in ids }.isEmpty()) {
+        if (stream().filtered { it.id() !in ids }.isEmpty()) {
             return true
         }
         items().forEach {

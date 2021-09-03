@@ -9,7 +9,7 @@ class BondPouch : RandomHandler() {
     }
 
     fun getBondPouch(): Component? =
-        Components.stream(65).filter { it.visible() && it.text().contains("Bond Pouch") }.firstOrNull()
+        Components.stream(65).filtered { it.visible() && it.text().contains("Bond Pouch") }.firstOrNull()
 
     override fun execute(): Boolean {
         val bPouch = getBondPouch()

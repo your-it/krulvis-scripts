@@ -43,7 +43,7 @@ enum class Ore(
     }
 
     fun getNearestRock(): Optional<GameObject> {
-        return Objects.stream().filter {
+        return Objects.stream().filtered {
             it.hasOre(this)
         }.nearest().findFirst()
     }

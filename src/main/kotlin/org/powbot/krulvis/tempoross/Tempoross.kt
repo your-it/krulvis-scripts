@@ -265,7 +265,7 @@ class Tempoross : ATScript() {
      * Detect and add blocked tiles.
      */
     fun detectDangerousTiles() {
-        Npcs.stream().name("Lightning cloud").nearest().filter { it.animation() > 0 }.forEach {
+        Npcs.stream().name("Lightning cloud").nearest().filtered { it.animation() > 0 }.forEach {
             addTile(it.tile())
         }
 
@@ -283,14 +283,14 @@ class Tempoross : ATScript() {
     }
 
     fun collectFishSpots() {
-        fishSpots = Npcs.stream().action("Harpoon").name("Fishing spot").filter {
+        fishSpots = Npcs.stream().action("Harpoon").name("Fishing spot").filtered {
             rightSide(it)
         }.list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
-        val paths = spots.filter { !containsDangerousTile(it.second) }
-        val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
+        val paths = spots.filtered { !containsDangerousTile(it.second) }
+        val doublePath = paths.filtered { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
         if (doublePath != null) {
             return doublePath.first
         }
@@ -305,15 +305,15 @@ class Tempoross : ATScript() {
         Npcs.stream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().name("Ammunition crate").filter { it.tile().distanceTo(mastLocation) <= 5 }.firstOrNull()
+        Npcs.stream().name("Ammunition crate").filtered { it.tile().distanceTo(mastLocation) <= 5 }.firstOrNull()
 
     fun getBucketCrate(): GameObject? =
-        Objects.stream().name("Buckets").filter {
+        Objects.stream().name("Buckets").filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
         }.nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
-        Objects.stream().name("Water pump").filter {
+        Objects.stream().name("Water pump").filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
         }.nearest().firstOrNull()
 
@@ -321,7 +321,7 @@ class Tempoross : ATScript() {
         val dest = Movement.destination()
         val destination = if (dest != Tile.Nil) dest else me.tile()
         val validTiles = listOf(totemLocation, mastLocation)
-        return Objects.stream().filter {
+        return Objects.stream().filtered {
             validTiles.contains(it.tile())
         }.action("Repair", "Tether").nearest(destination).firstOrNull()
     }

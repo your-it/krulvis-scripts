@@ -62,7 +62,7 @@ class TitheFarmer : ATScript() {
     var planting = false
 
     fun getCornerPatchTile(): Tile {
-        val allPatches = Objects.stream(30).filter { it.isPatch() }.list()
+        val allPatches = Objects.stream(30).filtered { it.isPatch() }.list()
         val maxX = allPatches.minOf { it.tile().x() }
         val maxY = allPatches.maxOf { it.tile().y() }
         return Tile(maxX, maxY, 0)
@@ -85,7 +85,7 @@ class TitheFarmer : ATScript() {
     fun refreshPatches() {
         val tiles = getPatchTiles()
         val onorderedPatches =
-            Objects.stream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+            Objects.stream(35).filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
                 .list()
         patches = tiles.mapIndexed { index, tile ->
             Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.Nil, tile, index)

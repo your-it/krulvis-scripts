@@ -204,7 +204,7 @@ object ATContext {
     fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
-    fun Inventory.emptyExcept(vararg ids: Int): Boolean = !stream().filter { it.id() !in ids }.findFirst().isPresent
+    fun Inventory.emptyExcept(vararg ids: Int): Boolean = !stream().filtered { it.id() !in ids }.findFirst().isPresent
 
     fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()
     fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
