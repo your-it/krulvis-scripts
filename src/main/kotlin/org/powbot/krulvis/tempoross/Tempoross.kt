@@ -313,7 +313,7 @@ class Tempoross : ATScript() {
         }.name("Buckets").nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
-        Objects.stream()filtered {
+        Objects.stream().filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
         }.name("Water pump")..nearest().firstOrNull()
 
