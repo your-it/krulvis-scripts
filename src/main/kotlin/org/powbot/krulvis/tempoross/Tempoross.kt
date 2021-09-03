@@ -289,8 +289,8 @@ class Tempoross : ATScript() {
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
-        val paths = spots.filtered { !containsDangerousTile(it.second) }
-        val doublePath = paths.filtered { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
+        val paths = spots.filter { !containsDangerousTile(it.second) }
+        val doublePath = paths.filter { it.first.id() == DOUBLE_FISH_ID }.firstOrNull()
         if (doublePath != null) {
             return doublePath.first
         }
