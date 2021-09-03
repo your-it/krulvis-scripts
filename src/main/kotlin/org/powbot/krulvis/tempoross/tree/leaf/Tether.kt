@@ -17,7 +17,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
             script.log.info("Waiting for wave to pass..")
             if (waitFor(script.waveTimer.getRemainder().toInt()) {
                     val tetherMast =
-                        Objects.stream().filter { it.tile() in listOf(script.mastLocation, script.totemLocation) }
+                        Objects.stream().filtered { it.tile() in listOf(script.mastLocation, script.totemLocation) }
                             .nearest().first()
                     script.waveTimer.isFinished() && !tetherMast.actions().contains("Untether")
                 }) {

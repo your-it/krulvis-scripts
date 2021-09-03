@@ -60,7 +60,7 @@ class TemporossDebug : ATScript() {
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
             val c =
-                Components.stream(Data.PARENT_WIDGET).filter { it.text().contains("Energy") }.firstOrNull()
+                Components.stream(Data.PARENT_WIDGET).filtered { it.text().contains("Energy") }.firstOrNull()
             debugComp(c)
             if (tempoross.side == Tempoross.Side.UNKNOWN) {
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
@@ -81,7 +81,7 @@ class TemporossDebug : ATScript() {
                 val dest = Movement.destination()
                 val destination = if (dest != Tile.Nil) dest else me.tile()
                 val validTiles = listOf(tempoross.totemLocation, tempoross.mastLocation)
-                val tetherpoles = Objects.stream().filter {
+                val tetherpoles = Objects.stream().filtered {
                     validTiles.contains(it.tile())
                 }.forEach { println("Found ${it.name()}: ${it.actions().joinToString()}") }
                 println(tetherpoles)

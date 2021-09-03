@@ -13,7 +13,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     constructor(go: GameObject, index: Int) : this(go, go.tile(), index)
 
     fun refresh(gameObject: GameObject? = null) {
-        go = gameObject ?: Objects.stream(35).at(tile).filter { it.name().isNotEmpty() && it.name() != "null" }
+        go = gameObject ?: Objects.stream(35).at(tile).filtered { it.name().isNotEmpty() && it.name() != "null" }
             .findFirst()
             .get()
     }
@@ -158,7 +158,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         fun List<Patch>.refresh(): List<Patch> {
             val tiles = tiles()
             val gameObjects =
-                Objects.stream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+                Objects.stream(35).filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
                     .list()
             return onEach { patch -> patch.refresh(gameObjects.firstOrNull { go -> go.tile() == patch.tile }) }
         }

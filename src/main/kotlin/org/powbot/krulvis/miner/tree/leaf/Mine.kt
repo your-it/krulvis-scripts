@@ -15,7 +15,7 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
 
     override fun execute() {
         val rock = Objects.stream()
-            .filter {
+            .filtered {
                 it.tile() in script.rockLocations && it.hasOre()
             }.nearest().findFirst()
         rock.ifPresent {

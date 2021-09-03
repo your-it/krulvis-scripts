@@ -11,7 +11,7 @@ import java.awt.geom.Point2D.distance
 
 class Untether(script: Tempoross) : Leaf<Tempoross>(script, "Untethering") {
     override fun execute() {
-        val pole = Objects.stream().filter { it.actions().contains("Untether") && it.distance() <= 2 }.firstOrNull()
+        val pole = Objects.stream().filtered { it.actions().contains("Untether") && it.distance() <= 2 }.firstOrNull()
         if (interact(pole, "Untether")) {
             waitFor { !script.isTethering() }
         }

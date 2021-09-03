@@ -37,7 +37,7 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
         if (!script.hopFromPlayers) {
             return false
         }
-        val nearByPlayers = Players.stream().filter {
+        val nearByPlayers = Players.stream().filtered {
             it.name() != Players.local().name() && it.tile()
                 .distanceTo(script.rockLocations[Random.nextInt(0, script.rockLocations.size)]) <= 5
         }
