@@ -315,7 +315,7 @@ class Tempoross : ATScript() {
     fun getWaterpump(): GameObject? =
         Objects.stream().filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
-        }.name("Water pump")..nearest().firstOrNull()
+        }.name("Water pump").nearest().firstOrNull()
 
     fun getTetherPole(): GameObject? {
         val dest = Movement.destination()
