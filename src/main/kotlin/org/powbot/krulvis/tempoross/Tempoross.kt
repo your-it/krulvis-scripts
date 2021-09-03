@@ -265,7 +265,7 @@ class Tempoross : ATScript() {
      * Detect and add blocked tiles.
      */
     fun detectDangerousTiles() {
-        Npcs.stream().name("Lightning cloud").nearest().filtered { it.animation() > 0 }.forEach {
+        Npcs.stream().filtered { it.animation() > 0 }.name("Lightning cloud").nearest().forEach {
             addTile(it.tile())
         }
 
@@ -283,9 +283,9 @@ class Tempoross : ATScript() {
     }
 
     fun collectFishSpots() {
-        fishSpots = Npcs.stream().action("Harpoon").name("Fishing spot").filtered {
+        fishSpots = Npcs.stream().filtered {
             rightSide(it)
-        }.list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+        }.action("Harpoon").name("Fishing spot").list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
@@ -305,17 +305,17 @@ class Tempoross : ATScript() {
         Npcs.stream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().name("Ammunition crate").filtered { it.tile().distanceTo(mastLocation) <= 5 }.firstOrNull()
+        Npcs.stream().filtered { it.tile().distanceTo(mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
 
     fun getBucketCrate(): GameObject? =
-        Objects.stream().name("Buckets").filtered {
+        Objects.stream().filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
-        }.nearest().firstOrNull()
+        }.name("Buckets").nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
-        Objects.stream().name("Water pump").filtered {
+        Objects.stream()filtered {
             it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
-        }.nearest().firstOrNull()
+        }.name("Water pump")..nearest().firstOrNull()
 
     fun getTetherPole(): GameObject? {
         val dest = Movement.destination()
