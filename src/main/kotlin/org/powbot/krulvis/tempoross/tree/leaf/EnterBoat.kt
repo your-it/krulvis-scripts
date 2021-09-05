@@ -10,13 +10,14 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
+import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 
 
 class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
     override fun execute() {
         //Reset the side for the next run...
-        script.side = Tempoross.Side.UNKNOWN
+        script.side = Side.UNKNOWN
 
         val ropeLadder = script.getLadder()
         if ((ropeLadder?.distance() ?: 6) > 5) {

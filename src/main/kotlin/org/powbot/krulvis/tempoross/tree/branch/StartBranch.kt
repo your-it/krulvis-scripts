@@ -9,6 +9,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
+import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
@@ -29,13 +30,13 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
 
 class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill") {
     override fun validate(): Boolean {
-        if (script.side == Tempoross.Side.UNKNOWN) {
+        if (script.side == Side.UNKNOWN) {
             if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                 println("Getting Side of minigame")
                 val mast = Objects.stream().name("Mast").nearest().first()
                 println("Mast found: $mast, orientation: ${mast.orientation()}")
-                script.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
-                script.mastLocation = mast.tile()
+                script.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
+                script.side.mastLocation = mast.tile()
             } else {
                 println("Couldn't find ammunition crate")
                 return true

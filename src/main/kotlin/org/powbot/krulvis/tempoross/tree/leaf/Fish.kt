@@ -47,9 +47,9 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 }
             } else {
                 script.log.info("No fishing spot found, walking to Totem pole / anchor")
-                var path = LocalPathFinder.findPath(script.totemLocation)
+                var path = LocalPathFinder.findPath(script.side.totemLocation)
                 if (path.isEmpty()) {
-                    path = LocalPathFinder.findPath(script.anchorLocation)
+                    path = LocalPathFinder.findPath(script.side.anchorLocation)
                 }
                 script.walkWhileDousing(path, false)
             }
@@ -67,7 +67,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             } else {
                 val tetherPole = script.getTetherPole()
                 if (tetherPole != null && !tetherPole.inViewport()) {
-                    if (script.oddFishingSpot.distance() <= 1) {
+                    if (script.side.oddFishingSpot.distance() <= 1) {
                         println("Fishing at weird spot so using unique camera rotation")
                         Camera.pitch(Random.nextInt(1200, 1300))
                     } else {

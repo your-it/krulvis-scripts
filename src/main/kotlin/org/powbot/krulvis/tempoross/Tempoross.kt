@@ -39,7 +39,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.2",
+    version = "1.1.3",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
 )
@@ -171,8 +171,7 @@ class Tempoross : ATScript() {
 
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
 
-    fun isTethering(): Boolean =
-        Objects.stream().action("Untether").isNotEmpty() || me.animation() == Data.TETHER_ANIM
+    fun isTethering(): Boolean = (Varpbits.varpbit(2933) and 2) == 2
 
     fun getEnergy(): Int {
         val text =
@@ -218,50 +217,12 @@ class Tempoross : ATScript() {
         }
     }
 
-    enum class Side {
-        UNKNOWN,
-        NORTH,
-        SOUTH
-    }
-
-
-    var mastLocation = Tile(9618, 2817, 0)
-    val oddFishingSpot: Tile get() = Tile(mastLocation.x() - 21, mastLocation.y() - 15, 0)
-
-    val cookLocation: Tile
-        get() = if (side == Side.NORTH)
-            Tile(mastLocation.x() + 4, mastLocation.y() + 25, 0)
-        else Tile(mastLocation.x() - 22, mastLocation.y() - 21, 0)
-
-    val northCookSpot: Tile get() = Tile(cookLocation.x() + 1, cookLocation.y() - 3, 0)
-
-    val bossPoolLocation: Tile
-        get() = if (side == Side.NORTH)
-            Tile(mastLocation.x() + 11, mastLocation.y() + 5, 0)
-        else Tile(mastLocation.x() - 11, mastLocation.y() - 5, 0)
-
-    val bossWalkLocation: Tile
-        get() = if (side == Side.NORTH)
-            Tile(bossPoolLocation.x(), bossPoolLocation.y() + 2, 0)
-        else
-            Tile(bossPoolLocation.x(), bossPoolLocation.y() - 2, 0)
-
-    val totemLocation: Tile
-        get() = if (side == Side.NORTH)
-            Tile(mastLocation.x() + 8, mastLocation.y() + 18, 0)
-        else Tile(mastLocation.x() - 15, mastLocation.y() - 16, 0)
-
-    val anchorLocation: Tile
-        get() = if (side == Side.NORTH)
-            Tile(mastLocation.x() + 8, mastLocation.y() + 9, 0)
-        else
-            Tile(mastLocation.x() - 8, mastLocation.y() - 9, 0)
 
     fun rightSide(spot: Npc): Boolean {
         return if (side == Side.NORTH) {
-            spot.tile().y() > mastLocation.y()
+            spot.tile().y() > side.mastLocation.y()
         } else {
-            spot.tile().y() < mastLocation.y()
+            spot.tile().y() < side.mastLocation.y()
         }
     }
 
@@ -307,25 +268,25 @@ class Tempoross : ATScript() {
     }
 
     fun getBossPool() =
-        Npcs.stream().at(bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
+        Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().filtered { it.tile().distanceTo(mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
+        Npcs.stream().filtered { it.tile().distanceTo(side.mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
 
     fun getBucketCrate(): GameObject? =
         Objects.stream().filtered {
-            it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
+            it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
         }.name("Buckets").nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
         Objects.stream().filtered {
-            it.tile().distanceTo(mastLocation) <= 5 || it.tile().distanceTo(bossPoolLocation) <= 5
+            it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
         }.name("Water pump").nearest().firstOrNull()
 
     fun getTetherPole(): GameObject? {
         val dest = Movement.destination()
         val destination = if (dest != Tile.Nil) dest else me.tile()
-        val validTiles = listOf(totemLocation, mastLocation)
+        val validTiles = listOf(side.totemLocation, side.mastLocation)
         return Objects.stream().filtered {
             validTiles.contains(it.tile())
         }.action("Repair", "Tether").nearest(destination).firstOrNull()

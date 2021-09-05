@@ -13,8 +13,8 @@ import org.powbot.krulvis.tempoross.Tempoross
 class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
 
     override fun execute() {
-        val walkSpot = if (script.side == Tempoross.Side.NORTH) script.northCookSpot else script.cookLocation
-        val cookShrine = Objects.stream().at(script.cookLocation).name("Shrine").firstOrNull()
+        val walkSpot = script.side.cookLocation
+        val cookShrine = Objects.stream().within(script.side.cookLocation, 5.0).name("Shrine").firstOrNull()
 
         if (me.animation() != FILLING_ANIM) {
             if (script.interactWhileDousing(cookShrine, "Cook-at", walkSpot, false)) {

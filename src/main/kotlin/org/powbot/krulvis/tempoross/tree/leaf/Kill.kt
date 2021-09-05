@@ -18,7 +18,7 @@ class Kill(script: Tempoross) : Leaf<Tempoross>(script, "Killing") {
         val killing = me.animation() != -1 && (spirit?.distance() ?: 4) <= 3
 
         Chat.canContinue()
-        if (!killing && script.interactWhileDousing(spirit, "Harpoon", script.bossWalkLocation, true)) {
+        if (!killing && script.interactWhileDousing(spirit, "Harpoon", script.side.bossWalkLocation, true)) {
             waitFor(long()) { me.animation() == KILLING_ANIM }
         }
     }
