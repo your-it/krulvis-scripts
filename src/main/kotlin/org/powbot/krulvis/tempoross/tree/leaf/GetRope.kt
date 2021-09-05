@@ -15,7 +15,7 @@ class GetRope(script: Tempoross) : Leaf<Tempoross>(script, "Getting rope") {
     override fun execute() {
         val ropes =
             Objects.stream().name("Ropes").filtered { it.tile().distanceTo(script.mastLocation) <= 6 }.firstOrNull()
-        if (ropes == null || ropes.distance() >= 15) {
+        if (ropes == null || ropes.distance() >= 20) {
             script.walkWhileDousing(script.anchorLocation, true)
         } else if (script.interactWhileDousing(ropes, "Take", script.mastLocation, true)) {
             waitFor(long()) { Inventory.containsOneOf(ROPE) }

@@ -89,7 +89,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     fun fishAtSpot(spot: Npc) {
         if (interact(spot, "Harpoon")) {
-            waitFor(long()) { me.animation() != -1 && me.interacting()?.name() == "Fishing spot" }
+            waitFor(long()) { (me.animation() != -1 && me.interacting()?.name() == "Fishing spot") || !spot.valid() }
         } else if (Movement.moving()) {
             waitFor(long()) { spot.distance() <= 2 }
         }
