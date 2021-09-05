@@ -21,6 +21,7 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
+import org.powbot.api.script.paint.Paint
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.TreeComponent
@@ -171,7 +172,7 @@ class Tempoross : ATScript() {
 
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
 
-    fun isTethering(): Boolean = (Varpbits.varpbit(2933) and 2) == 2
+    fun isTethering(): Boolean = (Varpbits.varpbit(2933) xor 7 and 7) != 7
 
     fun getEnergy(): Int {
         val text =
