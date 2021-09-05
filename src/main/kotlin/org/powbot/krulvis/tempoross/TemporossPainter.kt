@@ -6,12 +6,14 @@ import org.powbot.api.Color.GREEN
 import org.powbot.api.Color.ORANGE
 import org.powbot.api.Color.RED
 import org.powbot.api.Tile
+import org.powbot.api.script.paint.Paint
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.mobile.drawing.Graphics
 
 class TemporossPainter(script: Tempoross, lines: Int) : ATPainter<Tempoross>(script, lines, 350) {
+
 
     init {
         x = 1425

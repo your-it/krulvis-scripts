@@ -14,6 +14,7 @@ import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Tempoross
@@ -88,9 +89,9 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     fun fishAtSpot(spot: Npc) {
         if (interact(spot, "Harpoon")) {
-            waitFor { me.animation() != -1 && me.interacting()?.name() == "Fishing spot" }
+            waitFor(long()) { me.animation() != -1 && me.interacting()?.name() == "Fishing spot" }
         } else if (Movement.moving()) {
-            waitFor { spot.distance() <= 2 }
+            waitFor(long()) { spot.distance() <= 2 }
         }
     }
 

@@ -39,7 +39,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.1",
+    version = "1.1.2",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
 )
@@ -111,6 +111,10 @@ class Tempoross : ATScript() {
             }
         }
         return false
+    }
+
+    fun walkWhileDousing(tile: Tile, allowCrossing: Boolean): Boolean {
+        return walkWhileDousing(LocalPathFinder.findPath(tile), allowCrossing)
     }
 
     fun walkWhileDousing(path: LocalPath, allowCrossing: Boolean): Boolean {
@@ -285,7 +289,8 @@ class Tempoross : ATScript() {
     fun collectFishSpots() {
         fishSpots = Npcs.stream().filtered {
             rightSide(it)
-        }.action("Harpoon").name("Fishing spot").list().map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+        }.action("Harpoon").name("Fishing spot").list()
+            .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {

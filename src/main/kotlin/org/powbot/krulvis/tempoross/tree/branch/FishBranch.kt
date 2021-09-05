@@ -57,6 +57,9 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
+        if (!script.cookFish)
+            return false
+
         val rawCount = Inventory.getCount(RAW)
         script.collectFishSpots()
         script.bestFishSpot = script.getFishSpot(script.fishSpots)
@@ -88,7 +91,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val lowEnergy = energy / 4 < Inventory.getCount(true, RAW, COOKED)
         val fullHealth = script.getHealth() == 100
         script.log.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$rawCount")
-        return script.cookFish && rawCount > 0
+        return rawCount > 0
                 && (Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null)
     }
 

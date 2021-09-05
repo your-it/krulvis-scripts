@@ -187,7 +187,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
             if (e.inViewport()) {
                 val matrix = Touchscreen.scaleFromGame(e.tile().matrix().bounds())
                 g.drawPolygon(matrix)
-                g.drawString((e as Nameable).name(), matrix.getBounds().centerX, matrix.getBounds().centerY)
+                g.drawString((e as Nameable).name() ?: "null", matrix.getBounds().centerX, matrix.getBounds().centerY)
             }
         }
     }
