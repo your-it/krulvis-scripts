@@ -65,7 +65,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             return false
 
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
-        val cookLocation = if (script.side == Tempoross.Side.NORTH) script.northCookSpot else script.cookLocation
+        val cookLocation = script.side.cookLocation
         if (rawCount > 0 && !doubleSpot && cookLocation.distance() <= 1.5) {
             debug("Fishing because already there...")
             return true
@@ -74,13 +74,13 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             script.fishSpots.isEmpty() || script.fishSpots.all { script.containsDangerousTile(it.second) }
 
         if (rawCount > 3 && noEasyFishSpots && !script.hasDangerousPath(cookLocation)) {
-            if (script.fishSpots.isEmpty() && script.totemLocation.distance() > 10) {
+            if (script.fishSpots.isEmpty() && script.side.totemLocation.distance() > 10) {
                 script.log.info("Can't find cooking spots, walking to middle")
-                val path = LocalPathFinder.findPath(script.totemLocation)
+                val path = LocalPathFinder.findPath(script.side.totemLocation)
                 if (path.isNotEmpty()) {
                     script.walkWhileDousing(path, true)
                 } else {
-                    Movement.step(script.totemLocation)
+                    Movement.step(script.side.totemLocation)
                 }
                 return false
             } else {

@@ -18,8 +18,10 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.tempoross.Data
+import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.input.Touchscreen
@@ -62,17 +64,27 @@ class TemporossDebug : ATScript() {
             val c =
                 Components.stream(Data.PARENT_WIDGET).filtered { it.text().contains("Energy") }.firstOrNull()
             debugComp(c)
-            if (tempoross.side == Tempoross.Side.UNKNOWN) {
+            if (tempoross.side == Side.UNKNOWN) {
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                     val mast = Objects.stream().name("Mast").nearest().first()
                     println("Mast found: $mast, orientation: ${mast.orientation()}")
-                    tempoross.side = if (mast.orientation() == 4) Tempoross.Side.SOUTH else Tempoross.Side.NORTH
-                    tempoross.mastLocation = mast.tile()
+                    tempoross.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
+                    tempoross.side.mastLocation = mast.tile()
                 }
             } else if (tempoross.getEnergy() == -1) {
                 println("Not in game...")
-                tempoross.side = Tempoross.Side.UNKNOWN
+                tempoross.side = Side.UNKNOWN
             } else {
+                //In game
+                val pole = Objects.stream(3).action("Untether").firstOrNull()
+                val mast = Objects.stream().name("Mast").nearest().firstOrNull()
+                val atMast = Objects.stream().at(tempoross.side.mastLocation).list()
+                log.info("Untether pole: $pole")
+                log.info("Mast: $mast, distance=${mast?.distance()}, actions=${mast?.actions()?.joinToString()}")
+                atMast.forEach {
+                    log.info("Found obj at mast: ${it.name()}, actions=${it.actions().joinToString()}")
+                }
+
                 tempoross.blockedTiles.clear()
                 tempoross.triedPaths.clear()
                 tempoross.detectDangerousTiles()
@@ -80,13 +92,12 @@ class TemporossDebug : ATScript() {
 
                 val dest = Movement.destination()
                 val destination = if (dest != Tile.Nil) dest else me.tile()
-                val validTiles = listOf(tempoross.totemLocation, tempoross.mastLocation)
+                val validTiles = listOf(tempoross.side.totemLocation, tempoross.side.mastLocation)
                 val tetherpoles = Objects.stream().filtered {
                     validTiles.contains(it.tile())
                 }.forEach { println("Found ${it.name()}: ${it.actions().joinToString()}") }
                 println(tetherpoles)
-                cookSpot =
-                    if (tempoross.side == Tempoross.Side.NORTH) tempoross.northCookSpot else tempoross.cookLocation
+                cookSpot = tempoross.side.cookLocation
                 // In game
                 bucket = tempoross.getBucketCrate()
                 ammo = tempoross.getAmmoCrate()
@@ -97,7 +108,7 @@ class TemporossDebug : ATScript() {
                 tempoross.bestFishSpot = tempoross.getFishSpot(tempoross.fishSpots)
                 checkPaths(bucket, tether)
                 checkPaths(ammo, tempoross.bestFishSpot)
-                tempoross.hasDangerousPath(tempoross.bossWalkLocation)
+                tempoross.hasDangerousPath(tempoross.side.bossWalkLocation)
 
             }
             sleep(1000)
@@ -121,6 +132,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         y = drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
         y = drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
         y = drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
+        y = drawSplitText(g, "Tethering: ", "${script.tempoross.isTethering()}", x, y)
         y = drawSplitText(
             g,
             "Energy: ${script.tempoross.getEnergy()}",
@@ -137,7 +149,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
         if (tether != null) {
             y = drawSplitText(g, "Tether visible: ", tether.inViewport().toString(), x, y)
         }
-        if (script.tempoross.side != Tempoross.Side.UNKNOWN) {
+        if (script.tempoross.side != Side.UNKNOWN) {
             drawEntity(g, script.bucket)
             drawEntity(g, script.bossPool)
             drawEntity(g, script.ammo)
@@ -149,35 +161,35 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString("TP", mm.x, mm.y)
             }
 
-            script.cookSpot.drawOnScreen(g, null, CYAN)
-            script.tempoross.anchorLocation.drawOnScreen(g, null, CYAN)
-            script.tempoross.bossPoolLocation.drawOnScreen(g, null, CYAN)
-            script.tempoross.totemLocation.drawOnScreen(g, null, CYAN)
-            script.tempoross.bossWalkLocation.drawOnScreen(g, null, CYAN)
-            script.tempoross.mastLocation.drawOnScreen(g, null, CYAN)
+//            script.cookSpot.drawOnScreen(g, null, CYAN)
+//            script.tempoross.side.anchorLocation.drawOnScreen(g, null, CYAN)
+//            script.tempoross.side.bossPoolLocation.drawOnScreen(g, null, CYAN)
+//            script.tempoross.side.totemLocation.drawOnScreen(g, null, CYAN)
+//            script.tempoross.side.bossWalkLocation.drawOnScreen(g, null, CYAN)
+//            script.tempoross.side.mastLocation.drawOnScreen(g, null, CYAN)
 
-            val blockedTiles = script.tempoross.blockedTiles.toList()
-            val paths = script.tempoross.triedPaths.toList()
-
-            blockedTiles.forEach {
-                val t = it
-                if (t != Tile.Nil) {
-                    it.drawOnScreen(g, null, RED)
-                }
-            }
-            if (paths.isNotEmpty()) {
-                paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
-                    val containsBadTile = tiles.any { blockedTiles.contains(it) }
-                    val color = if (containsBadTile) ORANGE else GREEN
-                    tiles.forEach { tile ->
-                        tile.drawOnScreen(
-                            g,
-                            null,
-                            if (blockedTiles.contains(tile)) BLACK else color
-                        )
-                    }
-                }
-            }
+//            val blockedTiles = script.tempoross.blockedTiles.toList()
+//            val paths = script.tempoross.triedPaths.toList()
+//
+//            blockedTiles.forEach {
+//                val t = it
+//                if (t != Tile.Nil) {
+//                    it.drawOnScreen(g, null, RED)
+//                }
+//            }
+//            if (paths.isNotEmpty()) {
+//                paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
+//                    val containsBadTile = tiles.any { blockedTiles.contains(it) }
+//                    val color = if (containsBadTile) ORANGE else GREEN
+//                    tiles.forEach { tile ->
+//                        tile.drawOnScreen(
+//                            g,
+//                            null,
+//                            if (blockedTiles.contains(tile)) BLACK else color
+//                        )
+//                    }
+//                }
+//            }
         }
         return y
     }

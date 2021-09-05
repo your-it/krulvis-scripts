@@ -13,7 +13,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Untether
 class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Untether") {
     override fun validate(): Boolean {
         return script.waveTimer.isFinished()
-                && Objects.stream().action("Untether").within(3.0).firstOrNull() != null
+                && script.isTethering()
     }
 
     override val successComponent: TreeComponent<Tempoross> = Untether(script)

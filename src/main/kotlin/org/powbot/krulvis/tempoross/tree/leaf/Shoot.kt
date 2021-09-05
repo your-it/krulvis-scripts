@@ -17,7 +17,7 @@ class Shoot(script: Tempoross) : Leaf<Tempoross>(script, "Shooting") {
         val dest = Movement.destination()
         val nearAmmoBox = ammo != null && (ammo.distance() <= 2 || ammo.tile().distanceTo(dest) <= 2)
         val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
-        if (!shooting && script.interactWhileDousing(ammo, "Fill", script.mastLocation, false)) {
+        if (!shooting && script.interactWhileDousing(ammo, "Fill", script.side.mastLocation, false)) {
             waitFor(long()) { me.animation() == FILLING_ANIM }
         }
     }
