@@ -14,7 +14,7 @@ class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
         script.triedPaths.clear()
         val leaveNpc = getLeaveNpc()
         if (leaveNpc != null && interact(leaveNpc, "Leave")) {
-            waitFor(5000) { getLeaveNpc() == null }
+            waitFor(10000) { getLeaveNpc() == null }
         }
     }
 

@@ -60,6 +60,10 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val rawCount = Inventory.getCount(RAW)
         script.collectFishSpots()
         script.bestFishSpot = script.getFishSpot(script.fishSpots)
+
+        if (!script.cookFish)
+            return false
+
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = if (script.side == Tempoross.Side.NORTH) script.northCookSpot else script.cookLocation
         if (rawCount > 0 && !doubleSpot && cookLocation.distance() <= 1.5) {
@@ -88,7 +92,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val lowEnergy = energy / 4 < Inventory.getCount(true, RAW, COOKED)
         val fullHealth = script.getHealth() == 100
         script.log.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$rawCount")
-        return script.cookFish && rawCount > 0
+        return rawCount > 0
                 && (Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null)
     }
 

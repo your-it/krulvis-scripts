@@ -87,10 +87,10 @@ object ATContext {
         turnRunOn()
         debug("Interacting with: $name at: $pos")
         if (Menu.opened() && Menu.contains {
-                it.action.equals(action, true) && it.option.contains(
+                it.action.equals(action, true) && (name == null || it.option.contains(
                     name,
                     true
-                )
+                ))
             }) {
             debug("Clicking directly on opened menu")
             return handleMenu(action, name)
@@ -117,7 +117,7 @@ object ATContext {
             }
 
         }
-        val interactBool = if (name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
+        val interactBool = if (name == null || name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
         return waitFor(short()) {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         } && interactBool
@@ -126,22 +126,22 @@ object ATContext {
     /**
      * Requires menu to be open
      */
-    fun handleMenu(action: String, name: String): Boolean {
+    fun handleMenu(action: String, name: String?): Boolean {
         if (!Menu.opened()) {
             return false
         }
         if (!Menu.contains {
-                it.action.equals(action, true) && it.option.contains(
+                it.action.equals(action, true) && (name == null || it.option.contains(
                     name,
                     true
-                )
+                ))
             }) {
             debug("Closing menu in: handleMenu()")
             Menu.click { it.action == "Cancel" }
             waitFor { !Menu.opened() }
             return false
         }
-        return Menu.click { it.action.contains(action, true) && it.option.contains(name, true) }
+        return Menu.click { it.action.contains(action, true) && (name == null || it.option.contains(name, true)) }
     }
 
     fun Locatable.distance(): Int =
@@ -204,7 +204,7 @@ object ATContext {
     fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
-    fun Inventory.emptyExcept(vararg ids: Int): Boolean = !stream().filtered { it.id() !in ids }.findFirst().isPresent
+    fun Inventory.emptyExcept(vararg ids: Int): Boolean = stream().firstOrNull { it.id() !in ids } == null
 
     fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()
     fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
