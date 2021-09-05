@@ -57,12 +57,13 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
-        if (!script.cookFish)
-            return false
-
         val rawCount = Inventory.getCount(RAW)
         script.collectFishSpots()
         script.bestFishSpot = script.getFishSpot(script.fishSpots)
+
+        if (!script.cookFish)
+            return false
+
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = if (script.side == Tempoross.Side.NORTH) script.northCookSpot else script.cookLocation
         if (rawCount > 0 && !doubleSpot && cookLocation.distance() <= 1.5) {

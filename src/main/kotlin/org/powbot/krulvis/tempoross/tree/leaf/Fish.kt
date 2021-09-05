@@ -27,26 +27,26 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             script.log.info("No safe fishing spot found!")
             if (script.blockedTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
-                debug("We are standing on a dangerous tile! Walking to $safeTile")
+                script.log.info("We are standing on a dangerous tile! Walking to $safeTile")
                 if (safeTile != null && Movement.step(safeTile)) {
                     waitFor { me.tile() == safeTile }
                 }
             } else if (script.fishSpots.any { it.second.actions.last().destination.distance() <= 1 }) {
-                debug("Nearby blocked fishing spot found that is blocked")
+                script.log.info("Nearby blocked fishing spot found that is blocked")
                 val blockedTile =
                     script.fishSpots.filter { it.second.actions.last().destination.distance() <= 1 }
                         .first().second.actions.last()
                 val fireOptional =
                     Npcs.stream().name("Fire").within(blockedTile.destination, 2.0).nearest().findFirst()
                 if (fireOptional.isPresent) {
-                    debug("Dousing nearby fire...")
+                    script.log.info("Dousing nearby fire...")
                     val fire = fireOptional.get()
                     if (interact(fire, "Douse")) {
                         waitFor { Npcs.stream().at(fire.tile()).name("Fire").isEmpty() }
                     }
                 }
             } else {
-                println("No fishing spot found, walking to Totem pole / anchor")
+                script.log.info("No fishing spot found, walking to Totem pole / anchor")
                 var path = LocalPathFinder.findPath(script.totemLocation)
                 if (path.isEmpty()) {
                     path = LocalPathFinder.findPath(script.anchorLocation)
