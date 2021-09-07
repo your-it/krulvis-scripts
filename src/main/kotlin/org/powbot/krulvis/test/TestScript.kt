@@ -6,6 +6,7 @@ import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.event.VarpbitChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -51,13 +52,14 @@ import org.powbot.mobile.drawing.Graphics
 class TestScript : ATScript() {
     override fun createPainter(): ATPaint<*> = TestPainter(this)
 
-    //    val origin = Tile(3290, 3358, 0) //varrock mine
-//    val dest = Tile(3253, 3420, 0) //Varrock bank
-    var newDest = Tile(x = 3094, y = 3491, floor = 0)
+    val origin = Tile(3051, 4858, 0) //varrock mine
+
+    //    val dest = Tile(3253, 3420, 0) //Varrock bank
+    var newDest = Tile(3048, 4811, 0)
     var path: LocalPath = LocalPath(emptyList())
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-
+        path = LocalPathFinder.findPath(origin, newDest)
     }
 
 
@@ -88,6 +90,7 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     }
 
     override fun paintCustom(g: Graphics) {
+        script.origin.drawOnScreen(g)
         script.newDest.drawOnScreen(g)
         script.path.draw(g)
     }

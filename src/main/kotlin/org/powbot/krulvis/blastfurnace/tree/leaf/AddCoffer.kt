@@ -20,15 +20,15 @@ import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to coffer") {
     override fun execute() {
         val depositButton = Chat.stream().textContains("Deposit coins.").findFirst()
-        if (Inventory.getCount(995) < 10000) {
+        if (Inventory.getCount(995) < script.cofferAmount) {
             script.log.info("Not enough gold yet...")
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
                 chest.ifPresent { if (interact(it, "Use")) waitFor { Bank.opened() } }
             } else if (!Inventory.emptyExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)) {
                 Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
-            } else if (Bank.withdraw(995, 12500)) {
-                waitFor { Inventory.getCount(995) >= 12500 }
+            } else if (Bank.withdraw(995, script.cofferAmount)) {
+                waitFor { Inventory.getCount(995) >= script.cofferAmount }
             }
         } else if (depositButton.isPresent) {
             if (depositButton.get().select()) {

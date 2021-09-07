@@ -2,6 +2,7 @@ package org.powbot.krulvis.blastfurnace
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
@@ -17,24 +18,31 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.0.3",
+    version = "1.1.0",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
-            "bar",
+            "Bar",
             "Which bar do you want to smelt?",
             allowedValues = ["IRON", "STEEL", "MITHRIL", "ADAMANTITE", "RUNITE", "GOLD"],
             defaultValue = "STEEL"
+        ),
+        ScriptConfiguration(
+            "Coffer deposit",
+            "How much do you want to put in the coffer?",
+            defaultValue = "12500",
+            optionType = OptionType.INTEGER
         )
     ]
 )
 class BlastFurnace : ATScript() {
     var filledCoalBag: Boolean = false
 
-    val bar get() = Bar.valueOf(getOption<String>("bar")!!)
+    val cofferAmount by lazy { getOption<Int>("Coffer deposit")!! }
+    val bar by lazy { Bar.valueOf(getOption<String>("Bar")!!) }
     override fun createPainter(): ATPaint<*> = BFPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldPay(this)
@@ -59,9 +67,9 @@ class BlastFurnace : ATScript() {
     private fun rightMenuOpen(action: String): Boolean =
         Menu.opened() && Menu.contains { it.action.equals(action, true) }
 
-    val foremanTimer = Timer(0)
+    val foremanTimer = Timer(1)
 
-    fun shouldPayForeman() = Skills.level(Constants.SKILLS_SMITHING) < 60 && !foremanTimer.isFinished()
+    fun shouldPayForeman() = Skills.level(Constants.SKILLS_SMITHING) < 60 && foremanTimer.isFinished()
 
     fun cofferCount() = Varpbits.varpbit(795) / 2
 
