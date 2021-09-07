@@ -57,9 +57,11 @@ class TestScript : ATScript() {
     //    val dest = Tile(3253, 3420, 0) //Varrock bank
     var newDest = Tile(3048, 4811, 0)
     var path: LocalPath = LocalPath(emptyList())
+    var comp: Component? = null
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        path = LocalPathFinder.findPath(origin, newDest)
+//        path = LocalPathFinder.findPath(origin, newDest)
+        comp = Components.stream(270).max(Comparator.comparingInt(Component::componentCount)).get()
     }
 
 
@@ -86,7 +88,9 @@ class TestScript : ATScript() {
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        return paintBuilder.build()
+        return paintBuilder
+            .addString("Comp:") { "widgetId=${script.comp?.widgetId()}, ${script.comp}" }
+            .build()
     }
 
     override fun paintCustom(g: Graphics) {
