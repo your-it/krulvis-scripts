@@ -9,25 +9,23 @@ import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.Patch.Companion.refresh
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
-import org.powbot.mobile.script.ScriptManager
 import java.util.logging.Logger
 
 @ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
-    version = "1.0.3",
+    author = "Krulvis",
+    version = "1.0.4",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )
@@ -42,16 +40,11 @@ import java.util.logging.Logger
     ]
 )
 class TitheFarmer : ATScript() {
-    override val painter: ATPainter<*> = TithePainter(this)
+    override fun createPainter(): ATPaint<*> = TithePainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
     val logger = Logger.getLogger("TitheFarmer")
-
-    init {
-        debugComponents = true
-        skillTracker.addSkill(Skill.FARMING)
-    }
 
     val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
     var lock = false

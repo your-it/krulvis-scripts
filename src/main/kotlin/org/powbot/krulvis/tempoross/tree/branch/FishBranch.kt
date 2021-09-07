@@ -20,34 +20,34 @@ import org.powbot.krulvis.tempoross.tree.leaf.Shoot
 class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot") {
     override fun validate(): Boolean {
 
+        val fish = Inventory.stream().id(RAW, COOKED).count().toInt()
+
         //Forced shooting happens after a tether attempt
         if (script.forcedShooting) {
-            if (!Inventory.containsOneOf(RAW, COOKED)) {
+            if (fish == 0) {
                 script.forcedShooting = false
             }
             return script.forcedShooting
         }
+
+        val energy = script.getEnergy()
+        val hp = script.getHealth()
+        val lowEnergy = energy / 2.5 < fish
+
+        //If we are close to the ammo-box and have some fish, shoot em
         val ammoCrate = script.getAmmoCrate()
         if (Inventory.containsOneOf(if (script.cookFish) COOKED else RAW)
             && (ammoCrate?.distance() ?: 8) < 7
         ) {
+            script.forcedShooting = true
+            return true
+        } else if (fish > 0 && (hp <= 75 && lowEnergy && energy > 13)) {
+            script.forcedShooting = true
             return true
         } else if (Inventory.isFull() && (!script.cookFish || !Inventory.containsOneOf(RAW))) {
             return true
         }
-        val energy = script.getEnergy()
-        val hp = script.getHealth()
-        val fish = Inventory.stream().id(RAW, COOKED).count()
-        val lowEnergy = energy / 2.5 < fish
-        val hasRaw = Inventory.containsOneOf(RAW)
-        val hasCooked = Inventory.containsOneOf(COOKED)
-        /* TODO optimize this calculation
-            At low health you basically want to always shoot fish
-            At higher health you need to make sure that there is enough energy left to shoot
-         */
-//        script.log.info("lowEnergy=$lowEnergy, fish=$fish, hasRaw=$hasRaw")
-        return !hasRaw && hasCooked
-                || (hp <= 75 && lowEnergy && energy > 13)
+        return false
     }
 
     override val successComponent: TreeComponent<Tempoross> = Shoot(script)

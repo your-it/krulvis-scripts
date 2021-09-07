@@ -10,18 +10,18 @@ import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
 import java.util.*
 
 @ScriptManifest(
     name = "krul Thiever",
     description = "Pickpockets any NPC",
-    version = "1.0.2",
+    author = "Krulvis",
+    version = "1.0.3",
     markdownFileName = "Thiever.md",
     category = ScriptCategory.Thieving
 )
@@ -53,7 +53,7 @@ import java.util.*
     ]
 )
 class Thiever : ATScript() {
-    override val painter: ATPainter<*> = ThieverPainter(this)
+    override fun createPainter(): ATPaint<*> = ThieverPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
@@ -63,10 +63,6 @@ class Thiever : ATScript() {
     val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
 
     var mobile = false
-
-    init {
-        skillTracker.addSkill(Skill.THIEVING)
-    }
 
     fun getTarget(): Npc? {
         return Npcs.stream().name(target).nearest().firstOrNull()
