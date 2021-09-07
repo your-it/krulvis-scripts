@@ -18,7 +18,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.1.0",
+    version = "1.1.1",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
@@ -28,7 +28,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
             "Bar",
             "Which bar do you want to smelt?",
             allowedValues = ["IRON", "STEEL", "MITHRIL", "ADAMANTITE", "RUNITE", "GOLD"],
-            defaultValue = "STEEL"
+            defaultValue = "GOLD"
         ),
         ScriptConfiguration(
             "Coffer deposit",
@@ -76,5 +76,5 @@ class BlastFurnace : ATScript() {
 }
 
 fun main() {
-    BlastFurnace().startScript("127.0.0.1", "Krullieman", true)
+    BlastFurnace().startScript("127.0.0.1", "krullieman", true)
 }
