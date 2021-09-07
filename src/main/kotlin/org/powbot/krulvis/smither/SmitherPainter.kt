@@ -8,6 +8,8 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 class SmitherPainter(script: Smither) : ATPaint<Smither>(script) {
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        return paintBuilder.trackSkill(Skill.Smithing).build()
+        return paintBuilder
+            .trackSkill(Skill.Smithing)
+            .build()
     }
 }
