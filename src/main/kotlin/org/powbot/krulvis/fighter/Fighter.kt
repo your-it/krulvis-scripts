@@ -16,7 +16,8 @@ import org.powbot.mobile.drawing.Graphics
 @ScriptManifest(
     name = "krul Fighter",
     description = "Fights anything, anywhere",
-    version = "1.0.0",
+    author = "Krulvis",
+    version = "1.0.1",
     category = ScriptCategory.Combat
 )
 @ScriptConfiguration.List(

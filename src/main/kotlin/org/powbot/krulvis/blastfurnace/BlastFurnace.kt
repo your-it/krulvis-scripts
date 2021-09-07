@@ -16,7 +16,8 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
 @ScriptManifest(
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
-    version = "1.0.1",
+    author = "Krulvis",
+    version = "1.0.2",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )

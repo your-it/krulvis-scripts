@@ -20,7 +20,8 @@ import java.util.*
 @ScriptManifest(
     name = "krul Thiever",
     description = "Pickpockets any NPC",
-    version = "1.0.2",
+    author = "Krulvis",
+    version = "1.0.3",
     markdownFileName = "Thiever.md",
     category = ScriptCategory.Thieving
 )

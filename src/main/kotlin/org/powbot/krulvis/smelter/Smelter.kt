@@ -13,7 +13,8 @@ import org.powbot.krulvis.smelter.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Smelter",
     description = "Smelt bars or cannonballs",
-    version = "1.1.1",
+    author = "Krulvis",
+    version = "1.1.2",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(

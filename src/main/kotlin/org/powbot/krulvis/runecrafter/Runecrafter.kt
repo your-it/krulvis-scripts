@@ -14,7 +14,8 @@ import org.powbot.krulvis.runecrafter.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Runecrafter",
     description = "Runecrafts",
-    version = "1.0",
+    author = "Krulvis",
+    version = "1.0.1",
     markdownFileName = "RC.md",
     category = ScriptCategory.Runecrafting
 )

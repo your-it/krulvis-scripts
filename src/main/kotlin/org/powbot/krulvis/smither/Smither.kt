@@ -12,7 +12,8 @@ import org.powbot.krulvis.smither.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Smither",
     description = "Smiths stuff from bars",
-    version = "1.0.0",
+    author = "Krulvis",
+    version = "1.0.1",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(

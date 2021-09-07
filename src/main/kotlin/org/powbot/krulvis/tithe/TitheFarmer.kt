@@ -24,7 +24,8 @@ import java.util.logging.Logger
 @ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
-    version = "1.0.3",
+    author = "Krulvis",
+    version = "1.0.4",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )

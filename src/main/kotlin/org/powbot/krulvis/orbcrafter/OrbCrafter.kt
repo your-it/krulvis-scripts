@@ -10,7 +10,8 @@ import org.powbot.krulvis.orbcrafter.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Orbs",
     description = "Craft orbs",
-    version = "1.0.0",
+    author = "Krulvis",
+    version = "1.0.1",
     markdownFileName = "Orb.md",
     category = ScriptCategory.Magic
 )
