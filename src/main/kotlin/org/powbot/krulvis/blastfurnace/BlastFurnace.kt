@@ -17,7 +17,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.0.2",
+    version = "1.0.3",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
