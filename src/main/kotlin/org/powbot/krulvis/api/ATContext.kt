@@ -27,7 +27,7 @@ object ATContext {
 
     fun debug(msg: String) {
         if (debugComponents) {
-            ScriptManager.script()!!.log.info(msg)
+            ScriptManager.script()?.log?.info(msg)
         }
     }
 
@@ -117,7 +117,8 @@ object ATContext {
             }
 
         }
-        val interactBool = if (name == null || name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
+        val interactBool =
+            if (name == null || name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
         return waitFor(short()) {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         } && interactBool
