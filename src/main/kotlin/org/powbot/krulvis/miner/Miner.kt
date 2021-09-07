@@ -1,16 +1,12 @@
 package org.powbot.krulvis.miner
 
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.script.*
 import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.antiban.DelayHandler
-import org.powbot.krulvis.api.extensions.Skill
-import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 
 @ScriptManifest(
@@ -55,10 +51,6 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 )
 class Miner : ATScript() {
 
-    init {
-        skillTracker.addSkill(Skill.MINING)
-    }
-
     val rockLocations by lazy {
         val o = getOption<List<GameObjectOption>>("Rocks")
         log.info(o.toString())
@@ -72,7 +64,7 @@ class Miner : ATScript() {
     val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
 
-    override val painter: ATPainter<*> = MinerPainter(this)
+    override fun createPainter(): ATPaint<*> = MinerPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldFixStrut(this)
 
@@ -89,15 +81,6 @@ class Miner : ATScript() {
     fun getSack() = Objects.stream().name("Sack").action("Search").findFirst()
 
     fun getBrokenStrut() = Objects.stream().name("Broken strut").nearest().firstOrNull()
-
-    @com.google.common.eventbus.Subscribe
-    fun onInventoryChangeEvent(evt: InventoryChangeEvent) {
-        val item = evt.itemId
-        if (item != Ore.PAY_DIRT.id && (item.getOre() != null || item == 21341) && evt.quantityChange > 0) {
-            log.info("Getting new item id=$item, amount=${evt.quantityChange}")
-            lootTracker.addLoot(item, evt.quantityChange)
-        }
-    }
 
 }
 

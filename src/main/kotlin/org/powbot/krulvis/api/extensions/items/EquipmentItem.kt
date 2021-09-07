@@ -6,6 +6,7 @@ import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
+import org.powbot.mobile.script.ScriptManager
 import java.io.Serializable
 
 interface EquipmentItem : Item {
@@ -21,14 +22,17 @@ interface EquipmentItem : Item {
         return getInventoryCount(countNoted) + Equipment.stream().id(*ids).count(true).toInt()
     }
 
-    fun withdrawAndEquip(): Boolean {
+    fun withdrawAndEquip(stopIfOut: Boolean = false): Boolean {
         if (inEquipment()) {
             return true
         } else if (!inInventory()) {
             if (Bank.withdrawModeNoted(false) && inBank()
-                && Bank.withdraw(1, getBankId(true))
+                && withdrawExact(1, true)
             ) {
                 waitFor(5000) { inInventory() }
+            } else if (!inBank() && stopIfOut) {
+                ScriptManager.script()!!.log.warning("Stopping script due to being out of: ${itemName()}")
+                ScriptManager.stop()
             }
         }
         if (inInventory()) {
@@ -65,6 +69,6 @@ interface EquipmentItem : Item {
 
 class Equipment(
     override val requirements: List<Requirement>,
+    override val slot: Equipment.Slot? = null,
     override vararg val ids: Int,
-    override val slot: org.powbot.api.rt4.Equipment.Slot? = null
 ) : EquipmentItem, Serializable

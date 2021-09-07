@@ -7,25 +7,23 @@ import org.powbot.api.event.MessageEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
+import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
-import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.paint.Paint
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.debugComponents
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -57,13 +55,14 @@ import java.util.*
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
 
-    init {
-        skillTracker.addSkill(Skill.FISHING)
-        debugComponents = false
+    override fun createPainter(): ATPaint<*> {
+        return TemporossPaint(this)
     }
 
-    override val painter: ATPainter<*> = TemporossPainter(this, if (debugComponents) 10 else 6)
-
+    init {
+        debugComponents = false
+    }
+    
     val waveTimer = Timer(0)
     var side: Side = Side.UNKNOWN
     var forcedShooting = false

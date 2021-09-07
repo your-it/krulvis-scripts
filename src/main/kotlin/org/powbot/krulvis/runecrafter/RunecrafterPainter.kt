@@ -1,19 +1,19 @@
 package org.powbot.krulvis.runecrafter
 
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.api.rt4.walking.model.Skill
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
 
-class RunecrafterPainter(script: Runecrafter) : ATPainter<Runecrafter>(script, 10, 300) {
-    override fun paint(g: Graphics, startY: Int): Int {
-        var y = startY
-        y = drawSplitText(g, "Leaf: ", script.lastLeaf.toString(), x, y)
-        y = script.lootTracker.draw(g, x, y)
-        y = script.skillTracker.draw(g, x, y)
-        return y
+class RunecrafterPainter(script: Runecrafter) : ATPaint<Runecrafter>(script) {
+
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        paintBuilder.trackSkill(Skill.Runecrafting)
+        paintBuilder.trackInventoryItem(script.profile.type.rune)
+        return paintBuilder.build()
     }
 
-    override fun drawTitle(g: Graphics, x: Int, y: Int) {
-        drawTitle(g, "krul Runes", x, y)
-
+    override fun paintCustom(g: Graphics) {
     }
 }

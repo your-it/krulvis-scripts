@@ -4,10 +4,12 @@ import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldBank
 import org.powbot.mobile.drawing.Graphics
 
@@ -33,7 +35,7 @@ import org.powbot.mobile.drawing.Graphics
     ]
 )
 class Fighter : ATScript() {
-    override val painter: ATPainter<*> = FighterPainter(this)
+    override fun createPainter(): ATPaint<*> = FighterPainter(this)
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
     val food get() = Food.valueOf(getOption<String>("food")!!)
@@ -42,8 +44,13 @@ class Fighter : ATScript() {
     val maxLevel get() = getOption<Int>("max_level")!!
 }
 
-class FighterPainter(script: Fighter) : ATPainter<Fighter>(script, 10) {
-    override fun paint(g: Graphics, startY: Int): Int {
+class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
+
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        TODO("Not yet implemented")
+    }
+
+    override fun paintCustom(g: Graphics) {
         TODO("Not yet implemented")
     }
 }

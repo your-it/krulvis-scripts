@@ -16,6 +16,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
+        Game.closeOpenTab()
         if (Game.clientState() != 30) {
             return !waitFor(10000) { script.getEnergy() > -1 }
         }

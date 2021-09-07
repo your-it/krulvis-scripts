@@ -4,6 +4,8 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.CacheItemConfig
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
+import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import java.util.*
 import java.util.stream.Collectors
 
@@ -42,8 +44,20 @@ interface Item {
     fun getCount(countNoted: Boolean = true): Int
 
     fun withdrawExact(amount: Int, worse: Boolean = false, wait: Boolean = true): Boolean {
-//        return ctx.withdrawExact(amount, getBankId(ctx, worse), wait)
-        TODO("Not implemented yet")
+        val currentAmount = Inventory.getCount(*ids)
+        if (currentAmount == amount) {
+            return true
+        } else if (currentAmount > amount) {
+            if (Bank.deposit(Inventory.stream().id(*ids).first().id, currentAmount - amount)) {
+                return !wait || waitFor { Inventory.getCount(*ids) == amount }
+            }
+        } else if (currentAmount < amount) {
+            val id = getBankId(worse)
+            if (Bank.withdraw(id, amount - currentAmount)) {
+                return !wait || waitFor { Inventory.getCount(*ids) == amount }
+            }
+        }
+        return false
     }
 
     fun itemName(): String = CacheItemConfig.load(id).name
@@ -75,6 +89,7 @@ interface Item {
         val BUCKET_OF_WATER = 1929
         val ASHES = 592
         val BRONZE_BAR = 2349
+        val RING_OF_FORGING = 2568
         val SOFT_CLAY = 1791
         val YELLOW_DYE = 1765
         val ROPE = 954

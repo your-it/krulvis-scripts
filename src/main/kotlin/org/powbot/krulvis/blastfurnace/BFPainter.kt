@@ -1,27 +1,29 @@
 package org.powbot.krulvis.blastfurnace
 
-import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.api.rt4.walking.model.Skill
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
 
-class BFPainter(script: BlastFurnace) : ATPainter<BlastFurnace>(script, 8, 300) {
-    override fun paint(g: Graphics, startY: Int): Int {
-        var y = startY
-        val bar = script.bar
-        val prim = bar.primary
-        val coal = bar.secondary
-        y = drawSplitText(g, "Leaf:", script.lastLeaf.name, x, y)
-        y = drawSplitText(g, "Bars: ", bar.blastFurnaceCount.toString(), x, y)
-        y = drawSplitText(g, "${prim.name} Ore: ", prim.blastFurnaceCount.toString(), x, y)
-        if (prim != Ore.GOLD) {
-            y = drawSplitText(g, "Coal: ", coal.blastFurnaceCount.toString(), x, y)
+class BFPainter(script: BlastFurnace) : ATPaint<BlastFurnace>(script) {
+
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        paintBuilder.addString("Bars:") { script.bar.blastFurnaceCount.toString() }
+        paintBuilder.addString(
+            { "${script.bar.primary.name} Ore: " },
+            { script.bar.primary.blastFurnaceCount.toString() })
+        if (script.bar.secondaryMultiplier > 0) {
+            paintBuilder.addString(
+                { "${script.bar.secondary.name} Ore: " },
+                { script.bar.secondary.blastFurnaceCount.toString() })
         }
-        y = script.skillTracker.draw(g, x, y)
-        y = script.lootTracker.draw(g, x, y)
-        return y
+        paintBuilder.trackSkill(Skill.Smithing)
+        paintBuilder.trackInventoryItem(script.bar.id)
+
+        return paintBuilder.build()
     }
 
-    override fun drawTitle(g: Graphics, x: Int, y: Int) {
-        Companion.drawTitle(g, "Blast Furnace", x, y)
+    override fun paintCustom(g: Graphics) {
     }
 }

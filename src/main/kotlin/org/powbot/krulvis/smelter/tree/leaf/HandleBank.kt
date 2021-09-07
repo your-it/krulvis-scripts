@@ -1,6 +1,7 @@
 package org.powbot.krulvis.smelter.tree.leaf
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -8,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.RING_OF_FORGING
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smelter.Smelter
 import org.powbot.mobile.script.ScriptManager
@@ -38,6 +40,8 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                     Bank.withdraw(Bar.STEEL.id, Bank.Amount.ALL)
                 }
             }
+        } else if (script.forgingRing && !ringOfForging.inEquipment()) {
+            ringOfForging.withdrawAndEquip(true)
         } else {
             if (primCount != split.first) {
                 if (!Inventory.isFull() && !Bank.containsOneOf(script.bar.primary.id)) {
@@ -61,6 +65,9 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
             }
         }
     }
+
+    val ringOfForging =
+        org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.RING, RING_OF_FORGING)
 
     fun getRequirements(): IntArray {
         val requirements = mutableListOf(script.bar.primary.id)

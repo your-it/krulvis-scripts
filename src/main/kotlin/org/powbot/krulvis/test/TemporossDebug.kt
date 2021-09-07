@@ -11,21 +11,21 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.ATContext.mapPoint
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.script.painter.ATPainter
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.tempoross.Data
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.input.Touchscreen
-import java.util.*
 
 @ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
 class TemporossDebug : ATScript() {
@@ -47,7 +47,7 @@ class TemporossDebug : ATScript() {
         }
     }
 
-    override val painter: ATPainter<*> = TemporossDebugPainter(this)
+    override fun createPainter(): ATPaint<*> = TemporossDebugPainter(this)
 
     fun debugComp(c: Component?) {
         if (c == null) {
@@ -116,82 +116,62 @@ class TemporossDebug : ATScript() {
     }
 
     init {
-        skillTracker.addSkill(Skill.FISHING)
         tempoross = Tempoross()
     }
 
 }
 
-class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(script, 10, 350) {
-    init {
-        x = 400
+class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(script) {
+
+    override fun paintCustom(g: Graphics) {
+
+        val tether = script.tether
+        if (script.tempoross.side != Side.UNKNOWN) {
+//            drawSide(g, tether?.tile())
+        }
     }
 
-    override fun paint(g: Graphics, startY: Int): Int {
-        var y = startY
-        y = drawSplitText(g, "Side: ", script.tempoross.side.toString(), x, y)
-        y = drawSplitText(g, "Animation: ", "${me.animation()}", x, y)
-        y = drawSplitText(g, "Destination: ", "${Movement.destination()}", x, y)
-        y = drawSplitText(g, "Tethering: ", "${script.tempoross.isTethering()}", x, y)
-        y = drawSplitText(
-            g,
-            "Energy: ${script.tempoross.getEnergy()}",
-            "Health: ${script.tempoross.getHealth()}: ",
-            x,
-            y
-        )
-        val tether = script.tether
-//        val clicked = Ga.crosshair() == Game.Crosshair.ACTION
-//        val lastClick = System.currentTimeMillis() - script.ctx.input.pressWhen
-//        drawSplitText(g, "Click: $clicked", "Last: ${Timer.formatTime(lastClick)}", x, y)
-//        y += yy
+    fun drawSide(g: Graphics, tetherTile: Tile?) {
+        drawEntity(g, script.bucket)
+        drawEntity(g, script.bossPool)
+        drawEntity(g, script.ammo)
+        drawEntity(g, script.tether)
+        drawEntity(g, script.tempoross.bestFishSpot)
 
-        if (tether != null) {
-            y = drawSplitText(g, "Tether visible: ", tether.inViewport().toString(), x, y)
+        if (tetherTile != null) {
+            val mm = tetherTile.mapPoint()
+            g.drawString("TP", mm.x, mm.y)
         }
-        if (script.tempoross.side != Side.UNKNOWN) {
-            drawEntity(g, script.bucket)
-            drawEntity(g, script.bossPool)
-            drawEntity(g, script.ammo)
-            drawEntity(g, script.tether)
-            drawEntity(g, script.tempoross.bestFishSpot)
 
-            if (tether != null) {
-                val mm = tether.tile().mapPoint()
-                g.drawString("TP", mm.x, mm.y)
+        script.cookSpot.drawOnScreen(g, null, CYAN)
+        script.tempoross.side.anchorLocation.drawOnScreen(g, null, CYAN)
+        script.tempoross.side.bossPoolLocation.drawOnScreen(g, null, CYAN)
+        script.tempoross.side.totemLocation.drawOnScreen(g, null, CYAN)
+        script.tempoross.side.bossWalkLocation.drawOnScreen(g, null, CYAN)
+        script.tempoross.side.mastLocation.drawOnScreen(g, null, CYAN)
+
+        val blockedTiles = script.tempoross.blockedTiles.toList()
+        val paths = script.tempoross.triedPaths.toList()
+
+        blockedTiles.forEach {
+            val t = it
+            if (t != Tile.Nil) {
+                it.drawOnScreen(g, null, RED)
             }
-
-//            script.cookSpot.drawOnScreen(g, null, CYAN)
-//            script.tempoross.side.anchorLocation.drawOnScreen(g, null, CYAN)
-//            script.tempoross.side.bossPoolLocation.drawOnScreen(g, null, CYAN)
-//            script.tempoross.side.totemLocation.drawOnScreen(g, null, CYAN)
-//            script.tempoross.side.bossWalkLocation.drawOnScreen(g, null, CYAN)
-//            script.tempoross.side.mastLocation.drawOnScreen(g, null, CYAN)
-
-//            val blockedTiles = script.tempoross.blockedTiles.toList()
-//            val paths = script.tempoross.triedPaths.toList()
-//
-//            blockedTiles.forEach {
-//                val t = it
-//                if (t != Tile.Nil) {
-//                    it.drawOnScreen(g, null, RED)
-//                }
-//            }
-//            if (paths.isNotEmpty()) {
-//                paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
-//                    val containsBadTile = tiles.any { blockedTiles.contains(it) }
-//                    val color = if (containsBadTile) ORANGE else GREEN
-//                    tiles.forEach { tile ->
-//                        tile.drawOnScreen(
-//                            g,
-//                            null,
-//                            if (blockedTiles.contains(tile)) BLACK else color
-//                        )
-//                    }
-//                }
-//            }
         }
-        return y
+        if (paths.isNotEmpty()) {
+            paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
+                val containsBadTile = tiles.any { blockedTiles.contains(it) }
+                val color = if (containsBadTile) ORANGE else GREEN
+                tiles.forEach { tile ->
+                    tile.drawOnScreen(
+                        g,
+                        null,
+                        if (blockedTiles.contains(tile)) BLACK else color
+                    )
+                }
+            }
+        }
     }
 
     fun drawEntity(g: Graphics, e: InteractableEntity?) {
@@ -202,6 +182,15 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPainter<TemporossDebug>(
                 g.drawString((e as Nameable).name() ?: "null", matrix.getBounds().centerX, matrix.getBounds().centerY)
             }
         }
+    }
+
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        return paintBuilder.addString("Side:") { script.tempoross.side.name }
+            .addString("Animation: ") { me.animation().toString() }
+            .addString("Destination: ") { Movement.destination().toString() }
+            .addString("Tethering: ") { script.tempoross.isTethering().toString() }
+            .addString({ "Energy: ${script.tempoross.getEnergy()}" }, { "Health: ${script.tempoross.getHealth()}" })
+            .build()
     }
 
 }

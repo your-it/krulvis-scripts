@@ -6,17 +6,19 @@ import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.event.VarpbitChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
 
-@ScriptManifest(name = "testscript", version = "1.0.1", description = "")
+@ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "")
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
@@ -47,14 +49,29 @@ import org.powbot.mobile.drawing.Graphics
     ]
 )
 class TestScript : ATScript() {
-    override val painter: ATPainter<*> = TestPainter(this)
+    override fun createPainter(): ATPaint<*> = TestPainter(this)
 
     //    val origin = Tile(3290, 3358, 0) //varrock mine
 //    val dest = Tile(3253, 3420, 0) //Varrock bank
     var newDest = Tile(x = 3094, y = 3491, floor = 0)
     var path: LocalPath = LocalPath(emptyList())
 
+    override fun onStart() {
+        super.onStart()
+        addPaint(
+            PaintBuilder()
+                .trackSkill(Skill.Attack)
+                .trackInventoryItems(1511)
+                .build()
+        )
+    }
+
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+//        val items = Inventory.stream().filter { it.name().contains("Grimy") }
+
+        if (Game.singleTapEnabled())
+            Game.setSingleTapToggle(false)
+//        Preferences.setForceSingleTap(false)
     }
 
 
@@ -79,14 +96,14 @@ class TestScript : ATScript() {
     }
 }
 
-class TestPainter(script: TestScript) : ATPainter<TestScript>(script, 10, 500) {
-    override fun paint(g: Graphics, startY: Int): Int {
-        var y = startY
-        y = drawSplitText(g, "Single-tab", Game.singleTapEnabled().toString(), x, y)
+class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        return paintBuilder.build()
+    }
+
+    override fun paintCustom(g: Graphics) {
         script.newDest.drawOnScreen(g)
         script.path.draw(g)
-
-        return y
     }
 
 }

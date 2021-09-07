@@ -1,20 +1,17 @@
 package org.powbot.krulvis.blastfurnace
 
 import org.powbot.api.Tile
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.extensions.items.Bar
-import org.powbot.krulvis.api.script.painter.ATPainter
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
-import java.util.function.Consumer
 
 @ScriptManifest(
     name = "krul BlastFurnace",
@@ -36,12 +33,8 @@ import java.util.function.Consumer
 class BlastFurnace : ATScript() {
     var filledCoalBag: Boolean = false
 
-    init {
-        skillTracker.addSkill(Skill.SMITHING)
-    }
-
     val bar get() = Bar.valueOf(getOption<String>("bar")!!)
-    override val painter: ATPainter<*> = BFPainter(this)
+    override fun createPainter(): ATPaint<*> = BFPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldPay(this)
 
@@ -71,12 +64,6 @@ class BlastFurnace : ATScript() {
 
     fun cofferCount() = Varpbits.varpbit(795) / 2
 
-    @com.google.common.eventbus.Subscribe
-    fun onInventoryChangeEvent(ic: InventoryChangeEvent) {
-        if (ic.itemId == bar.id && ic.quantityChange > 0) {
-            lootTracker.addLoot(ic.itemId, ic.quantityChange)
-        }
-    }
 }
 
 fun main() {
