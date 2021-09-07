@@ -36,7 +36,7 @@ import java.util.logging.Logger
             name = "Patches",
             description = "How many patches do you want to use? Max 16",
             optionType = OptionType.INTEGER,
-            defaultValue = "8"
+            defaultValue = "14"
         )
     ]
 )
