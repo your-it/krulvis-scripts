@@ -56,22 +56,8 @@ class TestScript : ATScript() {
     var newDest = Tile(x = 3094, y = 3491, floor = 0)
     var path: LocalPath = LocalPath(emptyList())
 
-    override fun onStart() {
-        super.onStart()
-        addPaint(
-            PaintBuilder()
-                .trackSkill(Skill.Attack)
-                .trackInventoryItems(1511)
-                .build()
-        )
-    }
-
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        val items = Inventory.stream().filter { it.name().contains("Grimy") }
 
-        if (Game.singleTapEnabled())
-            Game.setSingleTapToggle(false)
-//        Preferences.setForceSingleTap(false)
     }
 
 

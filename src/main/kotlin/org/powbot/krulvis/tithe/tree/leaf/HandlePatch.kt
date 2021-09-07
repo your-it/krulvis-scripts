@@ -10,10 +10,6 @@ import java.util.logging.Logger
 class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling patch") {
 
     override fun execute() {
-        if (script.lock) {
-            script.log.warning("Handle patch locked")
-            return
-        }
 //        if (!waitFor(long()) { !ctx.movement.moving() }) {
 //            debug("Not interacting yet because still moving")
 //            return
@@ -23,13 +19,11 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0
         val patches = script.patches.sortedWith(compareBy(Patch::id, Patch::index))
-        val patch = patches.firstOrNull {
+        val patch = patches.filterNot { it.tile == script.lastPatch?.tile }.firstOrNull {
             it.needsAction() && (hasEnoughWater || it.isDone())
         } ?: return
-        script.log.warning("Handling patch: $patch")
         if (patch.handle(script.patches)) {
             sleep(1000)
-            script.log.warning("Handling patch interaction was successful")
         }
     }
 

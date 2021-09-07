@@ -12,10 +12,11 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     constructor(go: GameObject, index: Int) : this(go, go.tile(), index)
 
-    fun refresh(gameObject: GameObject? = null) {
+    fun refresh(gameObject: GameObject? = null): GameObject {
         go = gameObject ?: Objects.stream(35).at(tile).filtered { it.name().isNotEmpty() && it.name() != "null" }
             .findFirst()
             .get()
+        return go
     }
 
     val isNill get() = go == GameObject.Nil
@@ -86,7 +87,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 it.interact("Use")
             }
         }
-        return waitFor(short()) { Inventory.selectedItem().id() == seed } && go.interact("Use")
+        return waitFor(short()) { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
     }
 
     fun walkBetween(action: String, patches: List<Patch>): Boolean {
@@ -109,26 +110,10 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         Menu.opened() && Menu.contains { it.action.equals(action, true) }
 
     private fun interact(action: String): Boolean {
-        if (!Menu.opened()) {
-            go.click()
-        }
-        if (waitFor(short()) { Menu.opened() }) {
-            if (rightMenuOpen(action)) {
-                val interaction = Menu.click(
-                    Menu.filter(
-                        action
-                    )
-                )
-                ATContext.turnRunOn()
-                return interaction
-            } else {
-                Menu.click(Menu.filter("Cancel"))
-            }
-        }
-        return false
+        return go.interact(action)
     }
 
-    override fun toString(): String = "Patch(tile=${go.tile()})"
+    override fun toString(): String = "Patch(id=${go.id()}, tile=${go.tile()})"
 
     companion object {
         val EMPTY = 27383
