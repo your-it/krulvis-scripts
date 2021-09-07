@@ -78,6 +78,10 @@ enum class BankLocation(
         Tile(3760, 5666, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(3761, 5666, 0), "Use"),
     ),
+    MINING_GUILD(
+        Tile(3013, 9718, 0), BankType.CHEST,
+        GameObjectInteraction("Bank chest", Tile(3012, 9718, 0), "Use"),
+    ),
     MOTHERLOAD_MINE_DEPOSIT(
         Tile(3758, 5664, 0), BankType.DEPOSIT_BOX,
         GameObjectInteraction("Bank deposit box", Tile(3759, 5664, 0), "Deposit"),
