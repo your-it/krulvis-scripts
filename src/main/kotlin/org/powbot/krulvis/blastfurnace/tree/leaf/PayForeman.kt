@@ -13,7 +13,7 @@ class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman
         if (Inventory.getCount(995) < 2500) {
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
-                chest.ifPresent { if (interact(it, "Use")) waitFor { Bank.opened() } }
+                chest.ifPresent { if (interact(it, "Use")) waitFor(long()) { Bank.opened() } }
             }else if(Bank.withdraw(995, 2500)){
                 waitFor { Inventory.getCount(995) >= 2500 }
             }

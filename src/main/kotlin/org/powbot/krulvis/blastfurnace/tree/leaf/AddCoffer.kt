@@ -24,7 +24,7 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
             script.log.info("Not enough gold yet...")
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
-                chest.ifPresent { if (interact(it, "Use")) waitFor { Bank.opened() } }
+                chest.ifPresent { if (interact(it, "Use")) waitFor(long()) { Bank.opened() } }
             } else if (!Inventory.emptyExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)) {
                 Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
             } else if (Bank.withdraw(995, script.cofferAmount)) {
