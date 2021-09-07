@@ -18,6 +18,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.Patch.Companion.refresh
+import org.powbot.krulvis.tithe.tree.branch.Locked
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import java.util.logging.Logger
 
@@ -33,7 +34,7 @@ import java.util.logging.Logger
     [
         ScriptConfiguration(
             name = "Patches",
-            description = "How many patches do you want to use?",
+            description = "How many patches do you want to use? Max 16",
             optionType = OptionType.INTEGER,
             defaultValue = "14"
         )
@@ -42,11 +43,10 @@ import java.util.logging.Logger
 class TitheFarmer : ATScript() {
     override fun createPainter(): ATPaint<*> = TithePainter(this)
 
-    override val rootComponent: TreeComponent<*> = ShouldStart(this)
-
-    val logger = Logger.getLogger("TitheFarmer")
+    override val rootComponent: TreeComponent<*> = Locked(this)
 
     val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
+    var lastPatch: Patch? = null
     var lock = false
     var startPoints = -1
     var gainedPoints = 0
@@ -107,40 +107,17 @@ class TitheFarmer : ATScript() {
     fun onGameActionEvent(evt: GameActionEvent) {
         if (evt.rawOpcode == 4 || evt.opcode() == GameActionOpcode.InteractObject) {
             val tile = Tile(evt.var0 + 1, evt.widgetId + 1, 0).globalTile()
-            logger.warning("Interacted with ${evt.rawEntityName}: at: $tile")
             if (NAMES.any { evt.rawEntityName.contains(it, true) }) {
-                val patch = patches.first { it.tile == tile }
-//                Utils.waitFor(2500) { tile.distance() < 3 }
-                prepareNextInteraction(patch, evt.interaction)
+                lastPatch = patches.first { it.tile == tile }
+                lock = true
+                log.info("Interacted ${evt.interaction} on $lastPatch")
             }
-            lock = false
         }
     }
 
     private fun Tile.globalTile(): Tile {
         val a = Game.mapOffset()
         return this.derive(+a.x(), +a.y())
-    }
-
-    fun prepareNextInteraction(current: Patch, action: String) {
-        val waterCount = getWaterCount()
-        val harvestCount = Inventory.getCount(*Data.HARVEST)
-        lock = true
-        patches = patches.refresh()
-        val nextPatch = patches.minusElement(current)
-            .sortedWith(compareBy(Patch::id, Patch::index))
-            .firstOrNull { it.needsAction() }
-        if (nextPatch != null) {
-            nextPatch.go.click()
-            logger.warning("Prepared next patch interaction...")
-            if (waitFor(2000) {
-                    if (action.contains("water", true)) waterCount > getWaterCount()
-                    else harvestCount < Inventory.getCount(*Data.HARVEST)
-                })
-                logger.warning("Done with watering / harvesting")
-        } else {
-            logger.warning("No next patch or Faulty interaction... distance=${current.tile.distance()}")
-        }
     }
 
 
