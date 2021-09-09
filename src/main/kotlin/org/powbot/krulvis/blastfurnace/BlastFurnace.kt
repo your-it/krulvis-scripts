@@ -76,5 +76,5 @@ class BlastFurnace : ATScript() {
 }
 
 fun main() {
-    BlastFurnace().startScript("127.0.0.1", "krullieman", true)
+    BlastFurnace().startScript("127.0.0.1", "krullieman", false)
 }

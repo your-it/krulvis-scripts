@@ -36,9 +36,9 @@ class ShouldPutOre(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should 
 
 class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should Wait @ Dispenser") {
     override val successComponent: TreeComponent<BlastFurnace> = SimpleLeaf(script, "Waiting for XP drop") {
-        if (script.dispenserTile.distance() > 1) {
+        if (script.dispenserTile.distance() >= 2) {
             walk(script.dispenserTile)
-            waitFor { script.dispenserTile.distance() <= 1 }
+            waitFor { script.dispenserTile.distance() < 2 }
         }
     }
     override val failedComponent: TreeComponent<BlastFurnace> = HandleBank(script)
