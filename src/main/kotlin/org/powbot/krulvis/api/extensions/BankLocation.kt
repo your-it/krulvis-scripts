@@ -145,4 +145,16 @@ enum class BankLocation(
             return getNearestBank(includeDepositBox).open()
         }
     }
+
+
+}
+
+fun main() {
+    println(
+        "[\"${
+            BankLocation.values().map {
+                it.name
+            }.joinToString("\", \"")
+        }\"]"
+    )
 }

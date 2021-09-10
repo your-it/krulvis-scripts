@@ -12,18 +12,18 @@ import org.powbot.krulvis.fighter.tree.leaf.HandleBank
 
 class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = IsBankOpen(script)
-    override val failedComponent: TreeComponent<Fighter>
-        get() = TODO("Not yet implemented")
+    override val failedComponent: TreeComponent<Fighter> = CanLoot(script)
 
     override fun validate(): Boolean {
-        return !Inventory.containsOneOf(*script.food.ids)
+        val hasFood = Inventory.containsOneOf(*script.food.ids)
+        return !hasFood && (script.needFood() || Inventory.isFull())
     }
 }
 
 class IsBankOpen(
     script: Fighter,
     override val successComponent: TreeComponent<Fighter> = HandleBank(script),
-    override val failedComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Open Bank") { Bank.openNearestBank() },
+    override val failedComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Open Bank") { script.bank.open() },
 ) : Branch<Fighter>(script, "Should Bank") {
 
     override fun validate(): Boolean {
