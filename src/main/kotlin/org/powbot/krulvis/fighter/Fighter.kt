@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Tile
+import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
 import org.powbot.api.rt4.walking.model.Skill
@@ -10,7 +11,6 @@ import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.api.script.selectors.NpcOption
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
@@ -19,7 +19,6 @@ import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldBank
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -55,13 +54,13 @@ class Fighter : ATScript() {
 
     override fun onStart() {
         super.onStart()
-        log.info("[${getOption<List<NpcOption>>("monsters")!!.joinToString(",")}]")
+        log.info("[${getOption<List<NpcActionEvent>>("monsters")!!.joinToString(",")}]")
     }
 
     var safespot = Tile(2904, 9808, 0)
     val food by lazy { Food.valueOf(getOption<String>("food")!!) }
     val monsters by lazy {
-        getOption<List<NpcOption>>("monsters")!!.map { it.name }
+        getOption<List<NpcActionEvent>>("monsters")!!.map { it.name }
     }
     val radius by lazy { getOption<Int>("radius")!! }
     val bank by lazy { BankLocation.valueOf(getOption<String>("bank")!!) }
@@ -70,7 +69,8 @@ class Fighter : ATScript() {
     fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP() < .4
 
     fun loot(): List<GroundItem> =
-        GroundItems.stream().filtered { ItemPriceCache[it.id()] * it.stackSize() >= 500 }.list()
+        GroundItems.stream().filtered { 1 * it.stackSize() >= 500 }.list()
+//        GroundItems.stream().filtered { ItemPriceCache[it.id()] * it.stackSize() >= 500 }.list()
 
 }
 
