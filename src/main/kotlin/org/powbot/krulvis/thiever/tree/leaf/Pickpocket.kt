@@ -11,10 +11,10 @@ import org.powbot.krulvis.thiever.Thiever
 class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
     override fun execute() {
         val target = script.getTarget()
-        if(target != null) {
+        if (target != null) {
             val xp = Skills.experience(Constants.SKILLS_THIEVING)
             if (interact(target, "Pickpocket")) {
-                waitFor(Random.nextInt(4000, 7000)) { xp < Skills.experience(Constants.SKILLS_THIEVING) }
+                waitFor(Random.nextInt(4000, 5000)) { xp < Skills.experience(Constants.SKILLS_THIEVING) }
             }
         }
     }
