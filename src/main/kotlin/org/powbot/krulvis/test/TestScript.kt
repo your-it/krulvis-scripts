@@ -17,7 +17,9 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "")
 @ScriptConfiguration.List(
@@ -52,16 +54,16 @@ import org.powbot.mobile.drawing.Graphics
 class TestScript : ATScript() {
     override fun createPainter(): ATPaint<*> = TestPainter(this)
 
-    val origin = Tile(3051, 4858, 0) //varrock mine
+    var origin = Tile(3215, 3227, 0) //varrock mine
 
     //    val dest = Tile(3253, 3420, 0) //Varrock bank
-    var newDest = Tile(3048, 4811, 0)
+    var newDest = Tile(3224, 3237, 0)
     var path: LocalPath = LocalPath(emptyList())
     var comp: Component? = null
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        path = LocalPathFinder.findPath(origin, newDest)
-        comp = Components.stream(270).max(Comparator.comparingInt(Component::componentCount)).get()
+        sleep(1000)
+
     }
 
 

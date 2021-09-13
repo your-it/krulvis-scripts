@@ -22,7 +22,7 @@ class Drop(script: Miner) : Leaf<Miner>(script, "Drop") {
         }
         items().forEach {
             if (it.id() !in ids) {
-                it.interact("Drop")
+                it.click("Drop")
             }
         }
         return waitFor { stream().filter { it.id() !in ids }.isEmpty() }
