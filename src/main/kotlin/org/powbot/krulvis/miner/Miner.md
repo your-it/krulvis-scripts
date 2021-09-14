@@ -2,7 +2,6 @@
 
 **Mines any ore anywhere on Runescape and banks at nearest bank.**
 <br>
-**!!** *Make sure to create the script profile in Desktop Client as the Mobile doesn't have ClickListener.* **!!**
 
 ## Features
 
