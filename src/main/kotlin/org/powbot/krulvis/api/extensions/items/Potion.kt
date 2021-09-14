@@ -1,7 +1,6 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.extensions.Skill
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import kotlin.math.abs
@@ -63,7 +62,7 @@ enum class Potion(
     fun needsRestore(percentage: Int): Boolean {
         return when (this) {
             ANTIFIRE_EXTENDED, ANTIFIRE -> !isProtectedFromFire()
-            ANTIPOISON -> Combat.isPoisoned()
+            ANTIPOISON -> false//Combat.isPoisoned()
             PRAYER -> Skills.realLevel(skill) - Skills.level(skill) >= getRestore()
             STAMINA, ENERGY, SUPER_ENERGY -> !isHighOnStamina() && Movement.energyLevel() <= percentage
             else -> {
