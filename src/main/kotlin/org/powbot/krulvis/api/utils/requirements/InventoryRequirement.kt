@@ -45,7 +45,7 @@ class InventoryRequirement(
         } else if (id == -1) {
             return false
         } else if (onlyBest) {
-            return withdrawExact(item.id, amount, wait)
+            return Bank.withdrawExact(item.id, amount, wait)
         } else {
             if (count > amount) {
                 item.ids.forEach { Bank.deposit(it, Bank.Amount.ALL) }

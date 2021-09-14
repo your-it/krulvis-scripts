@@ -1,8 +1,10 @@
 package org.powbot.krulvis.thiever
 
 import com.google.common.eventbus.Subscribe
+import org.powbot.api.action.NpcAction
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
@@ -10,6 +12,7 @@ import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.selectors.NpcOption
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
@@ -21,16 +24,16 @@ import java.util.*
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.0.3",
+    version = "1.0.4",
     markdownFileName = "Thiever.md",
     category = ScriptCategory.Thieving
 )
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
-            name = "Target Name",
+            name = "Targets",
             description = "What NPC to pickpocket?",
-            defaultValue = "Master farmer"
+            optionType = OptionType.NPCS
         ),
         ScriptConfiguration(
             name = "Food",
@@ -58,14 +61,14 @@ class Thiever : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
     val food by lazy { Food.valueOf(getOption<String>("Food") ?: "TUNA") }
-    val target by lazy { getOption<String>("Target Name") ?: "Master farmer" }
+    val target by lazy { getOption<List<NpcOption>>("Targets")!! }
     val foodAmount by lazy { (getOption<Int>("Food amount") ?: 10) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
 
     var mobile = false
 
     fun getTarget(): Npc? {
-        return Npcs.stream().name(target).nearest().firstOrNull()
+        return Npcs.stream().name(*target.map { it.name }.toTypedArray()).nearest().firstOrNull()
     }
 
     @Subscribe
@@ -78,5 +81,5 @@ class Thiever : ATScript() {
 }
 
 fun main() {
-    Thiever().startScript(true)
+    Thiever().startScript(false)
 }
