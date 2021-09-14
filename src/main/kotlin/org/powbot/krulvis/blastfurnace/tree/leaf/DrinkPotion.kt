@@ -1,6 +1,7 @@
 package org.powbot.krulvis.blastfurnace.tree.leaf
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.extensions.items.Item.Companion.COINS
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -14,7 +15,9 @@ class DrinkPotion(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Draink pot
         val pot = script.potion
         if (pot.needsRestore(60)) {
             if (!pot.inInventory()) {
-                pot.withdrawExact(1, true)
+                if (Inventory.isFull())
+                    Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
+                pot.withdrawExact(1, true, wait = true)
             } else {
                 if (pot.drink()) {
                     waitFor { !pot.needsRestore(60) }
