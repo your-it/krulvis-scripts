@@ -69,20 +69,7 @@ class TestScript : ATScript() {
 
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        log.info(
-            "Getting nuggy price: ${
-                measureTimeMillis {
-                    repeat(10) { ItemPriceService.getItemPrice(12012) }
-                }
-            }"
-        )
-        log.info(
-            "Waiting for open bank: ${
-                measureTimeMillis {
-                    waitFor(Random.nextInt(5000, 7000)) { Bank.opened() || DepositBox.opened() }
-                }
-            }"
-        )
+
         sleep(1000)
     }
 
