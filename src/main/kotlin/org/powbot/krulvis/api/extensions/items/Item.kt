@@ -32,7 +32,18 @@ interface Item {
         return bankItem?.id() ?: -1
     }
 
-    fun getInvItem(): Optional<Item> = Inventory.stream().id(*ids).findFirst()
+    fun getInvItem(worse: Boolean = false): Item? {
+        return if (worse) {
+            val items = Inventory.stream().list()
+            ids.reversed().forEach { id ->
+                if (items.any { it.id == id }) {
+                    return items.firstOrNull { it.id == id }
+                }
+            }
+            return null
+        } else
+            Inventory.stream().id(*ids).firstOrNull()
+    }
 
     fun getInventoryCount(countNoted: Boolean = true): Int {
         return if (countNoted) Inventory.stream()

@@ -17,7 +17,7 @@ class ShouldPay(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should Pay
 
 class ShouldAddToCoffer(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should Coffer") {
     override val successComponent: TreeComponent<BlastFurnace> = AddCoffer(script)
-    override val failedComponent: TreeComponent<BlastFurnace> = ShouldTake(script)
+    override val failedComponent: TreeComponent<BlastFurnace> = ShouldDrinkPotion(script)
 
     override fun validate(): Boolean {
         return script.cofferCount() <= 100

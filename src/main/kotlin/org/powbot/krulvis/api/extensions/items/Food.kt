@@ -36,8 +36,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
         nextEatPercent = Random.nextInt(25, 55)
         val item = getInvItem()
         Game.tab(Game.Tab.INVENTORY)
-        return item.isPresent
-                && item.get()
+        return item != null
+                && item
             .interact(if (this == WINE) "Drink" else "Eat")
     }
 
