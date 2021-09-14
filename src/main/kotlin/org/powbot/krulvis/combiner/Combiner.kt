@@ -3,8 +3,10 @@ package org.powbot.krulvis.combiner
 import org.powbot.api.Production
 import org.powbot.api.StringUtils
 import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.event.WidgetActionEvent
+import org.powbot.api.rt4.Bank
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
@@ -91,8 +93,14 @@ class Combiner : ATScript() {
         return getOption<Int>("Item ${index + 1} Amount")!!
     }
 
-
     fun stoppedUsing() = Production.stoppedUsing(items.first { it.second == 0 || it.second > 1 }.first)
+
+    @com.google.common.eventbus.Subscribe
+    fun onInventoryItem(e: InventoryChangeEvent) {
+        if (items.none { it.first == e.itemId } && !Bank.opened()) {
+            painter.paintBuilder.trackInventoryItems(e.itemId)
+        }
+    }
 }
 
 fun main() {
