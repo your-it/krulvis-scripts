@@ -11,7 +11,7 @@
 ## Set-up
 
 <figure class="video_container">
-  <video>
+  <video controls>
     <source src="https://cloud.krulvis.space/s/7xWxLTGaLkGPCXZ/download/krul_combiner_tut.mp4" type="video/mp4">
   </video>
 </figure>
