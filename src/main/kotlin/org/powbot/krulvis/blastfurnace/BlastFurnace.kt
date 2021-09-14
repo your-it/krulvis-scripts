@@ -2,13 +2,11 @@ package org.powbot.krulvis.blastfurnace
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptCategory
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Bar
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils
@@ -18,7 +16,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.1.1",
+    version = "1.1.2",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
@@ -35,12 +33,28 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
             "How much do you want to put in the coffer?",
             defaultValue = "12500",
             optionType = OptionType.INTEGER
+        ),
+        ScriptConfiguration(
+            "Drink potions",
+            "Do you want do drink energy potions?",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            "Potion",
+            "Select a potion to drink",
+            defaultValue = "SUPER_ENERGY",
+            optionType = OptionType.STRING,
+            allowedValues = ["ENERGY", "SUPER_ENERGY", "STAMINA"],
+            visible = false
         )
     ]
 )
 class BlastFurnace : ATScript() {
     var filledCoalBag: Boolean = false
 
+    val drinkPotion by lazy { getOption<Boolean>("Drink potions")!! }
+    val potion by lazy { Potion.valueOf(getOption<String>("Potion")!!) }
     val cofferAmount by lazy { getOption<Int>("Coffer deposit")!! }
     val bar by lazy { Bar.valueOf(getOption<String>("Bar")!!) }
     override fun createPainter(): ATPaint<*> = BFPainter(this)
@@ -72,6 +86,11 @@ class BlastFurnace : ATScript() {
     fun shouldPayForeman() = Skills.level(Constants.SKILLS_SMITHING) < 60 && foremanTimer.isFinished()
 
     fun cofferCount() = Varpbits.varpbit(795) / 2
+
+    @ValueChanged("Drink potions")
+    fun valueChange(key: String) {
+        options.first { it.name == "Potions" }.visible = getOption<Boolean>(key)!!
+    }
 
 }
 
