@@ -4,25 +4,18 @@ import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
-import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.model.GameObjectInteraction
-import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
-import org.powbot.api.script.selectors.NpcOption
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.service.ItemPriceCache
-import org.powbot.mobile.service.ItemPriceService
 import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "")
