@@ -15,8 +15,9 @@ class DrinkPotion(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Draink pot
         val pot = script.potion
         if (pot.needsRestore(60)) {
             if (!pot.inInventory()) {
-                if (Inventory.isFull())
+                if (Inventory.isFull()) {
                     Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
+                }
                 pot.withdrawExact(1, true, wait = true)
             } else {
                 if (pot.drink()) {
