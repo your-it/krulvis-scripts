@@ -26,6 +26,7 @@ import java.util.*
     author = "Krulvis",
     version = "1.0.4",
     markdownFileName = "Thiever.md",
+    scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
 )
 @ScriptConfiguration.List(

@@ -16,7 +16,7 @@ enum class Ore(
     vararg val colors: Int
 ) : Item {
     AMETHYST(intArrayOf(21347), 92, -1, -1, 6705),
-    PAY_DIRT(intArrayOf(12011), 45, -1, -1, 6705),
+    PAY_DIRT(intArrayOf(12012), 45, -1, -1, 6705),
     RUNITE(intArrayOf(451), 85, 548, 8, -31437),
     ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
     MITHRIL(intArrayOf(447), 55, 547, 24, -22239),

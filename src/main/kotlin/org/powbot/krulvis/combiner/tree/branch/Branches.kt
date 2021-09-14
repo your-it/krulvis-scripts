@@ -27,7 +27,7 @@ class ShouldBank(
 
 class StoppedCombining(
     script: Combiner
-) : Branch<Combiner>(script, "Should bank") {
+) : Branch<Combiner>(script, "Stopped Combining") {
     override val failedComponent: TreeComponent<Combiner> =
         SimpleLeaf(script, "Chilling") { sleep(Random.nextInt(600, 1000)) }
     override val successComponent: TreeComponent<Combiner> = ComponentOpen(script)
