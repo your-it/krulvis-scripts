@@ -13,4 +13,3 @@
 ## Options
 
 - **Cooking fish grants more points at the cost of XP**
-- **'Force cooking / shooting with X fish' determines whether or not to stop fishing after a wave.**
