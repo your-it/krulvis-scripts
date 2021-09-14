@@ -114,11 +114,10 @@ enum class BankLocation(
             WebWalking.moveTo(tile, false, { false }, 1, 100, false)
             return false
         }
-        val interaction = interaction.handle()
-        return interaction && waitFor(
+        return interaction.handle() && waitFor(
             Random.nextInt(
-                5000,
-                7000
+                500,
+                1000
             )
         ) { Bank.opened() || DepositBox.opened() }
     }
