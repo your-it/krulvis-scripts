@@ -16,7 +16,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.1.2",
+    version = "1.1.3",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
@@ -88,8 +88,8 @@ class BlastFurnace : ATScript() {
     fun cofferCount() = Varpbits.varpbit(795) / 2
 
     @ValueChanged("Drink potions")
-    fun valueChange(key: String) {
-        options.first { it.name == "Potions" }.visible = getOption<Boolean>(key)!!
+    fun valueChange(drinkPotions: Boolean) {
+        updateVisibility("Potion", drinkPotions)
     }
 
 }
