@@ -24,7 +24,7 @@ import java.util.*
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.0.4",
+    version = "1.0.5",
     markdownFileName = "Thiever.md",
     scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
