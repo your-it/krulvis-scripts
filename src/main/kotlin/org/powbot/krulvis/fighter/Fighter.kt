@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Tile
+import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
 import org.powbot.api.rt4.walking.model.Skill
@@ -55,7 +56,7 @@ class Fighter : ATScript() {
     var safespot = Tile(2904, 9808, 0)
     val food by lazy { Food.valueOf(getOption<String>("food")!!) }
     val monsters by lazy {
-        getOption<List<NpcActionEvent>>("monsters")!!.map { it.name }
+        getOption<List<NpcOption>>("monsters")!!.map { it.name }
     }
     val radius by lazy { getOption<Int>("radius")!! }
     val bank by lazy { BankLocation.valueOf(getOption<String>("bank")!!) }

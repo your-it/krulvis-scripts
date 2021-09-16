@@ -62,7 +62,7 @@ class Thiever : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
     val food by lazy { Food.valueOf(getOption<String>("Food") ?: "TUNA") }
-    val target by lazy { getOption<List<NpcActionEvent>>("Targets")!! }
+    val target by lazy { getOption<List<NpcOption>>("Targets")!! }
     val foodAmount by lazy { (getOption<Int>("Food amount") ?: 10) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
 
