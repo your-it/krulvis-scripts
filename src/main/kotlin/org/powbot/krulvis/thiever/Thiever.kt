@@ -24,7 +24,7 @@ import java.util.*
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.0.5",
+    version = "1.0.6",
     markdownFileName = "Thiever.md",
     scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
@@ -62,7 +62,7 @@ class Thiever : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
     val food by lazy { Food.valueOf(getOption<String>("Food") ?: "TUNA") }
-    val target by lazy { getOption<List<NpcOption>>("Targets")!! }
+    val target by lazy { getOption<List<NpcActionEvent>>("Targets")!! }
     val foodAmount by lazy { (getOption<Int>("Food amount") ?: 10) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
 
@@ -75,7 +75,7 @@ class Thiever : ATScript() {
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {
         if (evt.rawOpcode == 11 || evt.opcode() == GameActionOpcode.InteractNpc) {
-            if (prepare && Game.singleTapEnabled())
+            if (options.firstOrNull { it.name == "Targets" }?.configured == true && prepare && Game.singleTapEnabled())
                 getTarget()?.click()
         }
     }

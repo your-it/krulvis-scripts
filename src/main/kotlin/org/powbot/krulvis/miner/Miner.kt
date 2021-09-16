@@ -55,7 +55,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 class Miner : ATScript() {
 
     val rockLocations by lazy {
-        val o = getOption<List<GameObjectOption>>("Rocks")
+        val o = getOption<List<GameObjectActionEvent>>("Rocks")
         log.info(o.toString())
         o?.map { it.tile } ?: emptyList()
     }
