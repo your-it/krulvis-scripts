@@ -20,7 +20,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.2",
+    version = "1.0.3",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -98,7 +98,7 @@ class Combiner : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryItem(e: InventoryChangeEvent) {
-        if (items.none { it.first == e.itemId }
+        if (options.all { it.configured } && items.none { it.first == e.itemId }
             && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == e.itemId } }
             && !Bank.opened()) {
             painter.paintBuilder.trackInventoryItems(e.itemId)
