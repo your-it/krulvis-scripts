@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Tile
+import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
 import org.powbot.api.rt4.walking.model.Skill

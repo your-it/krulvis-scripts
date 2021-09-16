@@ -7,6 +7,7 @@ import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.thiever.Thiever
 import org.powbot.krulvis.thiever.tree.leaf.Eat
 import org.powbot.krulvis.thiever.tree.leaf.HandleBank
@@ -19,7 +20,7 @@ class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
 
     override fun validate(): Boolean {
         val food = script.food
-        return food.inInventory() && food.canEat()
+        return food.inInventory() && (food.canEat() || currentHP() <= 4)
     }
 }
 

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner
 
+import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.script.*
 import org.powbot.api.script.selectors.GameObjectOption
