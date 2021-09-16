@@ -54,6 +54,13 @@ enum class Ore(
             return name == "Ore vein" || name == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
         }
 
+        /**
+         * @return true if there are no objects on the [GameObject]'s tile that have ore
+         */
+        fun GameObject.mined(vararg ores: Ore = values()): Boolean {
+            return Objects.stream().at(tile).none { it.hasOre(*ores) }
+        }
+
         fun GameObject.getOre(): Ore? {
             val name = name()
             //Amethyst crystals can always be mined, ore veins are static but can only be mined if called
