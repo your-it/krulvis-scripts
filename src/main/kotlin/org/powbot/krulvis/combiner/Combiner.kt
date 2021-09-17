@@ -20,7 +20,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.3",
+    version = "1.0.4",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -34,15 +34,9 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 //            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
-            name = "Open Combine Component",
-            description = "Perform the Game Actions to open the combining component",
-            optionType = OptionType.GAME_ACTIONS,
-//            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
-        ),
-        ScriptConfiguration(
             name = "Combine Items",
-            description = "Perform the widgetActionEvent to start combining",
-            optionType = OptionType.WIDGETS,
+            description = "Perform the Game Actions to start combining",
+            optionType = OptionType.GAME_ACTIONS,
 //            defaultValue = "[{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":91,\"rawEntityName\":\"<col=ff9040>Water battlestaff</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"widget\":{\"boundingModel\":null,\"parentSet\":false,\"widget\":null},\"strippedName\":\"Water battlestaff\"}]"
         ),
         ScriptConfiguration(
@@ -65,14 +59,20 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
             optionType = OptionType.INTEGER,
             defaultValue = "0",
             visible = false
+        ),
+        ScriptConfiguration(
+            name = "Item 4 Amount",
+            description = "How much of item 4 do you want in the inventory (0 is ALL)",
+            optionType = OptionType.INTEGER,
+            defaultValue = "0",
+            visible = false
         )
     ]
 )
 class Combiner : ATScript() {
     override fun createPainter(): ATPaint<*> = CombinerPainter(this)
 
-    val combineWidgetActionEvent by lazy { getOption<List<WidgetActionEvent>>("Combine Items")!!.firstOrNull() }
-    val openWidgetActionEvents by lazy { getOption<List<GameActionEvent>>("Open Combine Component")!! }
+    val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items")!! }
     val items by lazy {
         getOption<List<InventoryItemActionEvent>>("Items to combine")!!.mapIndexed { i, iiae ->
             Pair(iiae.id, getItemAmount(i))
@@ -85,7 +85,7 @@ class Combiner : ATScript() {
     fun onItemsChange(items: ArrayList<InventoryItemActionEvent>) {
         val itemCount = items.size
         log.info("Items to combine updated, size=$itemCount")
-        for (x in 1..3) {
+        for (x in 1..4) {
             updateVisibility("Item $x Amount", x <= itemCount)
         }
     }
