@@ -1,6 +1,6 @@
 package org.powbot.krulvis.combiner.tree.branch
 
-import org.powbot.api.Production
+import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -12,7 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.krulvis.combiner.tree.leaf.HandleBank
-import org.powbot.krulvis.combiner.tree.leaf.OpenComponent
+import org.powbot.krulvis.combiner.tree.leaf.Combine
 
 class ShouldBank(
     script: Combiner
@@ -30,26 +30,20 @@ class StoppedCombining(
 ) : Branch<Combiner>(script, "Stopped Combining") {
     override val failedComponent: TreeComponent<Combiner> =
         SimpleLeaf(script, "Chilling") { sleep(Random.nextInt(600, 1000)) }
-    override val successComponent: TreeComponent<Combiner> = ComponentOpen(script)
+    override val successComponent: TreeComponent<Combiner> = ShouldCloseBank(script)
 
     override fun validate(): Boolean {
         return script.stoppedUsing()
     }
 }
 
-class ComponentOpen(
+class ShouldCloseBank(
     script: Combiner
-) : Branch<Combiner>(script, "Combine Component Open") {
-    override val failedComponent: TreeComponent<Combiner> = OpenComponent(script)
-    override val successComponent: TreeComponent<Combiner> = SimpleLeaf(script, "Combine") {
-        val comp = script.combineWidgetActionEvent?.widget() ?: return@SimpleLeaf
-        if (comp.interact(script.combineWidgetActionEvent?.interaction, false)) {
-            waitFor(long()) { !script.stoppedUsing() }
-        }
-    }
+) : Branch<Combiner>(script, "ShouldCloseBank") {
+    override val failedComponent: TreeComponent<Combiner> = Combine(script)
+    override val successComponent: TreeComponent<Combiner> = SimpleLeaf(script, "Closing Bank") { Bank.close() }
 
     override fun validate(): Boolean {
-        val combineWidget = script.combineWidgetActionEvent?.widget()
-        return combineWidget?.visible() == true
+        return Bank.opened()
     }
 }
