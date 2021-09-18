@@ -17,15 +17,16 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
             script.log.warning("Script requires at least 1 rock location set in the Configuration")
             ScriptManager.stop()
         } else {
-            val loc = locs.minByOrNull { it.distance() }!!.getWalkableNeighbor()!!
-            WebWalking.moveTo(
-                loc,
-                false,
-                { script.getMotherloadCount() >= 82 },
-                5,
-                90,
-                loc.distanceTo(TOP_CENTER_ML) <= 5
-            )
+            val loc = locs.minByOrNull { it.distance() }!!.getWalkableNeighbor()
+            if (loc != null)
+                WebWalking.moveTo(
+                    loc,
+                    false,
+                    { script.getMotherloadCount() >= 82 },
+                    5,
+                    90,
+                    loc.distanceTo(TOP_CENTER_ML) <= 5
+                )
         }
     }
 }

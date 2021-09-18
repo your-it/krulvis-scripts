@@ -53,7 +53,9 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
 
     override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Hopping") {
         val worlds = Worlds.get()
-        worlds[Random.nextInt(0, worlds.size)].hop()
+        if (worlds.isNotEmpty()) {
+            worlds[Random.nextInt(0, worlds.size)].hop()
+        }
     }
     override val failedComponent: TreeComponent<Miner> = IsMining(script)
 }
