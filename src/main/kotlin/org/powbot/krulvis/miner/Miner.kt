@@ -1,13 +1,16 @@
 package org.powbot.krulvis.miner
 
+import org.powbot.api.Tile
 import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.*
 import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 
 @ScriptManifest(
