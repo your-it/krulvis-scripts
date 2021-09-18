@@ -31,7 +31,7 @@ class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman
                     script.foremanTimer.reset(10 * 60 * 1000)
                 }
             }
-        } else {
+        } else if (Bank.close()) {
             val foreman = Npcs.stream().name("Blast Furnace Foreman").findFirst()
             foreman.ifPresent {
                 if (interact(it, "Pay")) {
