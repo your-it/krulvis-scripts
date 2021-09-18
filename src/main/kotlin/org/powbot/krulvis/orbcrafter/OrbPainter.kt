@@ -8,7 +8,7 @@ import org.powbot.mobile.drawing.Graphics
 
 class OrbPainter(script: OrbCrafter) : ATPaint<OrbCrafter>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        paintBuilder.trackSkill(Skill.Magic)
+        PaintBuilder().trackSkill(Skill.Magic).trackInventoryItems(123)
         return paintBuilder.build()
     }
 
