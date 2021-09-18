@@ -16,6 +16,7 @@ import org.powbot.krulvis.orbcrafter.tree.branch.ShouldBank
     category = ScriptCategory.Magic
 )
 class OrbCrafter : ATScript() {
+
     override fun createPainter(): ATPaint<*> = OrbPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
