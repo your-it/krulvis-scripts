@@ -14,7 +14,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.2.6",
+    version = "1.2.7",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -86,6 +86,31 @@ class Miner : ATScript() {
 
     fun getBrokenStrut() = Objects.stream().name("Broken strut").nearest().firstOrNull()
 
+    fun inTopFloorAreas(): Boolean {
+        val t = Players.local().tile()
+        return Data.TOP_AREA.contains(t) || Data.TOP_AREA_NORTH.contains(t)
+    }
+
+    val nearHopper = Tile(3748, 5673, 0)
+    val northOfLadder = Tile(3755, 5675, 0)
+    val ladderTile = Tile(3755, 5674, 0)
+    fun escapeTopFloor(): Boolean {
+        val pos = Players.local().tile()
+        if (inTopFloorAreas() && LocalPathFinder.findPath(pos, nearHopper, true).isEmpty()) {
+            if (northOfLadder.distance() <= 5 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
+                if (ladderTile.matrix().interact("Climb")) {
+                    return Utils.waitFor {
+                        LocalPathFinder.findPath(Players.local().tile(), nearHopper, true).isNotEmpty()
+                    }
+                }
+            } else {
+                log.info("Walking to top of ladder first...")
+                Movement.walkTo(northOfLadder)
+            }
+            return false
+        }
+        return true
+    }
 }
 
 fun main() {
