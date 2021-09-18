@@ -97,8 +97,10 @@ class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
 
     override val successComponent: TreeComponent<Miner> = HandleBank(script)
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
-        val nearestBank = Bank.getNearestBank(true)
-        println("Opening: ${nearestBank.name}")
-        nearestBank.open()
+        if (script.escapeTopFloor()) {
+            val nearestBank = Bank.getNearestBank(true)
+            println("Opening: ${nearestBank.name}")
+            nearestBank.open()
+        }
     }
 }
