@@ -8,30 +8,40 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
+import kotlin.system.measureTimeMillis
 
 class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
     override fun execute() {
-        val logs = Inventory.stream().firstOrNull { it.id !in script.TOOLS }
+        val logs = Inventory.stream().firstOrNull { it.id in script.LOGS }
         if (Players.local().animation() == 733) {
             //Stil tryna burn
-            waitFor { Players.local().animation() != 733 }
+            waitFor { Players.local().animation() != 733 && Players.local().tile() != script.burnTile }
             return
         }
         if (logs == null) {
             script.burning = false
+            script.burnTile = null
             return
         } else {
             script.burning = true
         }
 
-        val burnTile = findGoodSpot()
-        if (burnTile == null) {
+
+        val flags = Movement.collisionMap(0).flags()
+        val destination = Movement.destination()
+        script.burnTile = if (destination != Tile.Nil) destination else Players.local().tile()
+
+        if (script.burnTile?.canMakeFire(flags) != true) {
+            script.burnTile = findGoodSpot(flags)
+        }
+
+        if (script.burnTile == null) {
             script.log.info("Can't find good burning spot...")
             script.burning = true
             return
-        } else if (burnTile != Players.local().tile()) {
-            if (Movement.walkTo(burnTile)) {
-                waitFor { burnTile == Players.local().tile() }
+        } else if (script.burnTile != Players.local().tile()) {
+            if (Movement.walkTo(script.burnTile)) {
+                waitFor { script.burnTile == Players.local().tile() }
             }
         }
 
@@ -47,35 +57,44 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         }
 
         if (Inventory.selectedItem().id == TINDERBOX) {
-            if (logs.click()) {
-                waitFor(long()) { Objects.stream().at(Players.local()).name("Fire").isNotEmpty() }
+            val floor = GroundItems.stream().at(script.burnTile!!).firstOrNull { it.id() in script.LOGS }
+            val interaction = floor?.interact("Use") ?: logs.click()
+            if (interaction) {
+                script.log.info(
+                    "waitFor{} took=${
+                        measureTimeMillis {
+                            waitFor(long()) {
+                                Players.local().tile() != script.burnTile
+                            }
+                        }
+                    } and is successful=${Players.local().tile() != script.burnTile}"
+                )
+
             }
         }
     }
 
-    fun findGoodSpot(): Tile? {
-        val t = Players.local().tile()
-        if (Objects.stream().at(t).firstOrNull { it.name.isNotEmpty() } == null) {
-            return t
-        }
+    fun Tile.canMakeFire(flags: Array<IntArray>): Boolean {
+        return !blocked(flags) && Objects.stream().at(this).firstOrNull { it.name.isNotEmpty() } == null
+    }
 
-        val flags = Movement.collisionMap(0).flags()
-
+    fun findGoodSpot(flags: Array<IntArray>): Tile? {
         var longestStreak = 0
         var bestTile: Tile? = null
         val myTile = Players.local().tile()
         for (y in myTile.y - 5..myTile.y + 5) {
-            var startTileY = Tile(myTile.x + 5, y)
+            var startTileY = Tile.Nil
             var streakY = 0
-            for (x in myTile.x + 5..myTile.x - 5) {
+            for (x in myTile.x + 5 downTo myTile.x - 5) {
                 val tile = Tile(x, y)
-                if (!tile.blocked(flags)) {
+                if (tile.canMakeFire(flags)) {
                     if (streakY == 0) {
                         startTileY = tile
                     }
                     streakY++
                     if (streakY > longestStreak) {
                         bestTile = startTileY
+                        longestStreak = streakY
                     }
                 } else {
                     streakY = 0

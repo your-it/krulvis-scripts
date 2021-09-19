@@ -11,9 +11,9 @@ class WoodcutterPainter(script: Woodcutter) : ATPaint<Woodcutter>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
             .trackSkill(Skill.Woodcutting)
+            .trackSkill(Skill.Firemaking)
             .trackInventoryItems(
-                1511, 1513, 1515, 1517, 1519, 1521, 2862, 6332, 6333, 19669,
-                5070, 5071, 5072, 5073, 5074
+                *script.LOGS, *script.NESTS
             )
             .build()
     }
