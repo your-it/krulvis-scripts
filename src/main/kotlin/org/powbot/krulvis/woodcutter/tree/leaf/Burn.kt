@@ -8,6 +8,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
+import kotlin.system.measureTimeMillis
 
 class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
     override fun execute() {
@@ -59,9 +60,16 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
             val floor = GroundItems.stream().at(script.burnTile!!).firstOrNull { it.id() in script.LOGS }
             val interaction = floor?.interact("Use") ?: logs.click()
             if (interaction) {
-                waitFor(long()) {
-                    Players.local().tile() != script.burnTile
-                }
+                script.log.info(
+                    "waitFor{} took=${
+                        measureTimeMillis {
+                            waitFor(long()) {
+                                Players.local().tile() != script.burnTile
+                            }
+                        }
+                    } and is successful=${Players.local().tile() != script.burnTile}"
+                )
+
             }
         }
     }
