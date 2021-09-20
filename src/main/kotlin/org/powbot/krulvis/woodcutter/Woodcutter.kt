@@ -15,7 +15,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     name = "krul Woodcutter",
     description = "Chops any tree, anywhere",
     author = "Krulvis",
-    version = "1.0.1",
+    version = "1.0.2",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -49,7 +49,7 @@ class Woodcutter : ATScript() {
     val LOGS = intArrayOf(1511, 1513, 1515, 1517, 1519, 1521, 2862, 6332, 6333, 19669)
     val NESTS = intArrayOf(5070, 5071, 5072, 5073, 5074)
     var lastChopAnim = 0L
-    var burning = true
+    var burning = false
     var burnTile: Tile? = null
     val chopDelay = DelayHandler(2000, 4000, OddsModifier(), "Chop delay")
 

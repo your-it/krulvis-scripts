@@ -43,7 +43,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                 }
             }
             val next =
-                if (script.combineActions.size - 1 > i) script.combineActions[i + 1] else null
+                if (script.combineActions.size == i + 1) null else script.combineActions[i + 1]
             if (interaction) {
                 script.log.info("Intereraction for event=$event successfull, next=$next")
                 if (next == null) {
