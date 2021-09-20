@@ -3,6 +3,7 @@ package org.powbot.krulvis.woodcutter.tree.leaf
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.extensions.items.Item.Companion.TINDERBOX
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -26,10 +27,11 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
             script.burning = true
         }
 
+        waitFor(2000) { !Movement.moving() }
 
         val flags = Movement.collisionMap(0).flags()
-        val destination = Movement.destination()
-        script.burnTile = if (destination != Tile.Nil) destination else Players.local().tile()
+//        val destination = Movement.destination()
+        script.burnTile = Players.local().tile()
 
         if (script.burnTile?.canMakeFire(flags) != true) {
             script.burnTile = findGoodSpot(flags)
@@ -75,7 +77,12 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
     }
 
     fun Tile.canMakeFire(flags: Array<IntArray>): Boolean {
-        return !blocked(flags) && Objects.stream().at(this).firstOrNull { it.name.isNotEmpty() } == null
+        val blocked = blocked(flags)
+        val objBlocking = Objects.stream().at(this).firstOrNull { it.name.isNotEmpty() }
+        if (this == script.burnTile && (blocked || objBlocking != null)) {
+            script.log.info("Can't build fire on tile=${script.burnTile}, blocked=$blocked, obj exists=${objBlocking != null}, name=${objBlocking?.name}, id=${objBlocking?.id()}")
+        }
+        return !blocked && (objBlocking == null || objBlocking.id() == 883)
     }
 
     fun findGoodSpot(flags: Array<IntArray>): Tile? {

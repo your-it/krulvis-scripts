@@ -9,13 +9,15 @@ import org.powbot.mobile.drawing.Graphics
 
 class WoodcutterPainter(script: Woodcutter) : ATPaint<Woodcutter>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        return paintBuilder
+        paintBuilder
             .trackSkill(Skill.Woodcutting)
             .trackSkill(Skill.Firemaking)
-            .trackInventoryItems(
+        if (script.bank) {
+            paintBuilder.trackInventoryItems(
                 *script.LOGS, *script.NESTS
             )
-            .build()
+        }
+        return paintBuilder.build()
     }
 
     override fun paintCustom(g: Graphics) {
