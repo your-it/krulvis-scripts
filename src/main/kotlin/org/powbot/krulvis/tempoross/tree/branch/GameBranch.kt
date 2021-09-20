@@ -57,7 +57,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
             script.triedPaths.clear()
             script.detectDangerousTiles()
 
-            !Inventory.containsOneOf(ROPE)
+            !script.hasOutfit && !Inventory.containsOneOf(ROPE)
         }
 }
 

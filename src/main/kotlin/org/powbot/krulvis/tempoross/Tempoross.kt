@@ -38,7 +38,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.4",
+    version = "1.1.5",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -63,7 +63,7 @@ class Tempoross : ATScript() {
     init {
         debugComponents = false
     }
-    
+
     val waveTimer = Timer(0)
     var side: Side = Side.UNKNOWN
     var forcedShooting = false
@@ -75,6 +75,7 @@ class Tempoross : ATScript() {
     var rounds = 0
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
+    val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
 
     val cookFish by lazy { getOption<Boolean>("Cook fish") ?: true }
 
