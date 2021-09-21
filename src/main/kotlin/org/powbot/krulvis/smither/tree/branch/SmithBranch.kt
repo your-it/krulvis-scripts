@@ -1,12 +1,12 @@
 package org.powbot.krulvis.smither.tree.branch
 
+import org.powbot.api.Production
 import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.LastMade
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smither.Smither
@@ -17,7 +17,7 @@ class ShouldSmith(script: Smither) : Branch<Smither>(script, "Should Smith") {
     override val successComponent: TreeComponent<Smither> = IsWidgetOpen(script)
 
     override fun validate(): Boolean {
-        return LastMade.stoppedUsing(script.bar.id)
+        return Production.stoppedUsing(script.bar.id)
     }
 }
 

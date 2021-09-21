@@ -35,7 +35,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                     )
                 }
                 is WidgetActionEvent -> {
-                    event.widget().interact(event.interaction)
+                    event.widget().interact(event.interaction, false)
                 }
                 else -> {
                     script.log.info("None of the handled types: $event")
@@ -45,7 +45,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
             val next =
                 if (script.combineActions.size == i + 1) null else script.combineActions[i + 1]
             if (interaction) {
-                script.log.info("Intereraction for event=$event successfull, next=$next")
+                script.log.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {
                     waitFor(long()) { !script.stoppedUsing() }
                 } else {
@@ -65,6 +65,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                     }
                 }
             } else {
+                script.log.info("FAILED interaction for event=$event, next=$next")
                 return
             }
         }

@@ -1,10 +1,10 @@
 package org.powbot.krulvis.orbcharger.tree.branch
 
 import org.powbot.api.Condition.sleep
+import org.powbot.api.Production
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.LastMade
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.orbcharger.OrbCrafter
 import org.powbot.krulvis.orbcharger.tree.leaf.Charge
@@ -25,6 +25,6 @@ class IsCrafting(script: OrbCrafter) : Branch<OrbCrafter>(script, "IsBankOpen?")
     override val failedComponent: TreeComponent<OrbCrafter> = Charge(script)
 
     override fun validate(): Boolean {
-        return !script.fastCharge && !LastMade.stoppedMaking(script.orb.id)
+        return !script.fastCharge && !Production.stoppedMaking(script.orb.id)
     }
 }

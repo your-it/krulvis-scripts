@@ -20,7 +20,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.4",
+    version = "1.0.5",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -77,6 +77,10 @@ class Combiner : ATScript() {
         getOption<List<InventoryItemActionEvent>>("Items to combine")!!.mapIndexed { i, iiae ->
             Pair(iiae.id, getItemAmount(i))
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
