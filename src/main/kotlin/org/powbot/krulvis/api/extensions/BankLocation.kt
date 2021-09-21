@@ -98,6 +98,10 @@ enum class BankLocation(
         Tile(1676, 3615, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(1675, 3615, 0), "Use"),
     ),
+    WINTERTODT(
+        Tile(1640, 3944, 0), BankType.CHEST,
+        GameObjectInteraction("Bank chest", Tile(1641, 3944, 0), "Bank"),
+    ),
     ;
 
     /**

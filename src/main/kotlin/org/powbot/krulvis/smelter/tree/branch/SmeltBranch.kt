@@ -1,6 +1,6 @@
 package org.powbot.krulvis.smelter.tree.branch
 
-import org.powbot.api.rt4.Bank
+import org.powbot.api.Production
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Objects
@@ -9,7 +9,6 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Item.Companion.CANNONBALL
-import org.powbot.krulvis.api.utils.LastMade
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smelter.Smelter
@@ -19,10 +18,10 @@ class ShouldSmelt(script: Smelter) : Branch<Smelter>(script, "Should Smelt") {
     override val successComponent: TreeComponent<Smelter> = IsWidgetOpen(script)
 
     override fun validate(): Boolean {
-        return if (script.cannonballs) LastMade.stoppedMaking(
+        return if (script.cannonballs) Production.stoppedMaking(
             CANNONBALL,
             10000
-        ) else LastMade.stoppedMaking(script.bar.id)
+        ) else Production.stoppedMaking(script.bar.id)
     }
 }
 
@@ -38,7 +37,7 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
     override val successComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Clicking Widget") {
         val comp = getComponent()
         if (comp?.interact(if (script.cannonballs) "Make sets:" else "Smelt", false) == true) {
-            waitFor(long()) { !LastMade.stoppedMaking(script.bar.id) }
+            waitFor(long()) { !Production.stoppedMaking(script.bar.id) }
         }
     }
 

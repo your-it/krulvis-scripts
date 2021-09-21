@@ -1,5 +1,6 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
+import org.powbot.api.Production.stoppedMaking
 import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Inventory
@@ -8,7 +9,6 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data

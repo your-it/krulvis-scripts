@@ -1,8 +1,8 @@
 package org.powbot.krulvis.smither.tree.leaf
 
+import org.powbot.api.Production
 import org.powbot.api.rt4.Components
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.LastMade
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smither.Smither
@@ -13,7 +13,7 @@ class ClickWidget(script: Smither) : Leaf<Smither>(script, "Click Widget") {
         val clickable = comp?.parent() ?: return
         script.log.info("Found widget with text: ${comp.text()}, parent: $clickable")
         if (clickable.interact("Smith", false)) {
-            val notStoppedMaking = waitFor(long()) { !LastMade.stoppedUsing(script.bar.id) }
+            val notStoppedMaking = waitFor(long()) { !Production.stoppedUsing(script.bar.id) }
             script.log.info("After widget click notStoppedMaking=$notStoppedMaking")
         }
     }

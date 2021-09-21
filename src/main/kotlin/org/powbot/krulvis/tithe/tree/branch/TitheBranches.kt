@@ -1,5 +1,6 @@
 package org.powbot.krulvis.tithe.tree.branch
 
+import org.powbot.api.Production
 import org.powbot.api.rt4.Camera
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -8,7 +9,6 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data
@@ -59,7 +59,7 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
         }
         debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
         return Inventory.stream().list()
-            .none { it.id() in Data.WATER_CANS } || !stoppedMaking(Data.WATER_CAN_FULL) ||
+            .none { it.id() in Data.WATER_CANS } || !Production.stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })
     }
 }
