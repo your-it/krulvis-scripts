@@ -36,7 +36,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                     Bank.withdraw(GOLD_GLOVES, 1)
                 }
                 Inventory.stream().id(COAL_BAG).findFirst().ifPresent {
-                    it.interact("Fill")
+                    it.click("Fill")
                     script.filledCoalBag = true
                 }
 
