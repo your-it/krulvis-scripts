@@ -78,7 +78,8 @@ object ATContext {
         action: String,
         alwaysWalk: Boolean = false,
         allowWalk: Boolean = true,
-        selectItem: Int = -1
+        selectItem: Int = -1,
+        useMenu: Boolean = true
     ): Boolean {
         val t = target ?: return false
         val name = (t as Nameable).name()
@@ -118,7 +119,7 @@ object ATContext {
 
         }
         val interactBool =
-            if (name == null || name == "null" || name.isEmpty()) t.interact(action) else t.interact(action, name)
+            if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(action, name, useMenu)
         return waitFor(short()) {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         } && interactBool
