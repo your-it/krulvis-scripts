@@ -36,7 +36,7 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
             }
         } else if (Chat.pendingInput()) {
             script.log.info("Pending deposit input...")
-            Input.sendln("15k")
+            Input.sendln("${script.cofferAmount / 1000}k")
             waitFor { script.cofferCount() > 100 }
         } else if (Bank.close()) {
             val matrix = Tile(1946, 4957, 0).matrix()
