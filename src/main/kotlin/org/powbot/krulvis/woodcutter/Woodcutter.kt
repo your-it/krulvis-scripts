@@ -16,7 +16,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.0.2",
+    version = "1.0.3",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -41,7 +41,18 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
 )
 class Woodcutter : ATScript() {
 
-    val trees by lazy { getOption<List<GameObjectActionEvent>>("Trees")!!.map { it.tile.derive(1, 1) } }
+    val trees by lazy {
+        getOption<List<GameObjectActionEvent>>("Trees")!!.map {
+            if (it.name == "Redwood")
+                if (it.tile.y in derpedRedWoodY)
+                    it.tile.derive(0, 1)
+                else it.tile.derive(1, 0)
+            else
+                it.tile.derive(1, 1)
+        }
+    }
+
+    val derpedRedWoodY = listOf(3480, 3494)
     val bank by lazy { getOption<Boolean>("Bank")!! }
     val burn by lazy { getOption<Boolean>("Burn")!! }
 
