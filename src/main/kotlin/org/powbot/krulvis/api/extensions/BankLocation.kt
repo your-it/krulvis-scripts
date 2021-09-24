@@ -94,6 +94,10 @@ enum class BankLocation(
         Tile(1253, 3741, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(1253, 3742, 0), "Use"),
     ),
+    WOODCUTTING_GUILD(
+        Tile(1592, 3476, 0), BankType.CHEST,
+        GameObjectInteraction("Bank chest", Tile(1592, 3475, 0), "Use"),
+    ),
     HOSIDIUS_BEST_BANK_SPOT(
         Tile(1676, 3615, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(1675, 3615, 0), "Use"),

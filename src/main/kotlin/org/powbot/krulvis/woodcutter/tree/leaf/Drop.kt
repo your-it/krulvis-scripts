@@ -12,7 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 
-class Drop(script: Woodcutter) : Leaf<Woodcutter>(script, "Chop Tree") {
+class Drop(script: Woodcutter) : Leaf<Woodcutter>(script, "Dropping") {
     override fun execute() {
         val items = Inventory.stream().id(*script.LOGS).list()
         items.forEach {

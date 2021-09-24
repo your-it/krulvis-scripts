@@ -13,15 +13,18 @@ import org.powbot.krulvis.woodcutter.Woodcutter
 class Chop(script: Woodcutter) : Leaf<Woodcutter>(script, "Chop Tree") {
     override fun execute() {
         Bank.close()
-        
+
+
         val trees = script.trees.map {
-            Objects.stream().at(it).action("Chop down").firstOrNull()
+            Objects.stream().at(it).action("Chop down", "Cut").firstOrNull()
         }
 
         script.log.info("Trees: ${trees.map { "${it?.name}: ${it?.tile}" }.joinToString()}")
+
         val tree = trees.filterNotNull()
             .minByOrNull { it.distance() }
-        if (tree != null && Utils.walkAndInteract(tree, "Chop down") && waitFor(long()) {
+        val action = if (tree?.actions()?.contains("Chop down") == true) "Chop down" else "Cut"
+        if (tree != null && Utils.walkAndInteract(tree, action) && waitFor(long()) {
                 Players.local().animation() != -1
             }) {
             script.lastChopAnim = System.currentTimeMillis()
