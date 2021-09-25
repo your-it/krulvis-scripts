@@ -48,10 +48,11 @@ interface EquipmentItem : Item {
     fun canWear(): Boolean = requirements.all { it.hasRequirement() }
 
     fun equip(wait: Boolean = true): Boolean {
-        if (!inEquipment() && inInventory()) {
+        if (inInventory()) {
             val item = Inventory.stream().id(*ids).first()
             val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-            if (GrandExchange.close() && item.interact(action)) {
+            ScriptManager.script()!!.log.info("Equipping ${itemName()} action=$action")
+            if (item.interact(action)) {
                 if (wait) waitFor(2000) { inEquipment() } else return true
             }
         }

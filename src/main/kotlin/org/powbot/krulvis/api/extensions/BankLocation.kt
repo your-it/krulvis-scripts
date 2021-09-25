@@ -2,15 +2,19 @@ package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.FailureReason
+import org.powbot.api.rt4.walking.WebWalkingResult
 import org.powbot.api.rt4.walking.model.GameObjectInteraction
 import org.powbot.api.rt4.walking.model.NamedEntityInteraction
 import org.powbot.api.rt4.walking.model.NpcInteraction
+import org.powbot.api.rt4.walking.toRegularTile
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
+import org.powbot.mobile.service.WebWalkingService
 
 
 enum class BankType {
@@ -145,7 +149,21 @@ enum class BankLocation(
         /**
          * @return the nearest bank according to the geographical distance
          */
-        fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
+        fun Bank.getNearestBank(includeDepositBox: Boolean = false, enableTeleports: Boolean = true): BankLocation {
+            val player = WebWalking.playerState.player(false)
+            if (player != null) {
+                val path = WebWalkingService.getPathToNearestBank(
+                    player, enableTeleports
+                ).filterNotNull()
+                val to = path.last().to.toRegularTile()
+                return values()
+                    .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
+                    .minByOrNull { it.tile.distanceM(to) }!!
+            }
+            return getNearestBankWithoutWeb(includeDepositBox)
+        }
+
+        fun Bank.getNearestBankWithoutWeb(includeDepositBox: Boolean = false): BankLocation {
             val me = Players.local()
             return values()
                 .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }

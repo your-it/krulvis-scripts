@@ -67,6 +67,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
             }
             return null
         }
+
+        fun forId(id: Int): Food? = values().firstOrNull { id in it.ids }
     }
 
 }

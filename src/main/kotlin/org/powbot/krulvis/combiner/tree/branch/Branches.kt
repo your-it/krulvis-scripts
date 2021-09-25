@@ -21,7 +21,7 @@ class ShouldBank(
     override val successComponent: TreeComponent<Combiner> = HandleBank(script)
 
     override fun validate(): Boolean {
-        return script.items.any { !Inventory.containsOneOf(it.first) }
+        return script.items.any { !Inventory.containsOneOf(it.key) }
     }
 }
 

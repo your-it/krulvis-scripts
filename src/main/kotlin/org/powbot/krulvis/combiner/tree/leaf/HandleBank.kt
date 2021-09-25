@@ -14,12 +14,13 @@ import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
+import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 import kotlin.system.measureTimeMillis
 
 class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
     override fun execute() {
-        val keepItems = script.items.map { it.first }.toIntArray()
+        val keepItems = script.items.map { it.key }.toIntArray()
         if (!Bank.opened()) {
             Bank.openNearestBank()
         } else if (!Inventory.emptyExcept(*keepItems)) {
@@ -28,20 +29,23 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
 //            }
             Bank.depositAllExcept(*keepItems)
         } else {
-            script.items.forEachIndexed { i, pair ->
-                if ((i == script.items.size - 1 && Inventory.emptySlotCount() <= pair.second) || pair.second == 0) {
-                    Bank.withdraw(pair.first, Bank.Amount.ALL)
-                } else if (!Bank.withdrawExact(pair.first, pair.second, false)) {
-                    return@forEachIndexed
+            script.items.forEach { (id, amount) ->
+                val stackable = ItemLoader.load(id)?.stackable == true
+                if (stackable) {
+                    Bank.withdraw(id, Bank.Amount.ALL)
+                } else if (!Bank.withdrawExact(id, amount, false)) {
+                    return
                 }
             }
             val outOfItem =
-                script.items.firstOrNull {
-                    (!Inventory.containsOneOf(it.first) || Inventory.getCount(it.first) < it.second)
-                            && !Bank.containsOneOf(it.first)
+                script.items.firstNotNullOfOrNull {
+                    it.takeIf {
+                        (!Inventory.containsOneOf(it.key) || Inventory.getCount(it.key) < it.value)
+                                && !Bank.containsOneOf(it.key)
+                    }
                 }
             if (outOfItem != null) {
-                script.log.info("Out of: ${CacheItemConfig.load(outOfItem.first).name}, stopping script")
+                script.log.info("Out of: ${CacheItemConfig.load(outOfItem.key).name}, stopping script")
                 ScriptManager.stop()
             }
         }
