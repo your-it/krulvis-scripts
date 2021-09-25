@@ -24,10 +24,15 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
             val currentCount = Inventory.getCount(id)
             if (gi.interact("Take") && (i == loots.size - 1 || gi.distance() >= 1)) {
                 if (script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.id == id) {
-                    waitFor(5000) { script.loot().any { loot -> loot.id() != id } }
+                    waitFor(5000) { !isTargetDying() || script.loot().any { loot -> loot.id() != id } }
                 }
                 waitFor { currentCount < Inventory.getCount(gi.id()) }
             }
         }
+    }
+
+    fun isTargetDying(): Boolean {
+        val monster = script.getNearbyMonsters().firstOrNull()
+        return monster != null && monster.healthBarVisible() && monster.healthPercent() == 0
     }
 }

@@ -1,10 +1,12 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Tile
+import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.*
+import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
@@ -25,7 +27,7 @@ import org.powbot.mobile.service.ItemPriceCache
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.0",
+    version = "1.1.1",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -126,12 +128,16 @@ class Fighter : ATScript() {
 
     fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP() < .4
 
+    fun getNearbyMonsters(): List<Npc> {
+        return Npcs.stream().within(radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
+    }
+
     fun getTarget(): Npc? {
         val local = Players.local()
-        return Npcs.stream().within(radius.toDouble()).name(*monsters.toTypedArray()).filtered {
+        return getNearbyMonsters().filter {
             val target = it.interacting()
-            target == Actor.Companion.Nil || target == local
-        }.nearest().firstOrNull()
+            (!it.healthBarVisible() || it.healthPercent() > 0) && (target == Actor.Companion.Nil || target == local)
+        }.firstOrNull()
     }
 
     @ValueChanged("Use safespot")
@@ -148,6 +154,18 @@ class Fighter : ATScript() {
             .nearest().list()
     }
 
+    @com.google.common.eventbus.Subscribe
+    fun onInventoryChange(evt: InventoryChangeEvent) {
+        val id = evt.itemId
+        if (!inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !TeleportItem.isTeleportItem(id)) {
+            if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
+                painter.paintBuilder.trackInventoryItems(id)
+                painter.paintBuilder.items.forEach { row ->
+                    (row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id } as InventoryItemPaintItem).diff += evt.quantityChange
+                }
+            }
+        }
+    }
 
 }
 
