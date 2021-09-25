@@ -5,6 +5,7 @@
 ## Features
 
 - **Eating**
+- **Drinking potions**
 - **Banking (with teleports)**
 - **Looting**
 - **Safespotting**
@@ -13,13 +14,44 @@
 ## Options
 
 - **Retrieve inventory that you want to go to Npcs with**
-- **Just have food in inventory when you retrieve the inventory**
 - **Retrieve equipment that you want to go to Npcs with**
 - **Interact with npcs you want to kill**
 - **Select safespot (or not)**
 - **With safespot disabled the script will use the current player's tile as centertile**
 - **Select radius in which npcs may be attacked from safe-/centerspot**
 - **Select nearest or any bank by preference**
+
+### Foods supported
+
+*Just have the in inventory when retrieving the inventory*
+
+- Shrimp
+- Cakes
+- Trout
+- Salmon
+- Peach
+- Tuna
+- Wine
+- Lobster
+- Bass
+- Swordfish
+- Potato & Cheese
+- Monkfish
+- Shark
+- Karambwan
+
+### Potions supported
+
+*Just have the in inventory when retrieving the inventory*
+
+- Energy
+- Super energy
+- Stamina
+- Ranged
+- Prayer
+- Combat
+
+## Setup
 
 <figure class="video_container">
   <video controls>

@@ -15,6 +15,7 @@ import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -27,7 +28,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.2",
+    version = "1.1.3",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -81,7 +82,14 @@ class Fighter : ATScript() {
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
     val safespot by lazy { getOption<Tile>("safespot")!! }
 
-    val inventory by lazy { getOption<Map<Int, Int>>("inventory")!! }
+    val inventoryOptions by lazy { getOption<Map<Int, Int>>("inventory")!! }
+    val inventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
+    val potions by lazy {
+        inventoryOptions.filter { Potion.isPotion(it.key) }.mapNotNull { Pair(Potion.forId(it.key), it.value) }
+            .groupBy {
+                it.first
+            }.map { it.key!! to it.value.sumOf { pair -> pair.second } }
+    }
     val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment")!! }
     val equipment by lazy {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
