@@ -21,7 +21,6 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldEquipAmmo
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -150,7 +149,7 @@ class Fighter : ATScript() {
 
     fun loot(): List<GroundItem> {
         return GroundItems.stream().within(this.radius + 10.0)
-            .filtered { lootNames.contains(it.name()) || ItemPriceCache[it.id()] * it.stackSize() >= minLoot }
+            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }
             .nearest().list()
     }
 
