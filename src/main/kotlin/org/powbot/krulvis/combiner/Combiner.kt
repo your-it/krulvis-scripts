@@ -20,7 +20,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.5",
+    version = "1.0.6",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -28,45 +28,46 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
-            name = "Items to combine",
-            description = "Put the correct amount in inventory and interact once with each unique item",
-            optionType = OptionType.INVENTORY_ITEMS,
+            name = "Inventory items",
+            description = "Put the correct amount in inventory and click the button",
+            optionType = OptionType.INVENTORY,
+            defaultValue = "{\"255\":14,\"227\":14}"
 //            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
             name = "Combine Items",
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
-//            defaultValue = "[{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":91,\"rawEntityName\":\"<col=ff9040>Water battlestaff</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"widget\":{\"boundingModel\":null,\"parentSet\":false,\"widget\":null},\"strippedName\":\"Water battlestaff\"}]"
+            defaultValue = "[{\"id\":255,\"interaction\":\"Use\",\"mouseX\":684,\"mouseY\":231,\"rawEntityName\":\"<col=ff9040>Harralander\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Harralander\",\"strippedName\":\"Harralander\"},{\"id\":227,\"interaction\":\"Use\",\"mouseX\":725,\"mouseY\":236,\"rawEntityName\":\"<col=ff9040>Harralander<col=ffffff> -> <col=ff9040>Vial of water\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Vial of water\",\"strippedName\":\"Harralander -> Vial of water\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":116,\"rawEntityName\":\"<col=ff9040>Harralander potion (unf)</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"componentIndex\":14,\"widgetIndex\":270,\"name\":\"Harralander potion (unf)\",\"strippedName\":\"Harralander potion (unf)\"}]"
         ),
-        ScriptConfiguration(
-            name = "Item 1 Amount",
-            description = "How much of item 1 do you want in the inventory (0 is ALL)",
-            optionType = OptionType.INTEGER,
-            defaultValue = "14",
-            visible = false
-        ),
-        ScriptConfiguration(
-            name = "Item 2 Amount",
-            description = "How much of item 2 do you want in the inventory (0 is ALL)",
-            optionType = OptionType.INTEGER,
-            defaultValue = "14",
-            visible = false
-        ),
-        ScriptConfiguration(
-            name = "Item 3 Amount",
-            description = "How much of item 3 do you want in the inventory (0 is ALL)",
-            optionType = OptionType.INTEGER,
-            defaultValue = "0",
-            visible = false
-        ),
-        ScriptConfiguration(
-            name = "Item 4 Amount",
-            description = "How much of item 4 do you want in the inventory (0 is ALL)",
-            optionType = OptionType.INTEGER,
-            defaultValue = "0",
-            visible = false
-        )
+//        ScriptConfiguration(
+//            name = "Item 1 Amount",
+//            description = "How much of item 1 do you want in the inventory (0 is ALL)",
+//            optionType = OptionType.INTEGER,
+//            defaultValue = "14",
+//            visible = false
+//        ),
+//        ScriptConfiguration(
+//            name = "Item 2 Amount",
+//            description = "How much of item 2 do you want in the inventory (0 is ALL)",
+//            optionType = OptionType.INTEGER,
+//            defaultValue = "14",
+//            visible = false
+//        ),
+//        ScriptConfiguration(
+//            name = "Item 3 Amount",
+//            description = "How much of item 3 do you want in the inventory (0 is ALL)",
+//            optionType = OptionType.INTEGER,
+//            defaultValue = "0",
+//            visible = false
+//        ),
+//        ScriptConfiguration(
+//            name = "Item 4 Amount",
+//            description = "How much of item 4 do you want in the inventory (0 is ALL)",
+//            optionType = OptionType.INTEGER,
+//            defaultValue = "0",
+//            visible = false
+//        )
     ]
 )
 class Combiner : ATScript() {
@@ -74,10 +75,10 @@ class Combiner : ATScript() {
 
     val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items")!! }
     val items by lazy {
-        getOption<List<InventoryItemActionEvent>>("Items to combine")!!.mapIndexed { i, iiae ->
-            Pair(iiae.id, getItemAmount(i))
-        }
+        getOption<Map<Int, Int>>("Inventory items")!!
     }
+
+    val id by lazy { items.filter { it.value == 0 || it.value > 1 }.map { it.key }.first() }
 
     override fun onStart() {
         super.onStart()
@@ -98,11 +99,11 @@ class Combiner : ATScript() {
         return getOption<Int>("Item ${index + 1} Amount")!!
     }
 
-    fun stoppedUsing() = Production.stoppedUsing(items.first { it.second == 0 || it.second > 1 }.first)
+    fun stoppedUsing() = Production.stoppedUsing(id)
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryItem(e: InventoryChangeEvent) {
-        if (options.all { it.configured } && items.none { it.first == e.itemId }
+        if (options.all { it.configured } && items.none { it.key == e.itemId }
             && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == e.itemId } }
             && !Bank.opened()) {
             painter.paintBuilder.trackInventoryItems(e.itemId)

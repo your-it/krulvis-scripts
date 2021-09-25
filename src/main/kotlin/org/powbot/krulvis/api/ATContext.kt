@@ -119,7 +119,11 @@ object ATContext {
 
         }
         val interactBool =
-            if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(action, name, useMenu)
+            if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(
+                action,
+                name,
+                useMenu
+            )
         return waitFor(short()) {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         } && interactBool
