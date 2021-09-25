@@ -1,9 +1,6 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
-import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Npcs
-import org.powbot.api.rt4.Players
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.distance
@@ -15,7 +12,12 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
     override fun execute() {
         val loots = script.loot()
 
-        script.log.info("Looting: name=${loots.first().name()} at=${loots.first().tile}")
+        val id = loots.first().id()
+        script.log.info(
+            "Looting: ${id}, name=${loots.first().name()} price=${
+                GrandExchange.getItemPrice(id)
+            }, at=${loots.first().tile}"
+        )
         loots.forEachIndexed { i, gi ->
             val id = gi.id()
             if ((!gi.stackable() || !Inventory.containsOneOf(id)) && Inventory.isFull() && script.food?.inInventory() == true) {

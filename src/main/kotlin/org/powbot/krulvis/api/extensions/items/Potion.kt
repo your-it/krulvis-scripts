@@ -76,6 +76,8 @@ enum class Potion(
         }
     }
 
+    fun doses(): Int = Inventory.stream().id(*ids).sumOf { ids.size - ids.indexOf(it.id) }
+
     override fun getCount(countNoted: Boolean): Int {
         return getInventoryCount(countNoted)
     }
@@ -96,6 +98,12 @@ enum class Potion(
         fun isProtectedFromFire(): Boolean {
             return !antiFireTimer.isFinished()
         }
+
+        fun forId(id: Int): Potion? {
+            return values().firstOrNull { id in it.ids }
+        }
+
+        fun isPotion(id: Int) = forId(id) != null
     }
 
 

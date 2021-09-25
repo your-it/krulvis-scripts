@@ -5,6 +5,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 
@@ -16,10 +17,28 @@ class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
             waitFor { script.food!!.getInventoryCount() < count }
         }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldEquipAmmo(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldSip(script)
 
     override fun validate(): Boolean {
         return script.food?.inInventory() == true && (script.needFood() || script.canEat())
+    }
+}
+
+class ShouldSip(script: Fighter) : Branch<Fighter>(script, "Should Sip Pot??") {
+
+    var potion: Potion? = null
+
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Sip Potion") {
+        val doses = potion!!.doses()
+        if (potion!!.drink()) {
+            waitFor { potion!!.doses() < doses }
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldEquipAmmo(script)
+
+    override fun validate(): Boolean {
+        potion = script.potions.firstOrNull { it.first.inInventory() && it.first.needsRestore(60) }?.first
+        return potion != null
     }
 }
 

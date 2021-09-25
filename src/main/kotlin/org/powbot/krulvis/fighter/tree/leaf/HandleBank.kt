@@ -28,8 +28,15 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
                     ScriptManager.stop()
                 }
             }
+            script.potions.forEach { (potion, amount) ->
+                if (!potion.withdrawExact(amount) && !potion.inBank()) {
+                    script.log.info("Stopped because no $potion in bank")
+                    ScriptManager.stop()
+                }
+            }
 
-            if (handleEquipment() && !script.canEat() && waitFor { script.inventory.all { Inventory.getCount(it.key) == it.value } }) {
+            if (handleEquipment() && !script.canEat() && waitFor { script.inventory.all { Inventory.getCount(it.key) == it.value } }
+                && waitFor { script.potions.all { it.first.getInventoryCount() == it.second } }) {
                 script.forcedBanking = false
                 Bank.close()
             }
