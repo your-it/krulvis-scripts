@@ -18,6 +18,7 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.krulvis.fighter.tree.branch.ShouldEquipAmmo
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
@@ -26,7 +27,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.1",
+    version = "1.1.2",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -75,7 +76,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 )
 class Fighter : ATScript() {
     override fun createPainter(): ATPaint<*> = FighterPainter(this)
-    override val rootComponent: TreeComponent<*> = ShouldEquipAmmo(this)
+    override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
     val safespot by lazy { getOption<Tile>("safespot")!! }

@@ -10,23 +10,6 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.HandleBank
 
-class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo") {
-    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip ammo") {
-        script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
-        waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
-    }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
-
-    override fun validate(): Boolean {
-        val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
-        return ammo != null && ammo.inInventory()
-                && (Inventory.isFull()
-                || (ammo.getInvItem()?.stack ?: -1) > 5
-                || !ammo.inEquipment()
-                )
-    }
-}
-
 class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = IsBankOpen(script)
     override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
