@@ -28,7 +28,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.4",
+    version = "1.1.5",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -70,6 +70,10 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             defaultValue = "Dragon bones, Blue dragonhide, Nature rune"
         ),
         ScriptConfiguration(
+            "Bury bones", "Bury bones (put the nammes in `Always loot` field).",
+            optionType = OptionType.BOOLEAN, defaultValue = "false"
+        ),
+        ScriptConfiguration(
             "bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FALADOR_WEST_BANK",
             allowedValues = ["NEAREST", "LUMBRIDGE_TOP", "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "LUMBRIDGE_CASTLE_BANK", "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "CASTLE_WARS_BANK", "EDGEVILLE_BANK", "DRAYNOR_BANK", "SEERS_BANK", "AL_KHARID_BANK", "SHANTAY_PASS_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "YANILLE_BANK", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "MISCELLANIA_BANK", "GNOME_STRONGHOLD_BANK", "TZHAAR_BANK", "FISHING_GUILD_BANK", "BURTHORPE_BANK", "PORT_SARIM_DB", "MOTHERLOAD_MINE", "MINING_GUILD", "MOTHERLOAD_MINE_DEPOSIT", "FARMING_GUILD_85", "FARMING_GUILD_65"]
         )
@@ -81,6 +85,7 @@ class Fighter : ATScript() {
 
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
     val safespot by lazy { getOption<Tile>("safespot")!! }
+    val buryBones by lazy { getOption<Boolean>("Bury bones")!! }
 
     val inventoryOptions by lazy { getOption<Map<Int, Int>>("inventory")!! }
     val inventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
@@ -143,7 +148,7 @@ class Fighter : ATScript() {
         return Npcs.stream().within(radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
     }
 
-    fun getTarget(): Npc? {
+    fun target(): Npc? {
         val local = Players.local()
         return getNearbyMonsters().filter {
             val target = it.interacting()
@@ -160,8 +165,10 @@ class Fighter : ATScript() {
     }
 
     fun loot(): List<GroundItem> {
-        return GroundItems.stream().within(this.radius + 10.0)
-            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }.list()
+        return GroundItems.stream()
+            .within(if (useSafespot) safespot else Players.local().tile(), this.radius + 5.0)
+            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }
+            .list()
             .sortedByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() }
     }
 

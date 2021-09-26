@@ -1,9 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.rt4.Chat
-import org.powbot.api.rt4.Movement
-import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.Prayer
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -29,7 +26,8 @@ class IsKilling(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val failedComponent: TreeComponent<Fighter> = CanLoot(script)
 
     override fun validate(): Boolean {
-        if (Players.local().interacting().name in script.monsters) {
+        val player = Players.local()
+        if (player.interacting().name in script.monsters) {
             return !script.useSafespot
                     || script.safespot == Players.local().tile()
                     || !Players.local().healthBarVisible()
@@ -55,7 +53,7 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
 
     override fun validate(): Boolean {
         return if (script.useSafespot) script.safespot == Players.local().tile()
-        else script.getTarget()?.reachable() == true
+        else script.target()?.reachable() == true
     }
 }
 
