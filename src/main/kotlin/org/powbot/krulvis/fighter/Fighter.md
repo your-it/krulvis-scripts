@@ -9,6 +9,7 @@
 - **QuickPray**
 - **Banking (with teleports)**
 - **Looting**
+- **Bury bones**
 - **Safespotting**
 - **Magic & Ranged**
 

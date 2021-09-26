@@ -2,10 +2,13 @@ package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Item
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Potion
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 
@@ -47,7 +50,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
         script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
         waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
 
     override fun validate(): Boolean {
         val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
@@ -56,5 +59,28 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
                 || (ammo.getInvItem()?.stack ?: -1) > 5
                 || !ammo.inEquipment()
                 )
+    }
+}
+
+class ShouldBurryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {
+
+    var bones = emptyList<Item>()
+
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
+        bones.forEachIndexed { i, item ->
+            val count = Inventory.getCount(item.id)
+            if (item.interact("Bury")) {
+                waitFor { count > Inventory.getCount(item.id) }
+                if (i < bones.size - 1)
+                    sleep(1500)
+            }
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
+
+    override fun validate(): Boolean {
+        if (!script.buryBones) return false
+        bones = Inventory.stream().filtered { it.name().contains("Bones") }.list()
+        return bones.isNotEmpty()
     }
 }
