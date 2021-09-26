@@ -6,6 +6,7 @@
 
 - **Eating**
 - **Drinking potions**
+- **QuickPray**
 - **Banking (with teleports)**
 - **Looting**
 - **Safespotting**
@@ -48,7 +49,7 @@
 - Super energy
 - Stamina
 - Ranged
-- Prayer (Quickpray is turned on during combat if these are taken)
+- Prayer (QuickPray is turned on during combat if these are taken)
 - Combat
 
 ## Setup
