@@ -28,7 +28,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.3",
+    version = "1.1.4",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -90,6 +90,8 @@ class Fighter : ATScript() {
                 it.first
             }.map { it.key!! to it.value.sumOf { pair -> pair.second } }
     }
+    val hasPrayPots by lazy { potions.any { it.first == Potion.PRAYER } }
+
     val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment")!! }
     val equipment by lazy {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
@@ -134,7 +136,8 @@ class Fighter : ATScript() {
 
     fun canEat() = food != null && ATContext.missingHP() > food!!.healing
 
-    fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP() < .4
+    fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
+
 
     fun getNearbyMonsters(): List<Npc> {
         return Npcs.stream().within(radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
@@ -158,8 +161,8 @@ class Fighter : ATScript() {
 
     fun loot(): List<GroundItem> {
         return GroundItems.stream().within(this.radius + 10.0)
-            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }
-            .nearest().list()
+            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }.list()
+            .sortedByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() }
     }
 
     @com.google.common.eventbus.Subscribe

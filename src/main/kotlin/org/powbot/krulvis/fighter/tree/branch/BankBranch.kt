@@ -27,6 +27,9 @@ class IsBankOpen(
     override val failedComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Open Bank") {
         if (Game.clientState() == Constants.GAME_LOGGED) {
             script.forcedBanking = true
+            if (Prayer.quickPrayer()) {
+                Prayer.quickPrayer(false)
+            }
             script.bank.open()
         }
     },

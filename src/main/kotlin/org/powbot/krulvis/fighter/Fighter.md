@@ -48,7 +48,7 @@
 - Super energy
 - Stamina
 - Ranged
-- Prayer
+- Prayer (Quickpray is turned on during combat if these are taken)
 - Combat
 
 ## Setup
