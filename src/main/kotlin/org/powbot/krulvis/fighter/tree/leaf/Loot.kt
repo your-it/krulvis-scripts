@@ -10,8 +10,10 @@ import org.powbot.krulvis.fighter.Fighter
 
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
     override fun execute() {
+        if (Prayer.quickPrayer()) {
+            Prayer.quickPrayer(false)
+        }
         val loots = script.loot()
-
         val id = loots.first().id()
         script.log.info(
             "Looting: ${id}, name=${loots.first().name()} price=${

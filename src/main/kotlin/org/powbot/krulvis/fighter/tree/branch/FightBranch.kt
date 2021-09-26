@@ -3,6 +3,7 @@ package org.powbot.krulvis.fighter.tree.branch
 import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Players
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -17,6 +18,9 @@ class IsKilling(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Chillings") {
         val interacting = Players.local().interacting()
         Chat.clickContinue()
+        if (script.hasPrayPots && !Prayer.quickPrayer()) {
+            Prayer.quickPrayer(true)
+        }
         if (waitFor { interacting.healthPercent() == 0 }) {
             waitFor(Random.nextInt(3000)) { script.loot().isNotEmpty() }
         } else
