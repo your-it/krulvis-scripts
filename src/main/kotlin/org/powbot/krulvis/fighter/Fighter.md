@@ -24,7 +24,7 @@
 
 ### Foods supported
 
-*Just have the in inventory when retrieving the inventory*
+*Just have them in inventory when retrieving the inventory*
 
 - Shrimp
 - Cakes
@@ -43,14 +43,15 @@
 
 ### Potions supported
 
-*Just have the in inventory when retrieving the inventory*
+*Just have them in inventory when retrieving the inventory*
 
 - Energy
 - Super energy
 - Stamina
 - Ranged
+- Combat, Attack, Strength, Defence (+super variants)
 - Prayer (QuickPray is turned on during combat if these are taken)
-- Combat
+- Antipoison, Super antipoison
 
 ## Setup
 
