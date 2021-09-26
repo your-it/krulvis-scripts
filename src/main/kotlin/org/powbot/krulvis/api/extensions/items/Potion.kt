@@ -15,13 +15,22 @@ enum class Potion(
     SUPER_ENERGY(Constants.SKILLS_AGILITY, 20, 3016, 3018, 3020, 3022),
     STAMINA(Constants.SKILLS_AGILITY, 20, 12625, 12627, 12629, 12631),
     RANGED(Constants.SKILLS_RANGE, -1, 2444, 169, 171, 173),
+    ATTACK(Constants.SKILLS_ATTACK, -1, 2428, 121, 123, 125),
+    STRENGTH(Constants.SKILLS_STRENGTH, -1, 113, 115, 117, 119),
+    DEFENCE(Constants.SKILLS_DEFENSE, -1, 2432, 133, 135, 137),
+    COMBAT(Constants.SKILLS_STRENGTH, -1, 9739, 9741, 9743, 9745),
+    SUPER_ATTACK(Constants.SKILLS_ATTACK, -1, 2436, 145, 147, 149),
+    SUPER_STRENGTH(Constants.SKILLS_STRENGTH, -1, 2440, 157, 159, 161),
+    SUPER_DEFENCE(Constants.SKILLS_DEFENSE, -1, 2442, 163, 165, 167),
+    SUPER_COMBAT(Constants.SKILLS_STRENGTH, -1, 12695, 12697, 12699, 12701),
     PRAYER(Constants.SKILLS_PRAYER, -1, 2434, 139, 141, 143),
     OVERLOAD(Constants.SKILLS_STRENGTH, -1, 11730, 11731, 11732, 11733),
     ABSORPTION(Constants.SKILLS_HITPOINTS, -1, 11734, 11735, 11736, 11737),
-    COMBAT(Constants.SKILLS_STRENGTH, -1, 9739, 9741, 9743, 9745),
     ANTIFIRE_EXTENDED(-1, -1, 11951, 11953, 11955, 11957),
     ANTIFIRE(-1, -1, 2452, 2454, 2456, 2458),
-    ANTIPOISON(-1, -1, 2446, 175, 177, 179);
+    ANTIPOISON(-1, -1, 2446, 175, 177, 179),
+    SUPER_ANTIPOISON(-1, -1, 2448, 181, 183, 185),
+    ;
 
     val bestPot: Int = ids[0]
 
@@ -30,7 +39,8 @@ enum class Potion(
             OVERLOAD -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
             RANGED -> 4 + floor(Skills.realLevel(skill) * 0.1).toInt()
             PRAYER -> floor(7 + Skills.realLevel(skill) / 4.0).toInt()
-            COMBAT -> 3 + floor(Skills.realLevel(skill) / 10.0).toInt()
+            ATTACK, STRENGTH, DEFENCE, COMBAT -> 3 + floor(Skills.realLevel(skill) / 10.0).toInt()
+            SUPER_ATTACK, SUPER_STRENGTH, SUPER_DEFENCE, SUPER_COMBAT -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
             else -> {
                 restore
             }
@@ -62,7 +72,7 @@ enum class Potion(
     fun needsRestore(percentage: Int): Boolean {
         return when (this) {
             ANTIFIRE_EXTENDED, ANTIFIRE -> !isProtectedFromFire()
-            ANTIPOISON -> false//Combat.isPoisoned()
+            ANTIPOISON, SUPER_ANTIPOISON -> Combat.isPoisoned()
             PRAYER -> Skills.realLevel(skill) - Skills.level(skill) >= getRestore()
             STAMINA, ENERGY, SUPER_ENERGY -> !isHighOnStamina() && Movement.energyLevel() <= percentage
             else -> {
