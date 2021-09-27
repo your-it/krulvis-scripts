@@ -1,8 +1,6 @@
 package org.powbot.krulvis.blastfurnace.tree.leaf
 
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
@@ -20,19 +18,20 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
 
 
     override fun execute() {
-        if (Bank.opened()) {
-            Bank.close()
-        }
         ATContext.turnRunOn()
         if (!Inventory.isFull() && script.filledCoalBag) {
             emptyCoalBag()
         }
+        val bankComp = Widgets.widget(Constants.BANK_WIDGET).component(Constants.BANK_ITEMS)
         val gloves = Inventory.stream().id(GOLD_GLOVES).findFirst()
+        val belt = Objects.stream().name("Conveyor belt").action("Put-ore-on").firstOrNull() ?: return
         if (gloves.isPresent) {
             if (gloves.get().interact("Wear")) {
                 waitFor { !Inventory.containsOneOf(GOLD_GLOVES) }
             }
-        } else {
+        } else if (!bankComp.visible() || !bankComp.boundingRect()
+                .contains(belt.centerPoint()) || Bank.close()
+        ) {
             val hasSpecialOres =
                 Inventory.containsOneOf(
                     Ore.ADAMANTITE.id,
@@ -41,20 +40,20 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
                     Ore.MITHRIL.id,
                     Ore.GOLD.id
                 )
-            Objects.stream().name("Conveyor belt").action("Put-ore-on").findFirst().ifPresent {
-                val waitForTime = if (it.distance() > 1)
-                    Random.nextInt(7500, 8000)
-                else 2000
-                if (interact(it, "Put-ore-on") && waitFor(waitForTime) { !Inventory.isFull() }) {
-                    if (script.filledCoalBag) {
-                        sleep(600)
-                        emptyCoalBag()
-                    }
-                    if (hasSpecialOres) {
-                        script.waitForBars = true
-                    }
+
+            val waitForTime = if (belt.distance() > 1)
+                Random.nextInt(7500, 8000)
+            else 2000
+            if (interact(belt, "Put-ore-on") && waitFor(waitForTime) { !Inventory.isFull() }) {
+                if (script.filledCoalBag) {
+                    sleep(600)
+                    emptyCoalBag()
+                }
+                if (hasSpecialOres) {
+                    script.waitForBars = true
                 }
             }
+
         }
 
     }

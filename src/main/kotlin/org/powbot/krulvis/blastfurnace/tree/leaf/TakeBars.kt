@@ -1,10 +1,7 @@
 package org.powbot.krulvis.blastfurnace.tree.leaf
 
 
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Chat
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Widgets
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.utils.Utils.long
@@ -29,10 +26,11 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
                 script.waitForBars = false
             }
         } else if (Chat.canContinue()) {
+            script.log.info("Can continue before taking bars.")
             Chat.clickContinue()
         } else if (Bank.close()) {
-            val matrix = script.dispenserTile.matrix()
-            if (script.interact(matrix, "Take")) {
+            val conveyerMatrix = script.dispenserTile.matrix()
+            if (script.interact(conveyerMatrix, "Take")) {
                 waitFor(long()) { takeWidget().valid() }
             }
         }
