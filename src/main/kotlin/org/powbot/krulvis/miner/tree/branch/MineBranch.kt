@@ -23,7 +23,8 @@ import java.util.*
 class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
-        return script.rockLocations.any { it.distance() < 5 }
+        val nearest = script.rockLocations.sortedBy { it.distance() }.first()
+        return nearest.reachable()
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)

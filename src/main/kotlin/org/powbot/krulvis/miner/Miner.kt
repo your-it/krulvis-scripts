@@ -17,7 +17,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.2.7",
+    version = "1.2.8",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -27,7 +27,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
         ScriptConfiguration(
             "Rocks",
             "Which rocks do you want to mine?",
-            optionType = OptionType.GAMEOBJECTS,
+            optionType = OptionType.GAMEOBJECT_ACTIONS,
             //Motherlode < 72
             defaultValue = "[{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5674,\"floor\":0,\"p\":{\"x\":3728,\"y\":5674,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5672,\"floor\":0,\"p\":{\"x\":3727,\"y\":5672,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5671,\"floor\":0,\"p\":{\"x\":3727,\"y\":5671,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5670,\"floor\":0,\"p\":{\"x\":3727,\"y\":5670,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5668,\"floor\":0,\"p\":{\"x\":3727,\"y\":5668,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5667,\"floor\":0,\"p\":{\"x\":3727,\"y\":5667,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5666,\"floor\":0,\"p\":{\"x\":3727,\"y\":5666,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5664,\"floor\":0,\"p\":{\"x\":3728,\"y\":5664,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5663,\"floor\":0,\"p\":{\"x\":3728,\"y\":5663,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5661,\"floor\":0,\"p\":{\"x\":3727,\"y\":5661,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5659,\"floor\":0,\"p\":{\"x\":3728,\"y\":5659,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5658,\"floor\":0,\"p\":{\"x\":3728,\"y\":5658,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5662,\"floor\":0,\"p\":{\"x\":3723,\"y\":5662,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5663,\"floor\":0,\"p\":{\"x\":3723,\"y\":5663,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5664,\"floor\":0,\"p\":{\"x\":3723,\"y\":5664,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5666,\"floor\":0,\"p\":{\"x\":3723,\"y\":5666,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5667,\"floor\":0,\"p\":{\"x\":3723,\"y\":5667,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3724,\"y\":5669,\"floor\":0,\"p\":{\"x\":3724,\"y\":5669,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3724,\"y\":5670,\"floor\":0,\"p\":{\"x\":3724,\"y\":5670,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3725,\"y\":5674,\"floor\":0,\"p\":{\"x\":3725,\"y\":5674,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3726,\"y\":5681,\"floor\":0,\"p\":{\"x\":3726,\"y\":5681,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5679,\"floor\":0,\"p\":{\"x\":3730,\"y\":5679,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5678,\"floor\":0,\"p\":{\"x\":3730,\"y\":5678,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5677,\"floor\":0,\"p\":{\"x\":3730,\"y\":5677,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3725,\"y\":5675,\"floor\":0,\"p\":{\"x\":3725,\"y\":5675,\"z\":0}},\"interaction\":\"\"}]"
             //Motherlode >= 72
@@ -59,7 +59,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 class Miner : ATScript() {
 
     val rockLocations by lazy {
-        val o = getOption<List<GameObjectOption>>("Rocks")
+        val o = getOption<List<GameObjectActionEvent>>("Rocks")
         log.info(o.toString())
         o?.map { it.tile } ?: emptyList()
     }
