@@ -1,15 +1,17 @@
 package org.powbot.krulvis.blastfurnace.tree.branch
 
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
+import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
+import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 import org.powbot.krulvis.blastfurnace.tree.leaf.DrinkPotion
 import org.powbot.krulvis.blastfurnace.tree.leaf.HandleBank
 import org.powbot.krulvis.blastfurnace.tree.leaf.PutOre
@@ -49,9 +51,12 @@ class ShouldPutOre(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should 
 
 class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should Wait @ Dispenser") {
     override val successComponent: TreeComponent<BlastFurnace> = SimpleLeaf(script, "Waiting for XP drop") {
+        val xp = Skills.experience(Constants.SKILLS_SMITHING)
         if (script.dispenserTile.distance() >= 2) {
-            walk(script.dispenserTile)
-            waitFor { script.dispenserTile.distance() < 2 }
+            Movement.step(script.dispenserTile.derive(-1, 0))
+            if (waitFor(long()) { script.dispenserTile.distance() < 2 && Skills.experience(Constants.SKILLS_SMITHING) > xp }) {
+                Inventory.stream().id(ICE_GLOVES).firstOrNull()?.interact("Wear")
+            }
         }
     }
     override val failedComponent: TreeComponent<BlastFurnace> = HandleBank(script)
