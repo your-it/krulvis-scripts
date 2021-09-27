@@ -31,16 +31,17 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
         } else {
             script.items.forEach { (id, amount) ->
                 val stackable = ItemLoader.load(id)?.stackable == true
-                if (stackable) {
+                if (stackable && amount > 1) {
                     Bank.withdraw(id, Bank.Amount.ALL)
-                } else if (!Bank.withdrawExact(id, amount, false)) {
+                } else if (!Bank.withdrawExact(id, amount, false) && amount <= 28) {
                     return
                 }
             }
             val outOfItem =
                 script.items.firstNotNullOfOrNull {
                     it.takeIf {
-                        (!Inventory.containsOneOf(it.key) || Inventory.getCount(it.key) < it.value)
+                        (!Inventory.containsOneOf(it.key)
+                                || Inventory.getCount(it.key) < if (it.value > 28) 1 else it.value)
                                 && !Bank.containsOneOf(it.key)
                     }
                 }
