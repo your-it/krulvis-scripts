@@ -54,7 +54,7 @@ class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script,
         val xp = Skills.experience(Constants.SKILLS_SMITHING)
         if (script.dispenserTile.distance() >= 2) {
             Movement.step(script.dispenserTile.derive(-1, 0))
-            if (waitFor(long()) { script.dispenserTile.distance() < 2 && Skills.experience(Constants.SKILLS_SMITHING) > xp }) {
+            if (waitFor(long()) { Skills.experience(Constants.SKILLS_SMITHING) > xp && script.bar.blastFurnaceCount >= 27 }) {
                 Inventory.stream().id(ICE_GLOVES).firstOrNull()?.interact("Wear")
             }
         }
