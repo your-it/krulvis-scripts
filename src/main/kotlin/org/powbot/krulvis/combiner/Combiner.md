@@ -1,12 +1,12 @@
 # AIO Runescape Combiner
 
-**Can Cook, Craft, Fletch, Herblore, Smith and Smelt any item in Runescape.**
+**Can Cook, Craft, Fletch, Herblore, Smith, Smelt and Tan any item in Runescape.**
 <br>
 
 ## Features
 
 - **Supports combining from inventory (using two or more items together).**
-- **Supports combining through GameObjects (Anvil, Furnace, Stove, etc).**
+- **Supports combining through GameObjects (Anvil, Furnace, Stove, Tan-Npc etc).**
 
 ## Set-up
 

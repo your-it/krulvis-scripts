@@ -110,6 +110,10 @@ enum class BankLocation(
         Tile(1640, 3944, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(1641, 3944, 0), "Bank"),
     ),
+    PRIFIDDINAS(
+        Tile(3256, 6108, 0), BankType.BOOTH,
+        GameObjectInteraction("Bank booth", Tile(3256, 6110, 0), "Bank"),
+    ),
     ;
 
     /**
@@ -155,10 +159,12 @@ enum class BankLocation(
                 val path = WebWalkingService.getPathToNearestBank(
                     player, enableTeleports
                 ).filterNotNull()
-                val to = path.last().to.toRegularTile()
-                return values()
-                    .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
-                    .minByOrNull { it.tile.distanceM(to) }!!
+                if (path.isNotEmpty()) {
+                    val to = path.last().to.toRegularTile()
+                    return values()
+                        .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
+                        .minByOrNull { it.tile.distanceM(to) }!!
+                }
             }
             return getNearestBankWithoutWeb(includeDepositBox)
         }

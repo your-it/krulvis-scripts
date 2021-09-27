@@ -20,7 +20,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.6",
+    version = "1.0.7",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -39,35 +39,7 @@ import org.powbot.krulvis.combiner.tree.branch.ShouldBank
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
             defaultValue = "[{\"id\":255,\"interaction\":\"Use\",\"mouseX\":684,\"mouseY\":231,\"rawEntityName\":\"<col=ff9040>Harralander\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Harralander\",\"strippedName\":\"Harralander\"},{\"id\":227,\"interaction\":\"Use\",\"mouseX\":725,\"mouseY\":236,\"rawEntityName\":\"<col=ff9040>Harralander<col=ffffff> -> <col=ff9040>Vial of water\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Vial of water\",\"strippedName\":\"Harralander -> Vial of water\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":116,\"rawEntityName\":\"<col=ff9040>Harralander potion (unf)</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"componentIndex\":14,\"widgetIndex\":270,\"name\":\"Harralander potion (unf)\",\"strippedName\":\"Harralander potion (unf)\"}]"
-        ),
-//        ScriptConfiguration(
-//            name = "Item 1 Amount",
-//            description = "How much of item 1 do you want in the inventory (0 is ALL)",
-//            optionType = OptionType.INTEGER,
-//            defaultValue = "14",
-//            visible = false
-//        ),
-//        ScriptConfiguration(
-//            name = "Item 2 Amount",
-//            description = "How much of item 2 do you want in the inventory (0 is ALL)",
-//            optionType = OptionType.INTEGER,
-//            defaultValue = "14",
-//            visible = false
-//        ),
-//        ScriptConfiguration(
-//            name = "Item 3 Amount",
-//            description = "How much of item 3 do you want in the inventory (0 is ALL)",
-//            optionType = OptionType.INTEGER,
-//            defaultValue = "0",
-//            visible = false
-//        ),
-//        ScriptConfiguration(
-//            name = "Item 4 Amount",
-//            description = "How much of item 4 do you want in the inventory (0 is ALL)",
-//            optionType = OptionType.INTEGER,
-//            defaultValue = "0",
-//            visible = false
-//        )
+        )
     ]
 )
 class Combiner : ATScript() {
@@ -78,7 +50,7 @@ class Combiner : ATScript() {
         getOption<Map<Int, Int>>("Inventory items")!!
     }
 
-    val id by lazy { items.filter { it.value == 0 || it.value > 1 }.map { it.key }.first() }
+    val id by lazy { items.filter { it.value in 2..28 }.map { it.key }.first() }
 
     override fun onStart() {
         super.onStart()
