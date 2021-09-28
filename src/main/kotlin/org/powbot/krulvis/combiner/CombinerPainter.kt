@@ -12,6 +12,7 @@ class CombinerPainter(script: Combiner) : ATPaint<Combiner>(script) {
             .trackSkill(Skill.Smithing)
             .trackSkill(Skill.Cooking)
             .trackSkill(Skill.Fletching)
+            .trackSkill(Skill.Herblore)
             .build()
     }
 }
