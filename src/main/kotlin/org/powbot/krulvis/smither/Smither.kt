@@ -1,8 +1,11 @@
 package org.powbot.krulvis.smither
 
+import org.powbot.api.event.InventoryChangeEvent
+import org.powbot.api.rt4.Bank
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.script.ATScript
@@ -13,7 +16,7 @@ import org.powbot.krulvis.smither.tree.branch.ShouldBank
     name = "krul Smither",
     description = "Smiths stuff from bars",
     author = "Krulvis",
-    version = "1.0.1",
+    version = "1.0.2",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(
@@ -38,6 +41,16 @@ class Smither : ATScript() {
 
     val bar by lazy { Bar.valueOf(getOption<String>("Bar") ?: "STEEL") }
     val item by lazy { Smithable.valueOf(getOption<String>("Item") ?: "PLATE_BODY") }
+
+    @com.google.common.eventbus.Subscribe
+    fun onInventChange(evt: InventoryChangeEvent) {
+        if (evt.itemId != bar.id && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == evt.itemId } } && !Bank.opened()) {
+            painter.paintBuilder.trackInventoryItems(evt.itemId)
+            val row =
+                painter.paintBuilder.items.first { row -> row.any { it is InventoryItemPaintItem && it.itemId == evt.itemId } }
+            (row.first { it is InventoryItemPaintItem && it.itemId == evt.itemId } as InventoryItemPaintItem).diff += evt.quantityChange
+        }
+    }
 }
 
 fun main() {

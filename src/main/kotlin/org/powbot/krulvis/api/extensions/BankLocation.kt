@@ -156,14 +156,18 @@ enum class BankLocation(
         fun Bank.getNearestBank(includeDepositBox: Boolean = false, enableTeleports: Boolean = true): BankLocation {
             val player = WebWalking.playerState.player(false)
             if (player != null) {
-                val path = WebWalkingService.getPathToNearestBank(
-                    player, enableTeleports
-                ).filterNotNull()
-                if (path.isNotEmpty()) {
-                    val to = path.last().to.toRegularTile()
-                    return values()
-                        .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
-                        .minByOrNull { it.tile.distanceM(to) }!!
+                try {
+                    val path = WebWalkingService.getPathToNearestBank(
+                        player, enableTeleports
+                    ).filterNotNull()
+                    if (path.isNotEmpty()) {
+                        val to = path.last().to.toRegularTile()
+                        return values()
+                            .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
+                            .minByOrNull { it.tile.distanceM(to) }!!
+                    }
+                } catch (e: Exception) {
+                    ScriptManager.script()?.log?.severe(e.stackTraceToString())
                 }
             }
             return getNearestBankWithoutWeb(includeDepositBox)
