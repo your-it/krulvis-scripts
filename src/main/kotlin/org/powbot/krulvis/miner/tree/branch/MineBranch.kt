@@ -17,6 +17,7 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.Worlds
 import org.powbot.api.rt4.stream.widget.WorldStream
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.utils.Utils.sleep
 import java.util.*
 
@@ -24,7 +25,7 @@ class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
         val nearest = script.rockLocations.sortedBy { it.distance() }.first()
-        return nearest.reachable()
+        return nearest.getWalkableNeighbor()?.reachable() == true
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)

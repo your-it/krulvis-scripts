@@ -11,10 +11,12 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
@@ -65,7 +67,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
         ),
         ScriptConfiguration(
             "Always loot",
-            "Names to always loot separated with \",\"",
+            "Separate items with \",\" Add \"!\" to never loot",
             optionType = OptionType.STRING,
             defaultValue = "Dragon bones, Blue dragonhide, Nature rune"
         ),
@@ -118,16 +120,31 @@ class Fighter : ATScript() {
     }
     val radius by lazy { getOption<Int>("radius")!! }
     val minLoot by lazy { getOption<Int>("Loot price")!! }
+    val lootNameOptions by lazy {
+        val names = getOption<String>("Always loot")!!.split(",")
+        val trimmed = mutableListOf<String>()
+        names.forEach { trimmed.add(it.trim().lowercase()) }
+        trimmed
+    }
+
     val lootNames by lazy {
-        val names = getOption<String>("Always loot")!!.split(",").toMutableList()
+        val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
         val ammo = equipment.firstOrNull { it.slot == org.powbot.api.rt4.Equipment.Slot.QUIVER }
         if (ammo != null) {
             names.add(ItemLoader.load(ammo.id)?.name ?: "nulll")
         }
-        val trimmed = mutableListOf<String>()
-        names.forEach { trimmed.add(it.trim()) }
-        trimmed.toList()
+        log.info("Looting: [${names.joinToString()}]")
+        names.toList()
     }
+    val neverLoot by lazy {
+        val trimmed = mutableListOf<String>()
+        lootNameOptions
+            .filter { it.startsWith("!") }
+            .forEach { trimmed.add(it.replace("!", "")) }
+        log.info("Not looting: [${trimmed.joinToString()}]")
+        trimmed
+    }
+
     val bank by lazy {
         val b = getOption<String>("bank")!!
         if (b == "nearest") {
@@ -167,15 +184,19 @@ class Fighter : ATScript() {
     fun loot(): List<GroundItem> {
         return GroundItems.stream()
             .within(if (useSafespot) safespot else Players.local().tile(), this.radius + 5.0)
-            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot }
-            .list()
-            .sortedByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() }
+            .filtered {
+                val name = it.name().lowercase()
+                !neverLoot.contains(name) &&
+                        (lootNames.contains(name) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
+            }.list()
     }
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryChange(evt: InventoryChangeEvent) {
         val id = evt.itemId
-        if (!inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !TeleportItem.isTeleportItem(id)) {
+        val pot = Potion.forId(evt.itemId)
+        val isTeleport = TeleportItem.isTeleportItem(id)
+        if (id != VIAL && !inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !isTeleport && potions.none { it.first == pot }) {
             if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
                 painter.paintBuilder.trackInventoryItems(id)
                 painter.paintBuilder.items.forEach { row ->
