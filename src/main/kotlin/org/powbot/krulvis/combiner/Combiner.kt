@@ -1,11 +1,9 @@
 package org.powbot.krulvis.combiner
 
 import org.powbot.api.Production
-import org.powbot.api.StringUtils
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.InventoryItemActionEvent
-import org.powbot.api.event.WidgetActionEvent
 import org.powbot.api.rt4.Bank
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -16,6 +14,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
+import org.powbot.mobile.rscache.loader.ItemLoader
 
 @ScriptManifest(
     name = "krul Combiner",
@@ -51,7 +50,7 @@ class Combiner : ATScript() {
     }
 
     val id by lazy { items.filter { it.value in 2..28 }.map { it.key }.first() }
-
+    val name by lazy { ItemLoader.load(id)?.name }
     override fun onStart() {
         super.onStart()
     }
@@ -65,10 +64,6 @@ class Combiner : ATScript() {
         for (x in 1..4) {
             updateVisibility("Item $x Amount", x <= itemCount)
         }
-    }
-
-    fun getItemAmount(index: Int): Int {
-        return getOption<Int>("Item ${index + 1} Amount")!!
     }
 
     fun stoppedUsing() = Production.stoppedUsing(id)

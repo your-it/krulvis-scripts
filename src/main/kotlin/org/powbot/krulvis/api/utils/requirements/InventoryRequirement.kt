@@ -12,10 +12,10 @@ class InventoryRequirement(
     override val amount: Int,
     private val onlyBest: Boolean = false,
     val allowMore: Boolean = false,
-    val countNoted: Boolean = false
+    val countNoted: Boolean = true
 ) : ItemRequirement {
 
-    constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = false) : this(object : Item {
+    constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = true) : this(object : Item {
         override val ids: IntArray
             get() = intArrayOf(id)
 
@@ -24,12 +24,12 @@ class InventoryRequirement(
         }
 
         override fun getCount(countNoted: Boolean): Int {
-            return Inventory.stream().id(this.id).count().toInt()
+            return Inventory.stream().id(this.id).count(countNoted).toInt()
         }
     }, amount, false, allowMore, countNoted)
 
     fun getCount(): Int {
-        return (if (onlyBest) Inventory.stream().id(item.id).count(true).toInt()
+        return (if (onlyBest) Inventory.stream().id(item.id).count(countNoted).toInt()
         else item.getInventoryCount(countNoted))
     }
 
@@ -69,7 +69,7 @@ class InventoryRequirement(
 //                "InvReq: ${item.itemName}: $amount"
 //            }
             else -> {
-                "InventoryRequirement -> ${item.itemName()}: $amount"
+                "InventoryRequirement(name=${item.itemName()}, amount=$amount)"
             }
         }
     }

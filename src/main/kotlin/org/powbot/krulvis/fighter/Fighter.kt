@@ -4,7 +4,9 @@ import org.powbot.api.Tile
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.rt4.walking.model.Skill
+import org.powbot.api.rt4.walking.model.Skill.Companion.forIndex
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.Paint
@@ -104,7 +106,7 @@ class Fighter : ATScript() {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
             Equipment(
                 emptyList(),
-                if (it.value > 1) org.powbot.api.rt4.Equipment.Slot.QUIVER else null,
+                Slot.forIndex(it.value),
                 it.key
             )
         }
@@ -129,9 +131,9 @@ class Fighter : ATScript() {
 
     val lootNames by lazy {
         val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
-        val ammo = equipment.firstOrNull { it.slot == org.powbot.api.rt4.Equipment.Slot.QUIVER }
+        val ammo = equipment.firstOrNull { it.slot == Slot.QUIVER }
         if (ammo != null) {
-            names.add(ItemLoader.load(ammo.id)?.name ?: "nulll")
+            names.add(ItemLoader.load(ammo.id)?.name?.lowercase() ?: "nulll")
         }
         log.info("Looting: [${names.joinToString()}]")
         names.toList()
@@ -196,11 +198,13 @@ class Fighter : ATScript() {
         val id = evt.itemId
         val pot = Potion.forId(evt.itemId)
         val isTeleport = TeleportItem.isTeleportItem(id)
-        if (id != VIAL && !inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !isTeleport && potions.none { it.first == pot }) {
+        if (evt.quantityChange > 0 && id != VIAL && !inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !isTeleport && potions.none { it.first == pot }) {
             if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
                 painter.paintBuilder.trackInventoryItems(id)
+                log.info("Now tracking: ${ItemLoader.load(id)?.name} adding ${evt.quantityChange} as start")
                 painter.paintBuilder.items.forEach { row ->
-                    (row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id } as InventoryItemPaintItem).diff += evt.quantityChange
+                    val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
+                    if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange
                 }
             }
         }
@@ -219,6 +223,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Prayer)
             .trackSkill(Skill.Magic)
             .trackSkill(Skill.Ranged)
+            .trackSkill(Skill.Slayer)
 
         return paintBuilder.build()
     }

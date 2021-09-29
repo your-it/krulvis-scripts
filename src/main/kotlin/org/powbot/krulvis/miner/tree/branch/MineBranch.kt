@@ -85,7 +85,7 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
             lastAnim = System.currentTimeMillis()
             true
         } else {
-            System.currentTimeMillis() - lastAnim < 2000
+            System.currentTimeMillis() - lastAnim < 3000
         }
     }
 
@@ -94,11 +94,14 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
     override val successComponent: TreeComponent<Miner> =
         SimpleLeaf(script, "Chilling") {
             if (Random.nextBoolean())
-                sleep(Random.nextInt(1000, 2000))
-            else
-                waitFor(1500) {
+                sleep(Random.nextInt(500, 800))
+            else if (!waitFor(1500) {
                     Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
+                }) {
+                if (me.animation() > 0) {
+                    lastAnim = System.currentTimeMillis()
                 }
+            }
         }
     override val failedComponent: TreeComponent<Miner> = Mine(script)
 }
