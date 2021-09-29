@@ -114,6 +114,12 @@ enum class Potion(
         }
 
         fun isPotion(id: Int) = forId(id) != null
+
+        private fun getAntipots(): List<Potion> = listOf(ANTIPOISON, SUPER_ANTIPOISON)
+        fun getAntipot(): Potion? = getAntipots().firstOrNull { it.inInventory() }
+        fun getAntipotBank(): Potion? = getAntipots().firstOrNull { it.inBank() }
+        fun hasAntipot(): Boolean = getAntipot() != null
+        fun hasAntipotBank(): Boolean = getAntipotBank() != null
     }
 
 

@@ -11,6 +11,7 @@ import org.powbot.api.rt4.walking.toRegularTile
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
@@ -130,12 +131,10 @@ enum class BankLocation(
             WebWalking.moveTo(tile, false, { false }, 1, 100, false)
             return false
         }
-        return interaction.handle() && waitFor(
-            Random.nextInt(
-                500,
-                1000
-            )
-        ) { Bank.opened() || DepositBox.opened() }
+        val interaction = interaction.handle()
+        log.info("Interacted with bank ${if (interaction) "successfully" else "unsuccessfully"}")
+        return interaction &&
+                waitFor(long()) { Bank.opened() || DepositBox.opened() }
     }
 
     /**

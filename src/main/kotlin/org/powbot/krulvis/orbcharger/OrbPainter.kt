@@ -7,8 +7,14 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
 
 class OrbPainter(script: OrbCrafter) : ATPaint<OrbCrafter>(script) {
+
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        PaintBuilder().trackSkill(Skill.Magic).trackInventoryItems(123)
+        paintBuilder.trackSkill(Skill.Magic)
+            .trackInventoryItems(
+                *Orb.values().map {
+                    it.id
+                }.toIntArray()
+            )
         return paintBuilder.build()
     }
 

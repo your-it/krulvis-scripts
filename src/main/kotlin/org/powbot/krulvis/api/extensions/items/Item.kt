@@ -28,8 +28,9 @@ interface Item {
 
     fun getBankId(worse: Boolean = false): Int {
         val ids = if (worse) ids.reversed().toIntArray() else ids
-        val bankItem = Bank.stream().filter { it.id() in ids }.firstOrNull()
-        return bankItem?.id() ?: -1
+        val bankIds = Bank.stream().filtered { it.id() in ids }.map { it.id }
+        val bankItem = ids.firstOrNull { it in bankIds }
+        return bankItem ?: -1
     }
 
     fun getInvItem(worse: Boolean = false): Item? {

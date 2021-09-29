@@ -40,8 +40,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
             val outOfItem =
                 script.items.firstNotNullOfOrNull {
                     it.takeIf {
-                        (!Inventory.containsOneOf(it.key)
-                                || Inventory.getCount(it.key) < if (it.value > 28) 1 else it.value)
+                        (Inventory.getCount(it.key) < if (it.value > 28) 1 else it.value)
                                 && !Bank.containsOneOf(it.key)
                     }
                 }

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.items
 
+import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Game
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
@@ -66,6 +67,10 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
                 }
             }
             return null
+        }
+
+        fun getFirstFoodBank(): Food? {
+            return forId(Bank.get { true }.firstOrNull { forId(it.id) != null }?.id ?: -1)
         }
 
         fun forId(id: Int): Food? = values().firstOrNull { id in it.ids }
