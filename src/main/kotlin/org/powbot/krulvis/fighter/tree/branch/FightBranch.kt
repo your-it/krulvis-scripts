@@ -11,7 +11,7 @@ import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Kill
 import org.powbot.krulvis.fighter.tree.leaf.Loot
 
-class IsKilling(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
+class IsKilling(script: Fighter) : Branch<Fighter>(script, "Is Killing?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Chillings") {
         val interacting = Players.local().interacting()
         Chat.clickContinue()
@@ -41,7 +41,8 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
     override val failedComponent: TreeComponent<Fighter> = AtSpot(script)
 
     override fun validate(): Boolean {
-        return script.loot().isNotEmpty()
+        val loot = script.loot()
+        return loot.isNotEmpty() && loot.first().reachable()
     }
 }
 

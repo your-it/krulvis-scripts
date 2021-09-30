@@ -17,12 +17,7 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
         }
         val loots = script.loot().sortedWith(compareBy<GroundItem> { it.distance() }
             .thenByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() })
-        val id = loots.first().id()
-        script.log.info(
-            "Looting: ${id}, name=${loots.first().name()} price=${
-                GrandExchange.getItemPrice(id)
-            }, at=${loots.first().tile}"
-        )
+
         loots.forEachIndexed { i, gi ->
             val id = gi.id()
             //Make space
