@@ -7,3 +7,4 @@
 - **Supports Banking**
 - **Supports Eating**
 - **Supports Pickpocketing**
+- **Supports Dodgy necklace**
