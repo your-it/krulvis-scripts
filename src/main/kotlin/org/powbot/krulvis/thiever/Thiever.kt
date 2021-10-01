@@ -14,6 +14,7 @@ import org.powbot.api.script.selectors.NpcOption
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
 import java.util.*
@@ -22,7 +23,7 @@ import java.util.*
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.0.7",
+    version = "1.0.8",
     markdownFileName = "Thiever.md",
     scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
@@ -58,6 +59,12 @@ import java.util.*
             defaultValue = "true",
             optionType = OptionType.BOOLEAN
         ),
+        ScriptConfiguration(
+            name = "Dodgy necklace",
+            description = "Equip dodgy necklace?",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
     ]
 )
 class Thiever : ATScript() {
@@ -65,12 +72,19 @@ class Thiever : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
+    override fun onStart() {
+        super.onStart()
+        dodgyNeck = getOption<Boolean>("Dodgy necklace")!!
+    }
+
     val food by lazy { Food.valueOf(getOption<String>("Food") ?: "TUNA") }
     val target by lazy { getOption<List<NpcOption>>("Targets")!! }
     val foodAmount by lazy { (getOption<Int>("Food amount") ?: 10) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu") ?: true) }
     val useMenu by lazy { !getOption<Boolean>("Left-click")!! }
+    var dodgyNeck = false
 
+    val dodgy = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
     var mobile = false
     var lastTile = Tile.Nil
 

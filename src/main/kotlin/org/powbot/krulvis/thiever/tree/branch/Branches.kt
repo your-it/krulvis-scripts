@@ -32,7 +32,7 @@ class ShouldBank(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
     override val failedComponent: TreeComponent<Thiever> = AtSpot(script)
 
     override fun validate(): Boolean {
-        return Inventory.isFull() || (currentHP() < 8 && !script.food.inInventory())
+        return Inventory.isFull() || (currentHP() < 8 && !script.food.inInventory()) || (script.dodgyNeck && !script.dodgy.inEquipment())
     }
 }
 

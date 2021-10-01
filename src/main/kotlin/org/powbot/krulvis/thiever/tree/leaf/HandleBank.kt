@@ -19,6 +19,12 @@ class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
         if (!Inventory.emptyExcept(*script.food.ids)) {
             Bank.depositInventory()
             waitFor { !Inventory.isFull() }
+        } else if (script.dodgyNeck && !script.dodgy.hasWith()) {
+            if (!script.dodgy.withdrawAndEquip(false)) {
+                if (!script.dodgy.inInventory() && !script.dodgy.inBank()) {
+                    script.dodgyNeck = false
+                }
+            }
         } else {
             val extra = ceil(missingHP() / script.food.healing.toDouble()).toInt()
             val toTake = min(28, script.foodAmount + extra)
