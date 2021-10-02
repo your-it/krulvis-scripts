@@ -112,6 +112,7 @@ class Fighter : ATScript() {
     }
 
     val warriorGuildCenter = Tile(2859, 3545, 2)
+    val warriorTokens = 8851
     val warriorGuild by lazy { getOption<Boolean>("Warrior guild")!! }
     val highAlch by lazy { getOption<Boolean>("High alch")!! }
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }

@@ -6,17 +6,26 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
+import org.powbot.mobile.script.ScriptManager
 
 class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Room?") {
     val doorTile = Tile(2847, 3541, 2)
+    val doorTileBasement = Tile(2911, 9968, 2)
+
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Exit room") {
-        val door = Objects.stream().at(doorTile).name("Door").firstOrNull()
+        val door = Objects.stream().at(doorTile).name("Door").firstOrNull() ?: Objects.stream().at(doorTileBasement)
+            .name("Door").firstOrNull()
         if (door != null && Utils.walkAndInteract(door, "Open")) {
             waitFor(long()) { Players.local().tile() == doorTile }
+            if (Inventory.getCount(script.warriorTokens) < 10) {
+                script.log.info("Stopping script, out of token")
+                ScriptManager.stop()
+            }
         }
     }
 
@@ -28,7 +37,9 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
         if (target == null || !target.reachable()) {
             script.lastDefenderIndex = currDefenderIndex
         }
-        return script.warriorGuild && script.lastDefenderIndex < currDefenderIndex && currDefenderIndex < script.defenders.size - 1
+        return script.warriorGuild &&
+                ((script.lastDefenderIndex < currDefenderIndex && currDefenderIndex < script.defenders.size - 1)
+                        || Inventory.getCount(script.warriorTokens) < 10)
     }
 }
 

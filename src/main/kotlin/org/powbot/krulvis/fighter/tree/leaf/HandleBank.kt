@@ -17,17 +17,23 @@ import org.powbot.mobile.script.ScriptManager
 class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
     override fun execute() {
         val ids = script.inventory.map { it.key }.toIntArray()
+
         val potIds = script.potions.flatMap { it.first.ids.toList() }.toIntArray()
         val defenderId = if (script.lastDefenderIndex >= 0) script.defenders[script.lastDefenderIndex] else 0
         val defender =
             org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.OFF_HAND, defenderId)
-        if (!Inventory.emptyExcept(defenderId, *ids, *potIds)) {
+        if (!Inventory.emptyExcept(defenderId, *ids, *potIds, script.warriorTokens)) {
             Bank.depositInventory()
         } else if (script.canEat() && script.food?.inInventory() == true) {
             script.food!!.eat()
             waitFor { script.canEat() }
         } else if (defenderId > 0 && !defender.hasWith()) {
             defender.withdrawExact(1)
+        } else if (script.warriorGuild && !Inventory.containsOneOf(script.warriorTokens)) {
+            if (!Bank.withdraw(script.warriorTokens, Bank.Amount.ALL) && !Bank.containsOneOf(script.warriorTokens)) {
+                script.log.info("Out of warrior tokens, stopping script")
+                ScriptManager.stop()
+            }
         } else {
             script.inventory.forEach { (id, amount) ->
                 if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
