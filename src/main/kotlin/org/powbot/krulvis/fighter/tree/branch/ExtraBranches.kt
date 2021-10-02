@@ -11,7 +11,6 @@ import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
-import org.powbot.mobile.service.ItemPriceCache
 
 
 class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
@@ -89,7 +88,7 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
             .toIntArray()
         return Inventory.stream().id(*lootIds).firstOrNull {
             val value = it.value()
-            value > 0 && it.value() / ItemPriceCache[it.id].toDouble() > .9
+            value > 0 && it.value() / GrandExchange.getItemPrice(it.id).toDouble() > .9
         }
     }
 

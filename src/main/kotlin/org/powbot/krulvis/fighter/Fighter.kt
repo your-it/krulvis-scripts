@@ -24,7 +24,6 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -98,13 +97,18 @@ class Fighter : ATScript() {
             updateOption("safespot", warriorGuildCenter, OptionType.TILE)
             val npcAction = NpcActionEvent(
                 0, 0, 10, 13729,
-                "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-76)",
+                "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
                 447, 447
             )
             updateOption("monsters", listOf(npcAction), OptionType.NPC_ACTIONS)
             updateOption("radius", 25, OptionType.INTEGER)
             updateOption("bank", "WARRIORS_GUILD", OptionType.STRING)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lastDefenderIndex = currentDefenderIndex()
     }
 
     val warriorGuildCenter = Tile(2859, 3545, 2)
@@ -116,10 +120,11 @@ class Fighter : ATScript() {
 
     val defenders = listOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
     var lastDefenderIndex = -1
-    fun currentDefender(): Int? {
+    fun currentDefenderIndex(): Int {
         val inv = Inventory.stream().list().map { it.id }
         val equipped = org.powbot.api.rt4.Equipment.itemAt(Slot.OFF_HAND).id
-        return defenders.lastOrNull { it in inv || equipped == it }
+        val defender = defenders.lastOrNull { it in inv || equipped == it }
+        return defenders.indexOf(defender)
     }
 
     val inventoryOptions by lazy { getOption<Map<Int, Int>>("inventory")!! }

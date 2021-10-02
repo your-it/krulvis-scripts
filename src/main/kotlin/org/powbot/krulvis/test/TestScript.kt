@@ -16,9 +16,6 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.service.ItemPriceCache
-import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -77,7 +74,7 @@ class TestScript : ATScript() {
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
         val ironDef = Inventory.stream().id(1313).firstOrNull()
         if (ironDef != null) {
-            val geValue = ItemPriceCache[ironDef.id]
+            val geValue = GrandExchange.getItemPrice(ironDef.id)
             log.info("Value=${ironDef.value()}, GE=${geValue}")
             log.info("Percentage=${ironDef.value() / geValue.toDouble()}")
         }

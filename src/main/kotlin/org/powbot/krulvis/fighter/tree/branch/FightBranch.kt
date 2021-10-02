@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
+import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -51,12 +52,9 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = Kill(script)
     override val failedComponent: TreeComponent<Fighter> =
         SimpleLeaf(script, "Walking") {
-            if (script.warriorGuild && Chat.canContinue()) {
-                Chat.clickContinue()
-                sleep(1000)
-                waitFor { Chat.canContinue() }
-            } else
-                Movement.walkTo(script.safespot)
+            val spot =
+                if (script.warriorGuild && script.lastDefenderIndex >= 6) Tile(2915, 9966, 0) else script.safespot
+            Movement.walkTo(spot)
         }
 
     override fun validate(): Boolean {
