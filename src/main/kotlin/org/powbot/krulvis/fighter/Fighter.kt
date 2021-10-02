@@ -201,9 +201,10 @@ class Fighter : ATScript() {
 
     fun target(): Npc? {
         val local = Players.local()
-        return getNearbyMonsters().filter {
-            val target = it.interacting()
-            (!it.healthBarVisible() || it.healthPercent() > 0) && (target == Actor.Companion.Nil || target == local)
+        val nearbyMonsters = getNearbyMonsters()
+        val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local }
+        return attackingMe ?: nearbyMonsters.filter {
+            !it.healthBarVisible() || it.healthPercent() > 0
         }.firstOrNull()
     }
 
