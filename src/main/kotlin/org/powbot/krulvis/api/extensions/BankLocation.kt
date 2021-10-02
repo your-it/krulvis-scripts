@@ -2,7 +2,6 @@ package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.FailureReason
 import org.powbot.api.rt4.walking.WebWalkingResult
 import org.powbot.api.rt4.walking.model.GameObjectInteraction
 import org.powbot.api.rt4.walking.model.NamedEntityInteraction
@@ -40,6 +39,15 @@ enum class BankLocation(
         GameObjectInteraction("Bank chest", Tile(2444, 3083, 0), "Use"),
     ),
     EDGEVILLE_BANK(Tile(3094, 3491, 0), BankType.BOOTH),
+    WARRIORS_GUILD(
+        Tile(2843, 3543, 0), BankType.BOOTH,
+        GameObjectInteraction("Bank booth", Tile(2842, 3543, 0), "Bank"),
+        requirements = arrayOf(object : Requirement {
+            override fun hasRequirement(): Boolean {
+                return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
+            }
+        })
+    ),
     DRAYNOR_BANK(Tile(3092, 3245, 0), BankType.BOOTH, GameObjectInteraction("Bank booth", "Bank")),
     SEERS_BANK(
         Tile(2727, 3493, 0), BankType.BOOTH,
@@ -149,6 +157,9 @@ enum class BankLocation(
 
     companion object {
 
+        private fun getAllowedBanks(): List<BankLocation> =
+            values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.hasRequirement() } }
+
         /**
          * @return the nearest bank according to the geographical distance
          */
@@ -161,7 +172,7 @@ enum class BankLocation(
                     ).filterNotNull()
                     if (path.isNotEmpty()) {
                         val to = path.last().to.toRegularTile()
-                        return values()
+                        return getAllowedBanks()
                             .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
                             .minByOrNull { it.tile.distanceM(to) }!!
                     }
@@ -174,7 +185,7 @@ enum class BankLocation(
 
         fun Bank.getNearestBankWithoutWeb(includeDepositBox: Boolean = false): BankLocation {
             val me = Players.local()
-            return values()
+            return getAllowedBanks()
                 .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
                 .minByOrNull { it.tile.distanceM(me) }!!
         }

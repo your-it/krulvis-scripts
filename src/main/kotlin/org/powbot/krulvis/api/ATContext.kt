@@ -210,6 +210,11 @@ object ATContext {
     fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Inventory.containsAll(vararg ids: Int): Boolean {
+        val inv = stream().list()
+        return ids.all { id -> inv.any { id == it.id } }
+    }
+
     fun Inventory.emptyExcept(vararg ids: Int): Boolean = stream().firstOrNull { it.id() !in ids } == null
 
     fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()

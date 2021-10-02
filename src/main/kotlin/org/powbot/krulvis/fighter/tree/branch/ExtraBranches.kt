@@ -3,6 +3,8 @@ package org.powbot.krulvis.fighter.tree.branch
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
+import org.powbot.api.rt4.Magic
+import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -50,7 +52,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
         script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
         waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script)
 
     override fun validate(): Boolean {
         val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
@@ -59,6 +61,31 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
                 || (ammo.getInvItem()?.stack ?: -1) > 5
                 || !ammo.inEquipment()
                 )
+    }
+}
+
+class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alch?") {
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "High alch") {
+        if (!Magic.casting(spell)) {
+            if (Magic.cast(spell)) {
+                waitFor { Magic.casting(spell) }
+            }
+        }
+        if (Magic.casting(spell)) {
+            val count = Inventory.stream().id(alchable!!.id).count()
+            alchable?.interact("Cast")
+            waitFor { Inventory.stream().id(alchable!!.id).count() != count }
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
+
+    val spell = Magic.Spell.HIGH_ALCHEMY
+    var alchable: Item? = null
+
+    override fun validate(): Boolean {
+        if (!script.highAlch) return false
+        alchable = script.alchable()
+        return alchable != null
     }
 }
 
@@ -76,7 +103,7 @@ class ShouldBurryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury b
             }
         }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
 
     override fun validate(): Boolean {
         if (!script.buryBones) return false

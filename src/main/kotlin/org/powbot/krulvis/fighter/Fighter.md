@@ -10,8 +10,10 @@
 - **Banking (with teleports)**
 - **Looting**
 - **Bury bones**
+- **High alching**
 - **Safespotting**
 - **Magic & Ranged**
+- **Warrior guild re-entering for defender**
 
 ## Options
 
