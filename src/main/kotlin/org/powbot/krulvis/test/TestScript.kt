@@ -17,6 +17,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
+import org.powbot.mobile.service.ItemPriceCache
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
@@ -74,10 +75,12 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        Equipment.Slot.values().map { Equipment.itemAt(it).id to it.index }
-            .filter { it.first > 0 }.toMap().forEach { (id, index) ->
-                log.info("Found ${ItemLoader.load(id)?.name} in slot=${Equipment.Slot.forIndex(index)}")
-            }
+        val ironDef = Inventory.stream().id(1313).firstOrNull()
+        if (ironDef != null) {
+            val geValue = ItemPriceCache[ironDef.id]
+            log.info("Value=${ironDef.value()}, GE=${geValue}")
+            log.info("Percentage=${ironDef.value() / geValue.toDouble()}")
+        }
         sleep(2000)
     }
 

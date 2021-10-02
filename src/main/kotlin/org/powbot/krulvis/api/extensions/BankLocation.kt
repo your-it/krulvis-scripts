@@ -39,15 +39,6 @@ enum class BankLocation(
         GameObjectInteraction("Bank chest", Tile(2444, 3083, 0), "Use"),
     ),
     EDGEVILLE_BANK(Tile(3094, 3491, 0), BankType.BOOTH),
-    WARRIORS_GUILD(
-        Tile(2843, 3543, 0), BankType.BOOTH,
-        GameObjectInteraction("Bank booth", Tile(2842, 3543, 0), "Bank"),
-        requirements = arrayOf(object : Requirement {
-            override fun hasRequirement(): Boolean {
-                return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
-            }
-        })
-    ),
     DRAYNOR_BANK(Tile(3092, 3245, 0), BankType.BOOTH, GameObjectInteraction("Bank booth", "Bank")),
     SEERS_BANK(
         Tile(2727, 3493, 0), BankType.BOOTH,
@@ -110,6 +101,15 @@ enum class BankLocation(
     WOODCUTTING_GUILD(
         Tile(1592, 3476, 0), BankType.CHEST,
         GameObjectInteraction("Bank chest", Tile(1592, 3475, 0), "Use"),
+    ),
+    WARRIORS_GUILD(
+        Tile(2843, 3543, 0), BankType.BOOTH,
+        GameObjectInteraction("Bank booth", Tile(2842, 3543, 0), "Bank"),
+        requirements = arrayOf(object : Requirement {
+            override fun hasRequirement(): Boolean {
+                return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
+            }
+        })
     ),
     HOSIDIUS_BEST_BANK_SPOT(
         Tile(1676, 3615, 0), BankType.CHEST,

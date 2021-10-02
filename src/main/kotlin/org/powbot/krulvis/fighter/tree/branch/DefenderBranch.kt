@@ -22,7 +22,11 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
     override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
 
     override fun validate(): Boolean {
-        if (script.target()?.reachable() == false) script.lastDefenderIndex = script.currentDefenderIndex()
-        return script.warriorGuild && script.lastDefenderIndex < script.currentDefenderIndex()
+        val target = script.target()
+        if (target == null || !target.reachable()) {
+            val defender = script.currentDefender()
+            script.lastDefenderIndex = script.defenders.indexOf(defender)
+        }
+        return script.warriorGuild && script.lastDefenderIndex < script.defenders.indexOf(script.currentDefender())
     }
 }
