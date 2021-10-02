@@ -11,6 +11,8 @@ class WGTokensPaint(script: WGTokens) : ATPaint<WGTokens>(script) {
             .trackSkill(Skill.Attack)
             .trackSkill(Skill.Strength)
             .trackSkill(Skill.Defence)
-            .trackSkill(Skill.Hitpoints).build()
+            .trackSkill(Skill.Hitpoints)
+            .trackInventoryItems(script.tokens.last())
+            .build()
     }
 }

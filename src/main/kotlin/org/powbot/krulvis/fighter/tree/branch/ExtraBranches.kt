@@ -1,9 +1,7 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
-import org.powbot.api.rt4.Magic
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Magic.component
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -37,6 +35,7 @@ class ShouldSip(script: Fighter) : Branch<Fighter>(script, "Should Sip Pot??") {
         val doses = potion!!.doses()
         if (potion!!.drink()) {
             waitFor { potion!!.doses() < doses }
+            sleep(1000)
         }
     }
     override val failedComponent: TreeComponent<Fighter> = ShouldEquipAmmo(script)
@@ -82,10 +81,21 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
     val spell = Magic.Spell.HIGH_ALCHEMY
     var alchable: Item? = null
 
+    fun alchable(): Item? {
+        val lootIds = script.painter.paintBuilder.items
+            .filter { row -> row.any { it is InventoryItemPaintItem } }
+            .map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
+            .toIntArray()
+        return Inventory.stream().id(*lootIds).firstOrNull {
+            val value = it.value()
+            value > 0 && it.value() / GrandExchange.getItemPrice(it.id).toDouble() > .9
+        }
+    }
+
     override fun validate(): Boolean {
         if (!script.highAlch) return false
-        alchable = script.alchable()
-        return alchable != null
+        alchable = alchable()
+        return alchable != null && Game.tab(Game.Tab.MAGIC) && component(spell).textureId() != spell.texture()
     }
 }
 

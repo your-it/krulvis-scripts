@@ -18,7 +18,5 @@ class InventoryItem() : Item() {
 }
 
 fun main() {
-    val items: List<Item> = InventoryItem().getItem()
-
-    println(items.first().interact())
+    println("Hello \n there")
 }

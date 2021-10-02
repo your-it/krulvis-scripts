@@ -41,7 +41,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
         ScriptConfiguration(
-            "High alch", "High-alch if HA-value is within 10% difference of GE-value",
+            "High alch", "High-alch if HA-value is at least 90% of GE-value",
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
         ScriptConfiguration(
@@ -83,7 +83,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
         ),
         ScriptConfiguration(
             "bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FALADOR_WEST_BANK",
-            allowedValues = ["NEAREST", "LUMBRIDGE_TOP", "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "LUMBRIDGE_CASTLE_BANK", "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "CASTLE_WARS_BANK", "EDGEVILLE_BANK", "DRAYNOR_BANK", "SEERS_BANK", "AL_KHARID_BANK", "SHANTAY_PASS_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "YANILLE_BANK", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "MISCELLANIA_BANK", "GNOME_STRONGHOLD_BANK", "TZHAAR_BANK", "FISHING_GUILD_BANK", "BURTHORPE_BANK", "PORT_SARIM_DB", "MOTHERLOAD_MINE", "MINING_GUILD", "MOTHERLOAD_MINE_DEPOSIT", "FARMING_GUILD_85", "FARMING_GUILD_65"]
+            allowedValues = ["NEAREST", "LUMBRIDGE_TOP", "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "LUMBRIDGE_CASTLE_BANK", "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "CASTLE_WARS_BANK", "EDGEVILLE_BANK", "DRAYNOR_BANK", "SEERS_BANK", "AL_KHARID_BANK", "SHANTAY_PASS_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "YANILLE_BANK", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "MISCELLANIA_BANK", "GNOME_STRONGHOLD_BANK", "TZHAAR_BANK", "FISHING_GUILD_BANK", "BURTHORPE_BANK", "PORT_SARIM_DB", "MOTHERLOAD_MINE", "MINING_GUILD", "MOTHERLOAD_MINE_DEPOSIT", "FARMING_GUILD_85", "FARMING_GUILD_65", "WARRIORS_GUILD"]
         )
     ]
 )
@@ -95,10 +95,24 @@ class Fighter : ATScript() {
     fun onWGChange(inWG: Boolean) {
         if (inWG) {
             updateOption("safespot", warriorGuildCenter, OptionType.TILE)
+            val npcAction = NpcActionEvent(
+                0, 0, 10, 13729,
+                "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
+                447, 447
+            )
+            updateOption("monsters", listOf(npcAction), OptionType.NPC_ACTIONS)
+            updateOption("radius", 25, OptionType.INTEGER)
+            updateOption("bank", "WARRIORS_GUILD", OptionType.STRING)
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        lastDefenderIndex = currentDefenderIndex()
+    }
+
     val warriorGuildCenter = Tile(2859, 3545, 2)
+    val warriorTokens = 8851
     val warriorGuild by lazy { getOption<Boolean>("Warrior guild")!! }
     val highAlch by lazy { getOption<Boolean>("High alch")!! }
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
@@ -111,7 +125,7 @@ class Fighter : ATScript() {
         val inv = Inventory.stream().list().map { it.id }
         val equipped = org.powbot.api.rt4.Equipment.itemAt(Slot.OFF_HAND).id
         val defender = defenders.lastOrNull { it in inv || equipped == it }
-        return if (defender != null) defenders.indexOf(defender) else -1
+        return defenders.indexOf(defender)
     }
 
     val inventoryOptions by lazy { getOption<Map<Int, Int>>("inventory")!! }
@@ -161,6 +175,7 @@ class Fighter : ATScript() {
         log.info("Looting: [${names.joinToString()}]")
         names.toList()
     }
+
     val neverLoot by lazy {
         val trimmed = mutableListOf<String>()
         lootNameOptions
@@ -192,9 +207,10 @@ class Fighter : ATScript() {
 
     fun target(): Npc? {
         val local = Players.local()
-        return getNearbyMonsters().filter {
-            val target = it.interacting()
-            (!it.healthBarVisible() || it.healthPercent() > 0) && (target == Actor.Companion.Nil || target == local)
+        val nearbyMonsters = getNearbyMonsters()
+        val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local }
+        return attackingMe ?: nearbyMonsters.filter {
+            !it.healthBarVisible() || it.healthPercent() > 0
         }.firstOrNull()
     }
 
@@ -209,20 +225,16 @@ class Fighter : ATScript() {
             }.list()
     }
 
-    fun alchable(): Item? {
-        val lootIds = painter.paintBuilder.items
-            .filter { row -> row.any { it is InventoryItemPaintItem } }
-            .map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
-            .toIntArray()
-        return Inventory.stream().id(*lootIds).firstOrNull()
-    }
-
     @com.google.common.eventbus.Subscribe
     fun onInventoryChange(evt: InventoryChangeEvent) {
         val id = evt.itemId
         val pot = Potion.forId(evt.itemId)
         val isTeleport = TeleportItem.isTeleportItem(id)
-        if (evt.quantityChange > 0 && id != VIAL && !inventory.containsKey(id) && !equipmentOptions.containsKey(id) && !isTeleport && potions.none { it.first == pot }) {
+        if (evt.quantityChange > 0 && id != VIAL
+            && id !in defenders
+            && !inventory.containsKey(id) && !equipmentOptions.containsKey(id)
+            && !isTeleport && potions.none { it.first == pot }
+        ) {
             if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
                 painter.paintBuilder.trackInventoryItems(id)
                 log.info("Now tracking: ${ItemLoader.load(id)?.name} adding ${evt.quantityChange} as start")
@@ -248,7 +260,6 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Magic)
             .trackSkill(Skill.Ranged)
             .trackSkill(Skill.Slayer)
-
         return paintBuilder.build()
     }
 
