@@ -6,14 +6,12 @@ import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.rt4.walking.model.Skill
-import org.powbot.api.rt4.walking.model.Skill.Companion.forIndex
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
@@ -24,7 +22,6 @@ import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
-import org.powbot.krulvis.fighter.tree.branch.ShouldEquipAmmo
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
 
@@ -32,13 +29,21 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.6",
+    version = "1.1.7",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
 )
 @ScriptConfiguration.List(
     [
+        ScriptConfiguration(
+            "Warrior guild", "Collect defenders in the warrior guild",
+            optionType = OptionType.BOOLEAN, defaultValue = "false"
+        ),
+        ScriptConfiguration(
+            "High alch", "High-alch if HA-value is within 10% difference of GE-value",
+            optionType = OptionType.BOOLEAN, defaultValue = "false"
+        ),
         ScriptConfiguration(
             "inventory", "What should your inventory look like?",
             optionType = OptionType.INVENTORY
@@ -60,9 +65,8 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
         ScriptConfiguration(
-            "safespot", "Get safespot",
-            optionType = OptionType.TILE,
-            visible = false
+            "safespot", "Get safespot / centertile",
+            optionType = OptionType.TILE
         ),
         ScriptConfiguration(
             "Loot price", "Min loot price?", optionType = OptionType.INTEGER, defaultValue = "1000"
@@ -87,9 +91,28 @@ class Fighter : ATScript() {
     override fun createPainter(): ATPaint<*> = FighterPainter(this)
     override val rootComponent: TreeComponent<*> = ShouldEat(this)
 
+    @ValueChanged("Warrior guild")
+    fun onWGChange(inWG: Boolean) {
+        if (inWG) {
+            updateOption("safespot", warriorGuildCenter, OptionType.TILE)
+        }
+    }
+
+    val warriorGuildCenter = Tile(2859, 3545, 2)
+    val warriorGuild by lazy { getOption<Boolean>("Warrior guild")!! }
+    val highAlch by lazy { getOption<Boolean>("High alch")!! }
     val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
     val safespot by lazy { getOption<Tile>("safespot")!! }
     val buryBones by lazy { getOption<Boolean>("Bury bones")!! }
+
+    val defenders = listOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
+    var lastDefenderIndex = -1
+    fun currentDefenderIndex(): Int {
+        val inv = Inventory.stream().list().map { it.id }
+        val equipped = org.powbot.api.rt4.Equipment.itemAt(Slot.OFF_HAND).id
+        val defender = defenders.lastOrNull { it in inv || equipped == it }
+        return if (defender != null) defenders.indexOf(defender) else -1
+    }
 
     val inventoryOptions by lazy { getOption<Map<Int, Int>>("inventory")!! }
     val inventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
@@ -175,22 +198,23 @@ class Fighter : ATScript() {
         }.firstOrNull()
     }
 
-    @ValueChanged("Use safespot")
-    fun onValueChange(useSafespot: Boolean) {
-        updateVisibility("safespot", useSafespot)
-        if (!useSafespot) {
-            updateOption("safespot", Tile.Nil, OptionType.TILE)
-        }
-    }
-
     fun loot(): List<GroundItem> {
         return GroundItems.stream()
             .within(if (useSafespot) safespot else Players.local().tile(), this.radius + 5.0)
             .filtered {
+                if (warriorGuild && it.id() in defenders) return@filtered true
                 val name = it.name().lowercase()
                 !neverLoot.contains(name) &&
                         (lootNames.contains(name) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
             }.list()
+    }
+
+    fun alchable(): Item? {
+        val lootIds = painter.paintBuilder.items
+            .filter { row -> row.any { it is InventoryItemPaintItem } }
+            .map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
+            .toIntArray()
+        return Inventory.stream().id(*lootIds).firstOrNull()
     }
 
     @com.google.common.eventbus.Subscribe

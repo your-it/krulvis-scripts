@@ -50,7 +50,14 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = Kill(script)
     override val failedComponent: TreeComponent<Fighter> =
-        SimpleLeaf(script, "Walking") { Movement.walkTo(script.safespot) }
+        SimpleLeaf(script, "Walking") {
+            if (script.warriorGuild && Chat.canContinue()) {
+                Chat.clickContinue()
+                sleep(1000)
+                waitFor { Chat.canContinue() }
+            } else
+                Movement.walkTo(script.safespot)
+        }
 
     override fun validate(): Boolean {
         return if (script.useSafespot) script.safespot == Players.local().tile()

@@ -3,6 +3,7 @@ package org.powbot.krulvis.test
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
@@ -15,15 +16,16 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 
-@ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "")
+@ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
             name = "rocks",
             description = "Click som rocks",
-            optionType = OptionType.GAMEOBJECTS,
+            optionType = OptionType.GAMEOBJECT_ACTIONS,
             defaultValue = "[{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":424,\"mouseY\":242,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":50,\"widgetId\":56,\"tile\":{\"floor\":1,\"x\":1570,\"y\":3480,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":449,\"mouseY\":238,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":51,\"widgetId\":56,\"tile\":{\"floor\":1,\"x\":1571,\"y\":3480,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":377,\"mouseY\":311,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":48,\"widgetId\":59,\"tile\":{\"floor\":1,\"x\":1568,\"y\":3483,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":403,\"mouseY\":318,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":48,\"widgetId\":58,\"tile\":{\"floor\":1,\"x\":1568,\"y\":3482,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":453,\"mouseY\":411,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":58,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3482,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":514,\"mouseY\":326,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":58,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3482,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":487,\"mouseY\":244,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":59,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3483,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":658,\"mouseY\":285,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":68,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3492,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":666,\"mouseY\":281,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":68,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3492,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":412,\"mouseY\":441,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":52,\"widgetId\":69,\"tile\":{\"floor\":1,\"x\":1572,\"y\":3493,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":501,\"mouseY\":401,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":51,\"widgetId\":70,\"tile\":{\"floor\":1,\"x\":1571,\"y\":3494,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":565,\"mouseY\":335,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":50,\"widgetId\":70,\"tile\":{\"floor\":1,\"x\":1570,\"y\":3494,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29668,\"interaction\":\"Cut\",\"mouseX\":563,\"mouseY\":336,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":48,\"widgetId\":69,\"tile\":{\"floor\":1,\"x\":1568,\"y\":3493,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"},{\"id\":29670,\"interaction\":\"Cut\",\"mouseX\":514,\"mouseY\":324,\"rawEntityName\":\"<col=ffff>Redwood\",\"rawOpcode\":3,\"var0\":48,\"widgetId\":68,\"tile\":{\"floor\":1,\"x\":1568,\"y\":3492,\"rendered\":true},\"name\":\"Redwood\",\"strippedName\":\"Redwood\"}]"
         ),
         ScriptConfiguration(
@@ -35,7 +37,7 @@ import org.powbot.mobile.service.WebWalkingService.drawEdgeList
         ScriptConfiguration(
             name = "rocks1",
             description = "WIDGETS?",
-            optionType = OptionType.WIDGETS,
+            optionType = OptionType.WIDGET_ACTIONS,
         ),
         ScriptConfiguration(
             name = "rocks1",
@@ -60,7 +62,7 @@ import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 class TestScript : ATScript() {
     override fun createPainter(): ATPaint<*> = TestPainter(this)
 
-    var origin = Tile(3229, 3214, 0) //varrock mine
+    var origin = Tile(3212, 3216, 0) //varrock mine
 
     var collisionMap: Array<IntArray> = emptyArray()
 
@@ -68,33 +70,13 @@ class TestScript : ATScript() {
     var newDest = Tile(3231, 3207, 0)
     var localPath: LocalPath = LocalPath(emptyList())
     var comp: Component? = null
-
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks")!! }
-
-    var redWoods: List<GameObject> = emptyList()
     var path = emptyList<Edge<*>?>()
-
+    var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        redWoods = Objects.stream().name("Redwood").list()
-//        log.info("Orientation of nearest: ${redWoods.sortedBy { it.distance() }.first().orientation()}")
-//        val player = WebWalking.playerState.player(false)
-//        if (player != null) {
-//            log.info("Getting path to nearest bank")
-////            path = WebWalkingService.getPath(player, WebTile(2901, 9809, 0))
-//            path = WebWalkingService.getPathToNearestBank(player, enableTeleports = false)
-//            log.info("path size=${path.size}")
-//            path.forEach {
-//                log.info("$it")
-//            }
-//        } else {
-//            log.info("Player is null")
-//        }
-        val lootNames = listOf("Blue dragonhide", "Dragon bones")
-        GroundItems.stream()
-            .filtered { lootNames.contains(it.name()) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= 1000 }
-            .nearest()
-            .list().forEach {
-                log.info("Found ${it.name()} at=${it.tile}")
+        Equipment.Slot.values().map { Equipment.itemAt(it).id to it.index }
+            .filter { it.first > 0 }.toMap().forEach { (id, index) ->
+                log.info("Found ${ItemLoader.load(id)?.name} in slot=${Equipment.Slot.forIndex(index)}")
             }
         sleep(2000)
     }
@@ -106,7 +88,9 @@ class TestScript : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryChange(evt: InventoryChangeEvent) {
-
+        if (!painter.paintBuilder.trackingInventoryItem(evt.itemId)) {
+            painter.paintBuilder.trackInventoryItem(evt)
+        }
     }
 
 }
@@ -114,29 +98,20 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Comp:") { "widgetId=${script.comp?.widgetId()}, ${script.comp}" }
-            .addString("CurrTile:") {
-                "blocked=${
-                    Players.local().tile().blocked(Movement.collisionMap(0).flags())
-                }, fire=${Objects.stream().at(Players.local().tile()).firstOrNull { it.name == "Fire" }?.name}"
-            }
-            .trackInventoryItem(12012)
+            .addString("Trapdoor inViewport:") { "${script.trapdoor?.inViewport()}" }
+            .withTotalLoot(true)
             .build()
     }
 
     override fun paintCustom(g: Graphics) {
-        val oldScale = g.getScale()
-        script.origin.drawOnScreen(g)
-        script.newDest.drawOnScreen(g)
-        script.localPath.draw(g)
-        script.path.drawEdgeList(g)
-        script.redWoods.forEach {
-            it.tile.drawOnScreen(g, outlineColor = Color.CYAN)
-        }
-        script.rocks.forEach {
-            it.tile.drawOnScreen(g, outlineColor = Color.GREEN)
-        }
-        g.setColor(Color.CYAN)
+//        val oldScale = g.getScale()
+//        script.origin.drawOnScreen(g)
+//        script.newDest.drawOnScreen(g)
+//        script.localPath.draw(g)
+//        script.path.drawEdgeList(g)
+////        script.rocks.forEach {
+////            it.tile.drawOnScreen(g, outlineColor = Color.GREEN)
+////        }
     }
 
     fun Tile.toWorld(): Tile {
@@ -147,5 +122,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript(true)
+    TestScript().startScript("127.0.0.1", "banned", true)
 }
