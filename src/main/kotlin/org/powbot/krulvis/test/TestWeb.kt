@@ -5,6 +5,7 @@ import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -23,19 +24,19 @@ import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 class TestWeb : ATScript() {
     override fun createPainter(): ATPaint<*> = TestWebPainter(this)
 
-    var origin = Tile(3229, 3214, 0) //varrock mine
+    var origin = Tile(2912, 9968, 0) //varrock mine
 
     var collisionMap: Array<IntArray> = emptyArray()
 
     //    val dest = Tile(3253, 3420, 0) //Varrock bank
-    var newDest = Tile(3231, 3207, 0)
+    var newDest = Tile(2907, 9968, 0)
     var localPath: LocalPath = LocalPath(emptyList())
     var comp: Component? = null
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks")!! }
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        Movement.walkTo(newDest)
+        localPath = LocalPathFinder.findPath(origin, newDest)
         sleep(2000)
     }
 
