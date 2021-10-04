@@ -7,6 +7,7 @@ import org.powbot.api.rt4.walking.model.GameObjectInteraction
 import org.powbot.api.rt4.walking.model.NamedEntityInteraction
 import org.powbot.api.rt4.walking.model.NpcInteraction
 import org.powbot.api.rt4.walking.toRegularTile
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Random
@@ -193,7 +194,7 @@ enum class BankLocation(
 
         fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
             val nearest = nearest()
-            if (nearest == Tile.Nil) {
+            if (nearest.distance() > 20) {
                 Movement.moveToBank()
             }
             return open()
