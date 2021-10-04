@@ -12,10 +12,12 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -72,12 +74,7 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val ironDef = Inventory.stream().id(1313).firstOrNull()
-        if (ironDef != null) {
-            val geValue = GrandExchange.getItemPrice(ironDef.id)
-            log.info("Value=${ironDef.value()}, GE=${geValue}")
-            log.info("Percentage=${ironDef.value() / geValue.toDouble()}")
-        }
+        log.info("opening bank took: ${measureTimeMillis { Bank.openNearestBank() }}")
         sleep(2000)
     }
 

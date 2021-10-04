@@ -13,6 +13,7 @@ import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.*
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
@@ -98,9 +99,7 @@ class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
     override val successComponent: TreeComponent<Miner> = HandleBank(script)
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
         if (script.escapeTopFloor()) {
-            val nearestBank = Bank.getNearestBank(true)
-            println("Opening: ${nearestBank.name}")
-            nearestBank.open()
+            Bank.openNearestBank()
         }
     }
 }
