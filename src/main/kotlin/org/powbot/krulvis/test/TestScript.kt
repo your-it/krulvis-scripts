@@ -18,6 +18,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.miner.Data
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.rscache.loader.ObjectLoader
 import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
@@ -75,7 +76,8 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        collisionMap = Movement.collisionMap(0).flags()
+//        Bank.openNearestBank()
+        WebWalking.moveTo(Tile(3713, 3834), forceWeb = true)
         sleep(2000)
     }
 
@@ -102,7 +104,6 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     }
 
     override fun paintCustom(g: Graphics) {
-        Players.local().tile().drawCollisions(g, script.collisionMap)
 //        val oldScale = g.getScale()
 //        script.origin.drawOnScreen(g)
 //        script.newDest.drawOnScreen(g)

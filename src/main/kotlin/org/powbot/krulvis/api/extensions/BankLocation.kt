@@ -200,7 +200,7 @@ enum class BankLocation(
                 return true
             }
             val nearest = nearest()
-            if (!nearest.reachable()) {
+            if (nearest.distance() > 30 || !nearest.reachable()) {
                 ScriptManager.script()?.log?.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
                 try {
                     Movement.moveToBank()
