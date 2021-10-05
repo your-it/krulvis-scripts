@@ -195,7 +195,11 @@ enum class BankLocation(
         fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
             val nearest = nearest()
             if (nearest.distance() > 10) {
-                Movement.moveToBank()
+                try {
+                    Movement.moveToBank()
+                } catch (e: Exception) {
+                    ScriptManager.script()?.log?.info("Failed to move to bank!")
+                }
             }
             return open()
         }
