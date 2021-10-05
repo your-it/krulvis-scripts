@@ -17,7 +17,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.2.8",
+    version = "1.2.9",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -90,7 +90,10 @@ class Miner : ATScript() {
     fun getBrokenStrut() = Objects.stream().name("Broken strut").nearest().firstOrNull()
 
     fun inTopFloorAreas(): Boolean {
-        val t = Players.local().tile()
+        return inTopFloorAreas(Players.local().tile())
+    }
+
+    fun inTopFloorAreas(t: Tile): Boolean {
         return Data.TOP_AREA.contains(t) || Data.TOP_AREA_NORTH.contains(t)
     }
 
