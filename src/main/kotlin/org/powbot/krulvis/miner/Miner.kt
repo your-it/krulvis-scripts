@@ -11,13 +11,14 @@ import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.miner.Data.TOP_POLY
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 
 @ScriptManifest(
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.2.9",
+    version = "1.2.10",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -94,7 +95,7 @@ class Miner : ATScript() {
     }
 
     fun inTopFloorAreas(t: Tile): Boolean {
-        return Data.TOP_AREA.contains(t) || Data.TOP_AREA_NORTH.contains(t)
+        return TOP_POLY.contains(t)
     }
 
     val nearHopper = Tile(3748, 5673, 0)

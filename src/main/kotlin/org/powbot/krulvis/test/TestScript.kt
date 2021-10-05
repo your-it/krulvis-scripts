@@ -16,6 +16,7 @@ import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.miner.Data
 import org.powbot.mobile.drawing.Graphics
 import kotlin.system.measureTimeMillis
 
@@ -74,7 +75,7 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        log.info("opening bank took: ${measureTimeMillis { Bank.openNearestBank() }}")
+        collisionMap = Movement.collisionMap(0).flags()
         sleep(2000)
     }
 
@@ -95,12 +96,13 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Trapdoor inViewport:") { "${script.trapdoor?.inViewport()}" }
+//            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
             .withTotalLoot(true)
             .build()
     }
 
     override fun paintCustom(g: Graphics) {
+        Players.local().tile().drawCollisions(g, script.collisionMap)
 //        val oldScale = g.getScale()
 //        script.origin.drawOnScreen(g)
 //        script.newDest.drawOnScreen(g)

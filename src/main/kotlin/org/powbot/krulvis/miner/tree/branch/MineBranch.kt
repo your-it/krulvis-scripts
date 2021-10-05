@@ -1,31 +1,28 @@
 package org.powbot.krulvis.miner.tree.branch
 
-import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.antiban.DelayHandler
-import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Players
+import org.powbot.api.rt4.Worlds
+import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.antiban.DelayHandler
+import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.Mine
 import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
-import org.powbot.api.Tile
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.Worlds
-import org.powbot.api.rt4.stream.widget.WorldStream
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powbot.krulvis.api.utils.Utils.sleep
-import java.util.*
 
 class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
-        val nearest = script.rockLocations.sortedBy { it.distance() }.first()
-        return nearest.getWalkableNeighbor()?.reachable() == true
+        val nearest = script.rockLocations.minByOrNull { it.distance() }!!
+        return nearest.getWalkableNeighbor(checkForWalls = false)?.reachable() == true
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)

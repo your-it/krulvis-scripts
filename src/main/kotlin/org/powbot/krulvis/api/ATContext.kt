@@ -4,6 +4,7 @@ import org.powbot.api.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Random
@@ -160,47 +161,6 @@ object ATContext {
     fun Locatable.onMap(): Boolean = tile().matrix()?.onMap() == true
 
     fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
-
-    /**
-     * Returns: [Tile] nearest neighbor or self as which is walkable
-     */
-    fun Locatable.getWalkableNeighbor(
-        diagonalTiles: Boolean = false,
-        filter: (Tile) -> Boolean = { true }
-    ): Tile? {
-        val walkableNeighbors = getWalkableNeighbors(diagonalTiles)
-        return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
-    }
-
-    fun Locatable.getWalkableNeighbors(
-        diagonalTiles: Boolean = false
-    ): MutableList<Tile> {
-
-        val t = tile()
-        val x = t.x()
-        val y = t.y()
-        val f = t.floor()
-        val cm = Movement.collisionMap(f).flags()
-
-        val n = Tile(x, y + 1, f)
-        val e = Tile(x + 1, y, f)
-        val s = Tile(x, y - 1, f)
-        val w = Tile(x - 1, y, f)
-        val straight = listOf(n, e, s, w)
-        val ne = Tile(x + 1, y + 1, f)
-        val se = Tile(x + 1, y - 1, f)
-        val sw = Tile(x - 1, y - 1, f)
-        val nw = Tile(x - 1, y + 1, f)
-        val diagonal = listOf(ne, se, sw, nw)
-
-        val walkableNeighbors = mutableListOf<Tile>()
-        walkableNeighbors.addAll(straight.filter { !it.blocked(cm) })
-
-        if (diagonalTiles) {
-            walkableNeighbors.addAll(diagonal.filter { !it.blocked(cm) })
-        }
-        return walkableNeighbors
-    }
 
     fun Tile.toRegionTile(): Tile {
         val mos = Game.mapOffset()
