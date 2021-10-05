@@ -1,8 +1,11 @@
 package org.powbot.krulvis.api.extensions
 
+import org.powbot.api.Filter
+import org.powbot.api.MenuCommand
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.WebWalkingResult
+import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.model.GameObjectInteraction
 import org.powbot.api.rt4.walking.model.NamedEntityInteraction
 import org.powbot.api.rt4.walking.model.NpcInteraction
@@ -193,9 +196,18 @@ enum class BankLocation(
         }
 
         fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
+            if (opened()) {
+                return true
+            }
             val nearest = nearest()
-            if (nearest.distance() > 10) {
-                Movement.moveToBank()
+            if (!nearest.reachable()) {
+                ScriptManager.script()?.log?.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
+                try {
+                    Movement.moveToBank()
+                } catch (e: Exception) {
+                    ScriptManager.script()?.log?.info("Failed to move to bank!")
+                    ScriptManager.script()?.log?.info(e.stackTraceToString())
+                }
             }
             return open()
         }
