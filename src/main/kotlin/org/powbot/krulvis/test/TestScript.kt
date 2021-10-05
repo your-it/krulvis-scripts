@@ -12,6 +12,7 @@ import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -75,16 +76,6 @@ class TestScript : ATScript() {
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
         log.info("opening bank took: ${measureTimeMillis { Bank.openNearestBank() }}")
         sleep(2000)
-    }
-
-    fun Bank.openNearestBank(): Boolean {
-        val nearest = nearest()
-        log.info("Nearest is $nearest, is Tile.Nil=${nearest == Tile.Nil}, distance=${nearest.distance()}")
-        if (nearest.distance() > 10) {
-            log.info("Distance too big, walking first")
-            Movement.moveToBank()
-        }
-        return open()
     }
 
     @com.google.common.eventbus.Subscribe
