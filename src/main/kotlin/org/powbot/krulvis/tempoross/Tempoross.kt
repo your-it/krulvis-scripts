@@ -8,6 +8,7 @@ import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -17,7 +18,6 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk

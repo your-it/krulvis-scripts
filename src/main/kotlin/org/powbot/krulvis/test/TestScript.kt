@@ -11,13 +11,10 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
-import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -74,7 +71,8 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        log.info("opening bank took: ${measureTimeMillis { Bank.openNearestBank() }}")
+//        Bank.openNearestBank()
+        WebWalking.moveTo(Tile(3713, 3834), forceWeb = true)
         sleep(2000)
     }
 
@@ -95,7 +93,7 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Trapdoor inViewport:") { "${script.trapdoor?.inViewport()}" }
+//            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
             .withTotalLoot(true)
             .build()
     }

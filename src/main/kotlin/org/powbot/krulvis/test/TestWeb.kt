@@ -37,6 +37,7 @@ class TestWeb : ATScript() {
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
         localPath = LocalPathFinder.findPath(origin, newDest)
+        collisionMap = LocalPathFinder.cachedFlags
         sleep(2000)
     }
 
@@ -55,6 +56,7 @@ class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
 
     override fun paintCustom(g: Graphics) {
         val oldScale = g.getScale()
+        Players.local().tile().drawCollisions(g, script.collisionMap)
         script.origin.drawOnScreen(g)
         script.newDest.drawOnScreen(g)
         script.localPath.draw(g)

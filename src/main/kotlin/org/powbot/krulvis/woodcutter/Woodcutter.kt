@@ -2,6 +2,7 @@ package org.powbot.krulvis.woodcutter
 
 import org.powbot.api.Tile
 import org.powbot.api.event.GameObjectActionEvent
+import org.powbot.api.rt4.GroundItems
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.antiban.DelayHandler
@@ -16,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.0.3",
+    version = "1.0.4",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -24,7 +25,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     [
         ScriptConfiguration(
             name = "Trees",
-            optionType = OptionType.GAMEOBJECTS,
+            optionType = OptionType.GAMEOBJECT_ACTIONS,
             description = "What trees do you want to chop?"
         ),
         ScriptConfiguration(
@@ -64,6 +65,8 @@ class Woodcutter : ATScript() {
     var burning = false
     var burnTile: Tile? = null
     val chopDelay = DelayHandler(2000, 4000, OddsModifier(), "Chop delay")
+
+    fun nest() = GroundItems.stream().within(10.0).name("Bird nest").firstOrNull()
 
     override fun createPainter(): ATPaint<*> = WoodcutterPainter(this)
 

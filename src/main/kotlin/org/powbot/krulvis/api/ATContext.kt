@@ -2,8 +2,10 @@ package org.powbot.krulvis.api
 
 import org.powbot.api.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Random
@@ -161,47 +163,6 @@ object ATContext {
 
     fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
 
-    /**
-     * Returns: [Tile] nearest neighbor or self as which is walkable
-     */
-    fun Locatable.getWalkableNeighbor(
-        diagonalTiles: Boolean = false,
-        filter: (Tile) -> Boolean = { true }
-    ): Tile? {
-        val walkableNeighbors = getWalkableNeighbors(diagonalTiles)
-        return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
-    }
-
-    fun Locatable.getWalkableNeighbors(
-        diagonalTiles: Boolean = false
-    ): MutableList<Tile> {
-
-        val t = tile()
-        val x = t.x()
-        val y = t.y()
-        val f = t.floor()
-        val cm = Movement.collisionMap(f).flags()
-
-        val n = Tile(x, y + 1, f)
-        val e = Tile(x + 1, y, f)
-        val s = Tile(x, y - 1, f)
-        val w = Tile(x - 1, y, f)
-        val straight = listOf(n, e, s, w)
-        val ne = Tile(x + 1, y + 1, f)
-        val se = Tile(x + 1, y - 1, f)
-        val sw = Tile(x - 1, y - 1, f)
-        val nw = Tile(x - 1, y + 1, f)
-        val diagonal = listOf(ne, se, sw, nw)
-
-        val walkableNeighbors = mutableListOf<Tile>()
-        walkableNeighbors.addAll(straight.filter { !it.blocked(cm) })
-
-        if (diagonalTiles) {
-            walkableNeighbors.addAll(diagonal.filter { !it.blocked(cm) })
-        }
-        return walkableNeighbors
-    }
-
     fun Tile.toRegionTile(): Tile {
         val mos = Game.mapOffset()
         return Tile(x() - mos.x(), y() - mos.y(), floor())
@@ -271,17 +232,61 @@ object ATContext {
     fun missingHP(): Int = maxHP() - currentHP()
 
 
-//    fun Menu.close(): Boolean {
-//        val ma = menu.area
-//        val width = 763
-//        val height = 499
-//        val x = if (ma.centerX > width / 2.0) Random.nextInt(ma.x - 1) else Random.nextInt(ma.x + ma.width, width)
-//        val y =
-//            if (ma.centerY > height / 2.0) Random.nextInt(ma.y - 1) else Random.nextInt(ma.y + ma.height, height)
-//        val pointToGetRid = Point(x, y)
-//        mouse.move(pointToGetRid)
-//        return waitFor { !menu.isOpen }
-//    }
+    @JvmOverloads
+    fun Locatable.getWalkableNeighbor(
+        allowSelf: Boolean = true,
+        diagonalTiles: Boolean = false,
+        checkForWalls: Boolean = true,
+        filter: (Tile) -> Boolean = { true },
+    ): Tile? {
+        val walkableNeighbors = getWalkableNeighbors(allowSelf, diagonalTiles, checkForWalls)
+        return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
+    }
+
+    @JvmOverloads
+    fun Locatable.getWalkableNeighbors(
+        allowSelf: Boolean = true,
+        diagonalTiles: Boolean = false,
+        checkForWalls: Boolean = true,
+    ): MutableList<Tile> {
+
+        val t = tile()
+        val x = t.x()
+        val y = t.y()
+        val f = t.floor()
+        val cm = Movement.collisionMap(t.floor).flags()
+        //the tile itself is not blocked, just return that...
+        if (allowSelf && !t.blocked(cm)) {
+            return mutableListOf(t)
+        }
+
+        val n = Tile(x, y + 1, f)
+        val e = Tile(x + 1, y, f)
+        val s = Tile(x, y - 1, f)
+        val w = Tile(x - 1, y, f)
+        val straight = listOf(n, e, s, w)
+        val straightFlags = listOf(Flag.W_S, Flag.W_W, Flag.W_N, Flag.W_E)
+        val ne = Tile(x + 1, y + 1, f)
+        val se = Tile(x + 1, y - 1, f)
+        val sw = Tile(x - 1, y - 1, f)
+        val nw = Tile(x - 1, y + 1, f)
+        val diagonal = listOf(ne, se, sw, nw)
+
+        val walkableNeighbors = mutableListOf<Tile>()
+        walkableNeighbors.addAll(straight.filterIndexed { i, it ->
+            if (checkForWalls) {
+                !it.blocked(
+                    cm,
+                    straightFlags[i]
+                )
+            } else !it.blocked(cm)
+        })
+
+        if (diagonalTiles) {
+            walkableNeighbors.addAll(diagonal.filter { !it.blocked(cm) })
+        }
+        return walkableNeighbors
+    }
 
 
 }
