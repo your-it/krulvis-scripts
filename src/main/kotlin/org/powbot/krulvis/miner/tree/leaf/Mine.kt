@@ -2,7 +2,7 @@ package org.powbot.krulvis.miner.tree.leaf
 
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me

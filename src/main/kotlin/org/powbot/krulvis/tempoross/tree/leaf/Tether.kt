@@ -1,7 +1,7 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbors
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbors
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Leaf
