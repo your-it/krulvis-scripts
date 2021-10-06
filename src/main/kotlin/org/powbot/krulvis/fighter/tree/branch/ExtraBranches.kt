@@ -8,6 +8,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Potion
+import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
@@ -17,23 +18,28 @@ class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Eating") {
         val count = script.food?.getInventoryCount() ?: -1
         if (script.food?.eat() == true) {
+            nextEatExtra = Random.nextInt(1, 8)
             waitFor { script.food!!.getInventoryCount() < count }
         }
     }
     override val failedComponent: TreeComponent<Fighter> = ShouldSip(script)
 
+    var nextEatExtra = Random.nextInt(1, 8)
+
     override fun validate(): Boolean {
-        return script.food?.inInventory() == true && (script.needFood() || script.canEat())
+        return script.food?.inInventory() == true && (script.needFood() || script.canEat(nextEatExtra))
     }
 }
 
 class ShouldSip(script: Fighter) : Branch<Fighter>(script, "Should Sip Pot??") {
 
     var potion: Potion? = null
+    var nextRestore = Random.nextInt(30, 60)
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Sip Potion") {
         val doses = potion!!.doses()
         if (potion!!.drink()) {
+            nextRestore = Random.nextInt(30, 60)
             waitFor { potion!!.doses() < doses }
             sleep(1000)
         }
@@ -41,7 +47,7 @@ class ShouldSip(script: Fighter) : Branch<Fighter>(script, "Should Sip Pot??") {
     override val failedComponent: TreeComponent<Fighter> = ShouldEquipAmmo(script)
 
     override fun validate(): Boolean {
-        potion = script.potions.firstOrNull { it.first.inInventory() && it.first.needsRestore(60) }?.first
+        potion = script.potions.firstOrNull { it.first.inInventory() && it.first.needsRestore(nextRestore) }?.first
         return potion != null
     }
 }
