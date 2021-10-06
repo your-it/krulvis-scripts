@@ -21,6 +21,7 @@ import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
@@ -172,6 +173,7 @@ class Fighter : ATScript() {
         if (ammo != null) {
             names.add(ItemLoader.load(ammo.id)?.name?.lowercase() ?: "nulll")
         }
+        names.add("brimstone key")
         log.info("Looting: [${names.joinToString()}]")
         names.toList()
     }
@@ -196,7 +198,7 @@ class Fighter : ATScript() {
 
     var forcedBanking = false
 
-    fun canEat() = food != null && ATContext.missingHP() > food!!.healing
+    fun canEat(extra: Int = 0) = food != null && ATContext.missingHP() > food!!.healing + extra
 
     fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
 
@@ -214,6 +216,15 @@ class Fighter : ATScript() {
         }.firstOrNull()
     }
 
+    /**
+     * Returns list of loot on the ground
+     * WarriorsGuild: Defenders enabled by default
+     * Neverloot: Needs to match name exactly (ignoreCasing=true) to skip item
+     * LootNames: If [GroundItem] name contains one of lootNames, it will be accepted
+     * Price: If price * stackSize >= minPrice
+     *
+     * @return [List] with [GroundItem]
+     */
     fun loot(): List<GroundItem> {
         return GroundItems.stream()
             .within(if (useSafespot) safespot else Players.local().tile(), this.radius + 5.0)
@@ -221,7 +232,7 @@ class Fighter : ATScript() {
                 if (warriorGuild && it.id() in defenders) return@filtered true
                 val name = it.name().lowercase()
                 !neverLoot.contains(name) &&
-                        (lootNames.contains(name) || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
+                        (lootNames.any { ln -> name.contains(ln) } || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
             }.list()
     }
 
