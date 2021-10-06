@@ -5,9 +5,9 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.WebWalking
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.local.Utils
-import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
+import org.powbot.api.rt4.walking.local.Utils.walkAndInteract
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import org.powbot.mobile.script.ScriptManager
@@ -26,7 +26,7 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
         ) {
             script.log.info("Climbing ladder manually")
             val ladderGoingUp = Objects.stream().at(Tile(3755, 5673, 0)).name("Ladder").firstOrNull()
-            if (ladderGoingUp != null && Utils.walkAndInteract(ladderGoingUp, "Climb")) {
+            if (ladderGoingUp != null && walkAndInteract(ladderGoingUp, "Climb")) {
                 waitFor { script.northOfLadder.distance() <= 1 }
             }
         } else {
