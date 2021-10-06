@@ -11,15 +11,10 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.miner.Data
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.rscache.loader.ObjectLoader
-import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
