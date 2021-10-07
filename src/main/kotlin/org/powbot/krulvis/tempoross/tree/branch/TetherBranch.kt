@@ -22,7 +22,7 @@ class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Unte
 
 class ShouldTether(script: Tempoross) : Branch<Tempoross>(script, "Should Tether") {
     override fun validate(): Boolean {
-        return !script.waveTimer.isFinished() && Inventory.containsOneOf(ROPE)
+        return !script.waveTimer.isFinished() && (script.hasOutfit || Inventory.containsOneOf(ROPE))
     }
 
     override val successComponent: TreeComponent<Tempoross> = Tether(script)
