@@ -95,8 +95,7 @@ class TemporossDebug : ATScript() {
                 val validTiles = listOf(tempoross.side.totemLocation, tempoross.side.mastLocation)
                 val tetherpoles = Objects.stream().filtered {
                     validTiles.contains(it.tile())
-                }.forEach { println("Found ${it.name()}: ${it.actions().joinToString()}") }
-                println(tetherpoles)
+                }.forEach { log.info("Found ${it.name()}: ${it.actions().joinToString()}") }
                 cookSpot = tempoross.side.cookLocation
                 // In game
                 bucket = tempoross.getBucketCrate()

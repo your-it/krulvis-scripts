@@ -33,13 +33,13 @@ class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill")
     override fun validate(): Boolean {
         if (script.side == Side.UNKNOWN) {
             if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
-                println("Getting Side of minigame")
+                script.log.info("Getting Side of minigame")
                 val mast = Objects.stream().name("Mast").nearest().first()
-                println("Mast found: $mast, orientation: ${mast.orientation()}")
+                script.log.info("Mast found: $mast, orientation: ${mast.orientation()}")
                 script.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
                 script.side.mastLocation = mast.tile()
             } else {
-                println("Couldn't find ammunition crate")
+                script.log.info("Couldn't find ammunition crate")
                 return true
             }
         }

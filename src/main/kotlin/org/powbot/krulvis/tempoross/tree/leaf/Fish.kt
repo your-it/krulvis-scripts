@@ -62,13 +62,13 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
             if (script.blockedTiles.contains(me.tile())
                 || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.id() == DOUBLE_FISH_ID)
             ) {
-                println("Moving to double/save fish spot!")
+                script.log.info("Moving to double/save fish spot!")
                 fishAtSpot(fishSpot)
             } else {
                 val tetherPole = script.getTetherPole()
                 if (tetherPole != null && !tetherPole.inViewport()) {
                     if (script.side.oddFishingSpot.distance() <= 1) {
-                        println("Fishing at weird spot so using unique camera rotation")
+                        script.log.info("Fishing at weird spot so using unique camera rotation")
                         Camera.pitch(Random.nextInt(1200, 1300))
                     } else {
                         Camera.turnTo(tetherPole)
@@ -76,7 +76,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 }
             }
         } else {
-            println("Fishing at first spot")
+            script.log.info("Fishing at first spot")
             fishAtSpot(fishSpot)
         }
     }

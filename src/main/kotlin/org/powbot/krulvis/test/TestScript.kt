@@ -33,8 +33,8 @@ import org.powbot.mobile.drawing.Graphics
         ),
         ScriptConfiguration(
             name = "rocks1",
-            description = "WIDGETS?",
-            optionType = OptionType.WIDGET_ACTIONS,
+            description = "NPCS?",
+            optionType = OptionType.NPC_ACTIONS,
         ),
         ScriptConfiguration(
             name = "rocks1",
@@ -117,5 +117,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "banned", true)
+    TestScript().startScript("127.0.0.1", "banned", false)
 }

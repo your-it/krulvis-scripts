@@ -38,7 +38,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.5",
+    version = "1.1.6",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -198,14 +198,14 @@ class Tempoross : ATScript() {
             return
         }
         val txt = me.message
-        println(txt)
+        log.info(txt)
         if (txt.contains("Points: ") && txt.contains("Personal best", true)) {
             val points = txt.substring(20, txt.indexOf("</col>")).replace(",", "").toInt()
-            println("Finished round, gained: $points points")
+            log.info("Finished round, gained: $points points")
             pointsObtained += points
             rounds++
         } else if (txt.contains("A colossal wave closes in...")) {
-            println("Should tether wave coming in!")
+            log.info("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
             val fishId = if (cookFish) COOKED else RAW
             val fish = Inventory.stream().id(fishId).count()
@@ -214,7 +214,7 @@ class Tempoross : ATScript() {
             }
         } else if (txt.contains("Reward permits: ") && txt.contains("Total permits:")) {
             val reward = txt.substring(28, txt.indexOf("</col>")).toInt()
-            println("Gained $reward points")
+            log.info("Gained $reward points")
             rewardGained += reward
         }
     }
