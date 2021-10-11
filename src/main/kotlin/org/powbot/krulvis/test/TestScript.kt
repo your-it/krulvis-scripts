@@ -15,6 +15,7 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -71,8 +72,11 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        Bank.openNearestBank()
-        WebWalking.moveTo(Tile(3713, 3834), forceWeb = true)
+        val sharks = Inventory.stream().name("shark").list()
+        sharks.forEach {
+            log.info("Noted item=${it.noted()}, id=${it.id}, CertId=${it.config.cosmeticId}")
+            log.info("Price=${ItemPriceCache[it]}")
+        }
         sleep(2000)
     }
 
@@ -117,5 +121,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "banned", false)
+    TestScript().startScript("127.0.0.1", "banned", true)
 }
