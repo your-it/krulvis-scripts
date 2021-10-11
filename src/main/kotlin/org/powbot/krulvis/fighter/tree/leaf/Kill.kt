@@ -11,7 +11,7 @@ import org.powbot.krulvis.fighter.Fighter
 class Kill(script: Fighter) : Leaf<Fighter>(script, "Killing") {
     override fun execute() {
         val target = script.target()
-        if (target != null && script.hasPrayPots && !Prayer.quickPrayer()) {
+        if (target != null && script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
             Prayer.quickPrayer(true)
         }
         if (attack(target)) {
