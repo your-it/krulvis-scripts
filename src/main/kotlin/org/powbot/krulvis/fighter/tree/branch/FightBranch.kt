@@ -16,7 +16,7 @@ class IsKilling(script: Fighter) : Branch<Fighter>(script, "Is Killing?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Chillings") {
         val interacting = Players.local().interacting()
         Chat.clickContinue()
-        if (script.hasPrayPots && !Prayer.quickPrayer()) {
+        if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
             Prayer.quickPrayer(true)
         }
         if (waitFor { interacting.healthPercent() == 0 }) {
@@ -58,8 +58,9 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
         }
 
     override fun validate(): Boolean {
-        return if (script.useSafespot) script.safespot == Players.local().tile()
-        else script.target()?.reachable() == true
+        val myTile = Players.local().tile()
+        return if (script.useSafespot) script.safespot == myTile
+        else script.target()?.reachable() == true || myTile.distanceTo(script.safespot) <= script.radius
     }
 }
 
