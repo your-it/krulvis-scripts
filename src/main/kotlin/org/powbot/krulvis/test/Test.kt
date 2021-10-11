@@ -18,6 +18,5 @@ class InventoryItem() : Item() {
 }
 
 fun main() {
-    val numbers = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
-    println("Odd: ${numbers.filter { it % 2 == 1 }.joinToString()}")
+    println(8 and 0x8)
 }

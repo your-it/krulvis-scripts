@@ -4,6 +4,7 @@ import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -69,14 +70,23 @@ class TestScript : ATScript() {
     var comp: Component? = null
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks")!! }
     var path = emptyList<Edge<*>?>()
-    var trapdoor: GameObject? = null
+    var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val sharks = Inventory.stream().name("shark").list()
-        sharks.forEach {
-            log.info("Noted item=${it.noted()}, id=${it.id}, CertId=${it.config.cosmeticId}")
-        }
+//        obj = Objects.stream().name("Bank chest").firstOrNull()
+//        if (obj != null) {
+//            val inViewport = Condition.wait({
+//                if (!obj!!.inViewport(true)) {
+//                    Camera.turnTo(obj!!.tile())
+//                }
+//                obj!!.inViewport(true)
+//            }, 100, 10)
+//            log.info("In viewport: $inViewport")
+//        }
+        val b = Bank.getBank()
+        Utils.walkAndInteract(b, "Use")
         sleep(2000)
     }
+
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
@@ -96,6 +106,7 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
 //            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
+            .addString("Bank in viewport:") { "${script.obj?.inViewport()}" }
             .withTotalLoot(true)
             .build()
     }

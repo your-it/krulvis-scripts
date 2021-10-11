@@ -58,7 +58,7 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
         if (script.lastLeaf.name != "Waiting...") {
             script.chillTimer.reset()
         }
-        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
+//        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
         return Inventory.stream().list()
             .none { it.id() in Data.WATER_CANS } || !Production.stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })
@@ -113,7 +113,7 @@ class ShouldHandlePatch(script: TitheFarmer) : Branch<TitheFarmer>(script, "Shou
     override val failedComponent: TreeComponent<TitheFarmer> = ShouldWalkBack(script)
 
     override fun validate(): Boolean {
-        return script.patches.filterNot { it.tile == script.lastPatch?.tile }.any { it.needsAction() }
+        return script.patches.any { it.needsAction() }
     }
 }
 
