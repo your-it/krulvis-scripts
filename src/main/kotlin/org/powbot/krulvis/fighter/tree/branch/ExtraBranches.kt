@@ -109,7 +109,8 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
 class ShouldDropVial(script: Fighter) : Branch<Fighter>(script, "Should Drop Vial?") {
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Dropping vial") {
-        Inventory.stream().id(VIAL).firstOrNull()?.interact("Drop")
+        if (Inventory.stream().id(VIAL).firstOrNull()?.interact("Drop") == true)
+            waitFor { Inventory.stream().id(VIAL).firstOrNull() == null }
     }
     override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
 
