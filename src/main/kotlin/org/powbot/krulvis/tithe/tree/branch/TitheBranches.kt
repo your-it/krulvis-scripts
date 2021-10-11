@@ -12,27 +12,28 @@ import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data
+import org.powbot.krulvis.tithe.Patch.Companion.sameState
 import org.powbot.krulvis.tithe.TitheFarmer
 import org.powbot.krulvis.tithe.tree.leaf.*
 
-class Locked(script: TitheFarmer) : Branch<TitheFarmer>(script, "IsLocked") {
-    override val successComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Locked") {
-        val waterCount = script.getWaterCount()
-        val harvestCount = Inventory.getCount(*Data.HARVEST)
-        if (waitFor(3000) {
-                waterCount > script.getWaterCount()
-                        || harvestCount < Inventory.getCount(*Data.HARVEST)
-            }) {
-            script.log.warning("Done with watering / harvesting")
-        }
-        script.lock = false
-    }
-    override val failedComponent: TreeComponent<TitheFarmer> = ShouldStart(script)
-
-    override fun validate(): Boolean {
-        return script.lock
-    }
-}
+//class Locked(script: TitheFarmer) : Branch<TitheFarmer>(script, "IsLocked") {
+//    override val successComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Locked") {
+//        val waterCount = script.getWaterCount()
+//        val harvestCount = Inventory.getCount(*Data.HARVEST)
+//        if (waitFor(3000) {
+//                waterCount > script.getWaterCount()
+//                        || harvestCount < Inventory.getCount(*Data.HARVEST)
+//            }) {
+//            script.log.warning("Done with watering / harvesting")
+//        }
+//        script.lock = false
+//    }
+//    override val failedComponent: TreeComponent<TitheFarmer> = ShouldStart(script)
+//
+//    override fun validate(): Boolean {
+//        return script.lock
+//    }
+//}
 
 class ShouldStart(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should start") {
     override val successComponent: TreeComponent<TitheFarmer> = Start(script)
@@ -121,7 +122,7 @@ class ShouldWalkBack(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should 
     override val failedComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Waiting...") {}
 
     override fun validate(): Boolean {
-        return script.chillTimer.isFinished()
+        return script.chillTimer.isFinished() || script.patches.sameState()
     }
 }
 

@@ -4,29 +4,25 @@ import com.google.common.eventbus.Subscribe
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
-import org.powbot.krulvis.tithe.Patch.Companion.refresh
-import org.powbot.krulvis.tithe.tree.branch.Locked
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
-import java.util.logging.Logger
 
 @ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.0.4",
+    version = "1.0.5",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )
@@ -36,14 +32,14 @@ import java.util.logging.Logger
             name = "Patches",
             description = "How many patches do you want to use? Max 16",
             optionType = OptionType.INTEGER,
-            defaultValue = "14"
+            defaultValue = "8"
         )
     ]
 )
 class TitheFarmer : ATScript() {
     override fun createPainter(): ATPaint<*> = TithePainter(this)
 
-    override val rootComponent: TreeComponent<*> = Locked(this)
+    override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
     val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
     var lastPatch: Patch? = null
@@ -51,7 +47,7 @@ class TitheFarmer : ATScript() {
     var startPoints = -1
     var gainedPoints = 0
     var patches = listOf<Patch>()
-    val chillTimer = Timer(2500)
+    val chillTimer = Timer(5000)
     var planting = false
 
     fun getCornerPatchTile(): Tile {
@@ -109,10 +105,16 @@ class TitheFarmer : ATScript() {
             val tile = Tile(evt.var0 + 1, evt.widgetId + 1, 0).globalTile()
             if (NAMES.any { evt.rawEntityName.contains(it, true) }) {
                 lastPatch = patches.first { it.tile == tile }
-                lock = true
                 log.info("Interacted ${evt.interaction} on $lastPatch")
             }
         }
+    }
+
+    var lastTick = -1L
+
+    @Subscribe
+    fun onGameTick(e: TickEvent) {
+        lastTick = System.currentTimeMillis()
     }
 
     private fun Tile.globalTile(): Tile {

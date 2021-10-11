@@ -1,11 +1,10 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tithe.Patch
 import org.powbot.krulvis.tithe.TitheFarmer
-import java.util.logging.Logger
 
 class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
 
@@ -19,16 +18,25 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
             script.planting = true
             val seed = script.getSeed()
             if (patch.walkBetween("None", script.patches) && patch.plant(seed)) {
-                if (patch.index < script.patchCount - 1) {
-                    Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use") }
-                }
-                val doneDidIt = waitFor(2500) {
+                val doneDidIt = waitFor(5000) {
                     !patch.isEmpty(true)
                 }
                 script.log.info("Planted on $patch: $doneDidIt")
+                if (doneDidIt) {
+                    val tick = script.lastTick
+                    val start = System.currentTimeMillis()
+
+                    if (waitFor { script.lastTick > tick || System.currentTimeMillis() > start + 600 }
+                        && patch.water()) {
+                        if (patch.index < script.patchCount - 1) {
+                            Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use") }
+                        }
+                        val watered = waitFor(4000) { !patch.needsAction(true) }
+                        script.log.info("Watered as well.. $patch: $watered")
+                    }
+                }
             }
         }
     }
-
 
 }
