@@ -19,7 +19,7 @@ class Deposit(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Depositing") {
         val sack = getSack()
         println("Sack: $sack")
         sack.ifPresent {
-            if (ATContext.interact(it, "Deposit")) {
+            if (ATContext.interact(it, "Deposit", useMenu = false)) {
                 waitFor { Inventory.stream().id(*Data.HARVEST).isEmpty() }
             }
         }

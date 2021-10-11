@@ -16,7 +16,7 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
                 val table = Objects.stream(25).name("Seed table").findFirst()
                 debug("Interacting with seed table=${table.isPresent}")
                 table.ifPresent {
-                    if (interact(it, "Search")) {
+                    if (interact(it, "Search", useMenu = false)) {
                         waitFor { chatting() }
                     }
                 }
@@ -29,7 +29,7 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
         } else {
             debug("Interacting with door")
             Objects.stream(25).name("Farm door").findFirst().ifPresent {
-                if (interact(it, "Open")) {
+                if (interact(it, "Open", useMenu = false)) {
                     waitFor(10000) { script.getPoints() >= 0 }
                 }
             }

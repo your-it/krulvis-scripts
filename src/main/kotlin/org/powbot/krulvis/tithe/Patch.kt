@@ -84,14 +84,13 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         if (selectedId != seed) {
             Game.tab(Game.Tab.INVENTORY)
             Inventory.stream().id(seed).findFirst().ifPresent {
-                it.interact("Use")
+                it.interact("Use", false)
             }
         }
         return waitFor(short()) { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
     }
 
     fun walkBetween(action: String, patches: List<Patch>): Boolean {
-        if (rightMenuOpen(action)) return true
         if (!go.inViewport() || go.distance() > 6) {
             val minX = patches.minOf { tile.x() } + 2
             val t = tile
@@ -110,7 +109,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         Menu.opened() && Menu.contains { it.action.equals(action, true) }
 
     private fun interact(action: String): Boolean {
-        return go.interact(action)
+        return go.interact(action, false)
     }
 
     override fun toString(): String = "Patch(id=${go.id()}, tile=${go.tile()})"
@@ -139,6 +138,8 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.Nil, -1)
 
         fun List<Patch>.tiles(): List<Tile> = map { it.tile }
+
+        fun List<Patch>.sameState() = groupBy { it.id }.size == 1
 
         fun List<Patch>.refresh(): List<Patch> {
             val tiles = tiles()
