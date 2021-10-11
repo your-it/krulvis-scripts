@@ -20,13 +20,16 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0
         val patches = script.patches.sortedWith(compareBy(Patch::id, Patch::index))
+        if (script.lastPatch?.needsAction(true) == false)
+            script.lastPatch = null
         val patch = patches.filterNot { it.tile == script.lastPatch?.tile }.firstOrNull {
             it.needsAction() && (hasEnoughWater || it.isDone())
         } ?: return
         val index = patches.indexOf(patch)
         if (patch.handle(script.patches) && waitFor(3000) { !patch.needsAction(true) }) {
             val nextPatch = if (index == patches.size - 1) null else patches[index + 1]
-            nextPatch?.walkBetween("", patches)
+            script.log.info("Current patcht index=$index, nextPatch at tile=${nextPatch?.tile}")
+            nextPatch?.walkBetween(patches)
         }
     }
 

@@ -1,7 +1,5 @@
 package org.powbot.krulvis.tithe
 
-import org.powbot.krulvis.api.script.ScriptProfile
-
 object Data {
 
     val WATER_CAN_FULL = 5340
@@ -18,9 +16,6 @@ object Data {
     val NAMES = listOf("Golovanova", "Bologano", "Logavano")
 
 }
-
-data class TitheProfile(val patchCount: Int = 12) : ScriptProfile
-
 
 fun main() {
     val total = 100

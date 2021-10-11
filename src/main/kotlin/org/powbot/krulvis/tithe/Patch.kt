@@ -2,11 +2,15 @@ package org.powbot.krulvis.tithe
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
+import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.script.ScriptManager
 
 class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
@@ -40,10 +44,10 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     fun handle(patches: List<Patch>): Boolean {
         return when {
             needsWatering() -> {
-                walkBetween("Water", patches) && water()
+                walkBetween(patches) && water()
             }
             isDone() -> {
-                walkBetween("Harvest", patches) && harvest()
+                walkBetween(patches) && harvest()
             }
             else -> {
                 false
@@ -90,25 +94,29 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return waitFor(short()) { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
     }
 
-    fun walkBetween(action: String, patches: List<Patch>): Boolean {
+    fun walkBetween(patches: List<Patch>): Boolean {
         if (!go.inViewport() || go.distance() > 6) {
             val minX = patches.minOf { tile.x() } + 2
-            val t = tile
-            val tile = Tile(minX, t.y(), 0)
+            val tile = Tile(minX, tile.y(), 0)
             if (tile.matrix().onMap()) {
+                ScriptManager.script()?.log?.info("Walking on minimap")
                 Movement.step(tile)
             } else {
-                ATContext.walk(tile)
+                LocalPathFinder.findPath(tile).traverse()
             }
             return false
         }
         return true
     }
 
-    private fun rightMenuOpen(action: String): Boolean =
-        Menu.opened() && Menu.contains { it.action.equals(action, true) }
-
     private fun interact(action: String): Boolean {
+        if (Menu.opened()) {
+            if (Menu.containsAction(action)) {
+                Menu.click { it.action.lowercase().contains(action.lowercase()) }
+            } else {
+                Menu.close()
+            }
+        }
         return go.interact(action, false)
     }
 
@@ -129,7 +137,6 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             val name = name()
             return listOf("Logavano", "Bologano", "Golovanova", "Tithe patch").any { it in name }
         }
-
 
         fun List<Patch>.hasEmpty(): Boolean = any { it.isEmpty() }
 

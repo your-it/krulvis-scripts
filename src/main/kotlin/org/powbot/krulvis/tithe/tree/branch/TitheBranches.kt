@@ -113,7 +113,7 @@ class ShouldHandlePatch(script: TitheFarmer) : Branch<TitheFarmer>(script, "Shou
     override val failedComponent: TreeComponent<TitheFarmer> = ShouldWalkBack(script)
 
     override fun validate(): Boolean {
-        return script.patches.filterNot { it.tile == script.lastPatch?.tile }.any { it.needsAction() }
+        return script.patches.any { it.needsAction() }
     }
 }
 

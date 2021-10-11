@@ -25,11 +25,12 @@ class Refill(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Refilling") {
     override fun execute() {
         val waterBarrel = getWaterBarrel()
         println("Barrel: present=${waterBarrel.isPresent}")
+        val emptyCan = Inventory.stream().firstOrNull { it.id in EMPTY_CAN until WATER_CAN_FULL }
         waterBarrel.ifPresent {
             if (!stoppedMaking(WATER_CAN_FULL)) {
                 println("Already filling water...")
-                waitFor(long()) { Inventory.stream().noneMatch { item -> item.id() in Data.WATER_CANS } }
-            } else if (Game.tab(Game.Tab.INVENTORY) && interact(it, "Use", selectItem = EMPTY_CAN)) {
+                waitFor(long()) { Inventory.stream().noneMatch { item -> item.id() in EMPTY_CAN until WATER_CAN_FULL } }
+            } else if (Game.tab(Game.Tab.INVENTORY) && interact(it, "Use", selectItem = emptyCan?.id ?: -1)) {
                 waitFor(5000) { !stoppedMaking(WATER_CAN_FULL) }
             }
         }

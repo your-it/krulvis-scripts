@@ -1,7 +1,6 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.TitheFarmer
@@ -17,7 +16,7 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
         } else {
             script.planting = true
             val seed = script.getSeed()
-            if (patch.walkBetween("None", script.patches) && patch.plant(seed)) {
+            if (patch.walkBetween(script.patches) && patch.plant(seed)) {
                 val doneDidIt = waitFor(5000) {
                     !patch.isEmpty(true)
                 }

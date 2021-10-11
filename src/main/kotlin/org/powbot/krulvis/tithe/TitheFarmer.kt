@@ -22,7 +22,7 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.0.5",
+    version = "1.0.7",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )
@@ -32,7 +32,7 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
             name = "Patches",
             description = "How many patches do you want to use? Max 16",
             optionType = OptionType.INTEGER,
-            defaultValue = "8"
+            defaultValue = "16"
         )
     ]
 )
@@ -43,7 +43,6 @@ class TitheFarmer : ATScript() {
 
     val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
     var lastPatch: Patch? = null
-    var lock = false
     var startPoints = -1
     var gainedPoints = 0
     var patches = listOf<Patch>()
@@ -97,7 +96,7 @@ class TitheFarmer : ATScript() {
 
     fun getWaterCount(): Int = Inventory.stream().id(*Data.WATER_CANS).list().sumOf { it.id() - 5332 }
 
-    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3.5
+    fun hasEnoughWater(): Boolean = getWaterCount() >= patchCount * 3
 
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {

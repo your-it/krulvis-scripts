@@ -4,6 +4,7 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.Movement
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.TitheFarmer
@@ -11,9 +12,11 @@ import org.powbot.krulvis.tithe.TitheFarmer
 class WalkBack(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Walking back") {
     override fun execute() {
 
-        val topMostTile = script.getCornerPatchTile()
-        val walkableTile = Tile(topMostTile.x() + 2, topMostTile.y())
-        if (walkableTile.distance() > 1 && Movement.step(walkableTile)) {
+        val cornerX = script.patches.first().tile.x
+        val walkableTile = Tile(cornerX + 2, script.patches.first().tile.y)
+        val furthestReachable =
+            script.patches.first { it.tile.onMap() }
+        if (walkableTile.distance() > 1 && Movement.step(Tile(cornerX + 2, furthestReachable.tile.y))) {
             waitFor(long()) { walkableTile.distance() < 5 }
         }
 
