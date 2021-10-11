@@ -7,6 +7,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -82,7 +83,7 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
             waitFor { Inventory.stream().id(alchable!!.id).count() != count }
         }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldDropVial(script)
 
     val spell = Magic.Spell.HIGH_ALCHEMY
     var alchable: Item? = null
@@ -94,7 +95,7 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
             .toIntArray()
         return Inventory.stream().id(*lootIds).firstOrNull {
             val value = it.value()
-            value > 250 && it.value() / GrandExchange.getItemPrice(it.id).toDouble() > .9
+            value > 300 && !it.stackable() && it.value() / GrandExchange.getItemPrice(it.id).toDouble() > .9
         }
     }
 
@@ -102,6 +103,19 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
         if (!script.highAlch) return false
         alchable = alchable()
         return alchable != null && Game.tab(Game.Tab.MAGIC) && component(spell).textureId() != spell.texture()
+    }
+}
+
+class ShouldDropVial(script: Fighter) : Branch<Fighter>(script, "Should Drop Vial?") {
+
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Dropping vial") {
+        if (Inventory.stream().id(VIAL).firstOrNull()?.interact("Drop") == true)
+            waitFor { Inventory.stream().id(VIAL).firstOrNull() == null }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
+
+    override fun validate(): Boolean {
+        return Inventory.stream().id(VIAL).firstOrNull() != null
     }
 }
 

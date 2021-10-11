@@ -21,7 +21,6 @@ import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
@@ -30,7 +29,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.1.9",
+    version = "1.2.0",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -74,9 +73,9 @@ import org.powbot.mobile.rscache.loader.ItemLoader
         ),
         ScriptConfiguration(
             "Always loot",
-            "Separate items with \",\" Add \"!\" to never loot",
+            "Separate items with \",\" Start with \"!\" to never loot",
             optionType = OptionType.STRING,
-            defaultValue = "Dragon bones, Blue dragonhide, Nature rune"
+            defaultValue = "Long bone, curved bone, ensouled, rune, clue, !adamantite bar"
         ),
         ScriptConfiguration(
             "Bury bones", "Bury bones (put the nammes in `Always loot` field).",

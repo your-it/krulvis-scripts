@@ -6,6 +6,7 @@ import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.HandleBank
@@ -21,7 +22,9 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
         if (ammo != null && !ammo.inEquipment()) return true
 
         val hasFood = script.food != null && Inventory.containsOneOf(*script.food!!.ids)
-        return !hasFood && (script.needFood() || Inventory.isFull() || Bank.opened())
+        return !hasFood && (script.needFood()
+                || (Inventory.isFull() && !Potion.PRAYER.hasWith())
+                || Bank.opened())
     }
 }
 

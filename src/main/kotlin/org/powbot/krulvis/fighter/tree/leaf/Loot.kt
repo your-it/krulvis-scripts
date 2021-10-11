@@ -12,7 +12,7 @@ import org.powbot.krulvis.fighter.Fighter
 
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
     override fun execute() {
-        if (script.hasPrayPots && Prayer.quickPrayer()) {
+        if (script.hasPrayPots && Prayer.quickPrayer() && !Players.local().healthBarVisible()) {
             Prayer.quickPrayer(false)
         }
         val loots = script.loot().sortedWith(compareBy<GroundItem> { it.distance() }

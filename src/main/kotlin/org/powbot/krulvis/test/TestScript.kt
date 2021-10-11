@@ -71,8 +71,10 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        Bank.openNearestBank()
-        WebWalking.moveTo(Tile(3713, 3834), forceWeb = true)
+        val sharks = Inventory.stream().name("shark").list()
+        sharks.forEach {
+            log.info("Noted item=${it.noted()}, id=${it.id}, CertId=${it.config.cosmeticId}")
+        }
         sleep(2000)
     }
 
@@ -117,5 +119,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "banned", false)
+    TestScript().startScript("127.0.0.1", "banned", true)
 }
