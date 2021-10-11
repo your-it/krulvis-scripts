@@ -74,9 +74,9 @@ import org.powbot.mobile.rscache.loader.ItemLoader
         ),
         ScriptConfiguration(
             "Always loot",
-            "Separate items with \",\" Add \"!\" to never loot",
+            "Separate items with \",\" Start with \"!\" to never loot",
             optionType = OptionType.STRING,
-            defaultValue = "Dragon bones, Blue dragonhide, Nature rune"
+            defaultValue = "Long bone, curved bone, rune, clue, !adamantite bar"
         ),
         ScriptConfiguration(
             "Bury bones", "Bury bones (put the nammes in `Always loot` field).",
