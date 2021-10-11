@@ -24,11 +24,12 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
             script.lastPatch = null
         val patch = patches.filterNot { it.tile == script.lastPatch?.tile }.firstOrNull {
             it.needsAction() && (hasEnoughWater || it.isDone())
-        } ?: return
-        val index = patches.indexOf(patch)
+        } ?: script.lastPatch ?: return
         if (patch.handle(script.patches) && waitFor(3000) { !patch.needsAction(true) }) {
-            val nextPatch = if (index == patches.size - 1) null else patches[index + 1]
-            script.log.info("Current patcht index=$index, nextPatch at tile=${nextPatch?.tile}")
+            val nextPatchIndex = script.patches.indexOfFirst { it.tile == patch.tile } + 1
+            val nextPatch = if (nextPatchIndex == script.patches.size) null
+            else script.patches[nextPatchIndex]
+            script.log.info("Current patcht index=$nextPatchIndex, nextPatch at tile=${nextPatch?.tile}")
             nextPatch?.walkBetween(patches)
         }
     }
