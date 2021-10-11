@@ -29,7 +29,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.2.0",
+    version = "1.2.1",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -231,8 +231,12 @@ class Fighter : ATScript() {
                 if (warriorGuild && it.id() in defenders) return@filtered true
                 val name = it.name().lowercase()
                 !neverLoot.contains(name) &&
-                        (lootNames.any { ln -> name.contains(ln) } || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
+                        (lootNames.any { ln -> name.contains(ln) } || getPrice(it) * it.stackSize() >= minLoot)
             }.list()
+    }
+
+    fun getPrice(gi: GenericItem): Int {
+        return GrandExchange.getItemPrice(if (gi.noted()) gi.id() - 1 else gi.id())
     }
 
     @com.google.common.eventbus.Subscribe
