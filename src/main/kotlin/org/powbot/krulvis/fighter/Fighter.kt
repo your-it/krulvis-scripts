@@ -24,12 +24,13 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
+import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.2.0",
+    version = "1.2.1",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -231,8 +232,12 @@ class Fighter : ATScript() {
                 if (warriorGuild && it.id() in defenders) return@filtered true
                 val name = it.name().lowercase()
                 !neverLoot.contains(name) &&
-                        (lootNames.any { ln -> name.contains(ln) } || GrandExchange.getItemPrice(it.id()) * it.stackSize() >= minLoot)
+                        (lootNames.any { ln -> name.contains(ln) } || getPrice(it) * it.stackSize() >= minLoot)
             }.list()
+    }
+
+    fun getPrice(gi: GenericItem): Int {
+        return ItemPriceCache[if (gi.noted()) gi.id() - 1 else gi.id()]
     }
 
     @com.google.common.eventbus.Subscribe

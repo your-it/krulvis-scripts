@@ -95,7 +95,7 @@ class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alc
             .toIntArray()
         return Inventory.stream().id(*lootIds).firstOrNull {
             val value = it.value()
-            value > 300 && !it.stackable() && it.value() / GrandExchange.getItemPrice(it.id).toDouble() > .9
+            value > 300 && !it.stackable() && it.value() / script.getPrice(it).toDouble() > .9
         }
     }
 
