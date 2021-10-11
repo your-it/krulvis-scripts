@@ -24,7 +24,6 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.service.ItemPriceCache
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -237,7 +236,7 @@ class Fighter : ATScript() {
     }
 
     fun getPrice(gi: GenericItem): Int {
-        return ItemPriceCache[if (gi.noted()) gi.id() - 1 else gi.id()]
+        return GrandExchange.getItemPrice(if (gi.noted()) gi.id() - 1 else gi.id())
     }
 
     @com.google.common.eventbus.Subscribe
