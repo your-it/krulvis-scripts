@@ -2,7 +2,6 @@ package org.powbot.krulvis.miner.tree.branch
 
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.api.script.tree.Branch
@@ -19,12 +18,12 @@ class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") 
 
     override fun validate(): Boolean {
         val hasHammer = Inventory.containsOneOf(Item.HAMMER)
-        val strutCount = Objects.stream(15).name("Broken strut").count().toInt()
+        val brokenCount = Objects.stream(15).name("Broken strut").count().toInt()
         script.rockLocations
         return (!Inventory.isFull() || hasHammer)
                 && Tile(3746, 5667, 0).distance() <= 10
                 && Npcs.stream().name("Pay-dirt").isNotEmpty()
-                && (strutCount == 2 || (hasHammer && strutCount >= 1))
+                && brokenCount >= if (hasHammer) 1 else 2
     }
 
     override val successComponent: TreeComponent<Miner> = FixStrut(script)

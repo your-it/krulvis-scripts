@@ -12,20 +12,19 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
+import org.powbot.krulvis.api.utils.Utils.long
 import kotlin.random.Random
 
 class FixStrut(script: Miner) : Leaf<Miner>(script, "Fixing strut") {
     override fun execute() {
         if (Inventory.containsOneOf(Item.HAMMER)) {
             val strut = script.getBrokenStrut()
-            val brokenStruts = Objects.stream(10).name("Broken strut").count()
             if (strut != null && Utils.walkAndInteract(strut, "Hammer")) {
-                waitFor(Random.nextInt(9900, 12000)) {
-                    Objects.stream(10).name("Broken strut").count() < brokenStruts
+                waitFor(long()) {
+                    Objects.stream().at(strut.tile).name("Broken strut").isEmpty()
                 }
             }
         } else {
-            println("Getting hammer")
             val crate = Objects.stream().at(Tile(3752, 5674, 0)).findFirst()
             crate.ifPresent {
                 if (interact(it, "Search")) {
