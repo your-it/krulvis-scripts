@@ -10,8 +10,8 @@ import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.script.ATScript
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Data.NAMES
@@ -22,7 +22,7 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.0.7",
+    version = "1.0.8",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming
 )
@@ -30,9 +30,9 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
     [
         ScriptConfiguration(
             name = "Patches",
-            description = "How many patches do you want to use? Max 16",
+            description = "How many patches do you want to use? Max 20",
             optionType = OptionType.INTEGER,
-            defaultValue = "16"
+            defaultValue = "20"
         )
     ]
 )
@@ -41,7 +41,7 @@ class TitheFarmer : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
-    val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 14 }
+    val patchCount by lazy { getOption<Int>("Patches")?.toInt() ?: 20 }
     var lastPatch: Patch? = null
     var startPoints = -1
     var gainedPoints = 0
@@ -65,6 +65,11 @@ class TitheFarmer : ATScript() {
                 columns.add(Tile(it.x(), it.y() - y))
                 columns.add(Tile(it.x() + 5, it.y() - y))
             }
+        }
+
+        val lastPatch = Tile(tiles[0].x() + 10, tiles[0].y())
+        for (y in 0..9 step 3) {
+            columns.add(Tile(lastPatch.x(), lastPatch.y() - y))
         }
 
         return columns.toList().subList(0, patchCount)
