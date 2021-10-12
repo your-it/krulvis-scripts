@@ -96,8 +96,10 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     fun walkBetween(patches: List<Patch>): Boolean {
         if (!go.inViewport() || go.distance() > 6) {
-            val minX = patches.minOf { tile.x() } + 2
-            val tile = Tile(minX, tile.y(), 0)
+            val minX = patches.minOf { it.tile.x() }
+            val maxX = patches.maxOf { it.tile.x() }
+            val x = if (tile.x < maxX) minX + 2 else maxX - 2
+            val tile = Tile(x, tile.y(), 0)
             if (tile.matrix().onMap()) {
                 ScriptManager.script()?.log?.info("Walking on minimap")
                 Movement.step(tile)
