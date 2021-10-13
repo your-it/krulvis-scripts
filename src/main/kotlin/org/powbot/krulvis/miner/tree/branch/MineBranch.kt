@@ -22,7 +22,7 @@ class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
         val nearest = script.rockLocations.minByOrNull { it.distance() }!!
-        return nearest.getWalkableNeighbor(checkForWalls = false)?.reachable() == true
+        return nearest.distance() <= 10 && nearest.getWalkableNeighbor(checkForWalls = false)?.reachable() == true
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)

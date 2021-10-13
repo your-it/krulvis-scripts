@@ -82,7 +82,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         if (this == script.burnTile && (blocked || objBlocking != null)) {
             script.log.info("Can't build fire on tile=${script.burnTile}, blocked=$blocked, obj exists=${objBlocking != null}, name=${objBlocking?.name}, id=${objBlocking?.id()}")
         }
-        return !blocked && (objBlocking == null || objBlocking.id() == 883)
+        return !blocked && (objBlocking == null || objBlocking.id() == script.boundaryId)
     }
 
     fun findGoodSpot(flags: Array<IntArray>): Tile? {
