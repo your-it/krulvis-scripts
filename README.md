@@ -1,7 +1,1 @@
 # krulvis-scripts
-
-
-
-
-
-
