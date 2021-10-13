@@ -92,7 +92,7 @@ class Woodcutter : ATScript() {
 
     @ValueChanged("Burn")
     fun onBurnValueChanged(burn: Boolean) {
-        updateVisibility("BoundaryID", !burn)
+        updateVisibility("BoundaryID", burn)
     }
 }
 
