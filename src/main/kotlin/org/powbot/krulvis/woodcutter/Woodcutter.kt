@@ -17,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.0.4",
+    version = "1.0.5",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -31,12 +31,21 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
         ScriptConfiguration(
             name = "Bank",
             optionType = OptionType.BOOLEAN,
-            description = "Bank the logs?"
+            description = "Bank the logs?",
+            defaultValue = "true"
         ),
         ScriptConfiguration(
             name = "Burn",
             optionType = OptionType.BOOLEAN,
-            description = "Burn the logs?"
+            description = "Burn the logs?",
+            defaultValue = "false"
+        ),
+        ScriptConfiguration(
+            name = "BoundaryID",
+            optionType = OptionType.INTEGER,
+            description = "Debug -> Boundary Objects -> which id pops up under your player?",
+            visible = false,
+            defaultValue = "-1"
         )
     ]
 )
@@ -56,6 +65,7 @@ class Woodcutter : ATScript() {
     val derpedRedWoodY = listOf(3480, 3494)
     val bank by lazy { getOption<Boolean>("Bank")!! }
     val burn by lazy { getOption<Boolean>("Burn")!! }
+    val boundaryId by lazy { getOption<Int>("BoundaryID")!! }
 
 
     val TOOLS = intArrayOf(1349, 1351, 1353, 1355, 1357, 1359, 1361, 6739, 13241, 13242, 14028, TINDERBOX)
@@ -73,11 +83,16 @@ class Woodcutter : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldBurn(this)
 
     @ValueChanged("Bank")
-    fun onValueChanged(bank: Boolean) {
+    fun onBankValueChanged(bank: Boolean) {
         updateVisibility("Burn", !bank)
         if (bank) {
             updateOption("Burn", false, OptionType.BOOLEAN)
         }
+    }
+
+    @ValueChanged("Burn")
+    fun onBurnValueChanged(burn: Boolean) {
+        updateVisibility("BoundaryID", !burn)
     }
 }
 
