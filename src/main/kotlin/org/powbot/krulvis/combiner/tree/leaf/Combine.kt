@@ -21,12 +21,6 @@ import org.powbot.krulvis.combiner.Combiner
 
 class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
     override fun execute() {
-//        val gameObjectAction =
-//            script.openWidgetActionEvents.firstOrNull { it is GameObjectActionEvent } as GameObjectActionEvent?
-//        if (gameObjectAction != null && gameObjectAction.tile != Tile.Nil && gameObjectAction.tile.distance() > 6) {
-//            Movement.walkTo(gameObjectAction.tile)
-//        }
-
         script.combineActions.forEachIndexed { i, event ->
             val useMenu = !event.rawEntityName.contains("->")
             val interaction = when (event) {
@@ -57,7 +51,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
             }
             val next =
                 if (script.combineActions.size == i + 1) null else script.combineActions[i + 1]
-            if (interaction) {
+            if (interaction || (next is WidgetActionEvent && next.widget().visible())) {
                 script.log.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {
                     waitFor(long()) { !script.stoppedUsing() }

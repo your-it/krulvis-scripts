@@ -186,7 +186,6 @@ object ATContext {
     }
 
     fun Int.getItemDef() = CacheItemConfig.load(this)
-    fun Item.getItemDef() = CacheItemConfig.load(id())
 
     fun Bank.withdrawExact(id: Number, amount: Int, wait: Boolean = true): Boolean {
         val id = id.toInt()
