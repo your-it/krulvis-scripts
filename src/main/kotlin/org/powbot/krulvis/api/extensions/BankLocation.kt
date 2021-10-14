@@ -1,23 +1,14 @@
 package org.powbot.krulvis.api.extensions
 
-import org.powbot.api.Filter
-import org.powbot.api.MenuCommand
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.WebWalkingResult
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
-import org.powbot.api.rt4.walking.model.GameObjectInteraction
-import org.powbot.api.rt4.walking.model.NamedEntityInteraction
-import org.powbot.api.rt4.walking.model.NpcInteraction
 import org.powbot.api.rt4.walking.toRegularTile
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Random
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
 import org.powbot.mobile.service.WebWalkingService
@@ -180,7 +171,17 @@ enum class BankLocation(
             if (opened()) {
                 return true
             }
-            val nearest = nearest()
+            var nearest = nearest()
+            var depositBox = false
+            if (includeDepositBox) {
+                val nearestDeposit =
+                    values().filter { it.type == BankType.DEPOSIT_BOX }.minByOrNull { it.tile.distance() }
+                if (nearestDeposit != null && nearestDeposit.tile.distance() < nearest.distance()) {
+                    //Open deposit box instead
+                    nearest = nearestDeposit.tile
+                    depositBox = true
+                }
+            }
             if (nearest.distance() > 30 || !nearest.reachable()) {
                 ScriptManager.script()?.log?.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
                 val localPath = LocalPathFinder.findPath(nearest.getWalkableNeighbor())
@@ -188,14 +189,20 @@ enum class BankLocation(
                     localPath.traverseUntilReached()
                 } else {
                     try {
-                        Movement.moveToBank()
+                        if (depositBox) {
+                            Movement.walkTo(nearest)
+                        } else
+                            Movement.moveToBank()
                     } catch (e: Exception) {
                         ScriptManager.script()?.log?.info("Failed to move to bank!")
                         ScriptManager.script()?.log?.info(e.stackTraceToString())
                     }
                 }
             }
-            return open()
+            return if (depositBox) Utils.walkAndInteract(
+                Objects.stream().name("Bank deposit box").firstOrNull(),
+                "Deposit"
+            ) else open()
         }
     }
 
