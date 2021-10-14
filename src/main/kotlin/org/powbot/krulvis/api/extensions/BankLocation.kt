@@ -173,11 +173,11 @@ enum class BankLocation(
             }
             var nearest = nearest()
             var depositBox = false
-            if (includeDepositBox) {
+            if (includeDepositBox && nearest.tile() != Tile.Nil) {
                 val nearestDeposit =
                     values().filter { it.type == BankType.DEPOSIT_BOX }.minByOrNull { it.tile.distance() }
                 if (nearestDeposit != null && nearestDeposit.tile.distance() < nearest.distance()) {
-                    //Open deposit box instead
+                    ScriptManager.script()?.log?.info("DepositBox is closer=$nearestDeposit, distance=${nearestDeposit.tile.distance()}")
                     nearest = nearestDeposit.tile
                     depositBox = true
                 }
