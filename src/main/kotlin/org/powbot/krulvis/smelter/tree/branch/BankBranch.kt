@@ -10,7 +10,6 @@ import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.smelter.Smelter
-import org.powbot.krulvis.smither.Smither
 import org.powbot.krulvis.smelter.tree.leaf.HandleBank
 
 class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {

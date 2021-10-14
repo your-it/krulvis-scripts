@@ -22,11 +22,10 @@ class HandleBank(script: Smither) : Leaf<Smither>(script, "Handling Bank") {
                 Bank.withdraw(HAMMER, 1)
             }
         }
-        Bank.withdraw(script.bar.id, Bank.Amount.ALL)
-
         if (!Inventory.isFull() && !Bank.containsOneOf(script.bar.id)) {
             script.log.info("Out of ${script.bar.name}, stopping script")
             ScriptManager.stop()
-        }
+        } else if (Bank.withdraw(script.bar.id, Bank.Amount.ALL))
+            Bank.close()
     }
 }

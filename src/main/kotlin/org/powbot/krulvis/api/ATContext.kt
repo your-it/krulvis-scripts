@@ -186,7 +186,6 @@ object ATContext {
     }
 
     fun Int.getItemDef() = CacheItemConfig.load(this)
-    fun Item.getItemDef() = CacheItemConfig.load(id())
 
     fun Bank.withdrawExact(id: Number, amount: Int, wait: Boolean = true): Boolean {
         val id = id.toInt()
@@ -200,6 +199,7 @@ object ATContext {
                 debug("No: ${CacheItemConfig.load(id).name} with id=$id in bank")
                 return false
             } else if (amount - currentAmount >= stream().id(id).count(true)) {
+                debug("Withdrawing all: $id, since bank contains too few")
                 withdraw(id, Bank.Amount.ALL)
             } else if (amount - currentAmount >= Inventory.emptySlots() && !id.getItemDef().stackable) {
                 debug("Withdrawing all: $id, since there's just enough space")

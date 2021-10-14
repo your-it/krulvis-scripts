@@ -49,8 +49,8 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                     ScriptManager.stop()
                 } else if (primCount > split.first) {
                     Bank.deposit(script.bar.primary.id, Bank.Amount.ALL)
-                } else if (Bank.withdraw(script.bar.primary.id, if (hasSecondary) split.first - primCount else 0)) {
-                    waitFor { script.bar.primary.getCount() == primCount }
+                } else {
+                    Bank.withdraw(script.bar.primary.id, if (hasSecondary) split.first - primCount else 0)
                 }
             }
             if (hasSecondary && !Inventory.isFull()) {
@@ -60,7 +60,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                 } else if (primCount > split.second) {
                     Bank.deposit(script.bar.secondary.id, Bank.Amount.ALL)
                 } else if (Bank.withdraw(script.bar.secondary.id, Bank.Amount.ALL)) {
-                    waitFor { script.bar.secondary.getCount() == primCount }
+                    Bank.close()
                 }
             }
         }
