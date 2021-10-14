@@ -159,7 +159,7 @@ object ATContext {
         return abs(dest.tile().x() - x()) + abs(dest.tile().y() - y())
     }
 
-    fun Locatable.onMap(): Boolean = tile().matrix()?.onMap() == true
+    fun Locatable.onMap(): Boolean = tile().matrix().onMap()
 
     fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
 
