@@ -2,21 +2,16 @@ package org.powbot.krulvis.combiner.tree.leaf
 
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.CacheItemConfig
-import org.powbot.api.rt4.DepositBox
 import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.walking.model.GameObjectInteraction
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
-import org.powbot.krulvis.api.utils.Random
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
-import kotlin.system.measureTimeMillis
 
 class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
     override fun execute() {
