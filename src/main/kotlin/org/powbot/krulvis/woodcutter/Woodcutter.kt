@@ -93,6 +93,9 @@ class Woodcutter : ATScript() {
     @ValueChanged("Burn")
     fun onBurnValueChanged(burn: Boolean) {
         updateVisibility("BoundaryID", burn)
+        if (burn) {
+            updateOption("Bank", false, OptionType.BOOLEAN)
+        }
     }
 }
 
