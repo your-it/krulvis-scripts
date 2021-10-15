@@ -60,7 +60,7 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override fun validate(): Boolean {
         val myTile = Players.local().tile()
         return if (script.useSafespot) script.safespot == myTile
-        else script.target()?.reachable() == true || myTile.distanceTo(script.safespot) <= script.radius
+        else script.target()?.reachable() == true && myTile.distanceTo(script.safespot) <= script.radius
     }
 }
 
