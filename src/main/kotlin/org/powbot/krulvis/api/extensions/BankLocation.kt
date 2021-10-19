@@ -9,6 +9,8 @@ import org.powbot.api.rt4.walking.toRegularTile
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
 import org.powbot.mobile.service.WebWalkingService
@@ -200,9 +202,9 @@ enum class BankLocation(
                 }
             }
             return if (depositBox) Utils.walkAndInteract(
-                Objects.stream().name("Bank deposit box").firstOrNull(),
-                "Deposit"
-            ) else open()
+                Objects.stream().name("Bank deposit box").firstOrNull(), "Deposit"
+            ) && waitFor(long()) { DepositBox.opened() }
+            else open()
         }
     }
 
