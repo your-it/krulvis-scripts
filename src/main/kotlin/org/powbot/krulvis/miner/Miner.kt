@@ -18,7 +18,7 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.2.11",
+    version = "1.3.0",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
