@@ -19,7 +19,7 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
     override fun execute() {
         val hopper = getHopper()
         val totalPaydirt = Inventory.getCount(Ore.PAY_DIRT.id) + script.getMotherloadCount()
-        if (!script.nearHopper.reachable()) {
+        if (!script.nearHopper.reachable() || script.nearHopper.distance() > 15) {
             if (!script.escapeTopFloor()) return
             val path = LocalPathFinder.findPath(script.nearHopper)
             if (path.isNotEmpty()) {
