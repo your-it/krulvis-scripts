@@ -17,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.0.5",
+    version = "1.0.6",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -57,6 +57,8 @@ class Woodcutter : ATScript() {
                 if (it.tile.y in derpedRedWoodY)
                     it.tile.derive(0, 1)
                 else it.tile.derive(1, 0)
+            else if (it.name == "Teak")
+                it.tile
             else
                 it.tile.derive(1, 1)
         }
