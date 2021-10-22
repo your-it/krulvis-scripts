@@ -36,6 +36,7 @@ class ShouldPickNest(script: Woodcutter) : Branch<Woodcutter>(script, "Should Pi
     var nest: GroundItem? = null
 
     override fun validate(): Boolean {
+        if (!script.bank) return false
         nest = script.nest()
         return nest != null
     }

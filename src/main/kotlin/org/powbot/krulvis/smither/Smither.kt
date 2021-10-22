@@ -16,6 +16,7 @@ import org.powbot.krulvis.smither.tree.branch.ShouldBank
     name = "krul Smither",
     description = "Smiths stuff from bars",
     author = "Krulvis",
+    markdownFileName = "Smither.md",
     version = "1.0.2",
     category = ScriptCategory.Smithing
 )
