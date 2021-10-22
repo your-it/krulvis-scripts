@@ -13,7 +13,3 @@
 ## Features
 
 - **All seeds**
-
-## Options
-
-- **Drink stamina pots.**

@@ -14,6 +14,7 @@ import org.powbot.krulvis.smelter.tree.branch.ShouldBank
     name = "krul Smelter",
     description = "Smelt bars or cannonballs",
     author = "Krulvis",
+    markdownFileName = "Smelter.md",
     version = "1.1.2",
     category = ScriptCategory.Smithing
 )
