@@ -58,6 +58,16 @@
 
 ## Setup
 
+### Without safespot
+
+<figure class="video_container">
+  <video controls>
+    <source src="https://cloud.krulvis.space/s/jEGd43y5RyfyKd3/download/krul_Fighter_setup.mp4" type="video/mp4">
+  </video>
+</figure>
+
+### With safespot (older UI)
+
 <figure class="video_container">
   <video controls>
     <source src="https://cloud.krulvis.space/s/R9MMakdep63rr7x/download/setup_blue_drags_example.mp4" type="video/mp4">
