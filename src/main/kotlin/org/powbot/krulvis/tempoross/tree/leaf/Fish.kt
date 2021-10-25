@@ -5,7 +5,6 @@ import org.powbot.api.rt4.Camera
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
-import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.me
@@ -25,7 +24,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
         val fishSpot = script.bestFishSpot
         if (fishSpot == null) {
             script.log.info("No safe fishing spot found!")
-            if (script.blockedTiles.contains(me.tile())) {
+            if (script.burningTiles.contains(me.tile())) {
                 val safeTile = findSaveTile(me.tile())
                 script.log.info("We are standing on a dangerous tile! Walking to $safeTile")
                 if (safeTile != null && Movement.step(safeTile)) {
@@ -59,7 +58,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
         val currentSpot = if (interacting is Npc) interacting else null
 
         if (currentSpot?.name() == "Fishing spot") {
-            if (script.blockedTiles.contains(me.tile())
+            if (script.burningTiles.contains(me.tile())
                 || (currentSpot.id() != DOUBLE_FISH_ID && fishSpot.id() == DOUBLE_FISH_ID)
             ) {
                 script.log.info("Moving to double/save fish spot!")
@@ -83,13 +82,15 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 
     fun findSaveTile(tile: Tile): Tile? {
         return tile.getWalkableNeighbor(diagonalTiles = true) {
-            !script.blockedTiles.contains(it)
+            !script.burningTiles.contains(it)
         }
     }
 
     fun fishAtSpot(spot: Npc) {
         if (interact(spot, "Harpoon")) {
-            waitFor(long()) { (me.animation() != -1 && me.interacting()?.name() == "Fishing spot") || !spot.valid() }
+            waitFor(Random.nextInt(1000, 5000)) {
+                me.interacting().name() == "Fishing spot" || !spot.valid() || !script.waveTimer.isFinished()
+            }
         } else if (Movement.moving()) {
             waitFor(long()) { spot.distance() <= 2 }
         }

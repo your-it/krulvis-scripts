@@ -1,6 +1,5 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
-import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbors
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.ATContext.walk
@@ -27,7 +26,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
         val pole = script.getTetherPole() ?: return
         val poleTiles = pole.tile().getWalkableNeighbors(diagonalTiles = true)
         val nearestTile = poleTiles.minByOrNull { it.distance() }
-        val safeTile = poleTiles.filterNot { script.blockedTiles.contains(it) }.minByOrNull { it.distance() }
+        val safeTile = poleTiles.filterNot { script.burningTiles.contains(it) }.minByOrNull { it.distance() }
         if (safeTile == nearestTile) {
             if (interact(pole, "Tether")) {
                 waitFor(2500) { script.isTethering() }
