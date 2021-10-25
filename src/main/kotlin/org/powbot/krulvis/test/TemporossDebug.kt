@@ -85,7 +85,7 @@ class TemporossDebug : ATScript() {
                     log.info("Found obj at mast: ${it.name()}, actions=${it.actions().joinToString()}")
                 }
 
-                tempoross.blockedTiles.clear()
+                tempoross.burningTiles.clear()
                 tempoross.triedPaths.clear()
                 tempoross.detectDangerousTiles()
 
@@ -149,7 +149,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(sc
         script.tempoross.side.bossWalkLocation.drawOnScreen(g, null, CYAN)
         script.tempoross.side.mastLocation.drawOnScreen(g, null, CYAN)
 
-        val blockedTiles = script.tempoross.blockedTiles.toList()
+        val blockedTiles = script.tempoross.burningTiles.toList()
         val paths = script.tempoross.triedPaths.toList()
 
         blockedTiles.forEach {

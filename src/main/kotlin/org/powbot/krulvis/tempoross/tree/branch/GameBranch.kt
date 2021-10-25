@@ -53,7 +53,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
     override val failedComponent: TreeComponent<Tempoross> =
         SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
-            script.blockedTiles.clear()
+            script.burningTiles.clear()
             script.triedPaths.clear()
             script.detectDangerousTiles()
 

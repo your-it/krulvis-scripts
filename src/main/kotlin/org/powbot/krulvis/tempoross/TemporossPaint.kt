@@ -5,7 +5,6 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.api.script.paint.TrackSkillOption
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
@@ -21,7 +20,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
 
     override fun paintCustom(g: Graphics) {
         if (debugComponents) {
-            val blockedTiles = script.blockedTiles.toList()
+            val blockedTiles = script.burningTiles.toList()
             val paths = script.triedPaths.toList()
             blockedTiles.forEach {
                 val t = it
@@ -31,7 +30,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
             }
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
-                    val dangerous = tiles.any { script.blockedTiles.contains(it) }
+                    val dangerous = tiles.any { script.burningTiles.contains(it) }
                     tiles.forEach { tile ->
                         tile.drawOnScreen(
                             g,

@@ -10,7 +10,7 @@ import org.powbot.krulvis.tempoross.Tempoross
 
 class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
     override fun execute() {
-        script.blockedTiles.clear()
+        script.burningTiles.clear()
         script.triedPaths.clear()
         val leaveNpc = getLeaveNpc()
         if (leaveNpc != null && interact(leaveNpc, "Leave")) {

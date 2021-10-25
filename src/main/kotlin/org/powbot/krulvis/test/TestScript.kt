@@ -15,6 +15,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.miner.Data
 import org.powbot.mobile.drawing.Graphics
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
@@ -72,18 +73,18 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        obj = Objects.stream().name("Bank chest").firstOrNull()
-//        if (obj != null) {
-//            val inViewport = Condition.wait({
-//                if (!obj!!.inViewport(true)) {
-//                    Camera.turnTo(obj!!.tile())
-//                }
-//                obj!!.inViewport(true)
-//            }, 100, 10)
-//            log.info("In viewport: $inViewport")
-//        }
-        val b = Bank.getBank()
-        Utils.walkAndInteract(b, "Use")
+        val upStairs = Objects.stream().id(19049).firstOrNull()
+        val downStairs = Objects.stream().id(19047).firstOrNull()
+        log.info("Up stairs: ${upStairs?.name}, at=${upStairs?.tile}, actions=${upStairs?.actions()?.joinToString()}")
+        log.info(
+            "Down stairs: ${downStairs?.name}, at=${downStairs?.tile}, actions=${
+                downStairs?.actions()?.joinToString()
+            }"
+        )
+        if (Data.TOP_POLY.contains(Players.local().tile()))
+            upStairs?.interact("Climb")
+        else
+            downStairs?.interact("Climb")
         sleep(2000)
     }
 

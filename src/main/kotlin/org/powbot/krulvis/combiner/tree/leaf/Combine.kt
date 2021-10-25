@@ -23,6 +23,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
     override fun execute() {
         script.combineActions.forEachIndexed { i, event ->
             val useMenu = !event.rawEntityName.contains("->")
+            val prev = if (i > 0) script.combineActions[i - 1] else null
             val interaction = when (event) {
                 is InventoryItemActionEvent -> {
                     Inventory.open() && event.item()
@@ -32,13 +33,15 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                 is GameObjectActionEvent -> {
                     Utils.walkAndInteract(
                         Objects.stream().within(event.tile, 2.5).name(event.name).firstOrNull(),
-                        event.interaction
+                        event.interaction,
+                        selectItem = if (prev is InventoryItemActionEvent && prev.interaction == "Use") prev.id else -1
                     )
                 }
                 is NpcActionEvent -> {
                     Utils.walkAndInteract(
                         Npcs.stream().name(event.name).nearest().firstOrNull(),
-                        event.interaction
+                        event.interaction,
+                        selectItem = if (prev is InventoryItemActionEvent && prev.interaction == "Use") prev.id else -1
                     )
                 }
                 is WidgetActionEvent -> {

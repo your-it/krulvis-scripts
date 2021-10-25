@@ -33,6 +33,8 @@ import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
 import org.powbot.krulvis.tempoross.tree.branch.ShouldEnterBoat
+import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
+import org.powbot.krulvis.tempoross.tree.leaf.Leave
 import java.util.*
 
 @ScriptManifest(
@@ -67,7 +69,7 @@ class Tempoross : ATScript() {
     val waveTimer = Timer(0)
     var side: Side = Side.UNKNOWN
     var forcedShooting = false
-    val blockedTiles = mutableListOf<Tile>()
+    val burningTiles = mutableListOf<Tile>()
     val triedPaths = mutableListOf<LocalPath>()
     var profile = TemporossProfile()
     var rewardGained = 0
@@ -86,7 +88,7 @@ class Tempoross : ATScript() {
 
     fun containsDangerousTile(path: LocalPath): Boolean {
         triedPaths.add(path)
-        return path.actions.any { blockedTiles.contains(it.destination) }
+        return path.actions.any { burningTiles.contains(it.destination) }
     }
 
     fun interactWhileDousing(
@@ -130,9 +132,9 @@ class Tempoross : ATScript() {
      * @param allowCrossing
      */
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
-        val blockedTile = path.actions.firstOrNull { blockedTiles.contains(it.destination) }
+        val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
         val fire =
-            if (blockedTile != null) Npcs.stream().name("Fire").within(blockedTile.destination, 2.5).nearest()
+            if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
                 .firstOrNull() else null
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
@@ -169,6 +171,10 @@ class Tempoross : ATScript() {
         } else {
             false
         }
+    }
+
+    override fun canBreak(): Boolean {
+        return lastLeaf is EnterBoat || lastLeaf is Leave
     }
 
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
@@ -243,10 +249,10 @@ class Tempoross : ATScript() {
     }
 
     fun addTile(tile: Tile) {
-        blockedTiles.add(tile)
-        blockedTiles.add(Tile(tile.x(), tile.y() - 1, 0))
-        blockedTiles.add(Tile(tile.x() - 1, tile.y(), 0))
-        blockedTiles.add(Tile(tile.x() - 1, tile.y() - 1, 0))
+        burningTiles.add(tile)
+        burningTiles.add(Tile(tile.x(), tile.y() - 1, 0))
+        burningTiles.add(Tile(tile.x() - 1, tile.y(), 0))
+        burningTiles.add(Tile(tile.x() - 1, tile.y() - 1, 0))
     }
 
     fun collectFishSpots() {
