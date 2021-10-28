@@ -141,8 +141,8 @@ class Tempoross : ATScript() {
         if (fire != null && hasBucket) {
             log.info("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
-                if (fire.distance() > 8) {
-                    val blockedIndex = path.actions.indexOf(blockedTile)
+                val blockedIndex = path.actions.indexOf(blockedTile)
+                if (fire.distance() > 8 && blockedIndex >= 2) {
                     val safeSpot = path.actions[blockedIndex - 2].destination
                     Movement.step(safeSpot)
                 }
