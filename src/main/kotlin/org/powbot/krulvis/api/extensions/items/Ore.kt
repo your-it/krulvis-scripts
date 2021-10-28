@@ -21,6 +21,7 @@ enum class Ore(
     ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
     MITHRIL(intArrayOf(447), 55, 547, 24, -22239),
     GOLD(intArrayOf(444), 40, 548, 16, 8885),
+    SANDSTONE(intArrayOf(6971, 6973, 6975, 6977), 25, -1, 0, 6949),
     COAL(intArrayOf(453), 30, 547, 0, 10508),
     SILVER(intArrayOf(442), 20, -1, -1, 74),
     IRON(intArrayOf(440), 15, 547, 16, 2576),

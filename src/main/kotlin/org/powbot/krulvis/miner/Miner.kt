@@ -71,6 +71,7 @@ class Miner : ATScript() {
 
     val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
+    var waterskins = false
 
     override fun createPainter(): ATPaint<*> = MinerPainter(this)
 
