@@ -7,11 +7,13 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.miner.Data
+import org.powbot.krulvis.miner.Data.WATERSKINS
 import org.powbot.krulvis.miner.Miner
+import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
     override fun execute() {
-        if (Inventory.stream().id(*Data.WATERSKINS, Data.EMPTY_WATERSKIN).isNotEmpty()) {
+        if (Inventory.stream().id(*WATERSKINS, Data.EMPTY_WATERSKIN).isNotEmpty()) {
             script.waterskins = true
         }
         if (!Inventory.emptyExcept(*Data.TOOLS)) {
@@ -21,7 +23,12 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
                 DepositBox.depositAllExcept(*Data.TOOLS)
             }
         } else if (script.waterskins && Data.hasWaterSkins()) {
-            Bank.withdraw(Data.WATERSKINS[0], Bank.Amount.FIVE)
+            if (Bank.containsOneOf(*WATERSKINS))
+                Bank.withdraw(WATERSKINS[0], Bank.Amount.FIVE)
+            else {
+                script.log.info("Out of waterskins, stopping script")
+                ScriptManager.stop()
+            }
         } else {
             Bank.close()
             DepositBox.close()
