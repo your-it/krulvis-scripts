@@ -13,6 +13,8 @@ import org.powbot.krulvis.miner.tree.leaf.*
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.utils.Utils.waitFor
 
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
@@ -27,6 +29,21 @@ class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") 
     }
 
     override val successComponent: TreeComponent<Miner> = FixStrut(script)
+    override val failedComponent: TreeComponent<Miner> = ShouldCastHumidify(script)
+}
+
+class ShouldCastHumidify(script: Miner) : Branch<Miner>(script, "Should Humidify") {
+
+    override fun validate(): Boolean {
+        return Data.hasEmptyWaterSkin() && !Data.hasWaterSkins() &&
+                Game.tab(Game.Tab.MAGIC) && Magic.ready(Magic.LunarSpell.HUMIDIFY)
+    }
+
+    override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Cast humidfy") {
+        if (Magic.cast(Magic.LunarSpell.HUMIDIFY)) {
+            waitFor(long()) { !Data.hasEmptyWaterSkin() }
+        }
+    }
     override val failedComponent: TreeComponent<Miner> = ShouldBank(script)
 }
 
@@ -40,6 +57,7 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
         //Actual should bank
         val full = Inventory.isFull()
         return full || Bank.opened() || DepositBox.opened()
+                || (Data.hasEmptyWaterSkin() && !Data.hasWaterSkins())
                 || (script.shouldEmptySack
                 && !Inventory.emptyExcept(*Data.TOOLS)
                 && (full || script.getMotherloadCount() == 0))
@@ -86,6 +104,18 @@ class HasPayDirt(script: Miner) : Branch<Miner>(script, "Has pay-dirt") {
     }
 
     override val successComponent: TreeComponent<Miner> = DropPayDirt(script)
+    override val failedComponent: TreeComponent<Miner> = HasSandstone(script)
+}
+
+class HasSandstone(script: Miner) : Branch<Miner>(script, "Has sandstone") {
+
+    override fun validate(): Boolean {
+        return Inventory.containsOneOf(*Ore.SANDSTONE.ids) &&
+                Objects.stream().name("Grinder").action("Deposit")
+                    .isNotEmpty()
+    }
+
+    override val successComponent: TreeComponent<Miner> = DropSandstone(script)
     override val failedComponent: TreeComponent<Miner> = IsBankOpen(script)
 }
 

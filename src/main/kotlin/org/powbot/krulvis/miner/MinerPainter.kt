@@ -13,7 +13,10 @@ class MinerPainter(script: Miner) : ATPaint<Miner>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder
             .trackSkill(Skill.Mining)
-            .trackInventoryItems(12012, *Ore.values().filter { it != Ore.PAY_DIRT }.map { it.id }.toIntArray())
+            .trackInventoryItems(
+                12012,
+                *Ore.values().filter { it != Ore.PAY_DIRT }.flatMap { it.ids.toList() }.toIntArray()
+            )
             .withTotalLoot(true)
         return paintBuilder.build()
     }

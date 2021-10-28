@@ -37,7 +37,6 @@ class TestWeb : ATScript() {
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
         localPath = LocalPathFinder.findPath(origin, newDest)
-        collisionMap = LocalPathFinder.cachedFlags
         sleep(2000)
     }
 
