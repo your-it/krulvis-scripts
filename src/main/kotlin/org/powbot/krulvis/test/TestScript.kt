@@ -3,6 +3,8 @@ package org.powbot.krulvis.test
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.Staff
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.model.Edge
@@ -73,18 +75,7 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val upStairs = Objects.stream().id(19049).firstOrNull()
-        val downStairs = Objects.stream().id(19047).firstOrNull()
-        log.info("Up stairs: ${upStairs?.name}, at=${upStairs?.tile}, actions=${upStairs?.actions()?.joinToString()}")
-        log.info(
-            "Down stairs: ${downStairs?.name}, at=${downStairs?.tile}, actions=${
-                downStairs?.actions()?.joinToString()
-            }"
-        )
-        if (Data.TOP_POLY.contains(Players.local().tile()))
-            upStairs?.interact("Climb")
-        else
-            downStairs?.interact("Climb")
+        Magic.cast(Magic.LunarSpell.HUMIDIFY)
         sleep(2000)
     }
 
@@ -107,7 +98,7 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
 //            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
-            .addString("Bank in viewport:") { "${script.obj?.inViewport()}" }
+            .addString("Can cast:") { "${Magic.LunarSpell.HUMIDIFY.canCast()}" }
             .withTotalLoot(true)
             .build()
     }

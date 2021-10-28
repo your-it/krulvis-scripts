@@ -35,7 +35,8 @@ class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") 
 class ShouldCastHumidify(script: Miner) : Branch<Miner>(script, "Should Humidify") {
 
     override fun validate(): Boolean {
-        return Data.hasEmptyWaterSkin() && !Data.hasWaterSkins() && Magic.LunarSpell.HUMIDIFY.canCast()
+        return Data.hasEmptyWaterSkin() && !Data.hasWaterSkins() &&
+                Game.tab(Game.Tab.MAGIC) && Magic.ready(Magic.LunarSpell.HUMIDIFY)
     }
 
     override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Cast humidfy") {
