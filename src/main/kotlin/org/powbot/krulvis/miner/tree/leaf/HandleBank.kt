@@ -6,6 +6,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.miner.Data.WATERSKINS
 import org.powbot.krulvis.miner.Miner
@@ -16,7 +17,12 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
         if (Inventory.stream().id(*WATERSKINS, Data.EMPTY_WATERSKIN).isNotEmpty()) {
             script.waterskins = true
         }
-        if (!Inventory.emptyExcept(*Data.TOOLS)) {
+        val gemBag = GemBag.getInvItem()
+        if (gemBag != null && !GemBag.empty) {
+            if (gemBag.interact("Empty")) {
+                GemBag.empty = true
+            }
+        } else if (!Inventory.emptyExcept(*Data.TOOLS)) {
             if (Bank.opened()) {
                 Bank.depositAllExcept(*Data.TOOLS)
             } else {

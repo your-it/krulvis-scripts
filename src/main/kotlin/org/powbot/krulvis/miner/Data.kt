@@ -3,10 +3,26 @@ package org.powbot.krulvis.miner
 import org.powbot.api.Area
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
+import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.api.extensions.items.Item
 
 object Data {
-    val TOOLS = intArrayOf(1265, 1267, 1269, 1271, 1273, 1275, 12297, Item.HAMMER, 11920, 12797, 13243, 13244, 1823)
+    val TOOLS = intArrayOf(
+        1265,
+        1267,
+        1269,
+        1271,
+        1273,
+        1275,
+        12297,
+        Item.HAMMER,
+        11920,
+        12797,
+        13243,
+        13244,
+        1823,
+        *GemBag.ids
+    )
 
     var TOP_POLY = Area(
         Tile(3748, 5685),
@@ -25,6 +41,7 @@ object Data {
     val WATERSKINS = intArrayOf(1823, 1825, 1827, 1829)
     val EMPTY_WATERSKIN = 1831
 
+    val GEM_BAG_GEMS = intArrayOf(1623, 1621, 1619, 1617)
     val SANDSTONE = intArrayOf(6971, 6973, 6975, 6977)
 
     fun hasWaterSkins() = Inventory.stream().id(*WATERSKINS).isNotEmpty()

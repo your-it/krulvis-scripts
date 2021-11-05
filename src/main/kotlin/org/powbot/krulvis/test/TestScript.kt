@@ -71,7 +71,8 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        Magic.cast(Magic.LunarSpell.HUMIDIFY)
+        val rock = Objects.stream().at(Tile(2823, 2999, 0)).name("Rocks").firstOrNull()
+        log.info("Mod colors: ${rock?.modifiedColors()?.joinToString()}")
         sleep(2000)
     }
 
@@ -84,7 +85,7 @@ class TestScript : ATScript() {
     @com.google.common.eventbus.Subscribe
     fun onInventoryChange(evt: InventoryChangeEvent) {
         if (!painter.paintBuilder.trackingInventoryItem(evt.itemId)) {
-            painter.paintBuilder.trackInventoryItem(evt)
+//            painter.paintBuilder.trackInventoryItem(evt)
         }
     }
 
@@ -94,7 +95,8 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
 //            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
-//            .addString("Can cast:") { "${Magic.LunarSpell.HUMIDIFY.canCast()}" }
+            .addString("Can cast fire strike:") { "${Magic.Spell.FIRE_STRIKE.canCast()}" }
+            .addString("Can cast water strike:") { "${Magic.Spell.WATER_STRIKE.canCast()}" }
             .withTotalLoot(true)
             .build()
     }
@@ -108,6 +110,7 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 ////        script.rocks.forEach {
 ////            it.tile.drawOnScreen(g, outlineColor = Color.GREEN)
 ////        }
+        g.setScale(1.0f)
     }
 
     fun Tile.toWorld(): Tile {

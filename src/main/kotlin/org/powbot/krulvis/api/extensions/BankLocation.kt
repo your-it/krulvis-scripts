@@ -170,6 +170,7 @@ enum class BankLocation(
         }
 
         fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
+            val log = ScriptManager.script()?.log ?: return false
             if (opened()) {
                 return true
             }
@@ -179,25 +180,28 @@ enum class BankLocation(
                 val nearestDeposit =
                     values().filter { it.type == BankType.DEPOSIT_BOX }.minByOrNull { it.tile.distance() }
                 if (nearestDeposit != null && nearestDeposit.tile.distance() < nearest.distance()) {
-                    ScriptManager.script()?.log?.info("DepositBox is closer=$nearestDeposit, distance=${nearestDeposit.tile.distance()}")
+                    log.info("DepositBox is closer=$nearestDeposit, distance=${nearestDeposit.tile.distance()}")
                     nearest = nearestDeposit.tile
                     depositBox = true
                 }
             }
             if (nearest.distance() > 30 || !nearest.reachable()) {
-                ScriptManager.script()?.log?.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
+                log.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
                 val localPath = LocalPathFinder.findPath(nearest.getWalkableNeighbor())
                 if (localPath.isNotEmpty()) {
                     localPath.traverseUntilReached()
                 } else {
                     try {
                         if (depositBox) {
+                            log.info("Walking to depositbox @ $nearest")
                             Movement.walkTo(nearest)
-                        } else
+                        } else {
+                            log.info("Moving to bank")
                             Movement.moveToBank()
+                        }
                     } catch (e: Exception) {
-                        ScriptManager.script()?.log?.info("Failed to move to bank!")
-                        ScriptManager.script()?.log?.info(e.stackTraceToString())
+                        log.info("Failed to move to bank!")
+                        log.info(e.stackTraceToString())
                     }
                 }
             }
