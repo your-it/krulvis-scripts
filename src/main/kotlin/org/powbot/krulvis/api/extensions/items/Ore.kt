@@ -19,6 +19,7 @@ enum class Ore(
     PAY_DIRT(intArrayOf(12011), 45, -1, -1, 6705),
     RUNITE(intArrayOf(451), 85, 548, 8, -31437),
     ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
+    GEM_ROCK(intArrayOf(1625, 1627, 1629, 1623, 1621, 1619, 1617), 65, -1, -1, -10335),
     MITHRIL(intArrayOf(447), 55, 547, 24, -22239),
     GOLD(intArrayOf(444), 40, 548, 16, 8885),
     SANDSTONE(intArrayOf(6971, 6973, 6975, 6977), 25, -1, 0, 6949),

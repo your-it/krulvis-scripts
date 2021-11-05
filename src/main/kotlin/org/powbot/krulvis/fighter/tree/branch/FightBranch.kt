@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
@@ -11,6 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Kill
 import org.powbot.krulvis.fighter.tree.leaf.Loot
+import org.powbot.mobile.script.ScriptManager
 
 class IsKilling(script: Fighter) : Branch<Fighter>(script, "Is Killing?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Chillings") {
@@ -54,6 +56,11 @@ class AtSpot(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
         SimpleLeaf(script, "Walking") {
             val spot =
                 if (script.warriorGuild && script.lastDefenderIndex >= 6) Tile(2915, 9966, 0) else script.safespot
+            if (spot == Tile.Nil) {
+                Notifications.showNotification("You have to select a centertile/safespot before starting the script")
+                ScriptManager.stop()
+                return@SimpleLeaf
+            }
             Movement.walkTo(spot)
         }
 

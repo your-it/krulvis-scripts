@@ -1,20 +1,23 @@
 package org.powbot.krulvis.miner.tree.branch
 
-import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.emptyExcept
-import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.extensions.items.Ore
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.miner.Data
-import org.powbot.krulvis.miner.Miner
-import org.powbot.krulvis.miner.tree.leaf.*
-import org.powbot.api.Tile
-import org.powbot.api.rt4.*
+import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.items.GemBag
+import org.powbot.krulvis.api.extensions.items.GemBag.GEM_BAG_CLOSED
+import org.powbot.krulvis.api.extensions.items.Item
+import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.miner.Data
+import org.powbot.krulvis.miner.Data.GEM_BAG_GEMS
+import org.powbot.krulvis.miner.Miner
+import org.powbot.krulvis.miner.tree.leaf.*
 
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
@@ -94,6 +97,20 @@ class ShouldDrop(script: Miner) : Branch<Miner>(script, "Should Drop") {
     }
 
     override val successComponent: TreeComponent<Miner> = Drop(script)
+    override val failedComponent: TreeComponent<Miner> = ShouldFillGemBag(script)
+}
+
+class ShouldFillGemBag(script: Miner) : Branch<Miner>(script, "Should Fill Gem Bag?") {
+
+    override fun validate(): Boolean {
+        return Inventory.containsOneOf(GEM_BAG_CLOSED) && Inventory.containsOneOf(*GEM_BAG_GEMS)
+    }
+
+    override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Filling gem bag") {
+        if (Inventory.stream().id(GEM_BAG_CLOSED).first().interact("Fill")) {
+            waitFor { !Inventory.isFull() }
+        }
+    }
     override val failedComponent: TreeComponent<Miner> = HasPayDirt(script)
 }
 
@@ -127,6 +144,7 @@ class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
 
     override val successComponent: TreeComponent<Miner> = HandleBank(script)
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
+        GemBag.empty = false
         if (script.escapeTopFloor()) {
             Bank.openNearestBank(true)
         }
