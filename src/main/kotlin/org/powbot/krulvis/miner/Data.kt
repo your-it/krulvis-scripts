@@ -24,6 +24,25 @@ object Data {
         *GemBag.ids
     )
 
+    @JvmStatic
+    fun main(args: Array<String>) {
+        OUTSIDE_TILES.forEach {
+            println("$it, inside=${TOP_POLY.contains(it)}")
+        }
+    }
+
+    val OUTSIDE_TILES = arrayOf(
+        Tile(3750, 5677),
+        Tile(3751, 5675),
+        Tile(3753, 5674),
+        Tile(3754, 5673),
+        Tile(3756, 5672),
+        Tile(3759, 5670),
+        Tile(3760, 5667),
+        Tile(3760, 5665),
+        Tile(3759, 5663),
+    )
+
     var TOP_POLY = Area(
         Tile(3748, 5685),
         Tile(3766, 5685),

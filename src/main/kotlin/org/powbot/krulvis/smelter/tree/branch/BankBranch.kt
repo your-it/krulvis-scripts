@@ -6,7 +6,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.smelter.Smelter
@@ -27,7 +27,7 @@ class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {
 class IsBankOpen(script: Smelter) : Branch<Smelter>(script, "IsBankOpen") {
     override val successComponent: TreeComponent<Smelter> = HandleBank(script)
     override val failedComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Opening Bank") {
-        Bank.openNearestBank()
+        Bank.openNearest()
     }
 
     override fun validate(): Boolean {

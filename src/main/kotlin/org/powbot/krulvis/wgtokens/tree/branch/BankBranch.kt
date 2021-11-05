@@ -6,7 +6,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.wgtokens.WGTokens
 import org.powbot.krulvis.wgtokens.tree.leaf.HandleBank
 
@@ -21,7 +21,7 @@ class ShouldBank(script: WGTokens) : Branch<WGTokens>(script, "ShouldBank?") {
 
 class IsBankOpen(script: WGTokens) : Branch<WGTokens>(script, "IsBankOpen?") {
     override val failedComponent: TreeComponent<WGTokens> = SimpleLeaf(script, "Open bank") {
-        Bank.openNearestBank()
+        Bank.openNearest()
     }
     override val successComponent: TreeComponent<WGTokens> = HandleBank(script)
 

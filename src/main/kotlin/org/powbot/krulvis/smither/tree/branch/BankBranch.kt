@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.smither.Smither
 import org.powbot.krulvis.smither.tree.leaf.HandleBank
 
@@ -20,7 +20,7 @@ class ShouldBank(script: Smither) : Branch<Smither>(script, "ShouldBank") {
 class IsBankOpen(script: Smither) : Branch<Smither>(script, "IsBankOpen") {
     override val successComponent: TreeComponent<Smither> = HandleBank(script)
     override val failedComponent: TreeComponent<Smither> = SimpleLeaf(script, "Opening Bank") {
-        Bank.openNearestBank()
+        Bank.openNearest()
     }
 
     override fun validate(): Boolean {

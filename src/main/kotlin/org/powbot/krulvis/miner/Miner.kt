@@ -44,6 +44,12 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
             defaultValue = "true"
         ),
         ScriptConfiguration(
+            "Deposit box",
+            "Use depositbox",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
+        ),
+        ScriptConfiguration(
             "Hop",
             "Hop from players?",
             optionType = OptionType.BOOLEAN,
@@ -59,6 +65,12 @@ import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 )
 class Miner : ATScript() {
 
+    @ValueChanged("Bank ores")
+    fun onBankOresValue(bank: Boolean) {
+        if (!bank) updateOption("Deposit box", false, OptionType.BOOLEAN)
+        updateVisibility("Deposit box", bank)
+    }
+
     val rockLocations by lazy {
         val o = getOption<List<GameObjectActionEvent>>("Rocks")
         log.info(o.toString())
@@ -66,6 +78,7 @@ class Miner : ATScript() {
     }
 
     val bankOres by lazy { getOption<Boolean>("Bank ores") ?: true }
+    val useDepositBox by lazy { getOption<Boolean>("Deposit box") ?: true }
     val fastMine by lazy { getOption<Boolean>("Fast mine") ?: true }
     val hopFromPlayers by lazy { getOption<Boolean>("Hop") ?: false }
 

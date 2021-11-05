@@ -11,6 +11,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -71,8 +72,6 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val rock = Objects.stream().at(Tile(2823, 2999, 0)).name("Rocks").firstOrNull()
-        log.info("Mod colors: ${rock?.modifiedColors()?.joinToString()}")
         sleep(2000)
     }
 
@@ -121,5 +120,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "banned", true)
+    TestScript().startScript("127.0.0.1", "GIM", true)
 }

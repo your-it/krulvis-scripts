@@ -8,7 +8,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
@@ -17,7 +17,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
     override fun execute() {
         val keepItems = script.items.map { it.key }.toIntArray()
         if (!Bank.opened()) {
-            Bank.openNearestBank()
+            Bank.openNearest()
         } else if (!Inventory.emptyExcept(*keepItems)) {
 //            if (Inventory.stream().filtered { it.id !in keepItems }.list().map { it.id }.toSet().size > 1){
 //                Bank.depositAll()

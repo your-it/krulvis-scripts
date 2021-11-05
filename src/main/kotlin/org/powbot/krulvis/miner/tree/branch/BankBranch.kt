@@ -7,7 +7,8 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestDB
 import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.api.extensions.items.GemBag.GEM_BAG_CLOSED
 import org.powbot.krulvis.api.extensions.items.Item
@@ -146,7 +147,8 @@ class IsBankOpen(script: Miner) : Branch<Miner>(script, "Is Bank open") {
     override val failedComponent: TreeComponent<Miner> = SimpleLeaf(script, "OpenBank") {
         GemBag.empty = false
         if (script.escapeTopFloor()) {
-            Bank.openNearestBank(true)
+            if (script.useDepositBox) DepositBox.openNearestDB()
+            else Bank.openNearest()
         }
     }
 }
