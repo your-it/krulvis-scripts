@@ -2,12 +2,10 @@ package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.HandleBank
 

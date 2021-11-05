@@ -3,21 +3,17 @@ package org.powbot.krulvis.test
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPath
-import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Edge
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 
 @ScriptManifest(name = "test Web", version = "1.0.1", description = "", priv = true)
@@ -29,14 +25,18 @@ class TestWeb : ATScript() {
     var collisionMap: Array<IntArray> = emptyArray()
 
     //    val dest = Tile(3253, 3420, 0) //Varrock bank
-    var newDest = Tile(2907, 9968, 0)
+    var newDest = Tile(3090, 3245, 0)
     var localPath: LocalPath = LocalPath(emptyList())
     var comp: Component? = null
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks")!! }
     var path = emptyList<Edge<*>?>()
     var trapdoor: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        localPath = LocalPathFinder.findPath(origin, newDest)
+//        localPath = LocalPathFinder.findPath(origin, newDest)
+//        localPath = LocalPathFinder.findPath(Players.local().tile(), newDest)
+        val nearest = Bank.getBank()
+        log.info("Nearest bank: ${nearest}, tile=${nearest.tile()}")
+        Bank.openNearest()
         sleep(2000)
     }
 
@@ -44,8 +44,8 @@ class TestWeb : ATScript() {
     fun onGameActionEvent(e: GameActionEvent) {
         log.info("$e")
     }
-
 }
+
 
 class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {

@@ -2,11 +2,10 @@ package org.powbot.krulvis.thiever.tree.branch
 
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.currentHP
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.utils.Utils.long
@@ -50,7 +49,7 @@ class IsBankOpen(script: Thiever) : Branch<Thiever>(script, "Should Open Bank") 
     override val successComponent: TreeComponent<Thiever> = HandleBank(script)
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Open bank") {
 
-        Bank.openNearestBank()
+        Bank.openNearest()
     }
 
     override fun validate(): Boolean {

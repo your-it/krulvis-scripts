@@ -136,6 +136,33 @@ enum class BankLocation(
 
     companion object {
 
+        fun DepositBox.openNearestDB(): Boolean {
+            val log = ScriptManager.script()?.log ?: return false
+            val nearest = values()
+                .filter { it.type == BankType.DEPOSIT_BOX }
+                .minByOrNull { it.tile.distance() } ?: return false
+            val box = Objects.stream().name("Bank deposit box").firstOrNull()
+            if (box == null || nearest.tile.distance() > 30 || !nearest.tile.reachable()) {
+                log.info("nearest=$nearest, distance=${nearest.tile.distance()} is not reachable!")
+                val localPath = LocalPathFinder.findPath(nearest.tile.getWalkableNeighbor())
+                if (localPath.isNotEmpty()) {
+                    log.info("LocalWalking to=${localPath.finalDestination()}")
+                    localPath.traverseUntilReached()
+                } else {
+                    try {
+                        log.info("WebWalking to=${nearest.tile}")
+                        Movement.walkTo(nearest.tile)
+                    } catch (e: Exception) {
+                        log.info("Failed to move to bank!")
+                        log.info(e.stackTraceToString())
+                    }
+                }
+            } else {
+                return Utils.walkAndInteract(box, "Deposit")
+            }
+            return false
+        }
+
         private fun getAllowedBanks(): List<BankLocation> =
             values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.hasRequirement() } }
 
@@ -169,46 +196,18 @@ enum class BankLocation(
                 .minByOrNull { it.tile.distanceM(me) }!!
         }
 
-        fun Bank.openNearestBank(includeDepositBox: Boolean = false): Boolean {
+        fun Bank.openNearest(): Boolean {
             val log = ScriptManager.script()?.log ?: return false
             if (opened()) {
                 return true
             }
-            var nearest = nearest()
-            var depositBox = false
-            if (includeDepositBox && nearest.tile() != Tile.Nil) {
-                val nearestDeposit =
-                    values().filter { it.type == BankType.DEPOSIT_BOX }.minByOrNull { it.tile.distance() }
-                if (nearestDeposit != null && nearestDeposit.tile.distance() < nearest.distance()) {
-                    log.info("DepositBox is closer=$nearestDeposit, distance=${nearestDeposit.tile.distance()}")
-                    nearest = nearestDeposit.tile
-                    depositBox = true
-                }
+            val nearest = nearest()
+            return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
+                open()
+            } else {
+                Movement.moveToBank()
+                false
             }
-            if (nearest.distance() > 30 || !nearest.reachable()) {
-                log.info("nearest=$nearest, distance=${nearest.distance()} is not reachable!")
-                val localPath = LocalPathFinder.findPath(nearest.getWalkableNeighbor())
-                if (localPath.isNotEmpty()) {
-                    localPath.traverseUntilReached()
-                } else {
-                    try {
-                        if (depositBox) {
-                            log.info("Walking to depositbox @ $nearest")
-                            Movement.walkTo(nearest)
-                        } else {
-                            log.info("Moving to bank")
-                            Movement.moveToBank()
-                        }
-                    } catch (e: Exception) {
-                        log.info("Failed to move to bank!")
-                        log.info(e.stackTraceToString())
-                    }
-                }
-            }
-            return if (depositBox) Utils.walkAndInteract(
-                Objects.stream().name("Bank deposit box").firstOrNull(), "Deposit"
-            ) && waitFor(long()) { DepositBox.opened() }
-            else open()
         }
     }
 

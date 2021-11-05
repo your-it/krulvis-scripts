@@ -8,7 +8,7 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestBank
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
@@ -52,7 +52,7 @@ class ShouldDrop(script: Woodcutter) : Branch<Woodcutter>(script, "Should Drop?"
 }
 
 class IsBankOpen(script: Woodcutter) : Branch<Woodcutter>(script, "Is Bank Open?") {
-    override val failedComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Open bank") { Bank.openNearestBank() }
+    override val failedComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Open bank") { Bank.openNearest() }
     override val successComponent: TreeComponent<Woodcutter> = HandleBank(script)
 
     override fun validate(): Boolean {
