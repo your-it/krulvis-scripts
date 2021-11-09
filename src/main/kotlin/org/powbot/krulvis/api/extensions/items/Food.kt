@@ -13,6 +13,7 @@ import kotlin.math.ceil
 enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializable {
 
     SHRIMP(3, 315),
+    MEAT(3, 2142),
     CAKES(5, 1891, 1893, 1895),
     TROUT(8, 333),
     SALMON(9, 329),
