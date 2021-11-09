@@ -33,7 +33,7 @@ interface Item {
         return bankItem ?: -1
     }
 
-    fun getInvItem(worse: Boolean = false): Item? {
+    fun getInvItem(worse: Boolean = true): Item? {
         return if (worse) {
             val items = Inventory.stream().list()
             ids.reversed().forEach { id ->
