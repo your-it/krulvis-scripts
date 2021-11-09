@@ -10,10 +10,10 @@ class HandleBank(script: WGTokens) : Leaf<WGTokens>(script, "Looting") {
     override fun execute() {
         if (!Inventory.emptyExcept(*ids())) {
             Bank.depositAllExcept(*ids())
-        } else if (script.food.withdrawExact(25) && !script.food.canEat()) {
+        } else if (script.food!!.withdrawExact(25) && !script.food!!.canEat()) {
             Bank.close()
         }
     }
 
-    fun ids() = intArrayOf(*script.armour.ids, *script.food.ids, *script.tokens)
+    fun ids() = intArrayOf(*script.armour.ids, *script.food!!.ids, *script.tokens)
 }

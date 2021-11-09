@@ -18,8 +18,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     fun refresh(gameObject: GameObject? = null): GameObject {
         go = gameObject ?: Objects.stream(35).at(tile).filtered { it.name().isNotEmpty() && it.name() != "null" }
-            .findFirst()
-            .get()
+            .firstOrNull() ?: GameObject.Nil
         return go
     }
 

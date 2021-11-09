@@ -1,5 +1,6 @@
 package org.powbot.krulvis.combiner
 
+import org.powbot.api.Notifications
 import org.powbot.api.Production
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
@@ -15,6 +16,7 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 import org.powbot.mobile.rscache.loader.ItemLoader
+import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
     name = "krul Combiner",
@@ -49,7 +51,14 @@ class Combiner : ATScript() {
         getOption<Map<Int, Int>>("Inventory items")!!
     }
 
-    val id by lazy { items.filter { it.value in 2..28 }.map { it.key }.first() }
+    val id by lazy {
+        if (items.isEmpty()) {
+            Notifications.showNotification("Inventory in GUI cannot be empty!")
+            log.info("Inventory in GUI cannot be empty!")
+            ScriptManager.stop()
+        }
+        items.filter { it.value in 2..28 }.map { it.key }.first()
+    }
     val name by lazy { ItemLoader.load(id)?.name }
     override fun onStart() {
         super.onStart()
