@@ -30,7 +30,9 @@
 *Just have them in inventory when retrieving the inventory*
 
 - Shrimp
+- Meat
 - Cakes
+- Meat pie
 - Trout
 - Salmon
 - Peach
