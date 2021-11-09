@@ -116,6 +116,7 @@ interface Item {
         val JADE = 1611
         val OPAL = 1609
         val VIAL = 229
+        val PIE_DISH = 2313
         val JUG = 1935
         val TAI_BWO_WANNAI_TELEPORT = 12409
         val ANTI_DRAGON_SHIELD = 1540
