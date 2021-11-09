@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner.tree.branch
 
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
@@ -17,11 +18,17 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.Mine
 import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
+import org.powbot.mobile.script.ScriptManager
 
 class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
 
     override fun validate(): Boolean {
-        val nearest = script.rockLocations.minByOrNull { it.distance() }!!
+        val nearest = script.rockLocations.minByOrNull { it.distance() }
+        if (nearest == null) {
+            Notifications.showNotification("Select at least one rock to mine at!")
+            ScriptManager.stop()
+            return false
+        }
         return nearest.distance() <= 10 && nearest.getWalkableNeighbor(checkForWalls = false)?.reachable() == true
     }
 

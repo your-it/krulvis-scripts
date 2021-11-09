@@ -13,14 +13,15 @@ class ShouldEat(script: WGTokens) : Branch<WGTokens>(script, "ShouldEat?") {
     override val failedComponent: TreeComponent<WGTokens> = ShouldBank(script)
     override val successComponent: TreeComponent<WGTokens> = SimpleLeaf(script, "Eat") {
         val oldHp = currentHP()
-        if (script.food.eat()) {
+        if (script.food?.eat() == true) {
             waitFor { oldHp < currentHP() }
             sleep(1200)
         }
     }
 
     override fun validate(): Boolean {
-        return script.food.canEat() && script.food.inInventory()
+        val food = script.food ?: return false
+        return food.canEat() && food.inInventory()
     }
 
 

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.wgtokens
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
@@ -10,6 +11,7 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.wgtokens.tree.branch.ShouldEat
+import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
     name = "krul Tokens",
@@ -36,9 +38,17 @@ class WGTokens : ATScript() {
 
     val inventoryOptions by lazy { getOption<Map<Int, Int>>("Inventory")!! }
 
-    val armour by lazy { Armour.values().first { it.ids.any { id -> inventoryOptions.contains(id) } } }
+    val armour by lazy {
+        val armour = Armour.values().firstOrNull { it.ids.any { id -> inventoryOptions.contains(id) } }
+        if (armour == null) {
+            Notifications.showNotification("You need to have armour in inventory when starting the script!")
+            ScriptManager.stop()
+            return@lazy Armour.Mithril
+        }
+        return@lazy armour
+    }
 
-    val food by lazy { Food.values().first { inventoryOptions.containsKey(it.id) } }
+    val food by lazy { Food.values().firstOrNull { inventoryOptions.containsKey(it.id) } }
 
     fun loot(): List<GroundItem> = GroundItems.stream().id(*armour.ids, *tokens).list()
 

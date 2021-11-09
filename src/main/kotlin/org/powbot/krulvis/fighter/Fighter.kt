@@ -188,7 +188,7 @@ class Fighter : ATScript() {
 
     val bank by lazy {
         val b = getOption<String>("bank")!!
-        if (b == "nearest") {
+        if (b == "NEAREST") {
             Bank.getNearestBank()
         } else {
             BankLocation.valueOf(b)

@@ -15,7 +15,8 @@ class ShouldBank(script: WGTokens) : Branch<WGTokens>(script, "ShouldBank?") {
     override val successComponent: TreeComponent<WGTokens> = IsBankOpen(script)
 
     override fun validate(): Boolean {
-        return script.armour.inInventory() && !script.food.inInventory() && currentHP() / maxHP().toDouble() < .4
+        val food = script.food ?: return false
+        return script.armour.inInventory() && food.inInventory() && currentHP() / maxHP().toDouble() < .4
     }
 }
 
