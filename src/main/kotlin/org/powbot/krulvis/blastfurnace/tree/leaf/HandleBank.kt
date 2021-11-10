@@ -45,7 +45,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                 if (Bank.withdraw(nextOre, Bank.Amount.ALL))
                     waitFor { Inventory.isFull() }
 
-                if (!Inventory.isFull() && !Bank.containsOneOf(nextOre)) {
+                if (!Inventory.isFull() && !Bank.containsOneOf(nextOre) && Bank.opened()) {
                     script.log.info("No more ores in bank, stopping script")
                     ScriptManager.stop()
                 }
