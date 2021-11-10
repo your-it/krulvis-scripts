@@ -18,6 +18,7 @@ import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import kotlin.math.max
+import kotlin.math.min
 
 @ScriptManifest(
     name = "krul Tithe",
@@ -42,7 +43,7 @@ class TitheFarmer : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
-    val patchCount by lazy { max(getOption<Int>("Patches")?.toInt() ?: 20, 20) }
+    val patchCount by lazy { min(getOption<Int>("Patches")?.toInt() ?: 20, 20) }
     var lastPatch: Patch? = null
     var startPoints = -1
     var gainedPoints = 0
