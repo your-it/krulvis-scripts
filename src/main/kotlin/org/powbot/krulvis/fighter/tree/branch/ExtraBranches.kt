@@ -115,14 +115,14 @@ class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Tr
         if (Inventory.stream().id(*TRASH).firstOrNull()?.interact("Drop") == true)
             waitFor { Inventory.stream().id(*TRASH).firstOrNull() == null }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBurryBones(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldBuryBones(script)
 
     override fun validate(): Boolean {
         return Inventory.stream().id(*TRASH).firstOrNull() != null
     }
 }
 
-class ShouldBurryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {
+class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {
 
     var bones = emptyList<Item>()
 
@@ -140,7 +140,7 @@ class ShouldBurryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury b
 
     override fun validate(): Boolean {
         if (!script.buryBones) return false
-        bones = Inventory.stream().filtered { it.name().contains("Bones") }.list()
+        bones = Inventory.stream().filtered { it.name().contains("bones", true) }.list()
         return bones.isNotEmpty()
     }
 }
