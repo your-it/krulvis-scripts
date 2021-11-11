@@ -15,13 +15,14 @@ import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman") {
     override fun execute() {
         if (Inventory.getCount(995) < 2500) {
+            val amount = if (script.cofferCount() < 150) 2500 + script.cofferAmount else 2500
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
                 chest.ifPresent { if (interact(it, "Use")) waitFor(long()) { Bank.opened() } }
             } else if (!Inventory.emptyExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)) {
                 Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
-            } else if (Bank.withdraw(995, 2500)) {
-                waitFor { Inventory.getCount(995) >= 2500 }
+            } else if (Bank.withdraw(995, amount)) {
+                waitFor { Inventory.getCount(995) >= amount }
             }
         } else if (Chat.stream().textContains("Yes").isNotEmpty()) {
             Chat.stream().textContains("Yes").findFirst().ifPresent {

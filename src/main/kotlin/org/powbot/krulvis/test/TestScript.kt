@@ -94,8 +94,9 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
 //            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
-            .addString("Can cast fire strike:") { "${Magic.Spell.FIRE_STRIKE.canCast()}" }
-            .addString("Can cast water strike:") { "${Magic.Spell.WATER_STRIKE.canCast()}" }
+            .addString("Binary of 543:") { Varpbits.varpbit(543).toString(2) }
+            .addString("Value of 543:") { "${Varpbits.varpbit(543)}" }
+//            .addString("Can cast water strike:") { "${Magic.Spell.WATER_STRIKE.canCast()}" }
             .withTotalLoot(true)
             .build()
     }

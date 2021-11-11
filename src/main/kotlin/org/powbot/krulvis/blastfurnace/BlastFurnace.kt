@@ -16,7 +16,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.1.7",
+    version = "1.1.8",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
@@ -82,6 +82,11 @@ class BlastFurnace : ATScript() {
         Menu.opened() && Menu.contains { it.action.equals(action, true) }
 
     val foremanTimer = Timer(1)
+
+    fun hasIceGloves() =
+        Inventory.stream().id(ICE_GLOVES).isNotEmpty() || Equipment.stream().id(ICE_GLOVES).isNotEmpty()
+
+    fun cooledDispenser() = Varpbits.varpbit(543) == 768
 
     fun shouldPayForeman() = Skills.level(Constants.SKILLS_SMITHING) < 60 && foremanTimer.isFinished()
 
