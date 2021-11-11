@@ -5,6 +5,8 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.extensions.items.Bar
+import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -42,8 +44,11 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
 
                 val nextOre = getNextOre()
 
+//                val amount = if (!script.hasIceGloves()
+//                    && !Inventory.containsOneOf(BUCKET_OF_WATER, EMPTY_BUCKET)
+//                ) Inventory.emptySlotCount() - 1 else Bank.Amount.ALL.value
                 if (Bank.withdraw(nextOre, Bank.Amount.ALL))
-                    waitFor { Inventory.isFull() }
+                    waitFor { Inventory.containsOneOf(nextOre) }
 
                 if (!Inventory.isFull() && !Bank.containsOneOf(nextOre) && Bank.opened()) {
                     script.log.info("No more ores in bank, stopping script")

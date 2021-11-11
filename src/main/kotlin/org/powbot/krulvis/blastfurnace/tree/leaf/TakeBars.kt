@@ -29,8 +29,8 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
             script.log.info("Can continue before taking bars.")
             Chat.clickContinue()
         } else if (Bank.close()) {
-            val conveyerMatrix = script.dispenserTile.matrix()
-            if (script.interact(conveyerMatrix, "Take")) {
+            val dispenserMatrix = script.dispenserTile.matrix()
+            if (script.interact(dispenserMatrix, "Take")) {
                 waitFor(long()) { takeWidget().valid() }
             }
         }
