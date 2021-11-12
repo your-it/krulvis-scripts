@@ -11,6 +11,7 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
@@ -26,17 +27,19 @@ class CoolDispenser(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Cool dis
             if ((Inventory.selectedItem().id == BUCKET_OF_WATER || Inventory.stream().id(BUCKET_OF_WATER).first()
                     .interact("Use")) && script.interact(dispenserMatrix, "Use")
             ) {
-                waitFor(Utils.long()) { script.cooledDispenser() }
+                waitFor(long()) { script.cooledDispenser() }
+            } else {
+                script.log.info("Failed to use bucket on dispenser")
             }
         } else if (Inventory.containsOneOf(EMPTY_BUCKET)) {
             val sink = Objects.stream().name("Sink").action("Fill-bucket").firstOrNull() ?: return
             if (sink.interact("Fill-bucket")) {
-                waitFor { Inventory.containsOneOf(BUCKET_OF_WATER) }
+                waitFor(long()) { Inventory.containsOneOf(BUCKET_OF_WATER) }
             }
         } else {
             val bucket = GroundItems.stream().id(EMPTY_BUCKET).firstOrNull() ?: return
             if (bucket.interact("Take")) {
-                waitFor { Inventory.containsOneOf(EMPTY_BUCKET) }
+                waitFor(long()) { Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         }
 
