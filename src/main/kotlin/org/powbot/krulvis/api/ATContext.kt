@@ -72,6 +72,10 @@ object ATContext {
         return false
     }
 
+    fun GenericItem.getPrice(): Int {
+        return GrandExchange.getItemPrice(if (noted()) id() - 1 else id())
+    }
+
     /**
      * Custom interaction function
      */

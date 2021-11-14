@@ -11,6 +11,7 @@ class TithePainter(script: TitheFarmer) : ATPaint<TitheFarmer>(script) {
         return paintBuilder
             .addString("Gained points:") { "${script.gainedPoints}, (${script.timer.getPerHour(script.gainedPoints)}/hr)" }
             .trackSkill(Skill.Farming)
+            .addCheckbox("Last round:", "lastRound", false)
             .build()
     }
 }

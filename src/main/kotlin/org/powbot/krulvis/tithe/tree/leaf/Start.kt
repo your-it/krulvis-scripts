@@ -1,15 +1,23 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.TitheFarmer
+import org.powbot.mobile.script.ScriptManager
 
 class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
 
     override fun execute() {
+        if (script.lastRound) {
+            Notifications.showNotification("Stopped because it was last round")
+            script.log.info("Stopped because it was last round")
+            ScriptManager.stop()
+            return
+        }
         if (!script.hasSeeds()) {
             debug("Getting seeds")
             if (!chatting()) {

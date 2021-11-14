@@ -14,6 +14,7 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 
     SHRIMP(3, 315),
     MEAT(3, 2142),
+    CHOCOLATE_BAR(4, 1973),
     CAKES(5, 1891, 1893, 1895),
     MEAT_PIE(6, 2327, 2331),
     TROUT(8, 333),

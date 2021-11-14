@@ -2,9 +2,7 @@ package org.powbot.krulvis.tithe
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.Tile
-import org.powbot.api.event.GameActionEvent
-import org.powbot.api.event.GameActionOpcode
-import org.powbot.api.event.TickEvent
+import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
@@ -17,7 +15,6 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
-import kotlin.math.max
 import kotlin.math.min
 
 @ScriptManifest(
@@ -34,7 +31,7 @@ import kotlin.math.min
             name = "Patches",
             description = "How many patches do you want to use? Max 20",
             optionType = OptionType.INTEGER,
-            defaultValue = "20"
+            defaultValue = "16"
         )
     ]
 )
@@ -45,6 +42,7 @@ class TitheFarmer : ATScript() {
 
     val patchCount by lazy { min(getOption<Int>("Patches")?.toInt() ?: 20, 20) }
     var lastPatch: Patch? = null
+    var lastRound = false
     var startPoints = -1
     var gainedPoints = 0
     var patches = listOf<Patch>()
@@ -69,9 +67,9 @@ class TitheFarmer : ATScript() {
             }
         }
 
-        val lastPatch = Tile(tiles[0].x() + 10, tiles[0].y())
+        val lastPatch = Tile(tiles[0].x() + 10, tiles[0].y() - 9)
         for (y in 0..9 step 3) {
-            columns.add(Tile(lastPatch.x(), lastPatch.y() - y))
+            columns.add(Tile(lastPatch.x(), lastPatch.y() + y))
         }
 
         return columns.toList().subList(0, patchCount)
@@ -114,6 +112,18 @@ class TitheFarmer : ATScript() {
                 log.info("Interacted ${evt.interaction} on $lastPatch")
             }
         }
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
+        if (e.checkboxId == "lastRound") {
+            lastRound = e.checked
+        }
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onMsg(e: MessageEvent) {
+        log.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
     var lastTick = -1L

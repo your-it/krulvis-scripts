@@ -76,12 +76,6 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return id in PLANTED || id in GROWN_1 || id in GROWN_2 || id in DONE
     }
 
-    fun clear(): Boolean = interact("Clear")
-
-    fun water(): Boolean = interact("Water")
-
-    fun harvest(): Boolean = interact("Harvest")
-
     fun plant(seed: Int): Boolean {
         val selectedId = Inventory.selectedItem().id()
         if (selectedId != seed) {
@@ -93,6 +87,12 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return waitFor(short()) { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
     }
 
+    fun clear(): Boolean = interact("Clear")
+
+    fun water(): Boolean = interact("Water")
+
+    fun harvest(): Boolean = interact("Harvest")
+
     fun walkBetween(patches: List<Patch>): Boolean {
         if (!go.inViewport() || go.distance() > 6) {
             val minX = patches.minOf { it.tile.x() }
@@ -101,6 +101,8 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             val tile = Tile(x, tile.y(), 0)
             if (tile.matrix().onMap()) {
                 ScriptManager.script()?.log?.info("Walking on minimap")
+                if (!Movement.running() && Movement.energyLevel() >= 3)
+                    Movement.running(true)
                 Movement.step(tile)
             } else {
                 LocalPathFinder.findPath(tile).traverse()
@@ -111,6 +113,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     }
 
     private fun interact(action: String): Boolean {
+        if (Inventory.selectedItem() != Item.Nil) Game.Tab.INVENTORY.getByTexture()?.click()
         if (Menu.opened()) {
             if (Menu.containsAction(action)) {
                 Menu.click { it.action.lowercase().contains(action.lowercase()) }

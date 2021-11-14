@@ -72,6 +72,7 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+        log.info("Tile of cave = ${Objects.stream().name("Opening").nearest().firstOrNull()?.tile}")
         sleep(2000)
     }
 
@@ -79,6 +80,11 @@ class TestScript : ATScript() {
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
         log.info("$e")
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onMsg(e: MessageEvent) {
+        log.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
     @com.google.common.eventbus.Subscribe
