@@ -3,6 +3,8 @@ package org.powbot.krulvis.test
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Constants.BANK_CULINAROMANCER_LOCATION
+import org.powbot.api.rt4.Constants.BANK_UNREACHABLES
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
@@ -11,6 +13,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -72,10 +75,9 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        log.info("Tile of cave = ${Objects.stream().name("Opening").nearest().firstOrNull()?.tile}")
+//        log.info("Bank=${getBank().tile()}")
         sleep(2000)
     }
-
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {

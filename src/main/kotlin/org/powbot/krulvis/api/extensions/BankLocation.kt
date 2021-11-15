@@ -202,6 +202,7 @@ enum class BankLocation(
                 return true
             }
             val nearest = nearest()
+            log.info("Nearest bank: $nearest")
             return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
                 open()
             } else {
