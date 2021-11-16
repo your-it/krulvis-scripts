@@ -5,7 +5,7 @@ import org.powbot.api.Production
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.orbcharger.OrbCrafter
 import org.powbot.krulvis.orbcharger.tree.leaf.Charge
 import org.powbot.krulvis.orbcharger.tree.leaf.Walk

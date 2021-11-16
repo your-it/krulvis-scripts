@@ -12,7 +12,7 @@ import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID

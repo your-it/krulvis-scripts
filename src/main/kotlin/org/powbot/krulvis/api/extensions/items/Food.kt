@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Game
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.missingHP
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.smither.Smithable
 import java.io.Serializable
 import kotlin.math.ceil

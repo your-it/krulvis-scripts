@@ -1,13 +1,6 @@
 package org.powbot.krulvis.api.utils
 
-import com.google.gson.JsonParser
-import java.io.ByteArrayInputStream
-import java.io.FileNotFoundException
-import java.io.InputStreamReader
-import java.net.URL
-import java.util.*
-import java.util.Base64
-import javax.imageio.ImageIO
+import org.powbot.api.Random
 
 
 object Utils {
