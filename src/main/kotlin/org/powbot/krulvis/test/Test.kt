@@ -18,5 +18,7 @@ class InventoryItem() : Item() {
 }
 
 fun main() {
-    println(8 and 0x8)
+    for (y in 0..9 step 3) {
+        println(y)
+    }
 }

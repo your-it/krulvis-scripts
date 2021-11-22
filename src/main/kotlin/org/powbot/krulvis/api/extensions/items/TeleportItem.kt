@@ -6,7 +6,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Store.getItem
 import org.powbot.api.rt4.Widgets
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.Requirement

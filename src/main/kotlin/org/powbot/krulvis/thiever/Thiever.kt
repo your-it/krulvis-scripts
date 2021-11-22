@@ -5,9 +5,7 @@ import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
 import org.powbot.api.event.NpcActionEvent
-import org.powbot.api.rt4.Game
-import org.powbot.api.rt4.Npc
-import org.powbot.api.rt4.Npcs
+import org.powbot.api.rt4.*
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Equipment
@@ -87,7 +85,20 @@ class Thiever : ATScript() {
     var lastTile = Tile.Nil
 
     fun getTarget(): Npc? {
-        return Npcs.stream().name(*target.map { it.name }.toTypedArray()).nearest().firstOrNull()
+        val farmerGuild = Tile(1249, 3735, 0)
+        val tile = if (farmerGuild.distance() <= 40) {
+            val farmLvl = Skills.realLevel(Constants.SKILLS_FARMING)
+            when {
+                farmLvl >= 85 -> Tile(1250, 3750, 0)
+                else -> Tile(1264, 3729, 0)
+            }
+        } else {
+            Players.local().tile()
+        }
+        if (tile.distance() > 10) {
+            return null
+        }
+        return Npcs.stream().name(*target.map { it.name }.toTypedArray()).nearest(tile).firstOrNull()
     }
 
     @Subscribe
@@ -109,5 +120,5 @@ class Thiever : ATScript() {
 }
 
 fun main() {
-    Thiever().startScript(false)
+    Thiever().startScript("127.0.0.1", "GIM", false)
 }

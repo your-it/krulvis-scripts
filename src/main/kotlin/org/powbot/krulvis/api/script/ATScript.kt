@@ -7,7 +7,7 @@ import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.extensions.randoms.BondPouch
 import org.powbot.krulvis.api.extensions.randoms.RandomHandler
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Timer
 import java.io.File
 

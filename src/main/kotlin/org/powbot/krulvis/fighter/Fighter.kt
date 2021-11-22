@@ -12,6 +12,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
@@ -231,12 +232,8 @@ class Fighter : ATScript() {
                 if (warriorGuild && it.id() in defenders) return@filtered true
                 val name = it.name().lowercase()
                 !neverLoot.contains(name) &&
-                        (lootNames.any { ln -> name.contains(ln) } || getPrice(it) * it.stackSize() >= minLoot)
+                        (lootNames.any { ln -> name.contains(ln) } || it.getPrice() * it.stackSize() >= minLoot)
             }.list()
-    }
-
-    fun getPrice(gi: GenericItem): Int {
-        return GrandExchange.getItemPrice(if (gi.noted()) gi.id() - 1 else gi.id())
     }
 
     @com.google.common.eventbus.Subscribe

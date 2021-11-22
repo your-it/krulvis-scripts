@@ -1,6 +1,6 @@
 package org.powbot.krulvis.api.antiban
 
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Timer
 
 class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier) {
@@ -39,7 +39,7 @@ class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier) {
 
     fun restartTimer() {
         timer = Timer(
-            Random.nextGaussian(
+            Random.nextInt(
                 min,
                 max
             )

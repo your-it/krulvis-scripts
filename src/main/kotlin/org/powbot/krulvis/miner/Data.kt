@@ -21,6 +21,7 @@ object Data {
         13243,
         13244,
         1823,
+        Item.RAW_KARAMBWANJI,
         3150,
         *GemBag.ids
     )

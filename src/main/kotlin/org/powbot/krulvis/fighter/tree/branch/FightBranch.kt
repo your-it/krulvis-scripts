@@ -6,7 +6,7 @@ import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
@@ -22,7 +22,7 @@ class IsKilling(script: Fighter) : Branch<Fighter>(script, "Is Killing?") {
             Prayer.quickPrayer(true)
         }
         if (waitFor { interacting.healthPercent() == 0 }) {
-            waitFor(Random.nextInt(3000)) { script.loot().isNotEmpty() }
+            waitFor(Random.nextInt(1500, 3000)) { script.loot().isNotEmpty() }
         } else
             sleep(Random.nextInt(1000, 1500))
     }

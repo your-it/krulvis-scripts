@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.krulvis.woodcutter.tree.leaf.Chop
 import org.powbot.krulvis.woodcutter.tree.leaf.Walk

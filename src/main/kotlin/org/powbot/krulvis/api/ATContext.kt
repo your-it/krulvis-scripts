@@ -3,15 +3,11 @@ package org.powbot.krulvis.api
 import org.powbot.api.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
-import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.smither.Smithable
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.abs
 
@@ -70,6 +66,10 @@ object ATContext {
             walkDelay.resetTimer()
         }
         return false
+    }
+
+    fun GenericItem.getPrice(): Int {
+        return GrandExchange.getItemPrice(if (noted()) id() - 1 else id())
     }
 
     /**

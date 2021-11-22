@@ -11,7 +11,8 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.krulvis.api.script.branch.ShouldHighAlch
+import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
@@ -60,7 +61,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
         script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
         waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldDropTrash(script))
 
     override fun validate(): Boolean {
         val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
@@ -72,41 +73,6 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
     }
 }
 
-class ShouldHighAlch(script: Fighter) : Branch<Fighter>(script, "Should high alch?") {
-    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "High alch") {
-        if (!Magic.casting(spell)) {
-            if (Magic.cast(spell)) {
-                waitFor { Magic.casting(spell) }
-            }
-        }
-        if (Magic.casting(spell)) {
-            val count = Inventory.stream().id(alchable!!.id).count()
-            alchable?.interact("Cast")
-            waitFor { Inventory.stream().id(alchable!!.id).count() != count }
-        }
-    }
-    override val failedComponent: TreeComponent<Fighter> = ShouldDropTrash(script)
-
-    val spell = Magic.Spell.HIGH_ALCHEMY
-    var alchable: Item? = null
-
-    fun alchable(): Item? {
-        val lootIds = script.painter.paintBuilder.items
-            .filter { row -> row.any { it is InventoryItemPaintItem } }
-            .map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
-            .toIntArray()
-        return Inventory.stream().id(*lootIds).firstOrNull {
-            val value = it.value()
-            value > 300 && !it.stackable() && it.value() / script.getPrice(it).toDouble() > .9
-        }
-    }
-
-    override fun validate(): Boolean {
-        if (!script.highAlch) return false
-        alchable = alchable()
-        return alchable != null && Game.tab(Game.Tab.MAGIC) && component(spell).textureId() != spell.texture()
-    }
-}
 
 class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Trash?") {
 

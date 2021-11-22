@@ -1,5 +1,6 @@
 package org.powbot.krulvis.thiever.tree.branch
 
+import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
@@ -72,6 +73,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
     }
 
     override fun validate(): Boolean {
-        return (script.getTarget()?.distance() ?: 99) < 20
+        return (script.lastTile == Tile.Nil || script.lastTile.distance() <= 10)
+                && (script.getTarget()?.distance() ?: 99) < 20
     }
 }

@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Game
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.missingHP
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 import org.powbot.krulvis.smither.Smithable
 import java.io.Serializable
 import kotlin.math.ceil
@@ -14,13 +14,14 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 
     SHRIMP(3, 315),
     MEAT(3, 2142),
+    CHOCOLATE_BAR(4, 1973),
     CAKES(5, 1891, 1893, 1895),
     MEAT_PIE(6, 2327, 2331),
     TROUT(8, 333),
     SALMON(9, 329),
     PEACH(9, 6883),
-    TUNA(10, 361),
     WINE(11, 1993),
+    TUNA(10, 361),
     LOBSTER(12, 379),
     BASS(13, 365),
     SWORDFISH(14, 373),

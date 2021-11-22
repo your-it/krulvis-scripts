@@ -78,10 +78,12 @@ interface Item {
         val HAMMER = 2347
         val CANNONBALL = 2
         val AMMO_MOULD = 4
+        val GRIMY_GUAM = 199
         val SAW = 8794
         val BOND_CHARGED = 13190
         val BOND_UNCHARGED = 13192
         val BRONZE_AXE = 1351
+        val MITHRIL_AXE = 1355
         val EMPTY_BUCKET = 1925
         val FISHING_NET = 303
         val COOKED_SHRIMP = 315
@@ -98,6 +100,8 @@ interface Item {
         val POT_OF_FLOUR = 1933
         val PINK_SKIRT = 1013
         val BEER = 1917
+        val BIRD_SNARE = 10006
+        val BOX_TRAP = 10008
         val BUCKET_OF_WATER = 1929
         val ASHES = 592
         val BRONZE_BAR = 2349
@@ -112,6 +116,7 @@ interface Item {
         val OAK_LOGS = 1521
         val BUCKET_OF_SAP = 4687
         val RAW_KARAMBWAN = 3142
+        val RAW_KARAMBWANJI = 3150
         val TRADING_STICK = 6306
         val JADE = 1611
         val OPAL = 1609
@@ -145,6 +150,7 @@ interface Item {
         val EMPTY_TOME = 20716
         val EMPTY_SEAS = 11908
         val KNIFE = 946
+        val DARK_KEY = 25244
     }
 
 }
