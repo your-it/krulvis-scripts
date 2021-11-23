@@ -87,6 +87,9 @@ enum class BankLocation(
     SHANTAY_PASS_BANK(
         Tile(3308, 3120, 0), BankType.CHEST,
     ),
+    SHILO_GEM_MINE(
+        Tile(2842, 9382, 0), BankType.DEPOSIT_BOX,
+    ),
     TZHAAR_BANK(
         Tile(2446, 5178, 0), BankType.NPC,
     ),
