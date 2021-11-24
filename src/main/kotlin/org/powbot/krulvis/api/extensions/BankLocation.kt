@@ -144,7 +144,7 @@ enum class BankLocation(
             val nearest = values()
                 .filter { it.type == BankType.DEPOSIT_BOX }
                 .minByOrNull { it.tile.distance() } ?: return false
-            val box = Objects.stream().name("Bank deposit box").firstOrNull()
+            val box = Objects.stream().name("Bank deposit box", "Bank deposit chest").firstOrNull()
             if (box == null || nearest.tile.distance() > 30 || !nearest.tile.reachable()) {
                 log.info("nearest=$nearest, distance=${nearest.tile.distance()} is not reachable!")
                 val localPath = LocalPathFinder.findPath(nearest.tile.getWalkableNeighbor())
