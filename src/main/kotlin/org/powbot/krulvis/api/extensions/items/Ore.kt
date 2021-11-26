@@ -17,6 +17,7 @@ enum class Ore(
 ) : Item {
     AMETHYST(intArrayOf(21347), 92, -1, -1, 6705),
     PAY_DIRT(intArrayOf(12011), 45, -1, -1, 6705),
+    VOLCANIC_ASH(intArrayOf(21622), 22, -1, -1, 6705),
     RUNITE(intArrayOf(451), 85, 548, 8, -31437),
     ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
     GEM_ROCK(intArrayOf(1625, 1627, 1629, 1623, 1621, 1619, 1617), 65, -1, -1, -10335),
@@ -53,7 +54,8 @@ enum class Ore(
     companion object {
         fun GameObject.hasOre(vararg ores: Ore = values()): Boolean {
             val name = name()
-            return name == "Ore vein" || name == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
+            val validNames = arrayOf("Ore vein", "Crystals", "Ash pile")
+            return name in validNames || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
         }
 
         /**
