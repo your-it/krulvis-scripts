@@ -115,11 +115,11 @@ class Fighter : ATScript() {
 
     val warriorGuildCenter = Tile(2859, 3545, 2)
     val warriorTokens = 8851
-    val warriorGuild by lazy { getOption<Boolean>("Warrior guild")!! }
-    val highAlch by lazy { getOption<Boolean>("High alch")!! }
-    val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
-    val safespot by lazy { getOption<Tile>("safespot")!! }
-    val buryBones by lazy { getOption<Boolean>("Bury bones")!! }
+    val warriorGuild by lazy { getOption<Boolean>("Warrior guild") }
+    val highAlch by lazy { getOption<Boolean>("High alch") }
+    val useSafespot by lazy { getOption<Boolean>("Use safespot") }
+    val safespot by lazy { getOption<Tile>("safespot") }
+    val buryBones by lazy { getOption<Boolean>("Bury bones") }
 
     val defenders = listOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
     var lastDefenderIndex = -1
@@ -140,7 +140,7 @@ class Fighter : ATScript() {
     }
     val hasPrayPots by lazy { potions.any { it.first == Potion.PRAYER } }
 
-    val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment")!! }
+    val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment") }
     val equipment by lazy {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
             Equipment(

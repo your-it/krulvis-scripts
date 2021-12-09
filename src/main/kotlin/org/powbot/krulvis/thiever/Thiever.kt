@@ -13,6 +13,7 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
+import org.powbot.mobile.script.ScriptManager
 import java.util.*
 
 @ScriptManifest(
@@ -104,7 +105,7 @@ class Thiever : ATScript() {
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {
         if (evt.rawOpcode == 11 || evt.opcode() == GameActionOpcode.InteractNpc) {
-            if (options.firstOrNull { it.name == "Targets" }?.configured == true && prepare && Game.singleTapEnabled())
+            if (ScriptManager.state() == ScriptState.Running && prepare && Game.singleTapEnabled())
                 getTarget()?.click()
         }
     }

@@ -6,10 +6,7 @@ import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.rt4.Bank
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.ValueChanged
+import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
@@ -46,9 +43,9 @@ import org.powbot.mobile.script.ScriptManager
 class Combiner : ATScript() {
     override fun createPainter(): ATPaint<*> = CombinerPainter(this)
 
-    val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items")!! }
+    val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items") }
     val items by lazy {
-        getOption<Map<Int, Int>>("Inventory items")!!
+        getOption<Map<Int, Int>>("Inventory items")
     }
 
     val id by lazy {
@@ -59,10 +56,8 @@ class Combiner : ATScript() {
         }
         items.filter { it.value in 2..28 }.map { it.key }.first()
     }
+
     val name by lazy { ItemLoader.load(id)?.name }
-    override fun onStart() {
-        super.onStart()
-    }
 
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
@@ -79,7 +74,7 @@ class Combiner : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryItem(e: InventoryChangeEvent) {
-        if (options.all { it.configured } && items.none { it.key == e.itemId }
+        if (ScriptManager.state() == ScriptState.Running && items.none { it.key == e.itemId }
             && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == e.itemId } }
             && !Bank.opened()) {
             painter.paintBuilder.trackInventoryItems(e.itemId)
