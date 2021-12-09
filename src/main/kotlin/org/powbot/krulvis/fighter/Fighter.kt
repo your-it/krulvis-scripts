@@ -3,6 +3,7 @@ package org.powbot.krulvis.fighter
 import org.powbot.api.Tile
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.NpcActionEvent
+import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.rt4.walking.model.Skill
@@ -30,7 +31,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.2.1",
+    version = "1.2.2",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -114,11 +115,11 @@ class Fighter : ATScript() {
 
     val warriorGuildCenter = Tile(2859, 3545, 2)
     val warriorTokens = 8851
-    val warriorGuild by lazy { getOption<Boolean>("Warrior guild")!! }
-    val highAlch by lazy { getOption<Boolean>("High alch")!! }
-    val useSafespot by lazy { getOption<Boolean>("Use safespot")!! }
-    val safespot by lazy { getOption<Tile>("safespot")!! }
-    val buryBones by lazy { getOption<Boolean>("Bury bones")!! }
+    val warriorGuild by lazy { getOption<Boolean>("Warrior guild") }
+    val highAlch by lazy { getOption<Boolean>("High alch") }
+    val useSafespot by lazy { getOption<Boolean>("Use safespot") }
+    val safespot by lazy { getOption<Tile>("safespot") }
+    val buryBones by lazy { getOption<Boolean>("Bury bones") }
 
     val defenders = listOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
     var lastDefenderIndex = -1
@@ -139,7 +140,7 @@ class Fighter : ATScript() {
     }
     val hasPrayPots by lazy { potions.any { it.first == Potion.PRAYER } }
 
-    val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment")!! }
+    val equipmentOptions by lazy { getOption<Map<Int, Int>>("equipment") }
     val equipment by lazy {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
             Equipment(
@@ -216,6 +217,8 @@ class Fighter : ATScript() {
         }.firstOrNull()
     }
 
+    fun taskRemainder() = Varpbits.varpbit(394)
+
     /**
      * Returns list of loot on the ground
      * WarriorsGuild: Defenders enabled by default
@@ -257,6 +260,15 @@ class Fighter : ATScript() {
         }
     }
 
+    var lastTask = false
+
+    @com.google.common.eventbus.Subscribe
+    fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
+        if (e.checkboxId == "stopAfterTask") {
+            lastTask = e.checked
+        }
+    }
+
 }
 
 class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
@@ -271,6 +283,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Magic)
             .trackSkill(Skill.Ranged)
             .trackSkill(Skill.Slayer)
+            .addCheckbox("Stop after Slay task", "stopAfterTask", false)
         return paintBuilder.build()
     }
 

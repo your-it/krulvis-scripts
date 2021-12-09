@@ -24,6 +24,11 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
         script.combineActions.forEachIndexed { i, event ->
             val useMenu = !event.rawEntityName.contains("->")
             val prev = if (i > 0) script.combineActions[i - 1] else null
+            val next =
+                if (script.combineActions.size == i + 1) null else script.combineActions[i + 1]
+            if (next is WidgetActionEvent && next.widget().visible()) {
+                return@forEachIndexed
+            }
             val interaction = when (event) {
                 is InventoryItemActionEvent -> {
                     Inventory.open() && event.item()
@@ -52,8 +57,6 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                     false
                 }
             }
-            val next =
-                if (script.combineActions.size == i + 1) null else script.combineActions[i + 1]
             if (interaction || (next is WidgetActionEvent && next.widget().visible())) {
                 script.log.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {

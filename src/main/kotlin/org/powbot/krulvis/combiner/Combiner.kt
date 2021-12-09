@@ -6,10 +6,7 @@ import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.rt4.Bank
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.ValueChanged
+import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
@@ -32,23 +29,23 @@ import org.powbot.mobile.script.ScriptManager
             name = "Inventory items",
             description = "Put the correct amount in inventory and click the button",
             optionType = OptionType.INVENTORY,
-//            defaultValue = "{\"255\":14,\"227\":14}"
+            defaultValue = "{\"1785\":1,\"1775\":27}"
 //            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
             name = "Combine Items",
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
-//            defaultValue = "[{\"id\":255,\"interaction\":\"Use\",\"mouseX\":684,\"mouseY\":231,\"rawEntityName\":\"<col=ff9040>Harralander\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Harralander\",\"strippedName\":\"Harralander\"},{\"id\":227,\"interaction\":\"Use\",\"mouseX\":725,\"mouseY\":236,\"rawEntityName\":\"<col=ff9040>Harralander<col=ffffff> -> <col=ff9040>Vial of water\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Vial of water\",\"strippedName\":\"Harralander -> Vial of water\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":116,\"rawEntityName\":\"<col=ff9040>Harralander potion (unf)</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"componentIndex\":14,\"widgetIndex\":270,\"name\":\"Harralander potion (unf)\",\"strippedName\":\"Harralander potion (unf)\"}]"
+            defaultValue = "[{\"id\":1785,\"interaction\":\"Use\",\"mouseX\":685,\"mouseY\":248,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Glassblowing pipe\",\"strippedName\":\"Glassblowing pipe\"},{\"id\":1775,\"interaction\":\"Use\",\"mouseX\":723,\"mouseY\":250,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Molten glass\",\"strippedName\":\"Glassblowing pipe -> Molten glass\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":365,\"mouseY\":94,\"rawEntityName\":\"<col=ff9040>Unpowered staff orb</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694739,\"componentIndex\":19,\"widgetIndex\":270,\"name\":\"Unpowered staff orb\",\"strippedName\":\"Unpowered staff orb\"}]"
         )
     ]
 )
 class Combiner : ATScript() {
     override fun createPainter(): ATPaint<*> = CombinerPainter(this)
 
-    val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items")!! }
+    val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items") }
     val items by lazy {
-        getOption<Map<Int, Int>>("Inventory items")!!
+        getOption<Map<Int, Int>>("Inventory items")
     }
 
     val id by lazy {
@@ -59,10 +56,8 @@ class Combiner : ATScript() {
         }
         items.filter { it.value in 2..28 }.map { it.key }.first()
     }
+
     val name by lazy { ItemLoader.load(id)?.name }
-    override fun onStart() {
-        super.onStart()
-    }
 
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
@@ -79,7 +74,7 @@ class Combiner : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryItem(e: InventoryChangeEvent) {
-        if (options.all { it.configured } && items.none { it.key == e.itemId }
+        if (ScriptManager.state() == ScriptState.Running && items.none { it.key == e.itemId }
             && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == e.itemId } }
             && !Bank.opened()) {
             painter.paintBuilder.trackInventoryItems(e.itemId)
@@ -88,5 +83,6 @@ class Combiner : ATScript() {
 }
 
 fun main() {
-    Combiner().startScript("127.0.0.1", "krullieman", false)
+    Combiner().startScript("127.0.0.1", "GIM", false)
 }
+//Starting Script with JSON: [{"allowedValues":[],"defaultValue":{},"description":"Put the correct amount in inventory and click the button","enabled":true,"name":"Inventory items","optionType":"INVENTORY","value":{"1785":1,"1775":27},"visible":true},{"allowedValues":[],"defaultValue":[],"description":"Perform the Game Actions to start combining","enabled":true,"name":"Combine Items","optionType":"GAME_ACTIONS","value":[{"id":1785,"interaction":"Use","mouseX":685,"mouseY":248,"rawEntityName":"<col=ff9040>Glassblowing pipe","rawOpcode":38,"var0":0,"widgetId":9764864,"name":"Glassblowing pipe","strippedName":"Glassblowing pipe"},{"id":1775,"interaction":"Use","mouseX":723,"mouseY":250,"rawEntityName":"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass","rawOpcode":31,"var0":1,"widgetId":9764864,"name":"Molten glass","strippedName":"Glassblowing pipe -> Molten glass"},{"id":1,"interaction":"Make","mouseX":365,"mouseY":94,"rawEntityName":"<col=ff9040>Unpowered staff orb</col>","rawOpcode":57,"var0":-1,"widgetId":17694739,"componentIndex":19,"widgetIndex":270,"name":"Unpowered staff orb","strippedName":"Unpowered staff orb"}],"visible":true}]
