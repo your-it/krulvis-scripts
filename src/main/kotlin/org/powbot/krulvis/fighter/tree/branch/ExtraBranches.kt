@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Magic.component
 import org.powbot.api.script.paint.InventoryItemPaintItem
@@ -16,6 +17,7 @@ import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
+import org.powbot.mobile.script.ScriptManager
 
 
 class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
@@ -26,7 +28,7 @@ class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
             waitFor { script.food!!.getInventoryCount() < count }
         }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldSip(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldStop(script)
 
     var nextEatExtra = Random.nextInt(1, 8)
 
@@ -34,6 +36,19 @@ class ShouldEat(script: Fighter) : Branch<Fighter>(script, "Should eat?") {
         return script.food?.inInventory() == true && (script.needFood() || script.canEat(nextEatExtra))
     }
 }
+
+class ShouldStop(script: Fighter) : Branch<Fighter>(script, "Should stop?") {
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Stopping") {
+        Notifications.showNotification("Stopped because task was finished!")
+        ScriptManager.stop()
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldSip(script)
+
+    override fun validate(): Boolean {
+        return script.lastTask && script.taskRemainder() <= 0
+    }
+}
+
 
 class ShouldSip(script: Fighter) : Branch<Fighter>(script, "Should Sip Pot??") {
 

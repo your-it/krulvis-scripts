@@ -32,14 +32,14 @@ import org.powbot.mobile.script.ScriptManager
             name = "Inventory items",
             description = "Put the correct amount in inventory and click the button",
             optionType = OptionType.INVENTORY,
-//            defaultValue = "{\"255\":14,\"227\":14}"
+            defaultValue = "{\"1785\":1,\"1775\":27}"
 //            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
             name = "Combine Items",
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
-//            defaultValue = "[{\"id\":255,\"interaction\":\"Use\",\"mouseX\":684,\"mouseY\":231,\"rawEntityName\":\"<col=ff9040>Harralander\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Harralander\",\"strippedName\":\"Harralander\"},{\"id\":227,\"interaction\":\"Use\",\"mouseX\":725,\"mouseY\":236,\"rawEntityName\":\"<col=ff9040>Harralander<col=ffffff> -> <col=ff9040>Vial of water\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Vial of water\",\"strippedName\":\"Harralander -> Vial of water\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":276,\"mouseY\":116,\"rawEntityName\":\"<col=ff9040>Harralander potion (unf)</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694734,\"componentIndex\":14,\"widgetIndex\":270,\"name\":\"Harralander potion (unf)\",\"strippedName\":\"Harralander potion (unf)\"}]"
+            defaultValue = "[{\"id\":1785,\"interaction\":\"Use\",\"mouseX\":685,\"mouseY\":248,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Glassblowing pipe\",\"strippedName\":\"Glassblowing pipe\"},{\"id\":1775,\"interaction\":\"Use\",\"mouseX\":723,\"mouseY\":250,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Molten glass\",\"strippedName\":\"Glassblowing pipe -> Molten glass\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":365,\"mouseY\":94,\"rawEntityName\":\"<col=ff9040>Unpowered staff orb</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694739,\"componentIndex\":19,\"widgetIndex\":270,\"name\":\"Unpowered staff orb\",\"strippedName\":\"Unpowered staff orb\"}]"
         )
     ]
 )
@@ -88,5 +88,6 @@ class Combiner : ATScript() {
 }
 
 fun main() {
-    Combiner().startScript("127.0.0.1", "krullieman", false)
+    Combiner().startScript("127.0.0.1", "GIM", false)
 }
+//Starting Script with JSON: [{"allowedValues":[],"defaultValue":{},"description":"Put the correct amount in inventory and click the button","enabled":true,"name":"Inventory items","optionType":"INVENTORY","value":{"1785":1,"1775":27},"visible":true},{"allowedValues":[],"defaultValue":[],"description":"Perform the Game Actions to start combining","enabled":true,"name":"Combine Items","optionType":"GAME_ACTIONS","value":[{"id":1785,"interaction":"Use","mouseX":685,"mouseY":248,"rawEntityName":"<col=ff9040>Glassblowing pipe","rawOpcode":38,"var0":0,"widgetId":9764864,"name":"Glassblowing pipe","strippedName":"Glassblowing pipe"},{"id":1775,"interaction":"Use","mouseX":723,"mouseY":250,"rawEntityName":"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass","rawOpcode":31,"var0":1,"widgetId":9764864,"name":"Molten glass","strippedName":"Glassblowing pipe -> Molten glass"},{"id":1,"interaction":"Make","mouseX":365,"mouseY":94,"rawEntityName":"<col=ff9040>Unpowered staff orb</col>","rawOpcode":57,"var0":-1,"widgetId":17694739,"componentIndex":19,"widgetIndex":270,"name":"Unpowered staff orb","strippedName":"Unpowered staff orb"}],"visible":true}]
