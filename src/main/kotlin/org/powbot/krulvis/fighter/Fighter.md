@@ -33,6 +33,7 @@
 - Meat
 - Cakes
 - Meat pie
+- Plain/Meat/Anchovy/Pineapple Pizza
 - Trout
 - Salmon
 - Peach
