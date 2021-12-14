@@ -24,7 +24,6 @@ import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
-import org.powbot.krulvis.fighter.tree.branch.ShouldEat
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
