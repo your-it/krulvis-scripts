@@ -7,7 +7,6 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.extensions.magic.Rune
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
 import org.powbot.krulvis.orbcharger.Orb.Companion.COSMIC
@@ -33,8 +32,8 @@ class HandleBank(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Handling Bank")
                 script.log.info("Out of antipots, stopping script")
                 ScriptManager.stop()
             }
-        } else if (!script.orb.requirements.all { it.hasRequirement() }) {
-            script.log.info("Missing requirement: ${script.orb.requirements.first { !it.hasRequirement() }}")
+        } else if (!script.orb.requirements.all { it.meets() }) {
+            script.log.info("Missing requirement: ${script.orb.requirements.first { !it.meets() }}")
             script.orb.requirements.forEach {
                 when (it) {
                     is EquipmentRequirement -> it.item.withdrawAndEquip(true)

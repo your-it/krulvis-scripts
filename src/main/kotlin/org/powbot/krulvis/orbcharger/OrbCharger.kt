@@ -1,5 +1,6 @@
 package org.powbot.krulvis.orbcharger
 
+import org.powbot.api.rt4.magic.Rune
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -7,11 +8,9 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.extensions.magic.Rune
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.orbcharger.tree.branch.IsPoisoned
-import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 
 @ScriptManifest(
     name = "krul Orbs",
@@ -53,10 +52,10 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 )
 class OrbCrafter : ATScript() {
 
-    val orb by lazy { Orb.valueOf(getOption("Orb")!!) }
-    val fastCharge by lazy { getOption<Boolean>("Fast charge")!! }
-    val antipoison by lazy { getOption<Boolean>("Antipoison")!! }
-    val food by lazy { Food.valueOf(getOption<String>("Food")!!) }
+    val orb by lazy { Orb.valueOf(getOption("Orb")) }
+    val fastCharge by lazy { getOption<Boolean>("Fast charge") }
+    val antipoison by lazy { getOption<Boolean>("Antipoison") }
+    val food by lazy { Food.valueOf(getOption<String>("Food")) }
 
     override fun createPainter(): ATPaint<*> = OrbPainter(this)
 

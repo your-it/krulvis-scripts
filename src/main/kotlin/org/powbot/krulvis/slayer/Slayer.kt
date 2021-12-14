@@ -40,11 +40,6 @@ import java.util.regex.Pattern
             description = "What should the inventory look like before heading out?",
             optionType = OptionType.INVENTORY,
             defaultValue = "{\"4155\":1,\"379\":15}"
-        ),
-        ScriptConfiguration(
-            name = "Food",
-            description = "Can be only a part of the name.",
-            defaultValue = "lobster"
         )
     ]
 )
