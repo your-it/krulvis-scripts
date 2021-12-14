@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.script.branch
+package org.powbot.krulvis.api.script.tree.branch
 
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
@@ -15,12 +15,12 @@ import org.powbot.krulvis.api.utils.Utils
 class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
     Branch<S>(script, "Should high alch?") {
     override val successComponent: TreeComponent<S> = SimpleLeaf(script, "High alching") {
-        if (!Magic.casting(spell)) {
+        if (!spell.casting()) {
             if (spell.cast()) {
-                Utils.waitFor { Magic.casting(spell) }
+                Utils.waitFor { spell.casting() }
             }
         }
-        if (Magic.casting(spell)) {
+        if (spell.casting()) {
             val count = Inventory.stream().id(alchable!!.id).count()
             alchable?.interact("Cast")
             Utils.waitFor { Inventory.stream().id(alchable!!.id).count() != count }

@@ -53,6 +53,8 @@ class ChestThiever : ATScript() {
 
     val trash = intArrayOf(BIRD_SNARE, BOX_TRAP, GRIMY_GUAM, MITHRIL_AXE)
 
+    val herbSacks = intArrayOf(13226, 24478)
+
     fun eatFood() {
         val food = Food.getFirstFood()
         if (food != null) {

@@ -23,7 +23,8 @@ import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.fighter.tree.branch.ShouldEat
+import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.rscache.loader.ItemLoader
 
@@ -91,7 +92,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 )
 class Fighter : ATScript() {
     override fun createPainter(): ATPaint<*> = FighterPainter(this)
-    override val rootComponent: TreeComponent<*> = ShouldEat(this)
+    override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
 
     @ValueChanged("Warrior guild")
     fun onWGChange(inWG: Boolean) {
@@ -202,7 +203,6 @@ class Fighter : ATScript() {
     fun canEat(extra: Int = 0) = food != null && ATContext.missingHP() > food!!.healing + extra
 
     fun needFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
-
 
     fun getNearbyMonsters(): List<Npc> {
         return Npcs.stream().within(safespot, radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
