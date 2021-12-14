@@ -8,8 +8,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.script.branch.ShouldHighAlch
-import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.mobile.script.ScriptManager
@@ -17,6 +16,8 @@ import org.powbot.mobile.script.ScriptManager
 class ShouldClearInv(script: ChestThiever) : Branch<ChestThiever>(script, "Should clear inv?") {
     override val failedComponent: TreeComponent<ChestThiever> = ShouldEat(script)
     override val successComponent: TreeComponent<ChestThiever> = SimpleLeaf(script, "Clear Inventory") {
+        sleep(600, 1200)
+        if (hasHerbs) herbSack?.interact("Fill")
         trash.forEach {
             it.interact("Drop")
         }
@@ -25,9 +26,12 @@ class ShouldClearInv(script: ChestThiever) : Branch<ChestThiever>(script, "Shoul
 
     var trash: List<Item> = emptyList()
 
+    val hasHerbs = Inventory.stream().name("grimy").isNotEmpty()
+    val herbSack get() = Inventory.stream().id(*script.herbSacks).firstOrNull()
+
     override fun validate(): Boolean {
         trash = Inventory.stream().id(*script.trash).list()
-        return trash.isNotEmpty()
+        return trash.isNotEmpty() || (herbSack != null && hasHerbs)
     }
 }
 

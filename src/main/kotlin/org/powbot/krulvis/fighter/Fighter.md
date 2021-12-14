@@ -14,6 +14,7 @@
 - **Safespotting**
 - **Magic & Ranged**
 - **Warrior guild re-entering for defender**
+- **Stop after finishing slayer task**
 
 ## Options
 
@@ -33,6 +34,7 @@
 - Meat
 - Cakes
 - Meat pie
+- Plain/Meat/Anchovy/Pineapple Pizza
 - Trout
 - Salmon
 - Peach
