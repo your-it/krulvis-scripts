@@ -14,28 +14,26 @@ class ShouldUseItem(script: Slayer) : Branch<Slayer>(script, "Should use item?")
     override val successComponent: TreeComponent<Slayer> = SimpleLeaf(script, "Using item") {
         val killItem = script.currentTask!!.target.killItem()
         val currentXp = Skills.experience(Constants.SKILLS_SLAYER)
-        script.log.info("target=$target, item=${killItem!!.ids[0]}")
         if (Utils.walkAndInteract(
-                target,
+                script.currentTarget,
                 "Use",
                 false,
                 true,
-                killItem.ids[0]
+                killItem!!.ids[0]
             )
         ) {
-            Condition.wait({ Skills.experience(Constants.SKILLS_SLAYER) > currentXp }, 250, 10)
+            if (Condition.wait({ Skills.experience(Constants.SKILLS_SLAYER) > currentXp }, 250, 10)) {
+                script.currentTarget = null
+            }
         }
     }
     override val failedComponent: TreeComponent<Slayer> = Killing(script)
 
-    var target: Npc? = null
-
     override fun validate(): Boolean {
-        if (script.currentTask!!.target.killItem() == null)
+        val currentTarget = script.currentTarget
+        if (currentTarget == null || !currentTarget.valid() || script.currentTask!!.target.killItem() == null)
             return false
-        target = Npcs.stream().within(4.0).interactingWithMe()
-            .firstOrNull { it.healthBarVisible() && it.healthPercent() <= 1 }
-        return target != null
+        return currentTarget.healthBarVisible() && currentTarget.healthPercent() <= 1
     }
 }
 
@@ -65,6 +63,7 @@ class Killing(script: Slayer) : Branch<Slayer>(script, "Killing?") {
 class NearTarget(script: Slayer) : Branch<Slayer>(script, "Near target?") {
     override val successComponent: TreeComponent<Slayer> = SimpleLeaf(script, "Attacking") {
         if (Utils.walkAndInteract(target, "Attack")) {
+            script.currentTarget = target
             Condition.wait({ Killing.killing(script.currentTask!!.target) }, 250, 15)
         }
     }

@@ -385,10 +385,9 @@ enum class SlayerTarget(
     ROCKSLUGS(
         arrayOf("Rockslug"),
         CombatStyle.Melee,
-        Location(Dungeon.NIL, Tile(3224, 9577, 0)),
+        Location(Dungeon.FREMENNIK_SLAYER_DUNGEON, Tile(2800, 10018, 0)),
         requirements = listOf(
-            KillItemRequirement(SALT),
-            LightRequirement()
+            KillItemRequirement(SALT)
         )
     ),
     RUNE_DRAGONS(

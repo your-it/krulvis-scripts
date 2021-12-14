@@ -1,9 +1,8 @@
 package org.powbot.krulvis.slayer
 
 import org.powbot.api.event.MessageEvent
-import org.powbot.api.rt4.Varpbits
-import org.powbot.api.rt4.Widget
-import org.powbot.api.rt4.Widgets
+import org.powbot.api.event.RenderEvent
+import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
@@ -16,6 +15,7 @@ import org.powbot.krulvis.slayer.task.Master
 import org.powbot.krulvis.slayer.task.SlayerTarget
 import org.powbot.krulvis.slayer.task.SlayerTask
 import org.powbot.krulvis.slayer.tree.branch.HasTask
+import org.powbot.mobile.drawing.Graphics
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -45,6 +45,7 @@ import java.util.regex.Pattern
 )
 class Slayer : ATScript() {
 
+    var currentTarget: Npc? = null
     var currentTask: SlayerTask? = null
     val master: Master by lazy { Master.valueOf(getOption("Slayer Master")) }
     val inventory: Map<Int, Int> by lazy { getOption("Inventory") }
