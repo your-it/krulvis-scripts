@@ -31,16 +31,18 @@ class ShouldEat<S : ATScript>(
     var nextEatExtra = Random.nextInt(1, 8)
 
     fun needsFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
+
     fun food(): Food? {
         val missingHp = missingHP()
-        return foods.firstOrNull { it.healing >= missingHp + nextEatExtra }
+        val needsFood = needsFood()
+        return foods.firstOrNull {
+            it.inInventory() &&
+                    (needsFood || it.healing <= missingHp + nextEatExtra)
+        }
     }
 
     override fun validate(): Boolean {
         food = food()
-        if (needsFood()) {
-            food = foods.firstOrNull { it.inInventory() }
-        }
         return food != null
     }
 }
