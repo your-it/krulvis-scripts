@@ -96,7 +96,7 @@ class TitheFarmer : TreeScript() {
         }
 
         //Do 17 for the first couple rounds to skip the round where you do just 4 plants
-        val patchCount = if (patchCount == 16 && seedCount() > 32) 17 else patchCount
+        val patchCount = if (patchCount == 16 && seedCount() >= 32) 17 else patchCount
         return columns.toList().subList(0, patchCount)
     }
 
