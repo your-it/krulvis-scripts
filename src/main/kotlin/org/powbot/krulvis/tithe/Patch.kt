@@ -78,7 +78,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 it.interact("Use", false)
             }
         }
-        return Condition.wait{ Inventory.selectedItem().id() == seed } && go.interact("Use", false)
+        return Condition.wait { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
     }
 
     fun clear(): Boolean = interact("Clear")

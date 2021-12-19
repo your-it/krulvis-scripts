@@ -33,7 +33,7 @@ class InventoryRequirement(
         else item.getInventoryCount(countNoted))
     }
 
-    override fun hasRequirement(): Boolean {
+    override fun meets(): Boolean {
         return if (allowMore) getCount() >= amount else getCount() == amount
     }
 

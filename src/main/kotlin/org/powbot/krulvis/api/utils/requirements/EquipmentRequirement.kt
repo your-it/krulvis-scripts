@@ -15,7 +15,7 @@ class EquipmentRequirement(override val item: EquipmentItem, override val amount
         return Bank.withdrawExact(item.id, (amount - Equipment.stream().id(*item.ids).count(true)).toInt(), wait)
     }
 
-    override fun hasRequirement(): Boolean {
+    override fun meets(): Boolean {
         return item.inEquipment()
     }
 

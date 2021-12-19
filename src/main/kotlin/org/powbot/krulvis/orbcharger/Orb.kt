@@ -4,11 +4,11 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePower
+import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
-import org.powbot.krulvis.api.extensions.items.Staff
 import org.powbot.krulvis.api.extensions.items.TeleportItem
-import org.powbot.krulvis.api.extensions.magic.Rune
-import org.powbot.krulvis.api.extensions.magic.RunePower
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
@@ -23,11 +23,11 @@ enum class Orb(
 ) {
     WATER(
         571, Tile(2845, 3424, 0), Magic.Spell.CHARGE_WATER_ORB, BankLocation.FALADOR_WEST_BANK,
-        InventoryRequirement(Rune.AIR, 3, allowMore = true), InventoryRequirement(Rune.LAW, 1, allowMore = true)
+        InventoryRequirement(Rune.AIR.id, 3, allowMore = true), InventoryRequirement(Rune.LAW.id, 1, allowMore = true)
     ),
     FIRE(
         569, Tile.Nil, Magic.Spell.CHARGE_FIRE_ORB, BankLocation.FALADOR_WEST_BANK,
-        InventoryRequirement(Rune.AIR, 3, allowMore = true), InventoryRequirement(Rune.LAW, 1, allowMore = true)
+        InventoryRequirement(Rune.AIR.id, 3, allowMore = true), InventoryRequirement(Rune.LAW.id, 1, allowMore = true)
     ),
     EARTH(
         575,
@@ -59,7 +59,7 @@ enum class Orb(
         return Objects.stream().within(10.0).name("Obelisk of $name").firstOrNull()
     }
 
-    fun staffEquipped() = Staff.getEquippedStaff()?.runePowers?.contains(RunePower.valueOf(name)) == true
+    fun staffEquipped() = Staff.equippedPowers().contains(RunePower.valueOf(name))
 
     companion object {
         val UNPOWERED = 567

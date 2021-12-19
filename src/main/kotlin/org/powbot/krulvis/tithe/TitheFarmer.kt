@@ -25,10 +25,11 @@ import kotlin.math.min
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.0.8",
+    version = "1.1.0",
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
-    category = ScriptCategory.Farming
+    category = ScriptCategory.Farming,
+    singleTapRequired = false
 )
 @ScriptConfiguration.List(
     [
@@ -44,7 +45,7 @@ class TitheFarmer : TreeScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
-    val patchCount by lazy { min(getOption<Int>("Patches")?.toInt() ?: 20, 20) }
+    val patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
     var lastPatch: Patch? = null
     var lastRound = false
     var startPoints = -1
@@ -65,6 +66,7 @@ class TitheFarmer : TreeScript() {
                     )
                 }/hr)"
             }
+            .addString("Single-tap") { Game.singleTapEnabled().toString() }
             .trackSkill(Skill.Farming)
             .addCheckbox("Last round:", "lastRound", false)
             .build())

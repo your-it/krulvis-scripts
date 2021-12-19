@@ -4,12 +4,12 @@
 
 ## Features
 
-- **Supports:** Gold, Iron, Steel, Mithril, Adamantite, Runite
-- **Supports Coal bag**
-- **Supports Gold gloves switching**
-- **Supports Cooling dispenser with Bucket of water or Ice gloves**
+- **Bars:** Gold, Iron, Steel, Mithril, Adamantite, Runite
+- **Coal bag**
+- **Ice/Gold gloves switching**
+- **Cooling dispenser with Bucket of water and Ice gloves**
 - **Puts gold in coffer and pays foreman**
-
+- **Stamina potions**
 ## Options
 
 - **Select bar to smelt**

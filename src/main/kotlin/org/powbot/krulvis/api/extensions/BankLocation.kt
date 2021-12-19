@@ -1,17 +1,14 @@
 package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.Tile
+import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.api.rt4.walking.toRegularTile
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
 import org.powbot.mobile.service.WebWalkingService
 
@@ -99,7 +96,7 @@ enum class BankLocation(
     WARRIORS_GUILD(
         Tile(2843, 3543, 0), BankType.BOOTH,
         requirements = arrayOf(object : Requirement {
-            override fun hasRequirement(): Boolean {
+            override fun meets(): Boolean {
                 return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
             }
         })
@@ -132,7 +129,7 @@ enum class BankLocation(
      * @return true if all the requirements are met to access this bank
      */
     fun canUse(): Boolean {
-        return requirements.all { it.hasRequirement() }
+        return requirements.all { it.meets() }
     }
 
     override fun toString(): String = "$name, tile=$tile, type=$type"
@@ -167,7 +164,7 @@ enum class BankLocation(
         }
 
         private fun getAllowedBanks(): List<BankLocation> =
-            values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.hasRequirement() } }
+            values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.meets() } }
 
         /**
          * @return the nearest bank according to the geographical distance

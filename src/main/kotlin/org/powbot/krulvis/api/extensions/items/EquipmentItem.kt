@@ -1,11 +1,10 @@
 package org.powbot.krulvis.api.extensions.items
 
+import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.requirements.Requirement
 import org.powbot.mobile.script.ScriptManager
 import java.io.Serializable
 
@@ -45,7 +44,7 @@ interface EquipmentItem : Item {
         return Equipment.get().any { it.id() in ids }
     }
 
-    fun canWear(): Boolean = requirements.all { it.hasRequirement() }
+    fun canWear(): Boolean = requirements.all { it.meets() }
 
     fun equip(wait: Boolean = true): Boolean {
         if (inInventory()) {

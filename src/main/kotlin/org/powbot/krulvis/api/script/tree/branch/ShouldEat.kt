@@ -30,7 +30,9 @@ class ShouldEat<S : ATScript>(
     var food: Food? = null
     var nextEatExtra = Random.nextInt(1, 8)
 
-    fun needsFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
+    companion object {
+        fun needsFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
+    }
 
     fun food(): Food? {
         val missingHp = missingHP()

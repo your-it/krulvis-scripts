@@ -81,8 +81,34 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        log.info("Bank=${getBank().tile()}")
+//        if (check()) {
+//            log.info("CHECK")
+//            execute()
+//        }
         sleep(2000)
+    }
+
+    fun check(): Boolean {
+        return !Game.singleTapEnabled()
+    }
+
+    fun execute(): Boolean {
+        val button = Components.stream(601).action("Set Function").first()
+        if (button.actions().contains("Toggle single-tap mode")) {
+            log.info("Found single-tap in function button")
+            return button.interact("Toggle single-tap mode") && Condition.wait { !Game.singleTapEnabled() }
+        } else if (!Chat.chatting()) {
+            log.info("Should set function first")
+            if (!Menu.opened()) {
+                val point = button.boundingRect().nextPoint()
+                Input.press(point)
+                sleep(Random.nextInt(1500, 2000))
+                Input.release(point)
+            } else Menu.click { it.action == "Set Function" }
+        } else if (Chat.completeChat("Single-tap")) {
+            Condition.wait { Components.stream(601).action("Toggle single-tap mode").isNotEmpty() }
+        }
+        return false
     }
 
     @com.google.common.eventbus.Subscribe
@@ -105,11 +131,27 @@ class TestScript : ATScript() {
 }
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
+
+    fun lampComp() = Components.stream(240).firstOrNull { it.actions().contains("Woodcutting") }
+
+    fun confirmButton(): Component? {
+        return Components.stream(240).action("Confirm").firstOrNull()
+    }
+
+    fun skillButton(): Component? {
+        return Components.stream(240).action("Woodcutting").firstOrNull()
+    }
+
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
 //            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
-            .addString("Binary of 543:") { Varpbits.varpbit(543).toString(2) }
-            .addString("Value of 543:") { "${Varpbits.varpbit(543)}" }
+            .addString("skillButton:") { "${skillButton()?.actions()}" }
+            .addString("confirmButton:") { "${confirmButton()?.tooltip()}" }
+            .addString("Can click confirm:") {
+                "${
+                    confirmButton()?.components()?.any { it.text().contains("Woodcutting") }
+                }"
+            }
 //            .addString("Can cast water strike:") { "${Magic.Spell.WATER_STRIKE.canCast()}" }
             .withTotalLoot(true)
             .build()
@@ -135,5 +177,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "GIM", false)
+    TestScript().startScript("127.0.0.1", "GIM", true)
 }

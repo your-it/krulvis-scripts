@@ -8,10 +8,10 @@ import org.powbot.krulvis.tithe.TitheFarmer
 class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
 
     override fun execute() {
-        val hasEnoughWater = script.hasEnoughWater()
         val hasSeeds = script.hasSeeds()
         val patch = script.patches.firstOrNull { it.isEmpty() }
-        if (!hasEnoughWater || !hasSeeds || patch == null) {
+        if (!hasSeeds || patch == null) {
+            script.log.info("Stopped planting: hasSeeds=$hasSeeds, patch=$patch")
             script.planting = false
         } else {
             script.planting = true
@@ -29,7 +29,7 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
                         && patch.water()
                     ) {
                         if (patch.index < script.patchCount - 1) {
-                            Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use") }
+                            Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use", false) }
                         }
                         val watered = Condition.wait({ !patch.needsAction(true) }, 200, 20)
                         script.log.info("Watered as well.. $patch: $watered")

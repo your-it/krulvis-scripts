@@ -76,6 +76,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
             return null
         }
 
+        fun hasFood(): Boolean = values().any { it.hasWith() }
+
         fun getFirstFoodBank(): Food? {
             return forId(Bank.get { true }.firstOrNull { forId(it.id) != null }?.id ?: -1)
         }

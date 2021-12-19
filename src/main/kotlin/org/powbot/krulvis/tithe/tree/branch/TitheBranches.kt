@@ -56,8 +56,8 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
             script.chillTimer.reset()
         }
 //        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
-        return Inventory.stream().list()
-            .none { it.id() in Data.WATER_CANS } || !Production.stoppedMaking(Data.WATER_CAN_FULL) ||
+        return Inventory.stream().list().none { it.id() in Data.WATER_CANS } ||
+                !Production.stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })
     }
 }
