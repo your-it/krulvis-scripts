@@ -114,7 +114,7 @@ object ATContext {
         if (selectedId != selectItem) {
             Game.tab(Game.Tab.INVENTORY)
             if (selectItem > -1) {
-                Inventory.stream().id(selectItem).firstOrNull()?.interact("Use")
+                Inventory.stream().id(selectItem).firstOrNull()?.interact("Use", useMenu)
             } else {
                 Inventory.stream().id(selectedId).firstOrNull()?.click()
             }

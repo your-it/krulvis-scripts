@@ -115,7 +115,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
                 Menu.close()
             }
         }
-        return go.click()
+        return go.interact(action, false)
     }
 
     override fun toString(): String = "Patch(id=${go.id()}, tile=${go.tile()})"
