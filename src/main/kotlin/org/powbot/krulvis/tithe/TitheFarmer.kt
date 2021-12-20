@@ -95,6 +95,8 @@ class TitheFarmer : TreeScript() {
             columns.add(Tile(lastPatch.x(), lastPatch.y() + y))
         }
 
+        //Do 17 for the first couple rounds to skip the round where you do just 4 plants
+        val patchCount = if (patchCount == 16 && seedCount() >= 32) 17 else patchCount
         return columns.toList().subList(0, patchCount)
     }
 
@@ -114,6 +116,10 @@ class TitheFarmer : TreeScript() {
     fun getSeed(): Int {
         val seed = Inventory.stream().id(*Data.SEEDS).findFirst()
         return if (seed.isPresent) seed.get().id() else -1
+    }
+
+    fun seedCount(): Int {
+        return Inventory.stream().id(*Data.SEEDS).count(true).toInt()
     }
 
     fun getPoints(): Int {

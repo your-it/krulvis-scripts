@@ -14,7 +14,7 @@ object Data {
     val HARVEST = intArrayOf(GOLOVANOVA, BOLOGANO, LOGAVANO)
 
     val NAMES = listOf("Golovanova", "Bologano", "Logavano")
-
+    
 }
 
 fun main() {
