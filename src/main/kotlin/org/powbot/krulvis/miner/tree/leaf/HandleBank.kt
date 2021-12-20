@@ -28,7 +28,7 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
             } else {
                 DepositBox.depositAllExcept(*Data.TOOLS)
             }
-        } else if (script.waterskins && Data.hasWaterSkins()) {
+        } else if (script.waterskins && !Data.hasWaterSkins()) {
             if (Bank.containsOneOf(*WATERSKINS))
                 Bank.withdraw(WATERSKINS[0], Bank.Amount.FIVE)
             else {
