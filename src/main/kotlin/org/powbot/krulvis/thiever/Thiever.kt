@@ -84,6 +84,7 @@ class Thiever : ATScript() {
     override fun onStart() {
         super.onStart()
         dodgyNeck = getOption("Dodgy necklace")
+        log.info("Droppables=[${droppables.all { it.isBlank() }}] empty=${droppables.isEmpty()}")
     }
 
     val food by lazy { Food.valueOf(getOption("Food")) }
@@ -91,7 +92,7 @@ class Thiever : ATScript() {
     val foodAmount by lazy { (getOption<Int>("Food amount")) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu")) }
     val useMenu by lazy { !getOption<Boolean>("Left-click") }
-    val droppables by lazy { getOption<String>("Droppables").split(",").map { it.trim() } }
+    val droppables by lazy { getOption<String>("Droppables").split(",").map { it.trim() }.filterNot { it.isBlank() } }
     var dodgyNeck = false
 
     val dodgy = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
