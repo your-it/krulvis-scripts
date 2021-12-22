@@ -10,8 +10,9 @@ class ThieverPainter(script: Thiever) : ATPaint<Thiever>(script) {
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .trackInventoryItem(COINS)
             .trackSkill(Skill.Thieving)
+            .trackInventoryItem(COINS)
+            .withTotalLoot(true)
             .build()
     }
 }

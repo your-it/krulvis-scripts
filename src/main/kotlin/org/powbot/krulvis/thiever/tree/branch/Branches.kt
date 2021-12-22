@@ -1,15 +1,17 @@
 package org.powbot.krulvis.thiever.tree.branch
 
+import org.powbot.api.Random
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.ATContext.currentHP
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.thiever.Thiever
 import org.powbot.krulvis.thiever.tree.leaf.Eat
@@ -28,13 +30,31 @@ class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
 }
 
 class ShouldBank(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
-    override val successComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script, IsBankOpen(script), 1)
+    override val successComponent: TreeComponent<Thiever> = CanDrop(script)
     override val failedComponent: TreeComponent<Thiever> = AtSpot(script)
 
     override fun validate(): Boolean {
         return Inventory.isFull() || (currentHP() < 8 && !script.food.inInventory()) || (script.dodgyNeck && !script.dodgy.inEquipment())
     }
 }
+
+class CanDrop(script: Thiever) : Branch<Thiever>(script, "Can drop") {
+    override val successComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Dropping") {
+        droppables.forEach {
+            it.interact("Drop")
+            sleep(Random.nextInt(150, 250))
+        }
+    }
+    override val failedComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script, IsBankOpen(script), 1)
+
+    var droppables: List<Item> = emptyList()
+
+    override fun validate(): Boolean {
+        droppables = Inventory.stream().name(*script.droppables.toTypedArray()).list()
+        return Inventory.isFull() && droppables.isNotEmpty()
+    }
+}
+
 
 class ShouldOpenCoinPouch(script: Thiever, nextNode: TreeComponent<Thiever>, private val stackSize: Int) :
     Branch<Thiever>(script, "Should Bank") {
