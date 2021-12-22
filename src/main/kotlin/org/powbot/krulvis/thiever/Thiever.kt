@@ -83,10 +83,10 @@ class Thiever : ATScript() {
 
     override fun onStart() {
         super.onStart()
-        dodgyNeck = getOption<Boolean>("Dodgy necklace")
+        dodgyNeck = getOption("Dodgy necklace")
     }
 
-    val food by lazy { Food.valueOf(getOption<String>("Food")) }
+    val food by lazy { Food.valueOf(getOption("Food")) }
     val target by lazy { getOption<List<NpcActionEvent>>("Targets") }
     val foodAmount by lazy { (getOption<Int>("Food amount")) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu")) }

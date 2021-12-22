@@ -50,7 +50,7 @@ class CanDrop(script: Thiever) : Branch<Thiever>(script, "Can drop") {
     var droppables: List<Item> = emptyList()
 
     override fun validate(): Boolean {
-        droppables = Inventory.stream().name(*script.droppables.toTypedArray()).list()
+        droppables = Inventory.stream().filter { item -> script.droppables.any { item.name().contains(it, true) } }
         return Inventory.isFull() && droppables.isNotEmpty()
     }
 }
