@@ -61,7 +61,7 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
         //Actual should bank
         val full = Inventory.isFull()
         return full || Bank.opened() || DepositBox.opened()
-                || (Data.hasEmptyWaterSkin() && !Data.hasWaterSkins())
+                || ((script.waterskins || Data.hasEmptyWaterSkin()) && !Data.hasWaterSkins())
                 || (script.shouldEmptySack
                 && !Inventory.emptyExcept(*Data.TOOLS)
                 && (full || script.getMotherloadCount() == 0))
