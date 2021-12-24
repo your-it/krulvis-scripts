@@ -1,7 +1,6 @@
 package org.powbot.krulvis.tithe
 
 import com.google.common.eventbus.Subscribe
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -13,10 +12,10 @@ import org.powbot.api.script.paint.PaintFormatters
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.mobile.script.ScriptManager
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
+import org.powbot.mobile.script.ScriptManager
 import kotlin.math.min
 
 @ScriptManifest(
