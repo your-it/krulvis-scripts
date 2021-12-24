@@ -6,26 +6,23 @@ import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Skill
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptCategory
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.*
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.paint.PaintFormatters
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.mobile.script.ScriptManager
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
+import org.powbot.mobile.script.ScriptManager
 import kotlin.math.min
 
 @ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.1.0",
+    version = "1.1.1",
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming,
@@ -33,6 +30,12 @@ import kotlin.math.min
 )
 @ScriptConfiguration.List(
     [
+        ScriptConfiguration(
+            name = "Smart Patches",
+            description = "17, 17, 17, 17, 16, 16",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
+        ),
         ScriptConfiguration(
             name = "Patches",
             description = "How many patches do you want to use? Max 20",
@@ -46,6 +49,7 @@ class TitheFarmer : TreeScript() {
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
     val patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
+    val smartPatches by lazy { getOption<Boolean>("Smart Patches") }
     var lastPatch: Patch? = null
     var lastRound = false
     var startPoints = -1
@@ -96,7 +100,7 @@ class TitheFarmer : TreeScript() {
         }
 
         //Do 17 for the first couple rounds to skip the round where you do just 4 plants
-        val patchCount = if (patchCount == 16 && seedCount() >= 32) 17 else patchCount
+        val patchCount = if (patchCount == 16 && smartPatches && seedCount() >= 32) 17 else patchCount
         return columns.toList().subList(0, patchCount)
     }
 
@@ -140,6 +144,14 @@ class TitheFarmer : TreeScript() {
                 lastPatch = patches.first { it.tile == tile }
                 log.info("Interacted ${evt.interaction} on $lastPatch")
             }
+        }
+    }
+
+    @ValueChanged("Smart Patches")
+    fun onValueChange(smart: Boolean) {
+        updateEnabled("Patches", !smart)
+        if (smart) {
+            updateOption("Patches", 16, OptionType.INTEGER)
         }
     }
 
