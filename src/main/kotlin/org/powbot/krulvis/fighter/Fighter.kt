@@ -284,6 +284,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Ranged)
             .trackSkill(Skill.Slayer)
             .addCheckbox("Stop after Slay task", "stopAfterTask", false)
+            .withTotalLoot(true)
         return paintBuilder.build()
     }
 
