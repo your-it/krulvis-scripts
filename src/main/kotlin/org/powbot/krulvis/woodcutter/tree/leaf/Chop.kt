@@ -14,16 +14,14 @@ class Chop(script: Woodcutter) : Leaf<Woodcutter>(script, "Chop Tree") {
     override fun execute() {
         Bank.close()
 
-
         val trees = script.trees.map {
-            Objects.stream().at(it).action("Chop down", "Cut").firstOrNull()
+            Objects.stream().at(it).action("Chop down", "Cut", "Chop").firstOrNull()
         }
 
-        script.log.info("Trees: ${trees.map { "${it?.name}: ${it?.tile}" }.joinToString()}")
+        script.log.info("Trees: ${trees.joinToString { "${it?.name}: ${it?.tile}" }}")
 
-        val tree = trees.filterNotNull()
-            .minByOrNull { it.distance() }
-        val action = if (tree?.actions()?.contains("Chop down") == true) "Chop down" else "Cut"
+        val tree = trees.filterNotNull().minByOrNull { it.distance() }
+        val action = tree?.actions()?.firstOrNull() ?: "Chop down"
         if (tree != null && Utils.walkAndInteract(tree, action) && waitFor(long()) {
                 Players.local().animation() != -1
             }) {
