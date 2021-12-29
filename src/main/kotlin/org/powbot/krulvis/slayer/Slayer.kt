@@ -21,9 +21,10 @@ import java.util.regex.Pattern
 
 
 @ScriptManifest(
-    name = "Slayer",
+    name = "krul Slayer",
     author = "Rob & Krulvis",
     priv = true,
+    version = "1.0.0",
     description = "Trains slayer"
 )
 @ScriptConfiguration.List(

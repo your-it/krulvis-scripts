@@ -8,6 +8,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.slayer.Slayer
 import org.powbot.krulvis.slayer.task.FISHING_EXPLOSIVE
+import org.powbot.krulvis.slayer.task.SLAYER_BELL
 import org.powbot.krulvis.slayer.task.SlayerTarget
 
 class ShouldUseItem(script: Slayer) : Branch<Slayer>(script, "Should use item?") {
@@ -80,13 +81,15 @@ class NearTarget(script: Slayer) : Branch<Slayer>(script, "Near target?") {
 class ShouldSpawnTarget(script: Slayer) : Branch<Slayer>(script, "Should spawn target?") {
     override val successComponent: TreeComponent<Slayer> = SimpleLeaf(script, "Spawning") {
         val spawnItem = script.currentTask!!.target.spawnItem()!!
-        when (spawnItem.ids[0]) {
-            FISHING_EXPLOSIVE -> {
-                val spot = Objects.stream().name("Ominous Fishing Spot").nearest().firstOrNull()
-                if (spot != null && Utils.walkAndInteract(spot, "Use", false, true, FISHING_EXPLOSIVE)) {
-                    Condition.wait({ script.currentTask!!.target() != null }, 250, 20)
-                }
-            }
+        val id = spawnItem.ids[0]
+        val name = when (id) {
+            FISHING_EXPLOSIVE -> "Ominous Fishing Spot"
+            SLAYER_BELL -> "Molanisk"
+            else -> ""
+        }
+        val spot = Objects.stream().name(name).nearest().firstOrNull()
+        if (spot != null && Utils.walkAndInteract(spot, "Use", false, true, id)) {
+            Condition.wait({ script.currentTask!!.target() != null }, 250, 20)
         }
     }
     override val failedComponent: TreeComponent<Slayer> = SimpleLeaf(script, "Walking to spot") {
