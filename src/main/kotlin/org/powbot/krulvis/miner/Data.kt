@@ -7,6 +7,9 @@ import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.api.extensions.items.Item
 
 object Data {
+
+    val WATERSKINS = intArrayOf(1823, 1825, 1827, 1829)
+    
     val TOOLS = intArrayOf(
         1265,
         1267,
@@ -26,7 +29,8 @@ object Data {
         1823,
         Item.RAW_KARAMBWANJI,
         3150,
-        *GemBag.ids
+        *GemBag.ids,
+        *WATERSKINS,
     )
 
     @JvmStatic
@@ -61,8 +65,6 @@ object Data {
         Tile(3753, 5675),
         Tile(3752, 5675)
     )
-
-    val WATERSKINS = intArrayOf(1823, 1825, 1827, 1829)
     val EMPTY_WATERSKIN = 1831
 
     val GEM_BAG_GEMS = intArrayOf(1623, 1621, 1619, 1617)

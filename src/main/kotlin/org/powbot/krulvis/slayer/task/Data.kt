@@ -30,6 +30,7 @@ class LightRequirement : Requirement {
     }
 }
 
+//2731, 5205, 0
 enum class CombatStyle {
     Melee, Magic, Ranged
 }
@@ -356,6 +357,15 @@ enum class SlayerTarget(
             SpawnItemRequirement(FISHING_EXPLOSIVE)
         )
     ),
+    MOLANISKS(
+        arrayOf("Molanisk"),
+        CombatStyle.Melee,
+        Location(Dungeon.NIL, Tile(2731, 5205, 0)),
+        requirements = listOf(
+            LightRequirement(),
+            SpawnItemRequirement(SLAYER_BELL)
+        )
+    ),
     MUTATED_ZYGOMITES(
         arrayOf("Mutated zygomite"),
         CombatStyle.Melee,
@@ -540,4 +550,6 @@ val LIT_BUG_LANTERN = 7053
 val FISHING_EXPLOSIVE = 6664
 val EMPTY_WATERSKIN = 1831
 val SHANTAY_PASS = 1854
-val LIGHTS = intArrayOf(-1)
+val SLAYER_BELL = 10952
+val BRUMA_TORCH = 20720
+val LIGHTS = intArrayOf(BRUMA_TORCH)

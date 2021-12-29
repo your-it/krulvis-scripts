@@ -16,7 +16,18 @@ class ShouldBank(script: Slayer) : Branch<Slayer>(script, "Should Bank?") {
     override fun validate(): Boolean {
         val hasRequirements = script.currentTask!!.target.requirements.all { it.meets() }
         val bankForFood = (ShouldEat.needsFood() && !Food.hasFood())
-        return !hasRequirements || bankForFood
+        if (!hasRequirements) {
+            script.log.info(
+                "Missing requirements=[${
+                    script.currentTask!!.target.requirements.filter { !it.meets() }.joinToString()
+                }]"
+            )
+            return true
+        } else if (bankForFood) {
+            script.log.info("Needs food=${ShouldEat.needsFood()}, Has Food=${Food.hasFood()}")
+            return true
+        }
+        return false
     }
 
 }
