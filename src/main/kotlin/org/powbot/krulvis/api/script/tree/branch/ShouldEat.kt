@@ -39,7 +39,7 @@ class ShouldEat<S : ATScript>(
         val needsFood = needsFood()
         return foods.firstOrNull {
             it.inInventory() &&
-                    (needsFood || it.healing <= missingHp + nextEatExtra)
+                    (needsFood || missingHp >= it.healing + nextEatExtra)
         }
     }
 
