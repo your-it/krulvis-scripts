@@ -10,6 +10,7 @@ import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.script.ScriptManager
 
@@ -33,12 +34,12 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
 
     override fun validate(): Boolean {
         val target = script.target()
-        val currDefenderIndex = script.currentDefenderIndex()
+        val currDefenderIndex = Defender.currentDefenderIndex()
         if (target == null || !target.reachable()) {
-            script.lastDefenderIndex = currDefenderIndex
+            Defender.lastDefenderIndex = currDefenderIndex
         }
         return script.warriorGuild &&
-                ((script.lastDefenderIndex < currDefenderIndex && currDefenderIndex < script.defenders.size - 1)
+                ((Defender.lastDefenderIndex < currDefenderIndex && currDefenderIndex < Defender.defenders.size - 1)
                         || Inventory.getCount(script.warriorTokens) < 10)
     }
 }
@@ -47,7 +48,7 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
 class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should show rune defender?") {
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Show rune defender") {
-        val runeDefender = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.OFF_HAND, script.defenders[6])
+        val runeDefender = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.OFF_HAND, Defender.defenders[6])
         val tile = Tile(2907, 9968, 0)
         if (runeDefender.inEquipment()) {
             runeDefender.dequip()
@@ -59,15 +60,15 @@ class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should 
             val lorelai = Npcs.stream().name("Lorelai").firstOrNull()
             if (lorelai == null || (!lorelai.reachable() && tile.distance() > 5)) {
                 Movement.walkTo(tile)
-            } else if (Utils.walkAndInteract(lorelai, "Use", selectItem = script.defenders[6])) {
+            } else if (Utils.walkAndInteract(lorelai, "Use", selectItem = Defender.defenders[6])) {
                 waitFor { Chat.canContinue() }
             }
         }
     }
 
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldUseItem(script)
 
     override fun validate(): Boolean {
-        return script.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096
+        return Defender.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096
     }
 }

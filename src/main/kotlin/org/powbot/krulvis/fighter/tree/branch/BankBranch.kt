@@ -1,17 +1,17 @@
 package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.HandleBank
 
 class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
     override val successComponent: TreeComponent<Fighter> = IsBankOpen(script)
-    override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
+    override val failedComponent: TreeComponent<Fighter> = CanLoot(script)
 
     override fun validate(): Boolean {
         if (script.forcedBanking) return true
@@ -19,8 +19,7 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
         val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
         if (ammo != null && !ammo.inEquipment()) return true
 
-        val hasFood = script.food != null && Inventory.containsOneOf(*script.food!!.ids)
-        return !hasFood && (script.needFood()
+        return !Food.hasFood() && (Food.needsFood()
                 || (Inventory.isFull() && !Potion.PRAYER.hasWith())
                 || Bank.opened())
     }

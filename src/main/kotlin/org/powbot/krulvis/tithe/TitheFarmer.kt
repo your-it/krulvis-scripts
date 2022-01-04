@@ -235,5 +235,5 @@ class TitheFarmer : TreeScript() {
 }
 
 fun main() {
-    TitheFarmer().startScript(true)
+    TitheFarmer().startScript(false)
 }

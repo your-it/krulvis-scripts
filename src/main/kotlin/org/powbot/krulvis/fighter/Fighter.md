@@ -8,7 +8,7 @@
 - **Drinking potions**
 - **QuickPray**
 - **Banking (with teleports)**
-- **Looting**
+- **Looting (ironman support)**
 - **Bury bones**
 - **High alching**
 - **Safespotting**
