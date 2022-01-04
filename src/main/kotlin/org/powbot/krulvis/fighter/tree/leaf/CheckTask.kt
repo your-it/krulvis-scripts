@@ -1,14 +1,14 @@
-package org.powbot.krulvis.slayer.tree.leaf
+package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.Condition
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.slayer.Slayer
-import org.powbot.krulvis.slayer.task.ENCHANTED_GEM
+import org.powbot.krulvis.fighter.Fighter
+import org.powbot.krulvis.fighter.slayer.ENCHANTED_GEM
 import org.powbot.mobile.script.ScriptManager
 
-class CheckTask(script: Slayer) : Leaf<Slayer>(script, "Checking task") {
+class CheckTask(script: Fighter) : Leaf<Fighter>(script, "Checking task") {
 
     override fun execute() {
         val gem = Inventory.stream().id(ENCHANTED_GEM).firstOrNull()
@@ -19,6 +19,6 @@ class CheckTask(script: Slayer) : Leaf<Slayer>(script, "Checking task") {
             return
         }
         if (gem.interact("Check"))
-            Condition.wait({ script.currentTask != null }, 250, 10)
+            Condition.wait({ script.slayer.currentTask != null }, 250, 10)
     }
 }

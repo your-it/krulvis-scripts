@@ -6,6 +6,7 @@ import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.api.Random
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.smither.Smithable
 import java.io.Serializable
 import kotlin.math.ceil
@@ -77,6 +78,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
         }
 
         fun hasFood(): Boolean = values().any { it.hasWith() }
+
+        fun needsFood(): Boolean = currentHP().toDouble() / maxHP().toDouble() < .4
 
         fun getFirstFoodBank(): Food? {
             return forId(Bank.get { true }.firstOrNull { forId(it.id) != null }?.id ?: -1)

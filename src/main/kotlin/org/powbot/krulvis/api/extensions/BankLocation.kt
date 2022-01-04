@@ -46,6 +46,7 @@ enum class BankLocation(
     FARMING_GUILD_65(
         Tile(1253, 3741, 0), BankType.CHEST,
     ),
+    FEROX_ENCLAVE(Tile(3135, 3628), BankType.CHEST),
     GRAND_EXCHANGE(
         Tile(3167, 3489, 0), BankType.NPC,
     ),

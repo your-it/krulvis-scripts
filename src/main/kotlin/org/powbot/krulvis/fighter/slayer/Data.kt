@@ -1,4 +1,4 @@
-package org.powbot.krulvis.slayer.task
+package org.powbot.krulvis.fighter.slayer
 
 import org.powbot.api.Tile
 import org.powbot.api.requirement.ItemRequirement
@@ -24,6 +24,18 @@ data class Location(val dungeon: Dungeon, val centerTile: Tile, val radius: Int 
  */
 class KillItemRequirement(id: Int) : ItemRequirement(id, 1, ItemRequirementType.INVENTORY)
 class SpawnItemRequirement(id: Int) : ItemRequirement(id, 1, ItemRequirementType.INVENTORY)
+class StoneShoesRequirement : ItemRequirement(intArrayOf(22951, 23037), 1, ItemRequirementType.EQUIPMENT)
+class LeafBladedRequirement : Requirement {
+    override fun meets(): Boolean {
+        return Equipment.stream().id(*weapons, *ammo).isNotEmpty()
+    }
+
+    companion object {
+        val weapons = intArrayOf(20727, 11902, 4158)
+        val ammo = intArrayOf(4150, 4036, 4280)
+    }
+}
+
 class LightRequirement : Requirement {
     override fun meets(): Boolean {
         return Inventory.stream().id(*LIGHTS).isNotEmpty() || Equipment.stream().id(*LIGHTS).isNotEmpty()
@@ -283,8 +295,9 @@ enum class SlayerTarget(
         Location(Dungeon.CATACOMBS_OF_KOUREND, Tile(1644, 10064, 0)),
         Location(Dungeon.CHASM_OF_FIRE, Tile(-1, -1, -1)),
         Location(Dungeon.ISLE_OF_SOULS_DUNGEON, Tile(-1, -1, -1)),
-        Location(Dungeon.KARUULM_SLAYER_DUNGEON, Tile(-1, -1, -1)),
+        Location(Dungeon.KARUULM_SLAYER_DUNGEON, Tile(1343, 10201, 2)),
         Location(Dungeon.BRIMHAVEN_DUNGEON, Tile(-1, -1, -1)),
+        Location(Dungeon.WITCHHAVEN_DUNGEON, Tile(2739, 9687, 0)),
     ),
     HYDRAS(
         arrayOf("Hydra"),
@@ -320,6 +333,12 @@ enum class SlayerTarget(
         CombatStyle.Melee,
         Location(Dungeon.FREMENNIK_SLAYER_DUNGEON, Tile(2702, 9998, 0)),
         Location(Dungeon.IORWERTH_DUNGEON, Tile(-1, -1, -1)),
+        requirements = listOf(LeafBladedRequirement())
+    ),
+    LESSER_DEMONS(
+        arrayOf("Lesser Demon"),
+        CombatStyle.Melee,
+        Location(Dungeon.CHASM_OF_FIRE, Tile(1437, 10082, 3)),
     ),
     LIZARDMEN(
         arrayOf("Lizardman"),
@@ -430,13 +449,15 @@ enum class SlayerTarget(
         arrayOf("Mountain troll"),
         CombatStyle.Melee,
         Location(Dungeon.DEATH_PLATEAU, Tile(2869, 3588, 0)),
-        Location(Dungeon.TROLL_STRONGHOLD, Tile(-1, -1, -1)),
+        Location(Dungeon.KELDAGRIM, Tile(2775, 10143, 0)),
+        Location(Dungeon.TROLL_STRONGHOLD, Tile(2828, 10079, 1)),
         Location(Dungeon.MOUNT_QUIDAMORTEN, Tile(-1, -1, -1)),
     ),
     TUROTH(
         arrayOf("Turoth"),
         CombatStyle.Melee,
         Location(Dungeon.FREMENNIK_SLAYER_DUNGEON, Tile(2723, 10003, 0)),
+        requirements = listOf(LeafBladedRequirement())
     ),
     VAMPYRE(
         arrayOf("Vampyre"),
@@ -474,12 +495,6 @@ enum class SlayerTarget(
         return parsedLocation
     }
 
-    fun killItem(): KillItemRequirement? =
-        requirements.firstOrNull { it is KillItemRequirement } as KillItemRequirement?
-
-    fun spawnItem(): SpawnItemRequirement? =
-        requirements.firstOrNull { it is SpawnItemRequirement } as SpawnItemRequirement?
-
     companion object {
         fun forName(name: String): SlayerTarget? {
             val n = name.replace(" ", "_")
@@ -488,7 +503,7 @@ enum class SlayerTarget(
     }
 }
 
-enum class Dungeon {
+enum class Dungeon(vararg val requirements: Requirement) {
     ABYSS,
     ANCIENT_CAVERN,
     ASGARNIAN_ICE_DUNGEON,
@@ -506,10 +521,11 @@ enum class Dungeon {
     IORWERTH_DUNGEON,
     ISLE_OF_SOULS_DUNGEON,
     JORMUNGAND_PRISON,
-    KARUULM_SLAYER_DUNGEON,
+    KARUULM_SLAYER_DUNGEON(StoneShoesRequirement()),
     KALPHITE_LAIR,
     KALPHITE_CAVE,
     KEBOS_SWAMP,
+    KELDAGRIM,
     KRAKEN_COVE,
     LITHKREN_VAULT,
     LIGHTHOUSE,
@@ -535,6 +551,7 @@ enum class Dungeon {
     DEATH_PLATEAU,
     WATERBIRTH_ISLAND,
     WATERFALL_DUNGEON,
+    WITCHHAVEN_DUNGEON,
     WYVERN_CAVE,
     ZANARIS,
     NIL

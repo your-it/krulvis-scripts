@@ -8,6 +8,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Food.Companion.needsFood
 import org.powbot.krulvis.api.script.ATScript
 
 /**
@@ -29,10 +30,6 @@ class ShouldEat<S : ATScript>(
 
     var food: Food? = null
     var nextEatExtra = Random.nextInt(1, 8)
-
-    companion object {
-        fun needsFood(): Boolean = ATContext.currentHP().toDouble() / ATContext.maxHP().toDouble() < .4
-    }
 
     fun food(): Food? {
         val missingHp = missingHP()

@@ -1,55 +1,21 @@
-package org.powbot.krulvis.slayer
+package org.powbot.krulvis.fighter.slayer
 
 import org.powbot.api.event.MessageEvent
-import org.powbot.api.event.RenderEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.tree.TreeComponent
-import org.powbot.api.script.tree.TreeScript
-import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.slayer.task.Dungeon.*
-import org.powbot.krulvis.slayer.task.Master
-import org.powbot.krulvis.slayer.task.SlayerTarget
-import org.powbot.krulvis.slayer.task.SlayerTask
-import org.powbot.krulvis.slayer.tree.branch.HasTask
-import org.powbot.mobile.drawing.Graphics
+import org.powbot.krulvis.fighter.slayer.Dungeon.*
+import java.util.logging.Logger
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
-@ScriptManifest(
-    name = "krul Slayer",
-    author = "Rob & Krulvis",
-    priv = true,
-    version = "1.0.0",
-    description = "Trains slayer"
-)
-@ScriptConfiguration.List(
-    [
-        ScriptConfiguration(
-            name = "Slayer Master",
-            //Fuck "KRYSTILIA" for now
-            allowedValues = ["TURAEL", "SPRIA", "MAZCHNA", "VANNAKA", "CHAELDAR", "KONAR", "NIEVE", "STEVE", "DURADEL"],
-            description = "What slayer master do you want to use?",
-            defaultValue = "VANNAKA"
-        ),
-        ScriptConfiguration(
-            name = "Inventory",
-            description = "What should the inventory look like before heading out?",
-            optionType = OptionType.INVENTORY,
-            defaultValue = "{\"4155\":1,\"379\":15}"
-        )
-    ]
-)
-class Slayer : ATScript() {
-
-    var currentTarget: Npc? = null
+class Slayer(val master: Master, val log: Logger) {
+    
     var currentTask: SlayerTask? = null
-    val master: Master by lazy { Master.valueOf(getOption("Slayer Master")) }
-    val inventory: Map<Int, Int> by lazy { getOption("Inventory") }
+
+    fun killItem(): KillItemRequirement? =
+        currentTask?.target?.requirements?.firstOrNull { it is KillItemRequirement } as KillItemRequirement?
+
+    fun spawnItem(): SpawnItemRequirement? =
+        currentTask?.target?.requirements?.firstOrNull { it is SpawnItemRequirement } as SpawnItemRequirement?
 
     //Widget info
     val WIDGET_ID = 231
@@ -109,12 +75,6 @@ class Slayer : ATScript() {
         currentTask = task
     }
 
-    override val rootComponent: TreeComponent<*> = HasTask(this)
-
-    override fun createPainter(): ATPaint<*> {
-        return Painter(this)
-    }
-
     companion object {
         private val TAG_REGEXP = Pattern.compile("<[^>]*>")
         private val PROGRESS_VARP = 394
@@ -140,8 +100,4 @@ class Slayer : ATScript() {
 
         fun taskRemainder(): Int = Varpbits.varpbit(PROGRESS_VARP)
     }
-}
-
-fun main() {
-    Slayer().startScript("localhost", "GIM", false)
 }

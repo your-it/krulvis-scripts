@@ -1,34 +1,22 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.Notifications
-import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Item
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
-import org.powbot.api.Random
-import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
-import org.powbot.mobile.script.ScriptManager
-
-class ShouldStop(script: Fighter) : Branch<Fighter>(script, "Should stop?") {
-    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Stopping") {
-        Notifications.showNotification("Stopped because task was finished!")
-        ScriptManager.stop()
-    }
-    override val failedComponent: TreeComponent<Fighter> = ShouldSipPotion(script, ShouldEquipAmmo(script))
-
-    override fun validate(): Boolean {
-        return script.lastTask && script.taskRemainder() <= 0
-    }
-}
+import org.powbot.krulvis.fighter.tree.leaf.Loot
 
 class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip ammo") {
@@ -46,7 +34,6 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
                 )
     }
 }
-
 
 class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Trash?") {
 
@@ -76,11 +63,28 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
             }
         }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
 
     override fun validate(): Boolean {
         if (!script.buryBones) return false
         bones = Inventory.stream().filtered { it.name().contains("bones", true) }.list()
         return bones.isNotEmpty()
+    }
+}
+
+
+///BANKING SITS IN BETWEEN HERE
+
+class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
+    override val successComponent: TreeComponent<Fighter> = Loot(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
+
+    override fun validate(): Boolean {
+        val loot = script.loot()
+        if (loot.isEmpty() || !loot.first().reachable()) {
+            return false
+        }
+        val first = loot.first()
+        return !Inventory.isFull() || Food.hasFood() || (first.stackable() && Inventory.containsOneOf(first.id()))
     }
 }

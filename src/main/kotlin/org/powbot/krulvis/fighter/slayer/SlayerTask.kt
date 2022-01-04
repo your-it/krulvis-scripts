@@ -1,14 +1,15 @@
-package org.powbot.krulvis.slayer.task
+package org.powbot.krulvis.fighter.slayer
 
 import org.powbot.api.rt4.Actor
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.rt4.Players
-import org.powbot.krulvis.slayer.Slayer
 
 class SlayerTask(val target: SlayerTarget, val amount: Int, val location: Location) {
 
     fun onGoing() = Slayer.taskRemainder() > 0
+
+    fun nearbyMonsters() = Npcs.stream().name(*target.names).reachable().nearest().list()
 
     fun target(): Npc? {
         val targets = Npcs.stream().name(*target.names).filtered {

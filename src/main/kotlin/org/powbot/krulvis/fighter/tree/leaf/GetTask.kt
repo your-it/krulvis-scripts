@@ -1,13 +1,14 @@
-package org.powbot.krulvis.slayer.tree.leaf
+package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.Condition
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.slayer.Slayer
-import org.powbot.krulvis.slayer.Slayer.Companion.sanitizeMultilineText
+import org.powbot.krulvis.fighter.Fighter
+import org.powbot.krulvis.fighter.slayer.Slayer
+import org.powbot.krulvis.fighter.slayer.Slayer.Companion.sanitizeMultilineText
 import java.util.regex.Pattern
 
-class GetTask(script: Slayer) : Leaf<Slayer>(script, "Getting task") {
+class GetTask(script: Fighter) : Leaf<Fighter>(script, "Getting task") {
 
 
     //NPC messages
@@ -21,15 +22,15 @@ class GetTask(script: Slayer) : Leaf<Slayer>(script, "Getting task") {
         Pattern.compile("^You're (?:still(?: meant to be)?|currently assigned to) (?:hunting|bringing balance to|kill|bring balance to|slaying) (?<name>.+?)(?: (?:in|on|south of) (?:the )?(?<location>.+))?(?:, with|; (?:you have|only)) (?<amount>\\d+)(?: more)? to go\\..*")
 
     override fun execute() {
-        script.currentTask = null
-        val widget = script.widget()
+        script.slayer.currentTask = null
+        val widget = script.slayer.widget()
         if (!widget.valid()) {
-            val masterTile = script.master.tile
-            val master = script.master.master()
+            val masterTile = script.slayer.master.tile
+            val master = script.slayer.master.master()
             if (masterTile.distance() > 10 || master?.reachable() == false) {
                 Movement.walkTo(masterTile)
             } else if (master?.interact("Assignment") == true) {
-                Condition.wait({ script.widget().valid() }, 500, 10)
+                Condition.wait({ script.slayer.widget().valid() }, 500, 10)
             }
         } else {
             val textComp = widget.components()
@@ -41,13 +42,13 @@ class GetTask(script: Slayer) : Leaf<Slayer>(script, "Getting task") {
             val firstAssignMsg = NPC_ASSIGN_FIRST_MESSAGE.matcher(text)
             val currentAssignMsg = NPC_CURRENT_MESSAGE.matcher(text)
             if (assignMsg.find())
-                script.parseTask(assignMsg)
+                script.slayer.parseTask(assignMsg)
             else if (bossAssignMsg.find())
-                script.parseTask(bossAssignMsg)
+                script.slayer.parseTask(bossAssignMsg)
             else if (firstAssignMsg.find())
-                script.parseTask(firstAssignMsg)
+                script.slayer.parseTask(firstAssignMsg)
             else if (currentAssignMsg.find())
-                script.parseTask(currentAssignMsg)
+                script.slayer.parseTask(currentAssignMsg)
         }
 
 

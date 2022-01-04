@@ -7,9 +7,13 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.EquipmentItem
+import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.script.tree.branch.ShouldEat
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
@@ -17,17 +21,15 @@ import org.powbot.mobile.script.ScriptManager
 class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
     override fun execute() {
         val ids = script.inventory.map { it.key }.toIntArray()
-
+        val edibleFood = foodToEat()
         val potIds = script.potions.flatMap { it.first.ids.toList() }.toIntArray()
-        val defenderId = if (script.lastDefenderIndex >= 0) script.defenders[script.lastDefenderIndex] else 0
-        val defender =
-            org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.OFF_HAND, defenderId)
-        if (!Inventory.emptyExcept(defenderId, *ids, *potIds, script.warriorTokens)) {
+        val defender = Defender.defender()
+        if (!Inventory.emptyExcept(Defender.defenderId(), *ids, *potIds, script.warriorTokens)) {
             Bank.depositInventory()
-        } else if (script.canEat() && script.food?.inInventory() == true) {
-            script.food!!.eat()
-            waitFor { script.canEat() }
-        } else if (defenderId > 0 && !defender.hasWith()) {
+        } else if (edibleFood != null) {
+            edibleFood.eat()
+            waitFor { foodToEat() == null }
+        } else if (Defender.defenderId() > 0 && !defender.hasWith()) {
             defender.withdrawExact(1)
         } else if (script.warriorGuild && !Inventory.containsOneOf(script.warriorTokens)) {
             if (!Bank.withdraw(script.warriorTokens, Bank.Amount.ALL) && !Bank.containsOneOf(script.warriorTokens)) {
@@ -49,7 +51,7 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
             }
 
             if (handleEquipment()
-                && !script.canEat()
+                && foodToEat() == null
                 && waitFor { script.inventory.all { Inventory.getCount(it.key) == it.value } }
                 && waitFor { script.potions.all { it.first.getInventoryCount() == it.second } }
             ) {
@@ -58,6 +60,8 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
             }
         }
     }
+
+    fun foodToEat() = Food.values().firstOrNull { it.inInventory() && it.healing <= missingHP() }
 
     fun handleEquipment(): Boolean {
         script.equipment.filterNot { it.slot == Equipment.Slot.QUIVER }.forEach {
