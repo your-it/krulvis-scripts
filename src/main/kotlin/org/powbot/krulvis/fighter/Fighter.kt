@@ -44,7 +44,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
         ScriptConfiguration(
-            "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", enabled = false
+            "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
         ),
         ScriptConfiguration(
             name = "Slayer Master",
