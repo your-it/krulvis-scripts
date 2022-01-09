@@ -32,7 +32,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.3.0",
+    version = "1.3.1",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -249,7 +249,7 @@ class Fighter : ATScript() {
         val nearbyMonsters =
             nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
         val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local }
-        return attackingMe ?: nearbyMonsters.firstOrNull()
+        return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
     }
 
     fun taskRemainder() = Varpbits.varpbit(394)
