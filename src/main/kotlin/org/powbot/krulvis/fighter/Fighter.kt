@@ -240,7 +240,7 @@ class Fighter : ATScript() {
     fun nearbyMonsters(): List<Npc> {
         return if (doSlayer) {
             slayer.currentTask!!.nearbyMonsters()
-        } else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).reachable().nearest().list()
+        } else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
     }
 
     var currentTarget: Npc? = null
@@ -249,7 +249,7 @@ class Fighter : ATScript() {
         val nearbyMonsters =
             nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
         val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local }
-        return attackingMe ?: nearbyMonsters.firstOrNull()
+        return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
     }
 
     fun taskRemainder() = Varpbits.varpbit(394)
