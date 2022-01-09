@@ -32,7 +32,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.3.0",
+    version = "1.3.1",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -240,7 +240,7 @@ class Fighter : ATScript() {
     fun nearbyMonsters(): List<Npc> {
         return if (doSlayer) {
             slayer.currentTask!!.nearbyMonsters()
-        } else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
+        } else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).reachable().nearest().list()
     }
 
     var currentTarget: Npc? = null
