@@ -121,9 +121,10 @@ class ShouldSpawnTarget(script: Fighter) : Branch<Fighter>(script, "Should spawn
     }
     override val failedComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Walking to spot") {
         Chat.clickContinue()
+        val spot = script.centerTile()
         val nearby = script.nearbyMonsters()
-        if (nearby.none { it.reachable() })
-            Movement.walkTo(script.centerTile())
+        if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius))
+            Movement.walkTo(spot)
     }
 
     override fun validate(): Boolean {
