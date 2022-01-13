@@ -28,7 +28,11 @@ class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: Tre
     var potion: Potion? = null
     var nextRestore = Random.nextInt(45, 60)
 
-    fun potion(): Potion? = Potion.values().filter { it.hasWith() }.firstOrNull { it.needsRestore(nextRestore) }
+    fun potion(): Potion? = Potion.values().filter { it.hasWith() }
+        .firstOrNull {
+            val restore = if (it == Potion.PRAYER) 100 + nextRestore else nextRestore
+            it.needsRestore(restore)
+        }
 
     override fun validate(): Boolean {
         potion = potion()
