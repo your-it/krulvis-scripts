@@ -15,14 +15,21 @@ enum class Potion(
     SUPER_ENERGY(Constants.SKILLS_AGILITY, 20, 3016, 3018, 3020, 3022),
     STAMINA(Constants.SKILLS_AGILITY, 20, 12625, 12627, 12629, 12631),
     RANGED(Constants.SKILLS_RANGE, -1, 2444, 169, 171, 173),
+    DIVINE_RANGED(Constants.SKILLS_RANGE, -1, 23733, 23736, 23739, 23742),
+    BASTION(Constants.SKILLS_RANGE, -1, 22461, 22464, 22467, 22470),
+    DIVINE_BASTION(Constants.SKILLS_RANGE, -1, 24635, 24638, 24641, 24644),
     ATTACK(Constants.SKILLS_ATTACK, -1, 2428, 121, 123, 125),
     STRENGTH(Constants.SKILLS_STRENGTH, -1, 113, 115, 117, 119),
     DEFENCE(Constants.SKILLS_DEFENSE, -1, 2432, 133, 135, 137),
     COMBAT(Constants.SKILLS_STRENGTH, -1, 9739, 9741, 9743, 9745),
     SUPER_ATTACK(Constants.SKILLS_ATTACK, -1, 2436, 145, 147, 149),
+    DIVINE_SUPER_ATTACK(Constants.SKILLS_ATTACK, -1, 23697, 23700, 23703, 23706),
     SUPER_STRENGTH(Constants.SKILLS_STRENGTH, -1, 2440, 157, 159, 161),
+    DIVINE_SUPER_STRENGTH(Constants.SKILLS_STRENGTH, -1, 23709, 23712, 23715, 23718),
     SUPER_DEFENCE(Constants.SKILLS_DEFENSE, -1, 2442, 163, 165, 167),
+    DIVINE_SUPER_DEFENCE(Constants.SKILLS_DEFENSE, -1, 23721, 23724, 23727, 23730),
     SUPER_COMBAT(Constants.SKILLS_STRENGTH, -1, 12695, 12697, 12699, 12701),
+    DIVINE_SUPER_COMBAT(Constants.SKILLS_STRENGTH, -1, 23685, 23688, 23691, 23694),
     PRAYER(Constants.SKILLS_PRAYER, -1, 2434, 139, 141, 143),
     OVERLOAD(Constants.SKILLS_STRENGTH, -1, 11730, 11731, 11732, 11733),
     ABSORPTION(Constants.SKILLS_HITPOINTS, -1, 11734, 11735, 11736, 11737),
@@ -37,10 +44,12 @@ enum class Potion(
     fun getRestore(): Int {
         return when (this) {
             OVERLOAD -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
-            RANGED -> 4 + floor(Skills.realLevel(skill) * 0.1).toInt()
+            RANGED, BASTION, DIVINE_BASTION, DIVINE_RANGED -> 4 + floor(Skills.realLevel(skill) * 0.1).toInt()
             PRAYER -> floor(7 + Skills.realLevel(skill) / 4.0).toInt()
             ATTACK, STRENGTH, DEFENCE, COMBAT -> 3 + floor(Skills.realLevel(skill) / 10.0).toInt()
-            SUPER_ATTACK, SUPER_STRENGTH, SUPER_DEFENCE, SUPER_COMBAT -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
+            SUPER_ATTACK, SUPER_STRENGTH, SUPER_DEFENCE, SUPER_COMBAT,
+            DIVINE_SUPER_COMBAT, DIVINE_SUPER_ATTACK, DIVINE_SUPER_STRENGTH, DIVINE_SUPER_DEFENCE
+            -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
             else -> {
                 restore
             }
@@ -73,7 +82,11 @@ enum class Potion(
         return when (this) {
             ANTIFIRE_EXTENDED, ANTIFIRE -> !isProtectedFromFire()
             ANTIPOISON, SUPER_ANTIPOISON -> Combat.isPoisoned()
-            PRAYER -> Skills.realLevel(skill) - Skills.level(skill) >= getRestore()
+            PRAYER -> {
+                val rl = Skills.realLevel(skill)
+                val cl = rl - Skills.level(skill)
+                cl <= 5 || cl >= getRestore() * (percentage / 100.0)
+            }
             STAMINA, ENERGY, SUPER_ENERGY -> !isHighOnStamina() && Movement.energyLevel() <= percentage
             else -> {
                 val rl = if (skill == Constants.SKILLS_AGILITY) 100 else Skills.realLevel(skill)

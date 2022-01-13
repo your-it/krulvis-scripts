@@ -32,7 +32,9 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
                 else edibleFood?.eat()
             }
             val currentCount = Inventory.getCount(id)
-            if (Utils.walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)) {
+            if ((!Inventory.isFull() || gi.stackable())
+                && Utils.walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)
+            ) {
                 waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || Players.local().tile() == gi.tile }
             }
         }

@@ -55,8 +55,8 @@
 - Energy
 - Super energy
 - Stamina
-- Ranged
-- Combat, Attack, Strength, Defence (+super variants)
+- Ranged, Bastion, Divine Bastion
+- Combat, Attack, Strength, Defence (+super variants) (+divine variants)
 - Prayer (QuickPray is turned on during combat if these are taken)
 - Antipoison, Super antipoison
 
