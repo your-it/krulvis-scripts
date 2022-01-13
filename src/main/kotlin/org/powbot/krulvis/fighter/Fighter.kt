@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Events
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
@@ -32,7 +33,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.3.1",
+    version = "1.3.2",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -266,6 +267,7 @@ class Fighter : ATScript() {
                 Thread.sleep(250)
             }
             log.info("Found loot=[${loot.joinToString()}]")
+            Notifications.showNotification("Found loot=[${loot.joinToString()}]")
             lootList.addAll(loot)
         }.start()
     }

@@ -84,7 +84,6 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
         if (loot.isEmpty() || !loot.first().reachable()) {
             return false
         }
-        val first = loot.first()
-        return !Inventory.isFull() || Food.hasFood() || (first.stackable() && Inventory.containsOneOf(first.id()))
+        return !Inventory.isFull() || Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
     }
 }
