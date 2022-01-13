@@ -84,8 +84,8 @@ enum class Potion(
             ANTIPOISON, SUPER_ANTIPOISON -> Combat.isPoisoned()
             PRAYER -> {
                 val rl = Skills.realLevel(skill)
-                val cl = rl - Skills.level(skill)
-                cl <= 5 || cl >= getRestore() * (percentage / 100.0)
+                val cl = Skills.level(skill)
+                cl <= 5 || rl - cl >= getRestore() * (percentage / 100.0)
             }
             STAMINA, ENERGY, SUPER_ENERGY -> !isHighOnStamina() && Movement.energyLevel() <= percentage
             else -> {
