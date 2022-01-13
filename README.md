@@ -1,5 +1,2 @@
 # krulvis-scripts
 
-
-
-
