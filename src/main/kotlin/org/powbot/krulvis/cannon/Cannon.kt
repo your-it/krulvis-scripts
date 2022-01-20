@@ -19,6 +19,7 @@ import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
     description = "Refills cannon, eats food and drinks pray pots",
     version = "1.0.0",
     priv = true,
+    scriptId = "ae5116c7-4b34-4bce-b464-22f4cdb2ccc6",
     author = "Krulvis"
 )
 class Cannon : ATScript() {
