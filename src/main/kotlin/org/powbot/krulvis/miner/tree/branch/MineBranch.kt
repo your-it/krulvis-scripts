@@ -2,9 +2,6 @@ package org.powbot.krulvis.miner.tree.branch
 
 import org.powbot.api.Notifications
 import org.powbot.api.Tile
-import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.Worlds
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -13,8 +10,10 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.api.Random
+import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.miner.Miner
 import org.powbot.krulvis.miner.tree.leaf.Mine
 import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
@@ -63,8 +62,24 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
             worlds[Random.nextInt(0, worlds.size)].hop()
         }
     }
+    override val failedComponent: TreeComponent<Miner> = ShouldSpec(script)
+}
+
+class ShouldSpec(script: Miner) : Branch<Miner>(script, "Should Spec?") {
+    override fun validate(): Boolean {
+        return Combat.specialPercentage() == 100
+                && Equipment.stream().id(*Data.SPECIAL_ATTACK_PICKS).isNotEmpty()
+    }
+
+
+    override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Special Attack") {
+        if (Combat.specialAttack(true)) {
+            waitFor { Combat.specialPercentage() < 100 }
+        }
+    }
     override val failedComponent: TreeComponent<Miner> = IsMining(script)
 }
+
 
 class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
 

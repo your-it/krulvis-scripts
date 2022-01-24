@@ -9,7 +9,10 @@ import org.powbot.krulvis.api.extensions.items.Item
 object Data {
 
     val WATERSKINS = intArrayOf(1823, 1825, 1827, 1829)
-    
+
+    val SPECIAL_ATTACK_PICKS = intArrayOf(
+        11920, 12797, 23677, 25376, 23680, 23682, 13243, 13244, 25063, 25369
+    )
     val TOOLS = intArrayOf(
         1265,
         1267,
