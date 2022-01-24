@@ -11,6 +11,7 @@ import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.api.Random
 import org.powbot.api.rt4.*
+import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Data
@@ -67,13 +68,15 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
 
 class ShouldSpec(script: Miner) : Branch<Miner>(script, "Should Spec?") {
     override fun validate(): Boolean {
-        return Combat.specialPercentage() == 100
+        return Combat.specialPercentage() == 100 && delay.isFinished()
                 && Equipment.stream().id(*Data.SPECIAL_ATTACK_PICKS).isNotEmpty()
     }
 
+    val delay = DelayHandler(5000, 35000)
 
     override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Special Attack") {
         if (Combat.specialAttack(true)) {
+            delay.resetTimer()
             waitFor { Combat.specialPercentage() < 100 }
         }
     }

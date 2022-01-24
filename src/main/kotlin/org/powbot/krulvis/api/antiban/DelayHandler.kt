@@ -3,7 +3,7 @@ package org.powbot.krulvis.api.antiban
 import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Timer
 
-class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier) {
+class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier = OddsModifier()) {
 
     constructor(time: Int, oddsModifier: OddsModifier, name: String) : this(
         (time - time * 0.2).toInt(),
