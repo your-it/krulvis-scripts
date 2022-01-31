@@ -29,7 +29,7 @@ class HasBarsInDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script, "H
     override val failedComponent: TreeComponent<BlastFurnace> = ShouldPutOre(script)
 
     override fun validate(): Boolean {
-        return script.bar.blastFurnaceCount > 0
+        return !Inventory.isFull() && script.bar.blastFurnaceCount > 0
                 && !Inventory.containsOneOf(
             script.bar.primary.id,
             script.bar.secondary.id
