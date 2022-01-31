@@ -15,6 +15,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
     override fun execute() {
         val gloves = Inventory.stream().id(ICE_GLOVES).findFirst()
         val takeWidget = takeWidget()
+        Bank.close()
         if (gloves.isPresent) {
             if (gloves.get().interact("Wear")) {
                 waitFor { !Inventory.containsOneOf(ICE_GLOVES) }

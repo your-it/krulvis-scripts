@@ -82,6 +82,12 @@ enum class BankLocation(
     SEERS_BANK(
         Tile(2727, 3493, 0), BankType.BOOTH,
     ),
+    SHAYZIEN_NORTH_CHEST(
+        Tile(1483, 3646, 0), BankType.CHEST,
+    ),
+    SHAYZIEN_SOUTH_BOOTH(
+        Tile(1488, 3592, 0), BankType.BOOTH,
+    ),
     SHANTAY_PASS_BANK(
         Tile(3308, 3120, 0), BankType.CHEST,
     ),
