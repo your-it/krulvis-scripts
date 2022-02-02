@@ -1,5 +1,6 @@
 package org.powbot.krulvis.blastfurnace.tree.leaf
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.interact
@@ -11,6 +12,7 @@ import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
 import org.powbot.krulvis.blastfurnace.ICE_GLOVES
+import org.powbot.mobile.script.ScriptManager
 
 class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman") {
     override fun execute() {
@@ -23,6 +25,9 @@ class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman
                 Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
             } else if (Bank.withdraw(995, amount)) {
                 waitFor { Inventory.getCount(995) >= amount }
+            } else if (Bank.stream().id(995).count(true) <= amount) {
+                Notifications.showNotification("Stopped because no more money")
+                ScriptManager.stop()
             }
         } else if (Chat.stream().textContains("Yes").isNotEmpty()) {
             Chat.stream().textContains("Yes").findFirst().ifPresent {
