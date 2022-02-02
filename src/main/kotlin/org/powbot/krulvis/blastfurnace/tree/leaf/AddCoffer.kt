@@ -1,6 +1,7 @@
 package org.powbot.krulvis.blastfurnace.tree.leaf
 
 import org.powbot.api.Input
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Chat
@@ -16,6 +17,7 @@ import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
 import org.powbot.krulvis.blastfurnace.ICE_GLOVES
+import org.powbot.mobile.script.ScriptManager
 
 class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to coffer") {
     override fun execute() {
@@ -29,6 +31,9 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
                 Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
             } else if (Bank.withdraw(995, script.cofferAmount)) {
                 waitFor { Inventory.getCount(995) >= script.cofferAmount }
+            } else if (Bank.stream().id(995).count(true) <= script.cofferAmount) {
+                Notifications.showNotification("Stopped because no more money")
+                ScriptManager.stop()
             }
         } else if (depositButton.isPresent) {
             if (depositButton.get().select()) {
