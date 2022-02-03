@@ -11,13 +11,9 @@ import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 
 class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
 
-    fun quantity(widget: Widget): Quantity {
-        return Quantity.values().first { q -> widget.components().none { it.actions().contains(q.action) } }
-    }
-
     fun quantity(widget: Widget, quantity: Quantity): Boolean {
-        if (quantity(widget) == quantity) return true
-        return widget.components().firstOrNull { it.actions().contains(quantity.action) }?.click() == true
+        val comp = widget.components().firstOrNull { it.actions().contains(quantity.action) }
+        return comp == null || comp.click()
     }
 
     enum class Quantity(val action: String) {
@@ -38,7 +34,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
             }
         } else if (takeWidget.valid()) {
             if (!quantity(takeWidget, Quantity.ALL)) return
-            
+
             val clickComp = takeWidget.components().maxByOrNull { it.componentCount() }
             script.log.info("Clicking on Widget[${clickComp?.widgetId()}], $clickComp")
             if (clickComp != null && clickComp.click() && waitFor { Inventory.isFull() }) {
