@@ -53,10 +53,10 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
 class BlastFurnace : ATScript() {
     var filledCoalBag: Boolean = false
 
-    val drinkPotion by lazy { getOption<Boolean>("Drink potions")!! }
-    val potion by lazy { Potion.valueOf(getOption<String>("Potion")!!) }
-    val cofferAmount by lazy { getOption<Int>("Coffer deposit")!! }
-    val bar by lazy { Bar.valueOf(getOption<String>("Bar")!!) }
+    val drinkPotion by lazy { getOption<Boolean>("Drink potions") }
+    val potion by lazy { Potion.valueOf(getOption("Potion")) }
+    val cofferAmount by lazy { getOption<Int>("Coffer deposit") }
+    val bar by lazy { Bar.valueOf(getOption("Bar")) }
     override fun createPainter(): ATPaint<*> = BFPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldPay(this)
