@@ -1,5 +1,7 @@
 package org.powbot.krulvis.fighter
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.powbot.api.Events
 import org.powbot.api.Notifications
 import org.powbot.api.Tile
@@ -15,6 +17,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
+import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
@@ -22,7 +25,6 @@ import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
-import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.slayer.Master
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -90,7 +92,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             "Always loot",
             "Separate items with \",\" Start with \"!\" to never loot",
             optionType = OptionType.STRING,
-            defaultValue = "Long bone, curved bone, ensouled, rune, clue, grimy, !blue dragon scale"
+            defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale"
         ),
         ScriptConfiguration(
             "Bury bones", "Bury bones (put the nammes in `Always loot` field).",
@@ -98,7 +100,10 @@ import org.powbot.mobile.rscache.loader.ItemLoader
         ),
         ScriptConfiguration(
             "Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FEROX_ENCLAVE",
-            allowedValues = ["NEAREST", "LUMBRIDGE_TOP", "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "LUMBRIDGE_CASTLE_BANK", "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "CASTLE_WARS_BANK", "EDGEVILLE_BANK", "DRAYNOR_BANK", "SEERS_BANK", "AL_KHARID_BANK", "SHANTAY_PASS_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "YANILLE_BANK", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "MISCELLANIA_BANK", "GNOME_STRONGHOLD_BANK", "TZHAAR_BANK", "FISHING_GUILD_BANK", "BURTHORPE_BANK", "PORT_SARIM_DB", "MOTHERLOAD_MINE", "MINING_GUILD", "MOTHERLOAD_MINE_DEPOSIT", "FARMING_GUILD_85", "FARMING_GUILD_65", "WARRIORS_GUILD", "FEROX_ENCLAVE"]
+            allowedValues = ["NEAREST", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "AL_KHARID_BANK", "BURTHORPE_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "CASTLE_WARS_BANK", "DRAYNOR_BANK", "EDGEVILLE_BANK",
+                "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "FARMING_GUILD_85", "FARMING_GUILD_65", "FEROX_ENCLAVE", "GRAND_EXCHANGE", "HOSIDIUS_BEST_BANK_SPOT", "MISCELLANIA_BANK", "LUMBRIDGE_TOP", "LUMBRIDGE_CASTLE_BANK",
+                "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "GNOME_STRONGHOLD_BANK", "FISHING_GUILD_BANK", "MINING_GUILD", "MOTHERLOAD_MINE", "MOTHERLOAD_MINE_DEPOSIT", "PRIFIDDINAS", "PORT_SARIM_DB", "SEERS_BANK",
+                "SHAYZIEN_NORTH_CHEST", "SHAYZIEN_SOUTH_BOOTH", "SHANTAY_PASS_BANK", "SHILO_GEM_MINE", "TZHAAR_BANK", "WOODCUTTING_GUILD", "WARRIORS_GUILD", "WINTERTODT", "YANILLE_BANK"]
         ),
     ]
 )
@@ -249,7 +254,7 @@ class Fighter : ATScript() {
         val local = Players.local()
         val nearbyMonsters =
             nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
-        val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local }
+        val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
         return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
     }
 
@@ -259,17 +264,13 @@ class Fighter : ATScript() {
 
     fun watchLootDrop(tile: Tile) {
         log.info("Waiting for loot at $tile")
-        val waitTimer = Timer(5000)
-        Thread {
-            var loot = GroundItems.stream().within(tile, 3).filtered { it.isLoot() }.list()
-            while (!waitTimer.isFinished() && loot.isEmpty()) {
-                loot = GroundItems.stream().within(tile, 3).filtered { it.isLoot() }.list()
-                Thread.sleep(250)
-            }
-            log.info("Found loot=[${loot.joinToString()}]")
-            Notifications.showNotification("Found loot=[${loot.joinToString()}]")
+        GlobalScope.launch {
+            val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
+            val loot = watcher.waitForLoot()
+            Notifications.showNotification("Found loot=${loot.joinToString()}")
             lootList.addAll(loot)
-        }.start()
+            watcher.unregister()
+        }
     }
 
     fun GroundItem.isLoot(): Boolean {
@@ -305,7 +306,7 @@ class Fighter : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun messageReceived(msg: MessageEvent) {
-        if (msg.message == "You're an iron") {
+        if (msg.message.contains("so you can't take that.")) {
             lootList.clear()
         }
     }
