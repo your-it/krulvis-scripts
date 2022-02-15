@@ -56,7 +56,8 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
         bones.forEachIndexed { i, item ->
             val count = Inventory.getCount(item.id)
-            if (item.interact("Bury")) {
+            val action = item.actions().first { action -> actions.any { it.equals(action, true) } }
+            if (item.interact(action)) {
                 waitFor { count > Inventory.getCount(item.id) }
                 if (i < bones.size - 1)
                     sleep(1500)
@@ -65,9 +66,15 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     }
     override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
 
+    val names = arrayOf("bones", "ashes")
+    val actions = arrayOf("burry", "scatter")
+
     override fun validate(): Boolean {
         if (!script.buryBones) return false
-        bones = Inventory.stream().filtered { it.name().contains("bones", true) }.list()
+        bones = Inventory.stream().filtered { item ->
+            val name = item.name().lowercase()
+            names.any { name.contains(it) }
+        }.list()
         return bones.isNotEmpty()
     }
 }
