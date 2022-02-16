@@ -22,7 +22,7 @@ import kotlin.math.min
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.1.1",
+    version = "1.1.2",
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming,
@@ -41,6 +41,12 @@ import kotlin.math.min
             description = "How many patches do you want to use? Max 20",
             optionType = OptionType.INTEGER,
             defaultValue = "16"
+        ),
+        ScriptConfiguration(
+            name = "Crash Watcher",
+            description = "Stop script if being crashed?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
         )
     ]
 )
@@ -50,6 +56,7 @@ class TitheFarmer : TreeScript() {
 
     val patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
     val smartPatches by lazy { getOption<Boolean>("Smart Patches") }
+    val crashWatcher by lazy { getOption<Boolean>("Crash Watcher") }
     var lastPatch: Patch? = null
     var lastRound = false
     var startPoints = -1
@@ -165,6 +172,10 @@ class TitheFarmer : TreeScript() {
     @com.google.common.eventbus.Subscribe
     fun onMsg(e: MessageEvent) {
         log.info("MSG: \n Type=${e.type}, msg=${e.message}")
+        if (e.message.contains("This plant was planted by ") && crashWatcher) {
+            Notifications.showNotification("World is crashed... stopping script")
+            ScriptManager.stop()
+        }
     }
 
     var lastTick = -1L
