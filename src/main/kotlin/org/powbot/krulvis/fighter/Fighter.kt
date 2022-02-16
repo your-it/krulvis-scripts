@@ -35,7 +35,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere",
     author = "Krulvis",
-    version = "1.3.2",
+    version = "1.3.3",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -267,7 +267,7 @@ class Fighter : ATScript() {
         GlobalScope.launch {
             val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
             val loot = watcher.waitForLoot()
-            Notifications.showNotification("Found loot=${loot.joinToString()}")
+//            Notifications.showNotification("Found loot=${loot.joinToString()}")
             lootList.addAll(loot)
             watcher.unregister()
         }
