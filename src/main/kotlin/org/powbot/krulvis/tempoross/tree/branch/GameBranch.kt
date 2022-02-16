@@ -3,11 +3,11 @@ package org.powbot.krulvis.tempoross.tree.branch
 import org.powbot.api.rt4.Combat
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.script.tree.*
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
-import org.powbot.api.script.tree.*
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DRAGON_HARPOON
@@ -27,8 +27,8 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 
 
     override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Special Attack") {
-        if (Combat.specialAttack(true)) {
-            waitFor { Combat.specialPercentage() < 100 }
+        if (Combat.specialAttack()) {
+            waitFor(5000) { Combat.specialPercentage() < 100 }
         }
     }
     override val failedComponent: TreeComponent<Tempoross> = ShouldKill(script)

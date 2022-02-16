@@ -40,7 +40,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.6",
+    version = "1.1.7",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
