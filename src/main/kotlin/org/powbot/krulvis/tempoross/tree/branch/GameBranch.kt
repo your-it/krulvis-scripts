@@ -27,7 +27,7 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 
 
     override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Special Attack") {
-        if (Combat.specialAttack()) {
+        if (Combat.specialAttack(true)) {
             waitFor(5000) { Combat.specialPercentage() < 100 }
         }
     }
