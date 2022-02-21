@@ -14,7 +14,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
-import org.powbot.krulvis.blastfurnace.COAL_BAG
+import org.powbot.krulvis.blastfurnace.COAL_BAG_CLOSED
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
 import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 import org.powbot.mobile.script.ScriptManager
@@ -27,8 +27,8 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
                 chest.ifPresent { if (interact(it, "Use")) waitFor(long()) { Bank.opened() } }
-            } else if (!Inventory.emptyExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)) {
-                Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
+            } else if (!Inventory.emptyExcept(COAL_BAG_CLOSED, ICE_GLOVES, GOLD_GLOVES)) {
+                Bank.depositAllExcept(COAL_BAG_CLOSED, ICE_GLOVES, GOLD_GLOVES)
             } else if (Bank.withdraw(995, script.cofferAmount)) {
                 waitFor { Inventory.getCount(995) >= script.cofferAmount }
             } else if (Bank.stream().id(995).count(true) <= script.cofferAmount) {

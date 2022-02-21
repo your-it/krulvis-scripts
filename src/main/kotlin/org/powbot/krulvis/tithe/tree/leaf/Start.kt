@@ -2,7 +2,10 @@ package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.api.Condition
 import org.powbot.api.Notifications
-import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Chat
+import org.powbot.api.rt4.Constants
+import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Skills
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.tithe.TitheFarmer
@@ -19,18 +22,18 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
         }
         if (!script.hasSeeds()) {
             script.log.info("Getting seeds")
-            if (!chatting()) {
+            if (!Chat.chatting()) {
                 val table = Objects.stream(25).name("Seed table").findFirst()
                 script.log.info("Interacting with seed table=${table.isPresent}")
                 table.ifPresent {
                     if (interact(it, "Search", useMenu = false)) {
-                        Condition.wait({ chatting() }, 250, 10)
+                        Condition.wait({ Chat.chatting() }, 250, 10)
                     }
                 }
             }
             val seed = getSeedInput()
             script.log.info("Selecting seed: $seed")
-            if (chatting() && Chat.continueChat(seed)) {
+            if (Chat.chatting() && Chat.continueChat(seed)) {
                 Condition.wait({ script.hasSeeds() }, 100, 20)
             }
         } else {
@@ -42,8 +45,6 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
             }
         }
     }
-
-    fun chatting() = Widgets.component(Constants.CHAT_WIDGET, 0).visible()
 
     fun getSeedInput(): String {
         val farming = Skills.level(Constants.SKILLS_FARMING)

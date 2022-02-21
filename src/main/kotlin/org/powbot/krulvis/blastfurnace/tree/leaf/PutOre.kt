@@ -11,7 +11,7 @@ import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
-import org.powbot.krulvis.blastfurnace.COAL_BAG
+import org.powbot.krulvis.blastfurnace.COAL_BAG_CLOSED
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
 
 class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt") {
@@ -58,7 +58,7 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
 
     }
 
-    fun emptyCoalBag() = Inventory.stream().id(COAL_BAG).findFirst().ifPresent {
+    fun emptyCoalBag() = Inventory.stream().id(COAL_BAG_CLOSED).findFirst().ifPresent {
         if (it.interact("Empty") && waitFor { Inventory.containsOneOf(Ore.COAL.id) }) {
             script.filledCoalBag = false
             waitFor { Inventory.containsOneOf(Ore.COAL.id) }
