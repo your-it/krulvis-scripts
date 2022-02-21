@@ -5,8 +5,6 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.krulvis.api.extensions.items.Bar
-import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
-import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -20,7 +18,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
         script.waitForBars = false
         if (Bank.opened()) {
             if (Inventory.containsOneOf(*Bar.values().map { it.id }.toIntArray())) {
-                Bank.depositAllExcept(COAL_BAG, ICE_GLOVES, GOLD_GLOVES)
+                Bank.depositAllExcept(COAL_BAG_CLOSED, COAL_BAG_OPENED, ICE_GLOVES, GOLD_GLOVES)
             } else if (!Inventory.isFull()) {
                 if (!Inventory.containsOneOf(ICE_GLOVES)
                     && !Equipment.containsOneOf(ICE_GLOVES)
@@ -28,8 +26,14 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                 ) {
                     Bank.withdraw(ICE_GLOVES, 1)
                 }
-                if (canUseCoalBag() && !Inventory.containsOneOf(COAL_BAG) && Bank.containsOneOf(COAL_BAG)) {
-                    Bank.withdraw(COAL_BAG, 1)
+                val bankBag = Bank.stream().id(COAL_BAG_OPENED, COAL_BAG_CLOSED).firstOrNull()
+                if (canUseCoalBag() && !Inventory.containsOneOf(COAL_BAG_CLOSED)) {
+                    if (bankBag != null && Bank.withdraw(bankBag.id, 1)) {
+                        waitFor { Inventory.containsOneOf(bankBag.id) }
+                    }
+                    if (Inventory.containsOneOf(COAL_BAG_OPENED)) {
+                        Inventory.stream().id(COAL_BAG_OPENED).first().interact("Close")
+                    }
                 }
                 if (script.bar == Bar.GOLD && !Inventory.containsOneOf(GOLD_GLOVES)
                     && !Equipment.containsOneOf(GOLD_GLOVES)
@@ -37,7 +41,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                 ) {
                     Bank.withdraw(GOLD_GLOVES, 1)
                 }
-                Inventory.stream().id(COAL_BAG).findFirst().ifPresent {
+                Inventory.stream().id(COAL_BAG_CLOSED).findFirst().ifPresent {
                     it.click("Fill")
                     script.filledCoalBag = true
                 }
@@ -69,7 +73,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
 
     fun getNextOre(): Int {
         val coal = Ore.COAL.blastFurnaceCount
-        val hasCoalBag = Inventory.containsOneOf(COAL_BAG)
+        val hasCoalBag = Inventory.containsOneOf(COAL_BAG_CLOSED)
         return when (script.bar) {
             Bar.GOLD -> Ore.GOLD.id
             Bar.IRON -> Ore.IRON.id
