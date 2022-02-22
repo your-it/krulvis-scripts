@@ -13,6 +13,7 @@ object Data {
     val SPECIAL_ATTACK_PICKS = intArrayOf(
         11920, 12797, 23677, 25376, 23680, 23682, 13243, 13244, 25063, 25369
     )
+
     val TOOLS = intArrayOf(
         1265,
         1267,
@@ -22,16 +23,10 @@ object Data {
         1275,
         12297,
         Item.HAMMER,
-        11920,
-        12797,
-        13243,
-        13244,
-        23677,
-        25063,
-        25376,
         1823,
         Item.RAW_KARAMBWANJI,
         3150,
+        *SPECIAL_ATTACK_PICKS,
         *GemBag.ids,
         *WATERSKINS,
     )

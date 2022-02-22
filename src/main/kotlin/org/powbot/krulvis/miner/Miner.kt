@@ -1,24 +1,27 @@
 package org.powbot.krulvis.miner
 
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.*
-import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Data.TOP_POLY
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
+import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.3.5",
+    version = "1.3.6",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -120,7 +123,7 @@ class Miner : ATScript() {
         if (inTopFloorAreas() && LocalPathFinder.findPath(pos, nearHopper, true).isEmpty()) {
             if (northOfLadder.distance() <= 5 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
                 if (ladderTile.matrix().interact("Climb")) {
-                    return Utils.waitFor {
+                    return waitFor {
                         LocalPathFinder.findPath(Players.local().tile(), nearHopper, true).isNotEmpty()
                     }
                 }
@@ -131,6 +134,16 @@ class Miner : ATScript() {
             return false
         }
         return true
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun actionListener(gae: GameActionEvent) {
+        if (gae.interaction == "Deposit worn items") {
+            if (waitFor(5000) { !Inventory.containsOneOf(*Data.TOOLS) && !Equipment.containsOneOf(*Data.TOOLS) }) {
+                Notifications.showNotification("Accidentally deposited equipment, stopping script")
+                ScriptManager.stop()
+            }
+        }
     }
 }
 
