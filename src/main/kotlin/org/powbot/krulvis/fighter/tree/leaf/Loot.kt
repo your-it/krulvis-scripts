@@ -13,7 +13,7 @@ import org.powbot.krulvis.fighter.Fighter
 
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
     override fun execute() {
-        if (script.hasPrayPots && Prayer.quickPrayer() && !Players.local().healthBarVisible()) {
+        if (script.hasPrayPots && script.useSafespot && Prayer.quickPrayer() && !Players.local().healthBarVisible()) {
             Prayer.quickPrayer(false)
         }
 
