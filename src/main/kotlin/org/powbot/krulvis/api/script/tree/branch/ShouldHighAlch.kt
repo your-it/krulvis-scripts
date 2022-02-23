@@ -9,6 +9,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DARK_KEY
+import org.powbot.krulvis.api.extensions.items.Item.Companion.SHIELD_LEFT_HALF
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Utils
 
@@ -42,7 +43,7 @@ class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: Tree
         }
     }
 
-    val skip = intArrayOf(DARK_KEY)
+    val skip = intArrayOf(DARK_KEY, SHIELD_LEFT_HALF)
 
     override fun validate(): Boolean {
         alchable = alchable()

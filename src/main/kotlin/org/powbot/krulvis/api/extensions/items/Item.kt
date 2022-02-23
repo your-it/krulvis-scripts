@@ -151,6 +151,7 @@ interface Item {
         val EMPTY_SEAS = 11908
         val KNIFE = 946
         val DARK_KEY = 25244
+        val SHIELD_LEFT_HALF = 2366
     }
 
 }

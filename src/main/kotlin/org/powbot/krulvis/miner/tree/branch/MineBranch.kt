@@ -1,7 +1,9 @@
 package org.powbot.krulvis.miner.tree.branch
 
 import org.powbot.api.Notifications
+import org.powbot.api.Random
 import org.powbot.api.Tile
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -9,9 +11,6 @@ import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
-import org.powbot.api.Random
-import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Data
