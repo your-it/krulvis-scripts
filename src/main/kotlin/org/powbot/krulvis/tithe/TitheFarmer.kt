@@ -15,6 +15,8 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
+import org.powbot.krulvis.tithe.tree.leaf.Refill
+import org.powbot.krulvis.tithe.tree.leaf.Start
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.min
 
@@ -22,7 +24,7 @@ import kotlin.math.min
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.1.2",
+    version = "1.1.3",
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming,
@@ -123,6 +125,10 @@ class TitheFarmer : TreeScript() {
     }
 
     fun hasSeeds(): Boolean = getSeed() > 0
+
+    override fun canBreak(): Boolean {
+        return lastLeaf is Start || lastLeaf is Refill
+    }
 
     fun getSeed(): Int {
         val seed = Inventory.stream().id(*Data.SEEDS).findFirst()
