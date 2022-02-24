@@ -152,6 +152,8 @@ interface Item {
         val KNIFE = 946
         val DARK_KEY = 25244
         val SHIELD_LEFT_HALF = 2366
+        val DRAGON_MED_HELM = 1149
+        val DRAGON_SPEAR = 1249
     }
 
 }
