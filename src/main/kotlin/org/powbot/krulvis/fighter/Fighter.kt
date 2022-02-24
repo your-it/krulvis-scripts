@@ -218,6 +218,7 @@ class Fighter : ATScript() {
             names.add(ItemLoader.load(ammo.id)?.name?.lowercase() ?: "nulll")
         }
         names.add("brimstone key")
+        names.add("ancient shard")
         log.info("Looting: [${names.joinToString()}]")
         names.toList()
     }
