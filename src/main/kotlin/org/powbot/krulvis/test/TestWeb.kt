@@ -14,6 +14,7 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 
 @ScriptManifest(name = "test Web", version = "1.0.1", description = "", priv = true)
@@ -53,15 +54,15 @@ class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
             .build()
     }
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
         val oldScale = g.getScale()
-        Players.local().tile().drawCollisions(g, script.collisionMap)
-        script.origin.drawOnScreen(g)
-        script.newDest.drawOnScreen(g)
-        script.localPath.draw(g)
-        script.path.drawEdgeList(g)
+        Players.local().tile().drawCollisions(script.collisionMap)
+        script.origin.drawOnScreen()
+        script.newDest.drawOnScreen()
+        script.localPath.draw()
+        script.path.drawEdgeList()
 //        script.rocks.forEach {
-//            it.tile.drawOnScreen(g, outlineColor = Color.GREEN)
+//            it.tile.drawOnScreen( outlineColor = Color.GREEN)
 //        }
     }
 

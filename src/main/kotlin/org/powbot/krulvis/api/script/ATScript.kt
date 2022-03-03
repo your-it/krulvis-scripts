@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.extensions.randoms.RandomHandler
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.api.Random
 import org.powbot.krulvis.api.utils.Timer
+import org.powbot.mobile.drawing.Rendering
 import java.io.File
 
 abstract class ATScript : TreeScript() {
@@ -59,8 +60,7 @@ abstract class ATScript : TreeScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onRender(e: RenderEvent) {
-        val g = e.graphics
-        painter.paintCustom(g)
+        painter.paintCustom(Rendering)
     }
 
     /**

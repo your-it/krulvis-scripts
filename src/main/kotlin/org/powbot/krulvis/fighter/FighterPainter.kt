@@ -5,6 +5,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 
 class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 
@@ -23,9 +24,9 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
         return paintBuilder.build()
     }
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
         val target = script.currentTarget
-        target?.draw(g)
+        target?.draw()
         if (target != null) {
             g.drawString("HP: ${target.healthPercent()}", 500, 200)
         }

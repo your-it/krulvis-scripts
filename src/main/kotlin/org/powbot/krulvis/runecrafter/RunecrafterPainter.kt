@@ -13,7 +13,4 @@ class RunecrafterPainter(script: Runecrafter) : ATPaint<Runecrafter>(script) {
         paintBuilder.trackInventoryItem(script.profile.type.rune)
         return paintBuilder.build()
     }
-
-    override fun paintCustom(g: Graphics) {
-    }
 }

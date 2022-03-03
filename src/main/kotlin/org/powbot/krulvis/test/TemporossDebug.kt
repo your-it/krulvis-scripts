@@ -25,6 +25,7 @@ import org.powbot.krulvis.tempoross.Data
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.input.Touchscreen
 
 @ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
@@ -122,32 +123,32 @@ class TemporossDebug : ATScript() {
 
 class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(script) {
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
 
         val tether = script.tether
         if (script.tempoross.side != Side.UNKNOWN) {
-//            drawSide(g, tether?.tile())
+//            drawSide( tether?.tile())
         }
     }
 
-    fun drawSide(g: Graphics, tetherTile: Tile?) {
-        drawEntity(g, script.bucket)
-        drawEntity(g, script.bossPool)
-        drawEntity(g, script.ammo)
-        drawEntity(g, script.tether)
-        drawEntity(g, script.tempoross.bestFishSpot)
+    fun drawSide(g: Rendering, tetherTile: Tile?) {
+        drawEntity(script.bucket)
+        drawEntity(script.bossPool)
+        drawEntity(script.ammo)
+        drawEntity(script.tether)
+        drawEntity(script.tempoross.bestFishSpot)
 
         if (tetherTile != null) {
             val mm = tetherTile.mapPoint()
             g.drawString("TP", mm.x, mm.y)
         }
 
-        script.cookSpot.drawOnScreen(g, null, CYAN)
-        script.tempoross.side.anchorLocation.drawOnScreen(g, null, CYAN)
-        script.tempoross.side.bossPoolLocation.drawOnScreen(g, null, CYAN)
-        script.tempoross.side.totemLocation.drawOnScreen(g, null, CYAN)
-        script.tempoross.side.bossWalkLocation.drawOnScreen(g, null, CYAN)
-        script.tempoross.side.mastLocation.drawOnScreen(g, null, CYAN)
+        script.cookSpot.drawOnScreen(null, CYAN)
+        script.tempoross.side.anchorLocation.drawOnScreen(null, CYAN)
+        script.tempoross.side.bossPoolLocation.drawOnScreen(null, CYAN)
+        script.tempoross.side.totemLocation.drawOnScreen(null, CYAN)
+        script.tempoross.side.bossWalkLocation.drawOnScreen(null, CYAN)
+        script.tempoross.side.mastLocation.drawOnScreen(null, CYAN)
 
         val blockedTiles = script.tempoross.burningTiles.toList()
         val paths = script.tempoross.triedPaths.toList()
@@ -155,7 +156,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(sc
         blockedTiles.forEach {
             val t = it
             if (t != Tile.Nil) {
-                it.drawOnScreen(g, null, RED)
+                it.drawOnScreen(null, RED)
             }
         }
         if (paths.isNotEmpty()) {
@@ -164,7 +165,7 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(sc
                 val color = if (containsBadTile) ORANGE else GREEN
                 tiles.forEach { tile ->
                     tile.drawOnScreen(
-                        g,
+
                         null,
                         if (blockedTiles.contains(tile)) BLACK else color
                     )
@@ -173,12 +174,16 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(sc
         }
     }
 
-    fun drawEntity(g: Graphics, e: InteractableEntity?) {
+    fun drawEntity(e: InteractableEntity?) {
         if (e != null) {
             if (e.inViewport()) {
                 val matrix = Touchscreen.scaleFromGame(e.tile().matrix().bounds())
-                g.drawPolygon(matrix)
-                g.drawString((e as Nameable).name() ?: "null", matrix.getBounds().centerX, matrix.getBounds().centerY)
+                Rendering.drawPolygon(matrix)
+                Rendering.drawString(
+                    (e as Nameable).name() ?: "null",
+                    matrix.getBounds().centerX,
+                    matrix.getBounds().centerY
+                )
             }
         }
     }

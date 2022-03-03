@@ -67,7 +67,7 @@ class Tempoross : ATScript() {
     }
 
     val waveTimer = Timer(0)
-    var side: Side = Side.UNKNOWN
+    var side = Side.UNKNOWN
     var forcedShooting = false
     val burningTiles = mutableListOf<Tile>()
     val triedPaths = mutableListOf<LocalPath>()

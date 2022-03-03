@@ -3,7 +3,12 @@ package org.powbot.krulvis.test
 import org.powbot.api.*
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.magic.Rune
 import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePouch.RUNE_AMOUNT_MASK
+import org.powbot.api.rt4.magic.RunePouch.RUNE_ID_MASK
+import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP
+import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP2
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
@@ -16,6 +21,8 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
+import kotlin.math.pow
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -76,33 +83,10 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        obj = Objects.stream().name("Blisterwood Tree").firstOrNull()
-        log.info(obj?.tile?.toString() ?: "")
+
         sleep(2000)
     }
 
-    fun check(): Boolean {
-        return !Game.singleTapEnabled()
-    }
-
-    fun execute(): Boolean {
-        val button = Components.stream(601).action("Set Function").first()
-        if (button.actions().contains("Toggle single-tap mode")) {
-            log.info("Found single-tap in function button")
-            return button.interact("Toggle single-tap mode") && Condition.wait { !Game.singleTapEnabled() }
-        } else if (!Chat.chatting()) {
-            log.info("Should set function first")
-            if (!Menu.opened()) {
-                val point = button.boundingRect().nextPoint()
-                Input.press(point)
-                sleep(Random.nextInt(1500, 2000))
-                Input.release(point)
-            } else Menu.click { it.action == "Set Function" }
-        } else if (Chat.completeChat("Single-tap")) {
-            Condition.wait { Components.stream(601).action("Toggle single-tap mode").isNotEmpty() }
-        }
-        return false
-    }
     //Tile(x=3635, y=3362, floor=0)
     //Tile(x=3633, y=3359, floor=0)
 
@@ -127,16 +111,30 @@ class TestScript : ATScript() {
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
+    val varp1 = Varpbits.varpbit(RUNE_POUCH_VARP)
+    val varp2 = Varpbits.varpbit(RUNE_POUCH_VARP2)
+
+    val runes = listOf(
+        Rune.forIndex(varp1 and RUNE_ID_MASK),
+        Rune.forIndex(varp1 shr 6 and RUNE_ID_MASK),
+        Rune.forIndex(varp1 shr 12 and RUNE_ID_MASK),
+    )
+    val amounts = listOf(
+        varp1 shr 18,
+        varp2 and RUNE_AMOUNT_MASK,
+        varp2 shr 14
+    )
+
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-//            .addString("Top poly:") { "${Data.TOP_POLY.contains(Players.local().tile())}" }
-            .addString("Runes:") { RunePouch.runes().joinToString { (id, a) -> "$id:$a" } }
-//            .addString("Runes:") { RunePouchCtm.runes().joinToString { (id, a) -> "$id:$a" } }
+            .addString("Comp") {
+                Components.stream(270).firstOrNull { it.actions().contains("All") }?.index()?.toString()
+            }
             .build()
     }
 
-    override fun paintCustom(g: Graphics) {
-        script.obj?.tile?.drawOnScreen(g)
+    override fun paintCustom(g: Rendering) {
+        script.obj?.tile?.drawOnScreen()
         g.setScale(1.0f)
     }
 
@@ -148,5 +146,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "GIM", false)
+    TestScript().startScript("127.0.0.1", "GIM", true)
 }

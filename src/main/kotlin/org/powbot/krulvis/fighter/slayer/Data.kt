@@ -277,7 +277,7 @@ enum class SlayerTarget(
         Location(Dungeon.CATACOMBS_OF_KOUREND, Tile(1685, 10085, 0)),
         Location(Dungeon.CHASM_OF_FIRE, Tile(-1, -1, -1)),
         Location(Dungeon.ISLE_OF_SOULS_DUNGEON, Tile(-1, -1, -1)),
-        Location(Dungeon.KARUULM_SLAYER_DUNGEON, Tile(-1, -1, -1)),
+        Location(Dungeon.KARUULM_SLAYER_DUNGEON, Tile(1280, 10203, 1)),
         Location(Dungeon.BRIMHAVEN_DUNGEON, Tile(-1, -1, -1)),
     ),
     HARPIE_BUG_SWARMS(
@@ -443,7 +443,7 @@ enum class SlayerTarget(
         arrayOf("Steel dragon"),
         CombatStyle.Melee,
         Location(Dungeon.CATACOMBS_OF_KOUREND, Tile(1608, 10054, 0)),
-        Location(Dungeon.BRIMHAVEN_DUNGEON, Tile(-1, -1, -1)),
+        Location(Dungeon.BRIMHAVEN_DUNGEON, Tile(2624, 9409, 0)),
     ),
     TROLLS(
         arrayOf("Mountain troll"),
