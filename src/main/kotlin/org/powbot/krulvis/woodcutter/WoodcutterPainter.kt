@@ -6,6 +6,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.woodcutter.tree.leaf.Burn
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 
 class WoodcutterPainter(script: Woodcutter) : ATPaint<Woodcutter>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
@@ -20,8 +21,8 @@ class WoodcutterPainter(script: Woodcutter) : ATPaint<Woodcutter>(script) {
         return paintBuilder.build()
     }
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
         if (script.lastLeaf is Burn)
-            script.burnTile?.drawOnScreen(g)
+            script.burnTile?.drawOnScreen()
     }
 }

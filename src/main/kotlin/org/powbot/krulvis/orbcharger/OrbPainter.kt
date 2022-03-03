@@ -18,8 +18,4 @@ class OrbPainter(script: OrbCrafter) : ATPaint<OrbCrafter>(script) {
         return paintBuilder.build()
     }
 
-    override fun paintCustom(g: Graphics) {
-    }
-
-
 }

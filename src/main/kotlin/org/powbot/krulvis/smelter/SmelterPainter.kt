@@ -13,7 +13,4 @@ class SmelterPainter(script: Smelter) : ATPaint<Smelter>(script) {
         return paintBuilder.trackSkill(Skill.Smithing)
             .trackInventoryItem(if (script.cannonballs) Item.CANNONBALL else script.bar.id).build()
     }
-
-    override fun paintCustom(g: Graphics) {
-    }
 }

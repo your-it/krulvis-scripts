@@ -5,6 +5,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 
 class BFPainter(script: BlastFurnace) : ATPaint<BlastFurnace>(script) {
 
@@ -24,6 +25,6 @@ class BFPainter(script: BlastFurnace) : ATPaint<BlastFurnace>(script) {
         return paintBuilder.build()
     }
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
     }
 }

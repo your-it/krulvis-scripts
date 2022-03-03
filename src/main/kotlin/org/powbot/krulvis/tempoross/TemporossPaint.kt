@@ -8,6 +8,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 
 class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
 
@@ -18,14 +19,14 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
         return paintBuilder.build()
     }
 
-    override fun paintCustom(g: Graphics) {
+    override fun paintCustom(g: Rendering) {
         if (debugComponents) {
             val blockedTiles = script.burningTiles.toList()
             val paths = script.triedPaths.toList()
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {
-                    it.drawOnScreen(g, null, Color.RED)
+                    it.drawOnScreen( null, Color.RED)
                 }
             }
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
@@ -33,7 +34,6 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
                     val dangerous = tiles.any { script.burningTiles.contains(it) }
                     tiles.forEach { tile ->
                         tile.drawOnScreen(
-                            g,
                             null,
                             if (blockedTiles.contains(tile)) Color.BLACK else if (dangerous) Color.ORANGE else Color.GREEN
                         )

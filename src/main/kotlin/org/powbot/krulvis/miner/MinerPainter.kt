@@ -6,6 +6,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
 
 
 class MinerPainter(script: Miner) : ATPaint<Miner>(script) {
@@ -19,8 +20,5 @@ class MinerPainter(script: Miner) : ATPaint<Miner>(script) {
             )
             .withTotalLoot(true)
         return paintBuilder.build()
-    }
-
-    override fun paintCustom(g: Graphics) {
     }
 }
