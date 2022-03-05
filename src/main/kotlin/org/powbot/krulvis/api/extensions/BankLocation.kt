@@ -54,16 +54,15 @@ enum class BankLocation(
     HOSIDIUS_BEST_BANK_SPOT(
         Tile(1676, 3615, 0), BankType.CHEST,
     ),
-    MISCELLANIA_BANK(
-        Tile(2618, 3895, 0), BankType.NPC,
-    ),
+    KOUREND_TOP_BUILDING(Tile(1611, 3681, 2), BankType.BOOTH),
     LUMBRIDGE_TOP(Tile(3208, 3221, 2), BankType.BOOTH),
     LUMBRIDGE_CASTLE_BANK(Tile(3208, 3220, 2), BankType.BOOTH),
-    VARROCK_WEST_BANK(Tile(3185, 3436, 0), BankType.BOOTH),
-    VARROCK_EAST_BANK(Tile(3253, 3420, 0), BankType.BOOTH),
     GNOME_STRONGHOLD_BANK(Tile(2445, 3424, 1), BankType.BOOTH),
     FISHING_GUILD_BANK(
         Tile(2586, 3419, 0), BankType.BOOTH,
+    ),
+    MISCELLANIA_BANK(
+        Tile(2618, 3895, 0), BankType.NPC,
     ),
     MINING_GUILD(
         Tile(3013, 9718, 0), BankType.CHEST,
@@ -98,6 +97,8 @@ enum class BankLocation(
     TZHAAR_BANK(
         Tile(2446, 5178, 0), BankType.NPC,
     ),
+    VARROCK_WEST_BANK(Tile(3185, 3436, 0), BankType.BOOTH),
+    VARROCK_EAST_BANK(Tile(3253, 3420, 0), BankType.BOOTH),
     WOODCUTTING_GUILD(
         Tile(1592, 3476, 0), BankType.CHEST,
     ),
