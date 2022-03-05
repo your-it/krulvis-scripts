@@ -12,9 +12,6 @@ import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
@@ -26,7 +23,7 @@ import java.util.*
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.1.1",
+    version = "1.1.2",
     markdownFileName = "Thiever.md",
     scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
@@ -74,6 +71,19 @@ import java.util.*
             defaultValue = "false",
             optionType = OptionType.BOOLEAN
         ),
+        ScriptConfiguration(
+            name = "Stop on wandering",
+            description = "Stop script when the NPC starts to walk away?",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            name = "Wander range",
+            description = "How far can the npc walk away?",
+            defaultValue = "10",
+            optionType = OptionType.INTEGER,
+            visible = false
+        ),
     ]
 )
 class Thiever : ATScript() {
@@ -88,6 +98,8 @@ class Thiever : ATScript() {
     }
 
     val food by lazy { Food.valueOf(getOption("Food")) }
+    val stopOnWander by lazy { getOption<Boolean>("Stop on wandering") }
+    val wanderRange by lazy { getOption<Int>("Wander range") }
     val target by lazy { getOption<List<NpcActionEvent>>("Targets") }
     val foodAmount by lazy { (getOption<Int>("Food amount")) }
     val prepare by lazy { (getOption<Boolean>("Prepare menu")) }
@@ -98,6 +110,7 @@ class Thiever : ATScript() {
     val dodgy = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
     var mobile = false
     var lastTile = Tile.Nil
+    var startNPCTile = Tile.Nil
 
     fun getTarget(): Npc? {
         val farmerGuild = Tile(1249, 3735, 0)
@@ -108,7 +121,7 @@ class Thiever : ATScript() {
                 else -> Tile(1264, 3729, 0)
             }
         } else {
-            Players.local().tile()
+            if (lastTile != Tile.Nil) lastTile else Players.local().tile()
         }
         if (tile.distance() > 10) {
             return null
@@ -125,11 +138,16 @@ class Thiever : ATScript() {
     }
 
     @ValueChanged("Left-click")
-    fun onValueChange(leftClick: Boolean) {
+    fun onLeftClick(leftClick: Boolean) {
         if (leftClick) {
             updateOption("Prepare menu", false, OptionType.BOOLEAN)
         }
         updateVisibility("Prepare menu", !leftClick)
+    }
+
+    @ValueChanged("Stop on wandering")
+    fun onStopOnWander(stopOnWander: Boolean) {
+        updateVisibility("Wander range", stopOnWander)
     }
 
     @Subscribe
@@ -143,8 +161,9 @@ class Thiever : ATScript() {
                 if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange
             }
         }
-
     }
+
+    fun coinPouch(): org.powbot.api.rt4.Item? = Inventory.stream().name("Coin pouch").firstOrNull()
 }
 
 fun main() {

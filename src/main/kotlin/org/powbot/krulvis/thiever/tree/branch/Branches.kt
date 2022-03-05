@@ -1,5 +1,6 @@
 package org.powbot.krulvis.thiever.tree.branch
 
+import org.powbot.api.Notifications
 import org.powbot.api.Random
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
@@ -18,6 +19,7 @@ import org.powbot.krulvis.thiever.tree.leaf.Eat
 import org.powbot.krulvis.thiever.tree.leaf.HandleBank
 import org.powbot.krulvis.thiever.tree.leaf.OpenPouch
 import org.powbot.krulvis.thiever.tree.leaf.Pickpocket
+import org.powbot.mobile.script.ScriptManager
 
 class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
     override val successComponent: TreeComponent<Thiever> = Eat(script)
@@ -63,14 +65,13 @@ class ShouldOpenCoinPouch(script: Thiever, nextNode: TreeComponent<Thiever>, pri
     override val failedComponent: TreeComponent<Thiever> = nextNode
 
     override fun validate(): Boolean {
-        return (Inventory.stream().name("Coin pouch").firstOrNull()?.stack ?: 0) >= stackSize
+        return (script.coinPouch()?.stack ?: 0) >= stackSize
     }
 }
 
 class IsBankOpen(script: Thiever) : Branch<Thiever>(script, "Should Open Bank") {
     override val successComponent: TreeComponent<Thiever> = HandleBank(script)
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Open bank") {
-
         Bank.openNearest()
     }
 
@@ -80,7 +81,7 @@ class IsBankOpen(script: Thiever) : Branch<Thiever>(script, "Should Open Bank") 
 }
 
 class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
-    override val successComponent: TreeComponent<Thiever> = Pickpocket(script)
+    override val successComponent: TreeComponent<Thiever> = ShouldStop(script)
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Walking") {
         Bank.close()
         if (Players.local().tile().floor > 0) {
@@ -96,5 +97,22 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
     override fun validate(): Boolean {
         return (script.lastTile == Tile.Nil || script.lastTile.distance() <= 10)
                 && (script.getTarget()?.distance() ?: 99) < 20
+    }
+}
+
+class ShouldStop(script: Thiever) : Branch<Thiever>(script, "Should stop?") {
+    override val successComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Stop because npc wandered") {
+        Notifications.showNotification("Stopping script because NPC wandered too far away")
+        script.log.info("Stopping script because NPC wandered too far away \n NPC: $target, tile=${target?.tile()}, startTile=${script.startNPCTile}")
+        ScriptManager.stop()
+    }
+    override val failedComponent: TreeComponent<Thiever> = Pickpocket(script)
+
+    var target: Npc? = null
+
+    override fun validate(): Boolean {
+        if (!script.stopOnWander || script.startNPCTile == Tile.Nil) return false
+        target = script.getTarget()
+        return (target?.tile()?.distanceTo(script.startNPCTile) ?: 99).toInt() >= script.wanderRange
     }
 }
