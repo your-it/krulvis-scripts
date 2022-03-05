@@ -16,6 +16,10 @@ import kotlin.math.max
 
 class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
     override fun execute() {
+        if (script.coinPouch() != null) {
+            Bank.close()
+            return
+        }
         val extra = ceil(missingHP() / script.food.healing.toDouble()).toInt()
         val toTake = min(28, script.foodAmount + extra)
         if (!Inventory.emptyExcept(*script.food.ids)) {

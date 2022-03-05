@@ -7,6 +7,7 @@ import org.powbot.api.rt4.Skills
 import org.powbot.krulvis.api.ATContext.interact
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.Random
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.thiever.Thiever
@@ -19,6 +20,8 @@ class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
             val xp = Skills.experience(Constants.SKILLS_THIEVING)
             if (interact(target, "Pickpocket", script.useMenu)) {
                 script.lastTile = target.tile()
+                if (script.startNPCTile == Tile.Nil)
+                    script.startNPCTile = script.lastTile
                 if (waitFor(Random.nextInt(1000, 1250)) {
                         Skills.experience(Constants.SKILLS_THIEVING) > xp ||
                                 Players.local().animation() == 424
