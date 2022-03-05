@@ -10,7 +10,7 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
-import org.powbot.krulvis.tempoross.Data.DRAGON_HARPOON
+import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Fish
@@ -21,7 +21,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Water
 class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
     override fun validate(): Boolean {
         return Combat.specialPercentage() == 100
-                && Equipment.stream().id(DRAGON_HARPOON).isNotEmpty()
+                && Equipment.stream().id(*SPEC_HARPOONS).isNotEmpty()
                 && (script.lastLeaf is Fish || script.lastLeaf is Kill)
     }
 
