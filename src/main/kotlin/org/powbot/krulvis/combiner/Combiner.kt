@@ -18,7 +18,7 @@ import org.powbot.mobile.script.ScriptManager
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.0.8",
+    version = "1.0.9",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -37,12 +37,19 @@ import org.powbot.mobile.script.ScriptManager
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
             defaultValue = "[{\"id\":1785,\"interaction\":\"Use\",\"mouseX\":685,\"mouseY\":248,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Glassblowing pipe\",\"strippedName\":\"Glassblowing pipe\"},{\"id\":1775,\"interaction\":\"Use\",\"mouseX\":723,\"mouseY\":250,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Molten glass\",\"strippedName\":\"Glassblowing pipe -> Molten glass\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":365,\"mouseY\":94,\"rawEntityName\":\"<col=ff9040>Unpowered staff orb</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694739,\"componentIndex\":19,\"widgetIndex\":270,\"name\":\"Unpowered staff orb\",\"strippedName\":\"Unpowered staff orb\"}]"
+        ),
+        ScriptConfiguration(
+            name = "Spam Click",
+            description = "Enable this to perform the interaction for every item",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
         )
     ]
 )
 class Combiner : ATScript() {
     override fun createPainter(): ATPaint<*> = CombinerPainter(this)
 
+    val spamClick by lazy { getOption<Boolean>("Spam Click") }
     val combineActions by lazy { getOption<List<GameActionEvent>>("Combine Items") }
     val items by lazy {
         getOption<Map<Int, Int>>("Inventory items")

@@ -33,7 +33,7 @@ class StoppedCombining(
     override val successComponent: TreeComponent<Combiner> = ShouldCloseBank(script)
 
     override fun validate(): Boolean {
-        return script.stoppedUsing()
+        return script.spamClick || script.stoppedUsing()
     }
 }
 
