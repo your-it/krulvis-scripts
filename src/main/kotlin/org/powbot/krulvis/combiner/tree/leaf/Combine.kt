@@ -60,7 +60,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
             if (interaction || (next is WidgetActionEvent && next.widget().visible())) {
                 script.log.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {
-                    waitFor(long()) { !script.stoppedUsing() }
+                    waitFor(long()) { script.spamClick || !script.stoppedUsing() }
                 } else {
                     val wait = waitFor(long()) {
                         if (event.name.contains("->")) {
