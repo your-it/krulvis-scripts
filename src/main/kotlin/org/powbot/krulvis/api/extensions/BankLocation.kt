@@ -76,6 +76,9 @@ enum class BankLocation(
     PRIFIDDINAS(
         Tile(3256, 6108, 0), BankType.BOOTH,
     ),
+    PRIFIDDINAS_MINE_CART(
+        Tile(3307, 12443, 0), BankType.DEPOSIT_BOX
+    ),
     PORT_SARIM_DB(
         Tile(3045, 3235, 0), BankType.DEPOSIT_BOX,
     ),
