@@ -30,6 +30,7 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
                 if (vial != null)
                     vial.interact("Drop")
                 else edibleFood?.eat()
+                waitFor { !Inventory.isFull() }
             }
             val currentCount = Inventory.getCount(id)
             if ((!Inventory.isFull() || gi.stackable())

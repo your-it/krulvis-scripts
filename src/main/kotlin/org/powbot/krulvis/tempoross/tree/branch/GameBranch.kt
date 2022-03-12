@@ -10,13 +10,11 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
+import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powbot.krulvis.tempoross.tree.leaf.Fish
-import org.powbot.krulvis.tempoross.tree.leaf.GetRope
-import org.powbot.krulvis.tempoross.tree.leaf.Kill
-import org.powbot.krulvis.tempoross.tree.leaf.Water
+import org.powbot.krulvis.tempoross.tree.leaf.*
 
 class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
     override fun validate(): Boolean {
@@ -31,6 +29,15 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
             waitFor(5000) { Combat.specialPercentage() < 100 }
         }
     }
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHarpoon(script)
+}
+
+class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
+    override fun validate(): Boolean {
+        return !Equipment.containsOneOf(*SPEC_HARPOONS) && !Inventory.containsOneOf(*HARPOONS)
+    }
+
+    override val successComponent: TreeComponent<Tempoross> = GetHarpoon(script)
     override val failedComponent: TreeComponent<Tempoross> = ShouldKill(script)
 }
 
