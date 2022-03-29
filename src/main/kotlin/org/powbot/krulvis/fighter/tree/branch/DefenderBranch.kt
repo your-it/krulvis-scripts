@@ -69,6 +69,6 @@ class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should 
     override val failedComponent: TreeComponent<Fighter> = ShouldUseItem(script)
 
     override fun validate(): Boolean {
-        return Defender.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096
+        return script.warriorGuild && Defender.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096
     }
 }
