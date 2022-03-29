@@ -46,6 +46,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             "Warrior guild", "Collect defenders in the warrior guild",
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
+
         ScriptConfiguration(
             "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
         ),
