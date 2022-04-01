@@ -111,6 +111,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 class Fighter : ATScript() {
 
     override fun createPainter(): ATPaint<*> = FighterPainter(this)
+
     override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
 
     lateinit var slayer: Slayer
