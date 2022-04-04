@@ -141,6 +141,22 @@ class Fighter : ATScript() {
         updateVisibility("Radius", !slayer)
     }
 
+    @com.google.common.eventbus.Subscribe
+    fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {
+        if (pcce.checkboxId == "stopAfterTask") {
+
+            val painter = painter as FighterPainter
+            if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
+                val index =
+                    painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
+                painter.paintBuilder.items.add(index, painter.slayerTracker)
+            } else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
+                painter.paintBuilder.items.remove(painter.slayerTracker)
+            }
+
+        }
+    }
+
     val doSlayer by lazy { getOption<Boolean>("Slayer") }
 
     override fun onStart() {

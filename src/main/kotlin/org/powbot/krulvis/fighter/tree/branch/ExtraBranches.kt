@@ -9,6 +9,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
@@ -94,5 +95,6 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
             return false
         }
         return !Inventory.isFull() || Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
+                || (Inventory.containsOneOf(HERB_SACK_OPEN) && loot.any { it.name().contains("grimy", true) })
     }
 }

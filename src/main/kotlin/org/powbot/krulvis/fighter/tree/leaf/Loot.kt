@@ -7,6 +7,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
@@ -33,7 +34,9 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
                 waitFor { !Inventory.isFull() }
             }
             val currentCount = Inventory.getCount(id)
-            if ((!Inventory.isFull() || gi.stackable())
+            if ((!Inventory.isFull()
+                        || gi.stackable()
+                        || (Inventory.containsOneOf(Item.HERB_SACK_OPEN) && gi.name().contains("grimy", true)))
                 && Utils.walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)
             ) {
                 waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || Players.local().tile() == gi.tile }
