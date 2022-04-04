@@ -9,6 +9,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
@@ -56,7 +57,9 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
         bones.forEachIndexed { i, bone ->
             val count = Inventory.getCount(bone.id)
-            if (bone.interact(bone.buryAction())) {
+            val action = bone.buryAction()
+            script.log.info("$action on ${bone.name()}")
+            if (bone.interact(action)) {
                 waitFor { count > Inventory.getCount(bone.id) }
                 if (i < this.bones.size - 1)
                     sleep(1500)
@@ -65,15 +68,15 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     }
     override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
 
-    val names = arrayOf("bones", "ashes")
-    val actions = arrayOf("bury", "scatter")
-    fun Item.buryAction(): String = actions[names.indexOfFirst { name.lowercase().contains(it) }]
+
+    val actions = mapOf("bones" to "bury", "ashes" to "scatter")
+    fun Item.buryAction(): String = actions[actions.keys.first { name().contains(it, true) }] ?: "Bury"
 
     override fun validate(): Boolean {
         if (!script.buryBones) return false
         bones = Inventory.stream().filter { item ->
             val name = item.name().lowercase()
-            names.any { name.contains(it) }
+            actions.keys.any { name.contains(it, true) }
         }
         return bones.isNotEmpty()
     }
@@ -92,5 +95,6 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
             return false
         }
         return !Inventory.isFull() || Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
+                || (Inventory.containsOneOf(HERB_SACK_OPEN) && loot.any { it.name().contains("grimy", true) })
     }
 }

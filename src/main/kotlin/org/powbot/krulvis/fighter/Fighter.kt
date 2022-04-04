@@ -33,9 +33,9 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 
 @ScriptManifest(
     name = "krul Fighter",
-    description = "Fights anything, anywhere",
+    description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
-    version = "1.3.4",
+    version = "1.3.5",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -46,6 +46,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
             "Warrior guild", "Collect defenders in the warrior guild",
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
+
         ScriptConfiguration(
             "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
         ),
@@ -110,6 +111,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 class Fighter : ATScript() {
 
     override fun createPainter(): ATPaint<*> = FighterPainter(this)
+
     override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
 
     lateinit var slayer: Slayer
@@ -137,6 +139,22 @@ class Fighter : ATScript() {
         updateVisibility("Safespot", !slayer)
         updateVisibility("Use safespot", !slayer)
         updateVisibility("Radius", !slayer)
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {
+        if (pcce.checkboxId == "stopAfterTask") {
+
+            val painter = painter as FighterPainter
+            if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
+                val index =
+                    painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
+                painter.paintBuilder.items.add(index, painter.slayerTracker)
+            } else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
+                painter.paintBuilder.items.remove(painter.slayerTracker)
+            }
+
+        }
     }
 
     val doSlayer by lazy { getOption<Boolean>("Slayer") }
