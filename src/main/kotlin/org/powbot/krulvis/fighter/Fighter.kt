@@ -33,7 +33,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 
 @ScriptManifest(
     name = "krul Fighter",
-    description = "Fights anything, anywhere",
+    description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
     version = "1.3.5",
     markdownFileName = "Fighter.md",
