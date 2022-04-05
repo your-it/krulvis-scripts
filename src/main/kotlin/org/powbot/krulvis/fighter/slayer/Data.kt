@@ -159,7 +159,7 @@ enum class SlayerTarget(
         arrayOf("Bloodveld"),
         CombatStyle.Melee,
         Location(Dungeon.CATACOMBS_OF_KOUREND, Tile(1679, 10075, 0)),
-        Location(Dungeon.GOD_WARS_DUNGEON, Tile(-1, -1, -1)),
+        Location(Dungeon.GOD_WARS_DUNGEON, Tile(2885, 5321, 2)),
         Location(Dungeon.IORWERTH_DUNGEON, Tile(-1, -1, -1)),
         Location(Dungeon.MEIYERDITCH_LABORATORIES, Tile(-1, -1, -1)),
         Location(Dungeon.SLAYER_TOWER, Tile(-1, -1, -1)),
