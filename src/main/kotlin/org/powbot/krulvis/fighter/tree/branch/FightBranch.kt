@@ -50,13 +50,18 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             script.currentTarget = interacting as Npc
 
         val safespot = script.centerTile()
-        if (script.useSafespot && safespot != Players.local().tile() && Players.local().healthBarVisible()) {
-            Movement.step(safespot, 0)
-        } else if (Condition.wait { script.killItem() == null && (interacting == Actor.Nil || interacting.healthPercent() == 0) }) {
-            script.currentTarget = null
-            script.watchLootDrop(interacting.tile())
+        if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || interacting.healthPercent() == 0)) }) {
+            if (shouldReturnToSafespot()) {
+                Movement.walkTo(safespot)
+            } else {
+                script.currentTarget = null
+                script.watchLootDrop(interacting.tile())
+            }
         }
     }
+
+    fun shouldReturnToSafespot() =
+        script.useSafespot && script.centerTile() != Players.local().tile() && Players.local().healthBarVisible()
 
     override fun validate(): Boolean {
         return killing(script.killItem())
@@ -70,6 +75,8 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             val hp = interacting.healthPercent()
             return killItem != null || hp > 0
         }
+
+
     }
 }
 
