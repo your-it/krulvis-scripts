@@ -8,6 +8,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
+import kotlin.math.roundToInt
 
 class EmptySack(script: Miner) : Leaf<Miner>(script, "Emptying sack") {
     override fun execute() {
