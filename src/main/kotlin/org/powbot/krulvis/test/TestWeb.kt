@@ -58,7 +58,7 @@ class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
     override fun paintCustom(g: Rendering) {
         val oldScale = g.getScale()
         if (script.collisionMap != null) {
-            Players.local().tile().drawCollisions(script.collisionMap)
+            Players.local().tile().drawCollisions(script.collisionMap!!)
         }
         script.origin.drawOnScreen()
         script.newDest.drawOnScreen()
