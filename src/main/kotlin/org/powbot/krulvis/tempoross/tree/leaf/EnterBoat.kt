@@ -12,7 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
-
+import kotlin.math.roundToInt
 
 class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
     override fun execute() {
@@ -20,7 +20,7 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
         script.side = Side.UNKNOWN
 
         val ropeLadder = script.getLadder()
-        if ((ropeLadder?.distance().roundToInt() ?: 6) > 5) {
+        if ((ropeLadder?.distance()?.roundToInt() ?: 6) > 5) {
             debug("Walking first")
             walk(Tile(3137, 2841, 0))
         } else if (interact(ropeLadder, "Quick-climb")) {
