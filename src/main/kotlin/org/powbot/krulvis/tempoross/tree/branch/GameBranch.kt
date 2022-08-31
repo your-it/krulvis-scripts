@@ -15,6 +15,7 @@ import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.*
+import kotlin.math.roundToInt
 
 class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
     override fun validate(): Boolean {
