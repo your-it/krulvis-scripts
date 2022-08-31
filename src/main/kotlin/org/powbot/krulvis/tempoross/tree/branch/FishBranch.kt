@@ -16,6 +16,7 @@ import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Cook
 import org.powbot.krulvis.tempoross.tree.leaf.Fish
 import org.powbot.krulvis.tempoross.tree.leaf.Shoot
+import kotlin.math.roundToInt
 
 class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot") {
     override fun validate(): Boolean {
