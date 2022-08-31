@@ -15,6 +15,7 @@ import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.*
+import kotlin.math.roundToInt
 
 class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
     override fun validate(): Boolean {
@@ -54,7 +55,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 
     fun atAmmoCrate(): Boolean {
         val ammoCrate = script.getAmmoCrate()
-        return (ammoCrate?.distance() ?: 3) <= 2
+        return (ammoCrate?.distance()?.roundToInt() ?: 3) <= 2
     }
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
@@ -74,7 +75,7 @@ class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get 
             return false
         }
         val bucketCrate = script.getBucketCrate()
-        return (bucketCrate?.distance() ?: 6) <= 5
+        return (bucketCrate?.distance()?.roundToInt() ?: 6) <= 5
     }
 
     override val successComponent: TreeComponent<Tempoross> = Water(script)

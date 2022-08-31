@@ -20,6 +20,7 @@ import org.powbot.krulvis.thiever.tree.leaf.HandleBank
 import org.powbot.krulvis.thiever.tree.leaf.OpenPouch
 import org.powbot.krulvis.thiever.tree.leaf.Pickpocket
 import org.powbot.mobile.script.ScriptManager
+import kotlin.math.roundToInt
 
 class ShouldEat(script: Thiever) : Branch<Thiever>(script, "Should Eat") {
     override val successComponent: TreeComponent<Thiever> = Eat(script)
@@ -96,7 +97,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
 
     override fun validate(): Boolean {
         return (script.lastTile == Tile.Nil || script.lastTile.distance() <= 10)
-                && (script.getTarget()?.distance() ?: 99) < 20
+                && (script.getTarget()?.distance()?.roundToInt() ?: 99) < 20
     }
 }
 

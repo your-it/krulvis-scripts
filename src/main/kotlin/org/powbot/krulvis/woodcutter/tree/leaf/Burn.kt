@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
+import org.powbot.util.TransientGetter2D
 import kotlin.system.measureTimeMillis
 
 class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
@@ -76,7 +77,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         }
     }
 
-    fun Tile.canMakeFire(flags: Array<IntArray>): Boolean {
+    fun Tile.canMakeFire(flags: TransientGetter2D<Int>): Boolean {
         val blocked = blocked(flags)
         val objBlocking = Objects.stream().at(this).firstOrNull { it.name.isNotEmpty() }
         if (this == script.burnTile && (blocked || objBlocking != null)) {
@@ -85,7 +86,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         return !blocked && (objBlocking == null || objBlocking.id() == script.boundaryId)
     }
 
-    fun findGoodSpot(flags: Array<IntArray>): Tile? {
+    fun findGoodSpot(flags: TransientGetter2D<Int>): Tile? {
         var longestStreak = 0
         var bestTile: Tile? = null
         val myTile = Players.local().tile()

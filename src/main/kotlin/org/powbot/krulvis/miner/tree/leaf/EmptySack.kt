@@ -8,13 +8,14 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
+import kotlin.math.roundToInt
 
 class EmptySack(script: Miner) : Leaf<Miner>(script, "Emptying sack") {
     override fun execute() {
         val sack = script.getSack()
         sack.ifPresent {
             if (interact(it, "Search")) {
-                waitFor(mid() + it.distance() * 400) { Inventory.isFull() }
+                waitFor(mid() + it.distance().roundToInt() * 400) { Inventory.isFull() }
             }
         }
     }
