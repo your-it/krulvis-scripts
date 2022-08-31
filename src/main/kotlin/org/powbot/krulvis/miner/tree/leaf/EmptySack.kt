@@ -14,7 +14,7 @@ class EmptySack(script: Miner) : Leaf<Miner>(script, "Emptying sack") {
         val sack = script.getSack()
         sack.ifPresent {
             if (interact(it, "Search")) {
-                waitFor(mid() + it.distance() * 400) { Inventory.isFull() }
+                waitFor(mid() + it.distance().roundToInt() * 400) { Inventory.isFull() }
             }
         }
     }
