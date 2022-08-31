@@ -38,7 +38,7 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
         //If we are close to the ammo-box and have some fish, shoot em
         val ammoCrate = script.getAmmoCrate()
         if (Inventory.containsOneOf(if (script.cookFish) COOKED else RAW)
-            && (ammoCrate?.distance().roundToInt() ?: 8) < 7
+            && (ammoCrate?.distance()?.roundToInt() ?: 8) < 7
         ) {
             script.forcedShooting = true
             return true
