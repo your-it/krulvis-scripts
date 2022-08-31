@@ -1,24 +1,41 @@
 package org.powbot.krulvis.api.extensions.items
 
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.GameObject
+import org.powbot.api.Tile
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Varpbits
 import java.util.*
 
-enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors: Int) : Item {
-    AMETHYST(intArrayOf(21347), 92, 6705),
-    PAY_DIRT(intArrayOf(12011), 45, 6705),
-    RUNITE(intArrayOf(451), 85, -31437),
-    ADAMANTITE(intArrayOf(449), 70, 21662),
-    MITHRIL(intArrayOf(447), 55, -22239),
-    GOLD(intArrayOf(444), 40, 8885),
-    COAL(intArrayOf(453), 30, 10508),
-    SILVER(intArrayOf(442), 20, 74),
-    IRON(intArrayOf(440), 15, 2576),
-    COPPER(intArrayOf(436), 1, 4510, 4645, 8889),
-    TIN(intArrayOf(438), 1, 53),
-    CLAY(intArrayOf(434), 1, 6705);
 
+enum class Ore(
+    override val ids: IntArray,
+    val miningLvl: Int,
+    //settingId & shiftAmount are used in Blast furnace
+    val settingId: Int,
+    val shiftAmount: Int,
+    vararg val colors: Int
+) : Item {
+    AMETHYST(intArrayOf(21347), 92, -1, -1, 6705),
+    PAY_DIRT(intArrayOf(12011), 45, -1, -1, 6705),
+    VOLCANIC_ASH(intArrayOf(21622), 22, -1, -1, 6705),
+    RUNITE(intArrayOf(451), 85, 548, 8, -31437),
+    ADAMANTITE(intArrayOf(449), 70, 548, 0, 21662),
+    GEM_ROCK(intArrayOf(1625, 1627, 1629, 1623, 1621, 1619, 1617), 65, -1, -1, -10335),
+    MITHRIL(intArrayOf(447), 55, 547, 24, -22239),
+    GOLD(intArrayOf(444), 40, 548, 16, 8885),
+    SANDSTONE(intArrayOf(6971, 6973, 6975, 6977), 25, -1, 0, 6949),
+    COAL(intArrayOf(453), 30, 547, 0, 10508),
+    SILVER(intArrayOf(442), 20, -1, -1, 74),
+    IRON(intArrayOf(440), 15, 547, 16, 2576),
+    COPPER(intArrayOf(436), 1, -1, -1, 4510, 4645, 8889),
+    TIN(intArrayOf(438), 1, -1, -1, 53),
+    CLAY(intArrayOf(434), 1, -1, -1, 6705),
+    BLURITE(intArrayOf(668), 1, -1, -1, 696969);
+
+    private val mask = 255
+
+    val blastFurnaceCount: Int
+        get() = Varpbits.varpbit(settingId) shr shiftAmount and mask
 
     override fun hasWith(): Boolean {
         return getInventoryCount(false) > 0
@@ -29,7 +46,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
     }
 
     fun getNearestRock(): Optional<GameObject> {
-        return ctx.objects.toStream().filter {
+        return Objects.stream().filtered {
             it.hasOre(this)
         }.nearest().findFirst()
     }
@@ -37,7 +54,15 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
     companion object {
         fun GameObject.hasOre(vararg ores: Ore = values()): Boolean {
             val name = name()
-            return name == "Ore vein" || name == "Crystals" || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
+            val validNames = arrayOf("Ore vein", "Crystals", "Ash pile")
+            return name in validNames || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
+        }
+
+        /**
+         * @return true if there are no objects on the [GameObject]'s tile that have ore
+         */
+        fun GameObject.mined(vararg ores: Ore = values()): Boolean {
+            return Objects.stream().at(tile).none { it.hasOre(*ores) }
         }
 
         fun GameObject.getOre(): Ore? {
@@ -55,7 +80,7 @@ enum class Ore(override val ids: IntArray, val miningLvl: Int, vararg val colors
         }
 
         fun Tile.getOre(): Ore? {
-            val rock = ctx.objects.toStream().at(this).name("Rock").findFirst()
+            val rock = Objects.stream().at(this).name("Rock").findFirst()
             return if (rock.isPresent) {
                 values().firstOrNull { ore ->
                     rock.get().hasOre(ore)

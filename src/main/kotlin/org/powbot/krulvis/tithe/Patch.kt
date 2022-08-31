@@ -1,27 +1,22 @@
 package org.powbot.krulvis.tithe
 
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.utils.Utils
-import org.powbot.krulvis.api.utils.Utils.short
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Game
-import org.powerbot.script.rt4.GameObject
-import org.powerbot.script.rt4.Menu
+import org.powbot.api.Condition
+import org.powbot.api.Tile
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.mobile.script.ScriptManager
 
 class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
     constructor(go: GameObject, index: Int) : this(go, go.tile(), index)
 
-    fun refresh(gameObject: GameObject? = null) {
-        go = gameObject ?: ctx.objects.toStream(35).at(tile).filter { it.name().isNotEmpty() && it.name() != "null" }
-            .findFirst()
-            .get()
+    fun refresh(gameObject: GameObject? = null): GameObject {
+        go = gameObject ?: Objects.stream(35).at(tile).filtered { it.name().isNotEmpty() && it.name() != "null" }
+            .firstOrNull() ?: GameObject.Nil
+        return go
     }
 
-    val isNill get() = go == GameObject.NIL
+    val isNill get() = go == GameObject.Nil
 
     val id get() = go.id()
 
@@ -42,10 +37,10 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     fun handle(patches: List<Patch>): Boolean {
         return when {
             needsWatering() -> {
-                walkBetween("Water", patches) && water()
+                walkBetween(patches) && water()
             }
             isDone() -> {
-                walkBetween("Harvest", patches) && harvest()
+                walkBetween(patches) && harvest()
             }
             else -> {
                 false
@@ -75,67 +70,55 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
         return id in PLANTED || id in GROWN_1 || id in GROWN_2 || id in DONE
     }
 
+    fun plant(seed: Int): Boolean {
+        val selectedId = Inventory.selectedItem().id()
+        if (selectedId != seed) {
+            Game.tab(Game.Tab.INVENTORY)
+            Inventory.stream().id(seed).findFirst().ifPresent {
+                it.interact("Use", false)
+            }
+        }
+        return Condition.wait { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
+    }
+
     fun clear(): Boolean = interact("Clear")
 
     fun water(): Boolean = interact("Water")
 
     fun harvest(): Boolean = interact("Harvest")
 
-    fun plant(seed: Int): Boolean {
-        val selectedId = ctx.inventory.selectedItem().id()
-        if (selectedId != seed) {
-            ctx.game.tab(Game.Tab.INVENTORY)
-            ctx.inventory.toStream().id(seed).findFirst().ifPresent {
-                it.interact("Use")
-            }
-        }
-        return waitFor(short()) { ctx.inventory.selectedItem().id() == seed } && go.interact("Use")
-    }
-
-    fun walkBetween(action: String, patches: List<Patch>): Boolean {
-        if (rightMenuOpen(action)) return true
-        if (!go.inViewport() || go.distance() > 6) {
-            val minX = patches.minOf { tile.x() } + 2
-            val t = tile
-            val tile = Tile(minX, t.y(), 0)
-            if (tile.matrix(ctx).onMap()) {
-                ctx.movement.step(tile)
+    fun walkBetween(patches: List<Patch>): Boolean {
+        if (!go.inViewport() || go.tile.distance() > 6) {
+            val minX = patches.minOf { it.tile.x() }
+            val maxX = patches.maxOf { it.tile.x() }
+            val x = if (tile.x < maxX) minX + 2 else maxX - 2
+            val tile = Tile(x, tile.y(), 0)
+            if (tile.matrix().onMap()) {
+                ScriptManager.script()?.log?.info("Walking on minimap")
+                if (!Movement.running() && Movement.energyLevel() >= 3)
+                    Movement.running(true)
+                Movement.step(tile)
             } else {
-                ATContext.walk(tile)
+                LocalPathFinder.findPath(tile).traverse()
             }
             return false
         }
         return true
     }
 
-    private fun rightMenuOpen(action: String): Boolean =
-        ctx.menu.opened() && ctx.menu.contains { it.action.equals(action, true) }
-
     private fun interact(action: String): Boolean {
-        if (!ctx.client().isMenuOpen) {
-            if (ctx.client().isMobile) {
-                go.click()
+        if (Inventory.selectedItem() != Item.Nil) Game.Tab.INVENTORY.getByTexture()?.click()
+        if (Menu.opened()) {
+            if (Menu.containsAction(action)) {
+                Menu.click { it.action.lowercase().contains(action.lowercase()) }
             } else {
-                go.click(false)
+                Menu.close()
             }
         }
-        if (waitFor(short()) { ctx.client().isMenuOpen }) {
-            if (rightMenuOpen(action)) {
-                val interaction = ATContext.clickMenu(
-                    Menu.filter(
-                        action
-                    )
-                )
-                ATContext.turnRunOn()
-                return interaction
-            } else {
-                ATContext.clickMenu(Menu.filter("Cancel"))
-            }
-        }
-        return false
+        return go.interact(action, false)
     }
 
-    override fun toString(): String = "Patch(tile=${go.tile()})"
+    override fun toString(): String = "Patch(id=${go.id()}, tile=${go.tile()})"
 
     companion object {
         val EMPTY = 27383
@@ -153,19 +136,20 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
             return listOf("Logavano", "Bologano", "Golovanova", "Tithe patch").any { it in name }
         }
 
-
         fun List<Patch>.hasEmpty(): Boolean = any { it.isEmpty() }
 
         fun List<Patch>.hasDone(): Boolean = any { it.isDone() }
 
-        fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.NIL, -1)
+        fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.Nil, -1)
 
         fun List<Patch>.tiles(): List<Tile> = map { it.tile }
+
+        fun List<Patch>.sameState() = groupBy { it.id }.size == 1
 
         fun List<Patch>.refresh(): List<Patch> {
             val tiles = tiles()
             val gameObjects =
-                ctx.objects.toStream(35).filter { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+                Objects.stream(35).filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
                     .list()
             return onEach { patch -> patch.refresh(gameObjects.firstOrNull { go -> go.tile() == patch.tile }) }
         }

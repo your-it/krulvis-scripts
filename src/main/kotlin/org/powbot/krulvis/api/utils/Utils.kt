@@ -1,14 +1,6 @@
 package org.powbot.krulvis.api.utils
 
-import com.google.gson.JsonParser
-import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.FileNotFoundException
-import java.io.InputStreamReader
-import java.net.URL
-import java.util.*
-import java.util.Base64
-import javax.imageio.ImageIO
+import org.powbot.api.Random
 
 
 object Utils {
@@ -27,7 +19,7 @@ object Utils {
 
     fun mid(): Int = Random.nextInt(1000, 2500)
 
-    fun long(): Int = Random.nextInt(2500, 5000)
+    fun long(): Int = Random.nextInt(5000, 8000)
 
     fun waitFor(min: Int, max: Int, condition: () -> Boolean): Boolean {
         return waitFor(
@@ -55,26 +47,26 @@ object Utils {
     }
 
 
-    fun getItemImage(id: Int): BufferedImage? {
-        try {
-            val conn = URL(OSRS_BOX_URL + id).openConnection()
-            val parser = JsonParser()
-            val ipr = InputStreamReader(conn.getInputStream())
-            val icon = parser.parse(ipr)?.asJsonObject?.get("icon")?.asString ?: return null
-            return ImageIO.read(ByteArrayInputStream(Base64.getDecoder().decode(icon)))
-        } catch (fnfe: FileNotFoundException) {
-            fnfe.printStackTrace()
-        }
-        return null
-    }
-
-    fun getWebImage(url: String): BufferedImage? {
-        try {
-            val conn = URL(url).openConnection()
-            return ImageIO.read(conn.getInputStream())
-        } catch (fnfe: FileNotFoundException) {
-            fnfe.printStackTrace()
-        }
-        return null
-    }
+//    fun getItemImage(id: Int): BufferedImage? {
+//        try {
+//            val conn = URL(OSRS_BOX_URL + id).openConnection()
+//            val parser = JsonParser()
+//            val ipr = InputStreamReader(conn.getInputStream())
+//            val icon = parser.parse(ipr)?.asJsonObject?.get("icon")?.asString ?: return null
+//            return ImageIO.read(ByteArrayInputStream(Base64.getDecoder().decode(icon)))
+//        } catch (fnfe: FileNotFoundException) {
+//            fnfe.printStackTrace()
+//        }
+//        return null
+//    }
+//
+//    fun getWebImage(url: String): BufferedImage? {
+//        try {
+//            val conn = URL(url).openConnection()
+//            return ImageIO.read(conn.getInputStream())
+//        } catch (fnfe: FileNotFoundException) {
+//            fnfe.printStackTrace()
+//        }
+//        return null
+//    }
 }

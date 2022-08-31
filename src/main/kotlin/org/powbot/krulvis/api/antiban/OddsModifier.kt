@@ -1,6 +1,6 @@
 package org.powbot.krulvis.api.antiban
 
-import org.powbot.krulvis.api.utils.Random
+import org.powbot.api.Random
 
 class OddsModifier {
 
@@ -14,9 +14,9 @@ class OddsModifier {
     }
 
     fun reset() {
-        minModifier = Random.nextGaussian(75, 115) / 100.0
-        maxModifier = Random.nextGaussian(85, 125) / 100.0
+        minModifier = Random.nextInt(75, 115) / 100.0
+        maxModifier = Random.nextInt(85, 125) / 100.0
     }
 
-    fun gaussian() = Random.gaussian(minModifier, maxModifier)
+    fun gaussian() = Random.nextDouble(minModifier, maxModifier)
 }

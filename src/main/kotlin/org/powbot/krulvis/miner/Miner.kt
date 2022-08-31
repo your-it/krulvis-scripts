@@ -1,115 +1,152 @@
 package org.powbot.krulvis.miner
 
-import org.powbot.krulvis.api.extensions.Skill
-import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.extensions.items.Ore.Companion.getOre
+import org.powbot.api.Notifications
+import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameObjectActionEvent
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.script.*
+import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.resources.ATGson
-import org.powbot.krulvis.api.utils.resources.ATGson.Gson
-import org.powbot.krulvis.miner.tree.branch.ShouldBank
+import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.miner.Data.TOP_POLY
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
-import org.powbot.krulvis.tithe.TitheGUI
-import org.powerbot.script.InventoryChangeEvent
-import org.powerbot.script.InventoryChangeListener
-import org.powerbot.script.Script
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import java.io.File
-import java.io.FileReader
-import javax.swing.SwingUtilities
+import org.powbot.mobile.script.ScriptManager
 
-@Script.Manifest(
+@ScriptManifest(
     name = "krul Miner",
-    description = "Mines & banks anything, anywhere",
-    version = "1.2.0",
+    description = "Mines & banks anything, anywhere (supports motherlode)",
+    author = "Krulvis",
+    version = "1.3.6",
+    scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
-    properties = "category=Mining;",
-    mobileReady = true
+    category = ScriptCategory.Mining
 )
-class Miner : ATScript(), MouseListener, InventoryChangeListener {
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            "Rocks",
+            "Which rocks do you want to mine?\nMake sure the delete the pre-set by clicking the red trash bin if you want to mine other rocks.",
+            optionType = OptionType.GAMEOBJECT_ACTIONS,
+            //Motherlode < 72
+            defaultValue = "[{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5674,\"floor\":0,\"p\":{\"x\":3728,\"y\":5674,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5672,\"floor\":0,\"p\":{\"x\":3727,\"y\":5672,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5671,\"floor\":0,\"p\":{\"x\":3727,\"y\":5671,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5670,\"floor\":0,\"p\":{\"x\":3727,\"y\":5670,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5668,\"floor\":0,\"p\":{\"x\":3727,\"y\":5668,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5667,\"floor\":0,\"p\":{\"x\":3727,\"y\":5667,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5666,\"floor\":0,\"p\":{\"x\":3727,\"y\":5666,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5664,\"floor\":0,\"p\":{\"x\":3728,\"y\":5664,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5663,\"floor\":0,\"p\":{\"x\":3728,\"y\":5663,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3727,\"y\":5661,\"floor\":0,\"p\":{\"x\":3727,\"y\":5661,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5659,\"floor\":0,\"p\":{\"x\":3728,\"y\":5659,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3728,\"y\":5658,\"floor\":0,\"p\":{\"x\":3728,\"y\":5658,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5662,\"floor\":0,\"p\":{\"x\":3723,\"y\":5662,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5663,\"floor\":0,\"p\":{\"x\":3723,\"y\":5663,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5664,\"floor\":0,\"p\":{\"x\":3723,\"y\":5664,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5666,\"floor\":0,\"p\":{\"x\":3723,\"y\":5666,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3723,\"y\":5667,\"floor\":0,\"p\":{\"x\":3723,\"y\":5667,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3724,\"y\":5669,\"floor\":0,\"p\":{\"x\":3724,\"y\":5669,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3724,\"y\":5670,\"floor\":0,\"p\":{\"x\":3724,\"y\":5670,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3725,\"y\":5674,\"floor\":0,\"p\":{\"x\":3725,\"y\":5674,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3726,\"y\":5681,\"floor\":0,\"p\":{\"x\":3726,\"y\":5681,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5679,\"floor\":0,\"p\":{\"x\":3730,\"y\":5679,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5678,\"floor\":0,\"p\":{\"x\":3730,\"y\":5678,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3730,\"y\":5677,\"floor\":0,\"p\":{\"x\":3730,\"y\":5677,\"z\":0}},\"interaction\":\"\"},{\"name\":\"Rock\",\"tile\":{\"x\":3725,\"y\":5675,\"floor\":0,\"p\":{\"x\":3725,\"y\":5675,\"z\":0}},\"interaction\":\"\"}]"
+            //Motherlode >= 72
+//            defaultValue = "[{\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3756,\"y\":5678,\"z\":0},\"x\":3756,\"y\":5678}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3756,\"y\":5679,\"z\":0},\"x\":3756,\"y\":5679}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3758,\"y\":5680,\"z\":0},\"x\":3758,\"y\":5680}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3758,\"y\":5681,\"z\":0},\"x\":3758,\"y\":5681}}, {\"interaction\":\"Examine\",\"name\":\"Depleted vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3755,\"y\":5681,\"z\":0},\"x\":3755,\"y\":5681}}, {\"interaction\":\"Examine\",\"name\":\"Depleted vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3755,\"y\":5682,\"z\":0},\"x\":3755,\"y\":5682}}, {\"interaction\":\"Examine\",\"name\":\"Depleted vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3755,\"y\":5683,\"z\":0},\"x\":3755,\"y\":5683}}, {\"interaction\":\"Examine\",\"name\":\"Depleted vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3756,\"y\":5684,\"z\":0},\"x\":3756,\"y\":5684}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3757,\"y\":5684,\"z\":0},\"x\":3757,\"y\":5684}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3758,\"y\":5685,\"z\":0},\"x\":3758,\"y\":5685}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3759,\"y\":5682,\"z\":0},\"x\":3759,\"y\":5682}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3761,\"y\":5681,\"z\":0},\"x\":3761,\"y\":5681}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3762,\"y\":5682,\"z\":0},\"x\":3762,\"y\":5682}}, {\"interaction\":\"Mine\",\"name\":\"Ore vein\",\"tile\":{\"floor\":0,\"p\":{\"x\":3762,\"y\":5683,\"z\":0},\"x\":3762,\"y\":5683}}]",
+//            defaultValue = "[{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3756,\"y\":5678,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3756,\"y\":5679,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3758,\"y\":5680,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3758,\"y\":5681,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Examine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Depleted vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3755,\"y\":5681,\"rendered\":true},\"name\":\"Depleted vein\",\"strippedName\":\"Depleted vein\"},{\"id\":-1,\"interaction\":\"Examine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Depleted vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3755,\"y\":5682,\"rendered\":true},\"name\":\"Depleted vein\",\"strippedName\":\"Depleted vein\"},{\"id\":-1,\"interaction\":\"Examine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Depleted vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3755,\"y\":5683,\"rendered\":true},\"name\":\"Depleted vein\",\"strippedName\":\"Depleted vein\"},{\"id\":-1,\"interaction\":\"Examine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Depleted vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3756,\"y\":5684,\"rendered\":true},\"name\":\"Depleted vein\",\"strippedName\":\"Depleted vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3757,\"y\":5684,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3758,\"y\":5685,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3759,\"y\":5682,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3761,\"y\":5681,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3762,\"y\":5682,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"},{\"id\":-1,\"interaction\":\"Mine\",\"mouseX\":-1,\"mouseY\":-1,\"rawEntityName\":\"Ore vein\",\"rawOpcode\":3,\"var0\":-1,\"widgetId\":-1,\"tile\":{\"floor\":0,\"x\":3762,\"y\":5683,\"rendered\":true},\"name\":\"Ore vein\",\"strippedName\":\"Ore vein\"}]"
+            //Alkharid 2 ores
+//            defaultValue = "[{\"interaction\":\"Mine\",\"name\":\"Rocks\",\"tile\":{\"floor\":0,\"p\":{\"x\":3303,\"y\":3284,\"z\":0},\"x\":3303,\"y\":3284}}, {\"interaction\":\"Mine\",\"name\":\"Rocks\",\"tile\":{\"floor\":0,\"p\":{\"x\":3302,\"y\":3285,\"z\":0},\"x\":3302,\"y\":3285}}]"
+        ),
+        ScriptConfiguration(
+            "Bank ores",
+            "Bank the ores you mine?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
+        ),
+        ScriptConfiguration(
+            "Deposit box",
+            "Use depositbox",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
+        ),
+        ScriptConfiguration(
+            "Hop",
+            "Hop from players?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "false"
+        ),
+        ScriptConfiguration(
+            "Fast mine",
+            "Don't sleep",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
+        ),
+    ]
+)
+class Miner : ATScript() {
 
-    var profile = MinerProfile()
-    var gui: MinerGUI? = null
+    @ValueChanged("Bank ores")
+    fun onBankOresValue(bank: Boolean) {
+        if (!bank) updateOption("Deposit box", false, OptionType.BOOLEAN)
+        updateVisibility("Deposit box", bank)
+    }
+
+    val rockLocations by lazy {
+        val o = getOption<List<GameObjectActionEvent>>("Rocks")
+        log.info(o.toString())
+        o?.map { it.tile } ?: emptyList()
+    }
+
+    val bankOres by lazy { getOption<Boolean>("Bank ores") ?: true }
+    val useDepositBox by lazy { getOption<Boolean>("Deposit box") ?: true }
+    val fastMine by lazy { getOption<Boolean>("Fast mine") ?: true }
+    val hopFromPlayers by lazy { getOption<Boolean>("Hop") ?: false }
+
+    val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
+    var waterskins = false
+
+    override fun createPainter(): ATPaint<*> = MinerPainter(this)
 
     override val rootComponent: TreeComponent<*> = ShouldFixStrut(this)
-
-    override val painter: ATPainter<*> = MinerPainter(this)
-
-    override fun startGUI() {
-        skillTracker.addSkill(Skill.MINING)
-        ctx.objects.toStream().name("Rock").nearest().findFirst()
-        if (System.getenv("LOCAL") == "true") {
-            val settingsFile =
-                File(settingsFolder().absolutePath + File.separator + "motherload.json")
-            profile = Gson().fromJson(FileReader(settingsFile).readText(), MinerProfile::class.java)
-            started = true
-        } else {
-            SwingUtilities.invokeLater { gui = MinerGUI(this) }
-        }
-    }
 
     /**
      * Used to get the amount of loot in the motherload sack
      */
-    fun getMotherloadCount(): Int = ctx.varpbits.varpbit(375) / 256
+    fun getMotherloadCount(): Int = (Varpbits.varpbit(375) and 65535) / 256
 
     var shouldEmptySack = false
 
     /**
      * Get the sack in the motherload mine
      */
-    fun getSack() = ctx.objects.toStream().name("Sack").action("Search").findFirst()
+    fun getSack() = Objects.stream().name("Sack").action("Search").findFirst()
 
-    override fun mouseClicked(p0: MouseEvent?) {
-        if (!started) {
-            val point = p0!!.point
-            val obj =
-                ctx.objects.toStream().filter {
-                    it.name().isNotEmpty() && it.boundingModel().contains(point)
-                }.findFirst()
-            if (obj.isPresent) {
-                val rock = obj.get()
-                println(
-                    "Clicked on: ${rock.name()}, Mod Colors: ${rock.modifiedColors().joinToString()}"
-                )
-                val ore = rock.getOre()
-                if (ore != null) {
-                    println("Found ore: $ore")
-                } else {
-                    println("Could not recognize ore: $ore... If this rock is currently mineable, report the Mod Colors to Krulvis.")
+    fun getBrokenStrut() = Objects.stream().name("Broken strut").nearest().firstOrNull()
+
+    fun inTopFloorAreas(): Boolean {
+        return inTopFloorAreas(Players.local().tile())
+    }
+
+    fun inTopFloorAreas(t: Tile): Boolean {
+        return TOP_POLY.contains(t)
+    }
+
+    val nearHopper = Tile(3748, 5673, 0)
+    val northOfLadder = Tile(3755, 5675, 0)
+    val ladderTile = Tile(3755, 5674, 0)
+    fun escapeTopFloor(): Boolean {
+        val pos = Players.local().tile()
+        if (inTopFloorAreas() && LocalPathFinder.findPath(pos, nearHopper, true).isEmpty()) {
+            if (northOfLadder.distance() <= 5 && LocalPathFinder.findPath(pos, northOfLadder, true).isNotEmpty()) {
+                if (ladderTile.matrix().interact("Climb")) {
+                    return waitFor {
+                        LocalPathFinder.findPath(Players.local().tile(), nearHopper, true).isNotEmpty()
+                    }
                 }
-                gui?.addRock(rock.tile())
-
             } else {
-                println("Clicked but couldn't find anything")
+                log.info("Walking to top of ladder first...")
+                Movement.walkTo(northOfLadder)
+            }
+            return false
+        }
+        return true
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun actionListener(gae: GameActionEvent) {
+        if (gae.interaction == "Deposit worn items") {
+            if (waitFor(5000) { !Inventory.containsOneOf(*Data.TOOLS) && !Equipment.containsOneOf(*Data.TOOLS) }) {
+                Notifications.showNotification("Accidentally deposited equipment, stopping script")
+                ScriptManager.stop()
             }
         }
     }
+}
 
-    override fun mousePressed(p0: MouseEvent?) {
-//        println("Pressed")
-    }
-
-    override fun mouseReleased(p0: MouseEvent?) {
-//        println("Released")
-    }
-
-    override fun mouseEntered(p0: MouseEvent?) {
-//        println("Entered")
-    }
-
-    override fun mouseExited(p0: MouseEvent?) {
-//        println("Exited")
-    }
-
-    override fun onChange(evt: InventoryChangeEvent) {
-        val item = evt.itemId
-        if (item != Ore.PAY_DIRT.id && (item.getOre() != null || item == 21341) && !ctx.bank.opened() && !ctx.depositBox.opened()) {
-            lootTracker.addLoot(item, evt.quantityChange)
-        }
-    }
-
+fun main() {
+    Miner().startScript("127.0.0.1", "krullieman", false)
 }

@@ -1,45 +1,53 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
-import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.api.Condition
+import org.powbot.api.Notifications
+import org.powbot.api.rt4.Chat
+import org.powbot.api.rt4.Constants
+import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Skills
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.interact
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tithe.TitheFarmer
-import org.powerbot.script.rt4.Constants
+import org.powbot.mobile.script.ScriptManager
 
 class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
 
     override fun execute() {
+        if (script.lastRound) {
+            Notifications.showNotification("Stopped because it was last round")
+            script.log.info("Stopped because it was last round")
+            ScriptManager.stop()
+            return
+        }
         if (!script.hasSeeds()) {
-            debug("Getting seeds")
-            if (!chatting()) {
-                val table = ctx.objects.toStream(25).name("Seed table").findFirst()
-                debug("Interacting with seed table=${table.isPresent}")
+            script.log.info("Getting seeds")
+            if (!Chat.chatting()) {
+                val table = Objects.stream(25).name("Seed table").findFirst()
+                script.log.info("Interacting with seed table=${table.isPresent}")
                 table.ifPresent {
-                    if (interact(it, "Search")) {
-                        waitFor { chatting() }
+                    if (interact(it, "Search", useMenu = false)) {
+                        Condition.wait({ Chat.chatting() }, 250, 10)
                     }
                 }
             }
             val seed = getSeedInput()
-            debug("Selecting seed: $seed")
-            if (chatting() && ctx.chat.continueChat(seed)) {
-                waitFor { script.hasSeeds() }
+            script.log.info("Selecting seed: $seed")
+            if (Chat.chatting() && Chat.continueChat(seed)) {
+                Condition.wait({ script.hasSeeds() }, 100, 20)
             }
         } else {
-            debug("Interacting with door")
-            ctx.objects.toStream(25).name("Farm door").findFirst().ifPresent {
-                if (interact(it, "Open")) {
-                    waitFor(10000) { script.getPoints() >= 0 }
+            script.log.info("Interacting with door")
+            Objects.stream(25).name("Farm door").findFirst().ifPresent {
+                if (interact(it, "Open", useMenu = false)) {
+                    Condition.wait({ script.getPoints() >= 0 }, 250, 40)
                 }
             }
         }
     }
 
-    fun chatting() = ctx.widgets.component(Constants.CHAT_WIDGET, 0).visible()
-
     fun getSeedInput(): String {
-        val farming = ctx.skills.level(Constants.SKILLS_FARMING)
+        val farming = Skills.level(Constants.SKILLS_FARMING)
         return if (farming >= 74) {
             "Logavano"
         } else if (farming >= 54) {

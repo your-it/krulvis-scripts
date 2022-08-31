@@ -1,31 +1,25 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
-import org.powbot.krulvis.api.ATContext.closeOpenHUD
-import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.ATContext.moving
-import org.powbot.krulvis.api.ATContext.turnRunOn
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.mid
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tithe.Data
+import org.powbot.api.Condition
+import org.powbot.api.rt4.Component
+import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.Widgets
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.tithe.Patch
 import org.powbot.krulvis.tithe.TitheFarmer
-import java.util.logging.Logger
 
 class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling patch") {
 
-
-    val logger = Logger.getLogger("HandlingPlant")
+    fun closeOpenHUD(): Boolean {
+        val tab = Game.tab()
+        if (tab == Game.Tab.NONE) {
+            return true
+        }
+        val c: Component = Widgets.widget(601).firstOrNull { (it?.textureId() ?: -1) in tab.textures } ?: return true
+        return c.click()
+    }
 
     override fun execute() {
-        if (script.lock) {
-            logger.warning("Handle patch locked")
-            return
-        }
 //        if (!waitFor(long()) { !ctx.movement.moving() }) {
 //            debug("Not interacting yet because still moving")
 //            return
@@ -35,13 +29,21 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0
         val patches = script.patches.sortedWith(compareBy(Patch::id, Patch::index))
-        val patch = patches.firstOrNull {
-            it.needsAction() && (hasEnoughWater || it.isDone())
-        } ?: return
-        logger.warning("Handling patch: $patch")
-        if (patch.handle(script.patches)) {
-            sleep(1000)
-            logger.warning("Handling patch interaction was successful")
+        if (script.lastPatch?.needsAction(true) == false)
+            script.lastPatch = null
+        val patch = patches.filterNot { it.tile == script.lastPatch?.tile }
+            .firstOrNull {
+                it.needsAction() && (hasEnoughWater || it.isDone())
+            } ?: script.lastPatch ?: return
+        if (patch.handle(script.patches) && Condition.wait({ !patch.needsAction(true) }, 500, 10)) {
+            val nextPatchIndex = script.patches.indexOfFirst { it.tile == patch.tile } + 1
+            val nextPatch = if (nextPatchIndex == script.patches.size) null
+            else script.patches[nextPatchIndex]
+            script.log.info("Current patcht index=$nextPatchIndex, nextPatch at tile=${nextPatch?.tile}")
+            if (nextPatch != null) {
+                nextPatch.walkBetween(patches)
+                Condition.wait({ nextPatch.needsAction(true) }, 150, 20)
+            }
         }
     }
 

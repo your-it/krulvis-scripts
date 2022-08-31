@@ -1,110 +1,150 @@
 package org.powbot.krulvis.test
 
-import org.powbot.krulvis.api.ATContext.ctx
-import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.toRegionTile
+import org.powbot.api.*
+import org.powbot.api.event.*
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePouch.RUNE_AMOUNT_MASK
+import org.powbot.api.rt4.magic.RunePouch.RUNE_ID_MASK
+import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP
+import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP2
+import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.model.Edge
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptConfiguration
+import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.paint.*
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPainter
-import org.powbot.krulvis.api.script.tree.Leaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.tithe.Patch
-import org.powbot.krulvis.tithe.Patch.Companion.isPatch
-import org.powerbot.script.GameActionEvent
-import org.powerbot.script.GameActionListener
-import org.powerbot.script.Script
-import org.powerbot.script.Tile
-import org.powerbot.script.rt4.Component
-import org.powerbot.script.rt4.Constants.*
-import org.powerbot.script.rt4.GameObject
-import java.awt.Graphics2D
-import java.util.*
+import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.mobile.drawing.Graphics
+import org.powbot.mobile.drawing.Rendering
+import kotlin.math.pow
 
-@Script.Manifest(name = "TestScript", description = "Some testing", version = "1.0")
-class TestScript : ATScript(), GameActionListener {
+@ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
+@ScriptConfiguration.List(
+    [
+        ScriptConfiguration(
+            name = "rocks",
+            description = "Click som rocks",
+            optionType = OptionType.GAMEOBJECT_ACTIONS,
+        ),
+        ScriptConfiguration(
+            name = "Extra info",
+            description = "Here comes extra info \n new lines?",
+            optionType = OptionType.INFO
+        ),
+        ScriptConfiguration(
+            name = "tile",
+            description = "Get Tile?",
+            optionType = OptionType.TILE,
+            defaultValue = "{\"floor\":0,\"x\":1640,\"y\":3944,\"rendered\":true}"
+        ),
+        ScriptConfiguration(
+            name = "rocks1",
+            description = "NPCS?",
+            optionType = OptionType.NPC_ACTIONS,
+        ),
+        ScriptConfiguration(
+            name = "rocks1",
+            description = "ALL ACTIONS?",
+            optionType = OptionType.GAME_ACTIONS,
+        ),
+        ScriptConfiguration(
+            name = "rocks2",
+            description = "Want to have 0?",
+            optionType = OptionType.BOOLEAN,
+            defaultValue = "true"
+        ),
+        ScriptConfiguration(
+            name = "rocks3",
+            description = "Select",
+            optionType = OptionType.STRING,
+            defaultValue = "2",
+            allowedValues = ["1", "2", "3"]
+        ),
+    ]
+)
+class TestScript : ATScript() {
+    override fun createPainter(): ATPaint<*> = TestPainter(this)
 
+    var origin = Tile(3212, 3216, 0) //varrock mine
 
-    val tile = Tile(7075, 3761, 0)
+    var collisionMap: Array<IntArray> = emptyArray()
 
-    override val painter: ATPainter<*>
-        get() = Painter(this)
+    //    val dest = Tile(3253, 3420, 0) //Varrock bank
+    var newDest = Tile(3231, 3207, 0)
+    var localPath: LocalPath = LocalPath(emptyList())
+    var comp: Component? = null
+    val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks") }
+    var path = emptyList<Edge<*>?>()
+    var obj: GameObject? = null
+    override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
 
-    var crate: Optional<GameObject> = Optional.empty()
-
-    var patches = listOf<Patch>()
-    override val rootComponent: TreeComponent<*> = object : Leaf<TestScript>(this, "TestLeaf") {
-        override fun execute() {
-//            ctx.objects.toStream().at(Tile(3752, 5674, 0)).list().forEach {
-//                println("${it.name()}, actions=${it.actions().joinToString()}")
-//            }
-//            crate = ctx.objects.toStream().at(Tile(3752, 5674, 0)).name("Crate").findFirst()
-//            println("Crate object present=${crate.isPresent}")
-        }
+        sleep(2000)
     }
 
-    fun getCornerPatchTile(): Tile {
-        val allPatches = ctx.objects.toStream(25).filter { it.isPatch() }.list()
-        val maxX = allPatches.minOf { it.tile().x() }
-        val maxY = allPatches.maxOf { it.tile().y() }
-        return Tile(maxX + 5, maxY, 0)
+    //Tile(x=3635, y=3362, floor=0)
+    //Tile(x=3633, y=3359, floor=0)
+
+    @com.google.common.eventbus.Subscribe
+    fun onGameActionEvent(e: GameActionEvent) {
+        log.info("$e")
     }
 
-    val inputTexts = listOf(
-        "enter message to", "enter amount", "set a price for each item",
-        "enter name", "how many do you wish to buy", "please pick a unique display name",
-        "how many charges would you like to add", "enter the player name",
-        "what would you like to buy"
-    )
-
-    fun waitingForInput(): Boolean {
-        val widget = ctx.widgets.widget(162).takeIf { w ->
-            w.any { wc ->
-                val text = wc.text().toLowerCase()
-                wc.visible() && inputTexts.any { it in text }
-            }
-        }
-        return widget?.any { it.visible() && it.text().endsWith("*") } ?: false
+    @com.google.common.eventbus.Subscribe
+    fun onMsg(e: MessageEvent) {
+        log.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
-    override fun startGUI() {
-        debugComponents = true
-        started = true
-    }
-
-    override fun stop() {
-        painter.saveProgressImage()
-    }
-
-    override fun onAction(evt: GameActionEvent) {
-        val tithe = ctx.objects.toStream().id(evt.id).nearest().findFirst()
-
-        println("Var0: ${evt.var0}, WidgetId: ${evt.widgetId}, Interaction: ${evt.interaction}, ID: ${evt.id}, Name: ${evt.rawEntityName}, OpCode: ${evt.rawOpcode}")
-        if (tithe.isPresent) {
-            val localTile = tithe.get().tile().toRegionTile()
-            println("Nearest ${evt.rawEntityName} farm: Local X: ${localTile.x()}, Y: ${localTile.y()}")
+    @com.google.common.eventbus.Subscribe
+    fun onInventoryChange(evt: InventoryChangeEvent) {
+        if (!painter.paintBuilder.trackingInventoryItem(evt.itemId)) {
+//            painter.paintBuilder.trackInventoryItem(evt)
         }
     }
 
 }
 
-class Painter(script: TestScript) : ATPainter<TestScript>(script, 10) {
-    override fun paint(g: Graphics2D) {
-        var y = this.y
-//        val crate = script.crate
-//
-//        crate.ifPresent {
-//            it.tile().drawOnScreen(g, "Crate")
-//        }
+class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
-        val comp = ctx.widgets.component(MOBILE_TAB_WINDOW_WIDGET_ID, MOBILE_TAB_WINDOW_COMPONENT_ID)
-        val viewport = comp.boundingRect()
-        g.draw(viewport)
+    val varp1 = Varpbits.varpbit(RUNE_POUCH_VARP)
+    val varp2 = Varpbits.varpbit(RUNE_POUCH_VARP2)
 
+    val runes = listOf(
+        Rune.forIndex(varp1 and RUNE_ID_MASK),
+        Rune.forIndex(varp1 shr 6 and RUNE_ID_MASK),
+        Rune.forIndex(varp1 shr 12 and RUNE_ID_MASK),
+    )
+    val amounts = listOf(
+        varp1 shr 18,
+        varp2 and RUNE_AMOUNT_MASK,
+        varp2 shr 14
+    )
+
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        return paintBuilder
+            .addString("Comp") {
+                Components.stream(270).firstOrNull { it.actions().contains("All") }?.index()?.toString()
+            }
+            .build()
     }
 
-
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
-        var y = startY
-        g.drawString("Test string", x, y)
-        y += yy
+    override fun paintCustom(g: Rendering) {
+        script.obj?.tile?.drawOnScreen()
+        g.setScale(1.0f)
     }
+
+    fun Tile.toWorld(): Tile {
+        val a = Game.mapOffset()
+        return this.derive(+a.x(), +a.y())
+    }
+
+}
+
+fun main() {
+    TestScript().startScript("127.0.0.1", "GIM", true)
 }

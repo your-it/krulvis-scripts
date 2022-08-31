@@ -1,22 +1,16 @@
 package org.powbot.krulvis.runecrafter
 
-import org.powbot.krulvis.api.script.painter.ATPainter
-import java.awt.Graphics2D
+import org.powbot.api.rt4.walking.model.Skill
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
+import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.mobile.drawing.Graphics
 
-class RunecrafterPainter(script: Runecrafter) : ATPainter<Runecrafter>(script, 10, 300) {
-    override fun paint(g: Graphics2D) {
-        var y = this.y
-        drawSplitText(g, "Leaf: ", script.lastLeaf.toString(), x, y)
-        y = script.lootTracker.drawLoot(g, x, y)
-        y = script.skillTracker.draw(g, x, y)
-    }
+class RunecrafterPainter(script: Runecrafter) : ATPaint<Runecrafter>(script) {
 
-    override fun drawProgressImage(g: Graphics2D, startY: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun drawTitle(g: Graphics2D, x: Int, y: Int) {
-        drawTitle(g, "krul Runes", x, y)
-
+    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+        paintBuilder.trackSkill(Skill.Runecrafting)
+        paintBuilder.trackInventoryItem(script.profile.type.rune)
+        return paintBuilder.build()
     }
 }

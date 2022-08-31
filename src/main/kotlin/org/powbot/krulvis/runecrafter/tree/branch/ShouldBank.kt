@@ -1,8 +1,10 @@
 package org.powbot.krulvis.runecrafter.tree.branch
 
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.runecrafter.PURE_ESSENCE
 import org.powbot.krulvis.runecrafter.Runecrafter
 import org.powbot.krulvis.runecrafter.tree.leaf.HandleBank
@@ -13,7 +15,7 @@ class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank
     override val failedComponent: TreeComponent<Runecrafter> = AtAltar(script)
 
     override fun validate(): Boolean {
-        return !script.hasTalisman() || !ctx.inventory.containsOneOf(PURE_ESSENCE)
+        return !script.hasTalisman() || !Inventory.containsOneOf(PURE_ESSENCE)
     }
 }
 
@@ -22,6 +24,6 @@ class IsBankOpen(script: Runecrafter) : Branch<Runecrafter>(script, "Is bank ope
     override val failedComponent: TreeComponent<Runecrafter> = OpenBank(script)
 
     override fun validate(): Boolean {
-        return ctx.bank.opened()
+        return Bank.opened()
     }
 }

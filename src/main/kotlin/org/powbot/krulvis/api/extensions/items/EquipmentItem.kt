@@ -1,11 +1,11 @@
 package org.powbot.krulvis.api.extensions.items
 
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.requirement.Requirement
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.requirements.Requirement
-import org.powerbot.script.rt4.Equipment
-import java.awt.image.BufferedImage
+import org.powbot.mobile.script.ScriptManager
 import java.io.Serializable
 
 interface EquipmentItem : Item {
@@ -15,23 +15,23 @@ interface EquipmentItem : Item {
     val slot: Equipment.Slot?
         get() = null
 
-    override val image: BufferedImage?
-        get() = null
-
     override fun hasWith(): Boolean = inInventory() || inEquipment()
 
     override fun getCount(countNoted: Boolean): Int {
-        return getInventoryCount(countNoted) + ctx.equipment.toStream().id(*ids).count(true).toInt()
+        return getInventoryCount(countNoted) + Equipment.stream().id(*ids).count(true).toInt()
     }
 
-    fun withdrawAndEquip(): Boolean {
+    fun withdrawAndEquip(stopIfOut: Boolean = false): Boolean {
         if (inEquipment()) {
             return true
         } else if (!inInventory()) {
-            if (ctx.bank.withdrawModeNoted(false) && inBank()
-                && ctx.bank.withdraw(1, getBankId(true))
+            if (Bank.withdrawModeNoted(false) && inBank()
+                && withdrawExact(1, true)
             ) {
                 waitFor(5000) { inInventory() }
+            } else if (!inBank() && stopIfOut) {
+                ScriptManager.script()!!.log.warning("Stopping script due to being out of: ${itemName()}")
+                ScriptManager.stop()
             }
         }
         if (inInventory()) {
@@ -41,16 +41,17 @@ interface EquipmentItem : Item {
     }
 
     fun inEquipment(): Boolean {
-        return ctx.equipment.any { it.id() in ids }
+        return Equipment.get().any { it.id() in ids }
     }
 
-    fun canWear(): Boolean = requirements.all { it.hasRequirement() }
+    fun canWear(): Boolean = requirements.all { it.meets() }
 
     fun equip(wait: Boolean = true): Boolean {
-        if (!inEquipment() && inInventory()) {
-            val item = ctx.inventory.toStream().id(*ids).first()
+        if (inInventory()) {
+            val item = Inventory.stream().id(*ids).first()
             val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-            if (ctx.grandExchange.close() && item.interact(action)) {
+            ScriptManager.script()!!.log.info("Equipping ${itemName()} action=$action")
+            if (item.interact(action)) {
                 if (wait) waitFor(2000) { inEquipment() } else return true
             }
         }
@@ -61,14 +62,13 @@ interface EquipmentItem : Item {
         if (!inEquipment()) {
             return true
         }
-        val equipped = ctx.equipment.toStream().id(*ids).first()
+        val equipped = Equipment.stream().id(*ids).first()
         return equipped.click()
     }
 }
 
 class Equipment(
     override val requirements: List<Requirement>,
-    override vararg val ids: Int,
     override val slot: Equipment.Slot? = null,
-    override val image: BufferedImage? = null
+    override vararg val ids: Int,
 ) : EquipmentItem, Serializable

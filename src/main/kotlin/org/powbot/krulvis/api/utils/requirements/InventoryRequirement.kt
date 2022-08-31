@@ -1,11 +1,10 @@
 package org.powbot.krulvis.api.utils.requirements
 
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powerbot.script.rt4.Bank
 
 
 class InventoryRequirement(
@@ -13,10 +12,10 @@ class InventoryRequirement(
     override val amount: Int,
     private val onlyBest: Boolean = false,
     val allowMore: Boolean = false,
-    val countNoted: Boolean = false
+    val countNoted: Boolean = true
 ) : ItemRequirement {
 
-    constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = false) : this(object : Item {
+    constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = true) : this(object : Item {
         override val ids: IntArray
             get() = intArrayOf(id)
 
@@ -25,16 +24,16 @@ class InventoryRequirement(
         }
 
         override fun getCount(countNoted: Boolean): Int {
-            return ctx.inventory.toStream().id(this.id).count().toInt()
+            return Inventory.stream().id(this.id).count(countNoted).toInt()
         }
     }, amount, false, allowMore, countNoted)
 
     fun getCount(): Int {
-        return (if (onlyBest) ctx.inventory.toStream().id(item.id).count(true).toInt()
+        return (if (onlyBest) Inventory.stream().id(item.id).count(countNoted).toInt()
         else item.getInventoryCount(countNoted))
     }
 
-    override fun hasRequirement(): Boolean {
+    override fun meets(): Boolean {
         return if (allowMore) getCount() >= amount else getCount() == amount
     }
 
@@ -46,14 +45,14 @@ class InventoryRequirement(
         } else if (id == -1) {
             return false
         } else if (onlyBest) {
-            return withdrawExact(item.id, amount, wait)
+            return Bank.withdrawExact(item.id, amount, wait)
         } else {
             if (count > amount) {
-                item.ids.forEach { ctx.bank.deposit(it, Bank.Amount.ALL) }
+                item.ids.forEach { Bank.deposit(it, Bank.Amount.ALL) }
                 if (wait) waitFor { !item.inInventory() }
             } else if (count < amount) {
                 return if (allowMore && amount == 99) {
-                    ctx.bank.withdraw(id, Bank.Amount.ALL)
+                    Bank.withdraw(id, Bank.Amount.ALL)
                 } else
                     item.withdrawExact(amount, false, wait)
             }
@@ -70,7 +69,7 @@ class InventoryRequirement(
 //                "InvReq: ${item.itemName}: $amount"
 //            }
             else -> {
-                "InventoryRequirement -> ${item.itemName()}: $amount"
+                "InventoryRequirement(name=${item.itemName()}, amount=$amount)"
             }
         }
     }

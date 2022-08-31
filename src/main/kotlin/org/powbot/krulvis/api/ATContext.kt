@@ -1,26 +1,21 @@
 package org.powbot.krulvis.api
 
+import org.powbot.api.*
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Flag
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.extensions.walking.local.LocalPathFinder
-import org.powbot.krulvis.api.utils.Random
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.walking.PBWebWalkingService
-import org.powerbot.script.*
-import org.powerbot.script.rt4.*
-import org.powerbot.script.rt4.ClientContext
-import org.powerbot.script.rt4.Interactive
-import java.awt.Point
-import java.awt.Rectangle
+import org.powbot.mobile.script.ScriptManager
 import kotlin.math.abs
 
 
 object ATContext {
 
-    val ctx: ClientContext get() = org.powerbot.script.ClientContext.ctx()
 
-    val me: Player get() = ctx.players.local()
+    val me: Player get() = Players.local()
 
     var nextRun = Random.nextInt(2, 5)
 
@@ -30,54 +25,51 @@ object ATContext {
 
     fun debug(msg: String) {
         if (debugComponents) {
-            println(msg)
+            ScriptManager.script()?.log?.info(msg)
         }
     }
 
     fun turnRunOn(): Boolean {
-        if (ctx.movement.running()) {
+        if (Movement.running()) {
             return true
         }
-        if (ctx.movement.energyLevel() >= Random.nextInt(1, 5)) {
-            return ctx.widgets.widget(Constants.MOVEMENT_MAP).component(Constants.MOVEMENT_RUN_ENERGY - 1).click(true)
+        if (Movement.energyLevel() >= Random.nextInt(1, 5)) {
+            return Widgets.widget(Constants.MOVEMENT_MAP).component(Constants.MOVEMENT_RUN_ENERGY - 1).click()
         }
         return false
     }
 
-    fun Movement.moving(): Boolean = ctx.movement.destination() != Tile.NIL
+    fun Movement.moving(): Boolean = Movement.destination() != Tile.Nil
 
     fun walk(position: Tile?, enableRun: Boolean = true, forceMinimap: Boolean = false): Boolean {
-        if (position == null || position == Tile.NIL) {
+        if (position == null || position == Tile.Nil) {
             return true
         }
-        val flags = ctx.client().collisionMaps[position.floor()].flags
+        val flags = Movement.collisionMap(position.floor()).flags()
         val position = if (!position.blocked(flags)) position else position.getWalkableNeighbor() ?: return false
-        if (ctx.players.local().tile() == position) {
+        if (Players.local().tile() == position) {
             debug("Already on tile: $position")
             return true
         }
-        if (enableRun && !ctx.movement.running() && ctx.client().runPercentage > nextRun) {
-            ctx.movement.running(true)
+        if (enableRun && !Movement.running() && Movement.energyLevel() > nextRun) {
+            Movement.running(true)
             nextRun = Random.nextInt(1, 5)
         }
-        if (!ctx.movement.moving() || walkDelay.isFinished()) {
-            if (forceMinimap && position.onMap()) {
-                //PowBot single tile interaction method (map)
-                ctx.movement.step(position)
+        if (!Movement.moving() || walkDelay.isFinished()) {
+            if (forceMinimap && position.onMap()
+                && LocalPathFinder.findWalkablePath(Players.local().tile(), position).isNotEmpty()
+            ) {
+                Movement.step(position)
             } else {
-                val localPath = LocalPathFinder.findPath(position)
-                if (localPath.isNotEmpty()) {
-                    debug("Using localwalker")
-                    localPath.traverse()
-                } else {
-                    debug("Using powbot method to walk")
-                    //Powbot method
-                    PBWebWalkingService.walkTo(position, false)
-                }
+                Movement.walkTo(position)
             }
             walkDelay.resetTimer()
         }
         return false
+    }
+
+    fun GenericItem.getPrice(): Int {
+        return GrandExchange.getItemPrice(if (noted()) id() - 1 else id())
     }
 
     /**
@@ -88,144 +80,192 @@ object ATContext {
         action: String,
         alwaysWalk: Boolean = false,
         allowWalk: Boolean = true,
-        selectItem: Int = -1
+        selectItem: Int = -1,
+        useMenu: Boolean = true
     ): Boolean {
         val t = target ?: return false
         val name = (t as Nameable).name()
         val pos = (t as Locatable).tile()
-        val destination = ctx.movement.destination()
+        val destination = Movement.destination()
         turnRunOn()
         debug("Interacting with: $name at: $pos")
-        if (ctx.menu.opened() && ctx.menu.contains {
-                it.action.equals(action, true) && it.option.contains(
+        if (Menu.opened() && Menu.contains {
+                it.action.equals(action, true) && (name == null || it.option.contains(
                     name,
                     true
-                )
+                ))
             }) {
             debug("Clicking directly on opened menu")
             return handleMenu(action, name)
         }
         if (!t.inViewport()
-            || (destination != pos && pos.distanceTo(if (destination == Tile.NIL) me else destination) > (if (alwaysWalk) 4 else 12))
+            || (destination != pos && pos.distanceTo(if (destination == Tile.Nil) me else destination) > (if (alwaysWalk) 4 else 12))
         ) {
             if (allowWalk) {
                 debug("Walking before interacting... in viewport: ${t.inViewport()}")
-                if (pos.matrix(ctx).onMap()) {
-                    ctx.movement.step(pos)
+                if (pos.matrix().onMap()) {
+                    Movement.step(pos)
                 } else {
                     walk(pos)
                 }
             }
         }
-        val selectedId = ctx.inventory.selectedItem().id()
+        val selectedId = Inventory.selectedItem().id()
         if (selectedId != selectItem) {
-            ctx.game.tab(Game.Tab.INVENTORY)
+            Game.tab(Game.Tab.INVENTORY)
             if (selectItem > -1) {
-                ctx.inventory.toStream().id(selectItem).findFirst().ifPresent {
-                    it.interact("Use")
-                }
+                Inventory.stream().id(selectItem).firstOrNull()?.interact("Use", useMenu)
             } else {
-                ctx.inventory.toStream().id(selectedId).findFirst().get().click()
+                Inventory.stream().id(selectedId).firstOrNull()?.click()
             }
 
         }
-        return waitFor(short()) { ctx.inventory.selectedItem().id() == selectItem } && t.interact(action)
+        val interactBool =
+            if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(
+                action,
+                name,
+                useMenu
+            )
+        return waitFor(short()) {
+            Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
+        } && interactBool
     }
 
     /**
      * Requires menu to be open
      */
-    fun handleMenu(action: String, name: String): Boolean {
-        if (!ctx.client().isMenuOpen) {
+    fun handleMenu(action: String, name: String?): Boolean {
+        if (!Menu.opened()) {
             return false
         }
-        if (!ctx.menu.contains {
-                it.action.equals(action, true) && it.option.contains(
+        if (!Menu.contains {
+                it.action.equals(action, true) && (name == null || it.option.contains(
                     name,
                     true
-                )
+                ))
             }) {
             debug("Closing menu in: handleMenu()")
-            clickMenu(Menu.filter("Cancel"))
-            waitFor { !ctx.client().isMenuOpen }
+            Menu.click { it.action == "Cancel" }
+            waitFor { !Menu.opened() }
             return false
         }
-        return clickMenu(
-            Menu.filter(
-                action,
-                name
-            )
-        )
-    }
-
-    fun clickMenu(filter: Filter<in MenuCommand>): Boolean {
-        val slot = ctx.menu.indexOf(filter)
-        val headerOffset = if (ctx.client().isMobile) 29 else 19
-        val itemOffset = if (ctx.client().isMobile) 24 else 15
-
-        val rectangle = Rectangle(
-            ctx.client().menuX,
-            ctx.client().menuY + headerOffset + slot * itemOffset,
-            ctx.client().menuWidth,
-            itemOffset
-        )
-        val point = Point(
-            Random.nextInt(rectangle.x + 3, rectangle.x + rectangle.width - 3),
-            Random.nextInt(rectangle.y + 2, rectangle.y + rectangle.height - 2)
-        )
-        Condition.sleep(org.powerbot.script.Random.hicks(slot) / 2)
-//        if (!ctx.input.move(
-//                org.powerbot.script.Random.nextInt(rectangle.x, rectangle.x + rectangle.width),
-//                org.powerbot.script.Random.nextInt(rectangle.y, rectangle.y + rectangle.height)
-//            ) || !ctx.client().isMenuOpen
-//        ) {
-//            return false
-//        }
-        return ctx.input.click(point, true)
+        return Menu.click { it.action.contains(action, true) && (name == null || it.option.contains(name, true)) }
     }
 
     fun Locatable.distance(): Int =
-        tile().distanceTo(ctx.players.local()).toInt()
+        tile().distanceTo(Players.local()).toInt()
 
     fun Tile.distanceM(dest: Locatable): Int {
         return abs(dest.tile().x() - x()) + abs(dest.tile().y() - y())
     }
 
-    fun Locatable.onMap(): Boolean = tile().matrix(ctx).onMap()
+    fun Locatable.onMap(): Boolean = tile().matrix().onMap()
 
-    fun Locatable.mapPoint(): Point = ctx.game.tileToMap(tile())
+    fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
 
-    fun Locatable.reachable(): Boolean {
-        val path = LocalPathFinder.findPath(tile())
-        return path.isNotEmpty() && !path.containsSpecialNode()
+    fun Tile.toRegionTile(): Tile {
+        val mos = Game.mapOffset()
+        return Tile(x() - mos.x(), y() - mos.y(), floor())
+    }
+
+    fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Inventory.containsAll(vararg ids: Int): Boolean {
+        val inv = stream().list()
+        return ids.all { id -> inv.any { id == it.id } }
+    }
+
+    fun Inventory.emptyExcept(vararg ids: Int): Boolean = stream().firstOrNull { it.id() !in ids } == null
+
+    fun Inventory.emptySlots(): Int = (28 - stream().count()).toInt()
+    fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
+    fun Inventory.getCount(countStacks: Boolean, vararg ids: Int): Int {
+        val items = stream().id(*ids).list()
+        return if (countStacks) items.sumOf { it.stack } else items.count()
+    }
+
+    fun Int.getItemDef() = CacheItemConfig.load(this)
+
+    fun Bank.withdrawExact(id: Number, amount: Int, wait: Boolean = true): Boolean {
+        val id = id.toInt()
+        if (id <= 0) {
+            return false
+        }
+        debug("WithdrawExact: $id, $amount")
+        val currentAmount = Inventory.getCount(true, id)
+        if (currentAmount < amount) {
+            if (!containsOneOf(id)) {
+                debug("No: ${CacheItemConfig.load(id).name} with id=$id in bank")
+                return false
+            } else if (amount - currentAmount >= stream().id(id).count(true)) {
+                debug("Withdrawing all: $id, since bank contains too few")
+                withdraw(id, Bank.Amount.ALL)
+            } else if (amount - currentAmount >= Inventory.emptySlots() && !id.getItemDef().stackable) {
+                debug("Withdrawing all: $id, since there's just enough space")
+                withdraw(id, Bank.Amount.ALL)
+            } else if (!withdraw(id, amount - currentAmount)) {
+                return false
+            }
+        } else if (currentAmount > amount) {
+            deposit(id, Bank.Amount.ALL)
+            if (wait) waitFor { !Inventory.containsOneOf(id) }
+            return false
+        }
+        return if (wait) waitFor(5000) { Inventory.getCount(true, id) == amount } else true
     }
 
     /**
-     * Returns: [Tile] nearest neighbor or self as which is walkable
+     * Only useful for mobile
      */
+    fun closeOpenHUD(): Boolean {
+        val tab = Game.tab()
+        if (tab == Game.Tab.NONE) {
+            return true
+        }
+        val c: Component = Widgets.widget(601).firstOrNull { (it?.textureId() ?: -1) in tab.textures } ?: return true
+        return c.click()
+    }
+
+    fun currentHP(): Int = Skills.level(Constants.SKILLS_HITPOINTS)
+    fun maxHP(): Int = Skills.realLevel(Constants.SKILLS_HITPOINTS)
+    fun missingHP(): Int = maxHP() - currentHP()
+
+
+    @JvmOverloads
     fun Locatable.getWalkableNeighbor(
+        allowSelf: Boolean = true,
         diagonalTiles: Boolean = false,
-        filter: (Tile) -> Boolean = { true }
+        checkForWalls: Boolean = true,
+        filter: (Tile) -> Boolean = { true },
     ): Tile? {
-        val walkableNeighbors = getWalkableNeighbors(diagonalTiles)
+        val walkableNeighbors = getWalkableNeighbors(allowSelf, diagonalTiles, checkForWalls)
         return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
     }
 
+    @JvmOverloads
     fun Locatable.getWalkableNeighbors(
-        diagonalTiles: Boolean = false
+        allowSelf: Boolean = true,
+        diagonalTiles: Boolean = false,
+        checkForWalls: Boolean = true,
     ): MutableList<Tile> {
 
         val t = tile()
         val x = t.x()
         val y = t.y()
         val f = t.floor()
-        val cm = ctx.client().collisionMaps[f].flags
+        val cm = Movement.collisionMap(t.floor).flags()
+        //the tile itself is not blocked, just return that...
+        if (allowSelf && !t.blocked(cm)) {
+            return mutableListOf(t)
+        }
 
         val n = Tile(x, y + 1, f)
         val e = Tile(x + 1, y, f)
         val s = Tile(x, y - 1, f)
         val w = Tile(x - 1, y, f)
         val straight = listOf(n, e, s, w)
+        val straightFlags = listOf(Flag.W_S, Flag.W_W, Flag.W_N, Flag.W_E)
         val ne = Tile(x + 1, y + 1, f)
         val se = Tile(x + 1, y - 1, f)
         val sw = Tile(x - 1, y - 1, f)
@@ -233,86 +273,20 @@ object ATContext {
         val diagonal = listOf(ne, se, sw, nw)
 
         val walkableNeighbors = mutableListOf<Tile>()
-        walkableNeighbors.addAll(straight.filter { !it.blocked(cm) })
+        walkableNeighbors.addAll(straight.filterIndexed { i, it ->
+            if (checkForWalls) {
+                !it.blocked(
+                    cm,
+                    straightFlags[i]
+                )
+            } else !it.blocked(cm)
+        })
 
         if (diagonalTiles) {
             walkableNeighbors.addAll(diagonal.filter { !it.blocked(cm) })
         }
         return walkableNeighbors
     }
-
-    fun Tile.toRegionTile(): Tile {
-        val mos = ctx.game.mapOffset()
-        return Tile(x() - mos.x(), y() - mos.y(), floor())
-    }
-
-    fun Inventory.containsOneOf(vararg ids: Int): Boolean = toStream().anyMatch { it.id() in ids }
-    fun Inventory.emptyExcept(vararg ids: Int): Boolean = !toStream().filter { it.id() !in ids }.findFirst().isPresent
-
-    fun Inventory.emptySlots(): Int = (28 - toStream().count()).toInt()
-    fun Inventory.getCount(vararg ids: Int): Int = getCount(true, *ids)
-    fun Inventory.getCount(countStacks: Boolean, vararg ids: Int): Int {
-        val items = toStream().id(*ids)
-        return if (countStacks) items.count(true).toInt() else items.count().toInt()
-    }
-
-    fun Int.getItemDef() = CacheItemConfig.load(ctx.bot().cacheWorker, this)
-    fun Item.getItemDef() = CacheItemConfig.load(ctx.bot().cacheWorker, id())
-
-    fun withdrawExact(id: Int, amount: Number, wait: Boolean = true): Boolean {
-        return ctx.bank.withdrawExact(id, amount, wait)
-    }
-
-    fun Bank.withdrawExact(amount: Int, id: Number, wait: Boolean = true): Boolean {
-        val id = id.toInt()
-        if (id <= 0) {
-            return false
-        }
-        debug("WithdrawExact: $id, $amount")
-        val currentAmount = ctx.inventory.getCount(true, id)
-        if (currentAmount < amount) {
-            if (ctx.bank.none { it.id() == id }) {
-                return false
-            } else if (amount - currentAmount >= ctx.bank.toStream().id(id).count(true)) {
-                ctx.bank.withdraw(id, Bank.Amount.ALL)
-            } else if (amount - currentAmount >= ctx.inventory.emptySlots() && !id.getItemDef().stackable) {
-                debug("Withdrawing all: $id, since there's just enough space")
-                ctx.bank.withdraw(id, Bank.Amount.ALL)
-            } else if (!ctx.bank.withdraw(amount - currentAmount, id)) {
-                return false
-            }
-        } else if (currentAmount > amount) {
-            ctx.bank.deposit(id, Bank.Amount.ALL)
-            if (wait) waitFor { !ctx.inventory.containsOneOf(id) }
-            return false
-        }
-        return if (wait) waitFor(5000) { ctx.inventory.getCount(true, id) == amount } else true
-    }
-
-    /**
-     * Only useful for mobile
-     */
-    fun closeOpenHUD(): Boolean {
-        val tab = ctx.game.tab()
-        if (!ctx.client().isMobile || tab == Game.Tab.NONE) {
-            return true
-        }
-        val c: Component = ctx.widgets.widget(601).firstOrNull { it.textureId() in tab.textures } ?: return true
-        return c.click(true)
-    }
-
-
-//    fun Menu.close(): Boolean {
-//        val ma = menu.area
-//        val width = 763
-//        val height = 499
-//        val x = if (ma.centerX > width / 2.0) Random.nextInt(ma.x - 1) else Random.nextInt(ma.x + ma.width, width)
-//        val y =
-//            if (ma.centerY > height / 2.0) Random.nextInt(ma.y - 1) else Random.nextInt(ma.y + ma.height, height)
-//        val pointToGetRid = Point(x, y)
-//        mouse.move(pointToGetRid)
-//        return waitFor { !menu.isOpen }
-//    }
 
 
 }

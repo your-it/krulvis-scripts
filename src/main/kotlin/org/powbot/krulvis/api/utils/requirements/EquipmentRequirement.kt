@@ -1,6 +1,7 @@
 package org.powbot.krulvis.api.utils.requirements
 
-import org.powbot.krulvis.api.ATContext.ctx
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Equipment
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.EquipmentItem
 
@@ -11,10 +12,10 @@ class EquipmentRequirement(override val item: EquipmentItem, override val amount
         if (item.getCount() == amount) {
             return true
         }
-        return withdrawExact(item.id, amount - ctx.equipment.toStream().id(*item.ids).count(true), wait)
+        return Bank.withdrawExact(item.id, (amount - Equipment.stream().id(*item.ids).count(true)).toInt(), wait)
     }
 
-    override fun hasRequirement(): Boolean {
+    override fun meets(): Boolean {
         return item.inEquipment()
     }
 

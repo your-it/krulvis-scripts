@@ -1,16 +1,36 @@
 package org.powbot.krulvis.tithe.tree.branch
 
-import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.SimpleLeaf
-import org.powbot.krulvis.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.LastMade.stoppedMaking
-import org.powbot.krulvis.api.utils.Random
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.api.Condition
+import org.powbot.api.Production
+import org.powbot.api.Random
+import org.powbot.api.rt4.Camera
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.tithe.Data
-import org.powbot.krulvis.tithe.TitheFarmer
 import org.powbot.krulvis.tithe.tree.leaf.*
+import org.powbot.krulvis.tithe.Patch.Companion.sameState
+import org.powbot.krulvis.tithe.TitheFarmer
+
+//class Locked(script: TitheFarmer) : Branch<TitheFarmer>(script, "IsLocked") {
+//    override val successComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Locked") {
+//        val waterCount = script.getWaterCount()
+//        val harvestCount = Inventory.getCount(*Data.HARVEST)
+//        if (waitFor(3000) {
+//                waterCount > script.getWaterCount()
+//                        || harvestCount < Inventory.getCount(*Data.HARVEST)
+//            }) {
+//            script.log.warning("Done with watering / harvesting")
+//        }
+//        script.lock = false
+//    }
+//    override val failedComponent: TreeComponent<TitheFarmer> = ShouldStart(script)
+//
+//    override fun validate(): Boolean {
+//        return script.lock
+//    }
+//}
 
 class ShouldStart(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should start") {
     override val successComponent: TreeComponent<TitheFarmer> = Start(script)
@@ -35,9 +55,9 @@ class ShouldRefill(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should re
         if (script.lastLeaf.name != "Waiting...") {
             script.chillTimer.reset()
         }
-        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
-        return ctx.inventory.toStream().list()
-            .none { it.id() in Data.WATER_CANS } || !stoppedMaking(Data.WATER_CAN_FULL) ||
+//        debug("Found: ${script.patches.size} patches: nill=${script.patches.count { it.isNill }}")
+        return Inventory.stream().list().none { it.id() in Data.WATER_CANS } ||
+                !Production.stoppedMaking(Data.WATER_CAN_FULL) ||
                 (!script.hasEnoughWater() && script.patches.all { it.isEmpty() })
     }
 }
@@ -56,21 +76,21 @@ class ShouldDeposit(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should d
     override val failedComponent: TreeComponent<TitheFarmer> = Leave(script)
 
     override fun validate(): Boolean {
-        return ctx.inventory.containsOneOf(*Data.HARVEST)
+        return Inventory.stream().id(*Data.HARVEST).isNotEmpty()
     }
 }
 
 class ShouldMoveCamera(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should turn camera") {
     override val successComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Moving camera") {
-        ctx.camera.angle(Random.nextInt(255, 290))
-        ctx.camera.pitch(Random.nextInt(95, 99))
-        waitFor { !validate() }
+        Camera.angle(Random.nextInt(255, 290))
+        Camera.pitch(Random.nextInt(95, 99))
+        Condition.wait { !validate() }
     }
 
     override val failedComponent: TreeComponent<TitheFarmer> = ShouldPlant(script)
 
     override fun validate(): Boolean {
-        return !ctx.client().isMobile && (ctx.camera.yaw() !in 255..290 || ctx.camera.pitch() < 95)
+        return Camera.yaw() !in 255..290 || Camera.pitch() < 95
     }
 }
 
@@ -99,7 +119,7 @@ class ShouldWalkBack(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should 
     override val failedComponent: TreeComponent<TitheFarmer> = SimpleLeaf(script, "Waiting...") {}
 
     override fun validate(): Boolean {
-        return script.chillTimer.isFinished()
+        return script.chillTimer.isFinished() || script.patches.sameState()
     }
 }
 

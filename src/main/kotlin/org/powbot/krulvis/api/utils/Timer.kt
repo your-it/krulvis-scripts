@@ -128,6 +128,4 @@ class Timer(var time: Number) {
     override fun toString(): String {
         return if (end == 0L) formatTime(getElapsedTime()) else getRemainderString()
     }
-
-
 }

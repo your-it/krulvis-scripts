@@ -1,38 +1,140 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.script.tree.Branch
-import org.powbot.krulvis.api.script.tree.TreeComponent
+import org.powbot.api.Condition
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.Utils
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.fighter.Fighter
-import org.powbot.krulvis.fighter.tree.leaf.fight.Attack
-import org.powbot.krulvis.fighter.tree.leaf.fight.Chill
-import org.powbot.krulvis.fighter.tree.leaf.fight.WalkToSpot
-import org.powerbot.script.rt4.Npc
+import org.powbot.krulvis.fighter.slayer.*
 
-class AtSpot(script: Fighter) : Branch<Fighter>(script, "AtSpot") {
+class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?") {
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Using item") {
+        val killItem = script.killItem()
+        val currentXp = Skills.experience(Constants.SKILLS_SLAYER)
+        if (Utils.walkAndInteract(
+                script.currentTarget,
+                "Use",
+                false,
+                true,
+                killItem!!.ids[0]
+            )
+        ) {
+            script.watchLootDrop(script.currentTarget!!.tile())
+            if (Condition.wait({ Skills.experience(Constants.SKILLS_SLAYER) > currentXp }, 300, 10)) {
+                script.currentTarget = null
+            }
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = Killing(script)
+
     override fun validate(): Boolean {
-        val safeSpot = script.profile.safeSpot
-        return if (safeSpot != null) {
-            safeSpot.distance() <= script.profile.maxDistance
-        } else {
-            script.profile.centerLocation.distance() <= script.profile.radius
+        val currentTarget = script.currentTarget
+        if (currentTarget == null || !currentTarget.valid() || script.killItem() == null)
+            return false
+        return currentTarget.healthBarVisible() && currentTarget.healthPercent() <= 1
+    }
+}
+
+class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
+    override val failedComponent: TreeComponent<Fighter> = CanKill(script)
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Killing..") {
+        val interacting = Players.local().interacting()
+        Chat.clickContinue()
+        if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
+            Prayer.quickPrayer(true)
+        }
+
+        if (script.currentTarget == null)
+            script.currentTarget = interacting as Npc
+
+        val safespot = script.centerTile()
+        if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || interacting.healthPercent() == 0)) }) {
+            if (shouldReturnToSafespot()) {
+                Movement.walkTo(safespot)
+            } else {
+                script.currentTarget = null
+                script.watchLootDrop(interacting.tile())
+            }
         }
     }
 
-    override val successComponent: TreeComponent<Fighter> = IsKilling(script)
-    override val failedComponent: TreeComponent<Fighter> = WalkToSpot(script)
-}
+    fun shouldReturnToSafespot() =
+        script.useSafespot && script.centerTile() != Players.local().tile() && Players.local().healthBarVisible()
 
-class IsKilling(script: Fighter) : Branch<Fighter>(script, "IsKilling") {
     override fun validate(): Boolean {
-        val target = me.interacting()
-//        debug("Currently interacting with: ${target.name()}")
-//        debug("Full debug: $target")
-        return target is Npc && script.validTarget(target)
+        return killing(script.killItem())
     }
 
-    override val successComponent: TreeComponent<Fighter> = Chill(script)
-    override val failedComponent: TreeComponent<Fighter> = Attack(script)
+    companion object {
+        fun killing(killItem: KillItemRequirement?): Boolean {
+            val interacting = Players.local().interacting()
+            if (interacting == Actor.Nil) return false
+            if (!interacting.healthBarVisible()) return false
+            val hp = interacting.healthPercent()
+            return killItem != null || hp > 0
+        }
+
+
+    }
 }
 
+class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
+
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Attacking") {
+        if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
+            Prayer.quickPrayer(true)
+        }
+        if (attack(target)) {
+            script.currentTarget = target
+            Condition.wait({
+                Killing.killing(script.killItem())
+            }, 250, 10)
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldSpawnTarget(script)
+
+    var target: Npc? = null
+
+    fun attack(target: Npc?): Boolean {
+        return if (script.useSafespot) {
+            target?.interact("Attack") == true
+        } else {
+            Utils.walkAndInteract(target, "Attack")
+        }
+    }
+
+    override fun validate(): Boolean {
+        if (script.useSafespot && script.centerTile() != Players.local().tile()) return false
+        target = script.target()
+        return target != null
+    }
+}
+
+class ShouldSpawnTarget(script: Fighter) : Branch<Fighter>(script, "Should spawn target?") {
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Spawning") {
+        val spawnItem = script.slayer.spawnItem()!!
+        val id = spawnItem.ids[0]
+        val name = when (id) {
+            FISHING_EXPLOSIVE -> "Ominous Fishing Spot"
+            SLAYER_BELL -> "Molanisk"
+            else -> ""
+        }
+        val spot = Objects.stream().name(name).nearest().firstOrNull()
+        if (spot != null && Utils.walkAndInteract(spot, "Use", false, true, id)) {
+            Condition.wait({ script.slayer.currentTask!!.target() != null }, 400, 10)
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Walking to spot") {
+        Chat.clickContinue()
+        val spot = script.centerTile()
+        val nearby = script.nearbyMonsters()
+        if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius))
+            Movement.walkTo(spot)
+    }
+
+    override fun validate(): Boolean {
+        return script.doSlayer && script.slayer.currentTask!!.location.centerTile.distance() < 10 && script.slayer.spawnItem() != null
+    }
+}
