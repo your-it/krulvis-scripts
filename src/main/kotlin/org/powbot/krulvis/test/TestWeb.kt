@@ -16,6 +16,7 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
+import org.powbot.util.TransientGetter2D
 
 @ScriptManifest(name = "test Web", version = "1.0.1", description = "", priv = true)
 class TestWeb : ATScript() {
@@ -23,7 +24,7 @@ class TestWeb : ATScript() {
 
     var origin = Tile(2912, 9968, 0) //varrock mine
 
-    var collisionMap: Array<IntArray> = emptyArray()
+    var collisionMap: TransientGetter2D<Int>? = null
 
     //    val dest = Tile(3253, 3420, 0) //Varrock bank
     var newDest = Tile(3090, 3245, 0)
@@ -56,7 +57,9 @@ class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
 
     override fun paintCustom(g: Rendering) {
         val oldScale = g.getScale()
-        Players.local().tile().drawCollisions(script.collisionMap)
+        if (script.collisionMap != null) {
+            Players.local().tile().drawCollisions(script.collisionMap)
+        }
         script.origin.drawOnScreen()
         script.newDest.drawOnScreen()
         script.localPath.draw()
