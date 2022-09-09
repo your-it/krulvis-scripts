@@ -40,7 +40,7 @@ import java.util.*
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.1.9",
+    version = "1.2.0",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -52,6 +52,18 @@ import java.util.*
             description = "Cooking the fish gives more points at the cost of XP",
             defaultValue = "true",
             optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            name = "Debug Paint",
+            description = "Show debugging paint",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            name = "Special Attack",
+            description = "Do Dragon Harpoon special",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
         )
     ]
 )
@@ -60,10 +72,6 @@ class Tempoross : ATScript() {
 
     override fun createPainter(): ATPaint<*> {
         return TemporossPaint(this)
-    }
-
-    init {
-        debugComponents = false
     }
 
     val waveTimer = Timer(0)
@@ -79,7 +87,9 @@ class Tempoross : ATScript() {
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
     val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
 
-    val cookFish by lazy { getOption<Boolean>("Cook fish") ?: true }
+    val cookFish by lazy { getOption<Boolean>("Cook fish") }
+    val debugPaint by lazy { getOption<Boolean>("Debug Paint") }
+    val spec by lazy { getOption<Boolean>("Special Attack") }
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)

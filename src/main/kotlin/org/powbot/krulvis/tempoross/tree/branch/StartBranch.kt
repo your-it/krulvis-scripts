@@ -6,6 +6,7 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
@@ -16,7 +17,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
-        Game.closeOpenTab()
+        ATContext.debugComponents = script.debugPaint
         if (Game.clientState() != 30) {
             return !waitFor(10000) { script.getEnergy() > -1 }
         }

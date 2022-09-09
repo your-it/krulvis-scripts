@@ -1,10 +1,12 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.*
-import org.powbot.api.event.*
+import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameObjectActionEvent
+import org.powbot.api.event.InventoryChangeEvent
+import org.powbot.api.event.MessageEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.magic.Rune
-import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.rt4.magic.RunePouch.RUNE_AMOUNT_MASK
 import org.powbot.api.rt4.magic.RunePouch.RUNE_ID_MASK
 import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP
@@ -14,15 +16,15 @@ import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.paint.*
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
-import kotlin.math.pow
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
 @ScriptConfiguration.List(
@@ -82,8 +84,9 @@ class TestScript : ATScript() {
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks") }
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
-    override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
 
+    override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+        obj = Objects.stream().filtered { it.tile == Tile(3228, 3144, 0) && it.hasOre() }.nearest().firstOrNull()
         sleep(2000)
     }
 
@@ -111,24 +114,10 @@ class TestScript : ATScript() {
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
-    val varp1 = Varpbits.varpbit(RUNE_POUCH_VARP)
-    val varp2 = Varpbits.varpbit(RUNE_POUCH_VARP2)
-
-    val runes = listOf(
-        Rune.forIndex(varp1 and RUNE_ID_MASK),
-        Rune.forIndex(varp1 shr 6 and RUNE_ID_MASK),
-        Rune.forIndex(varp1 shr 12 and RUNE_ID_MASK),
-    )
-    val amounts = listOf(
-        varp1 shr 18,
-        varp2 and RUNE_AMOUNT_MASK,
-        varp2 shr 14
-    )
-
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Comp") {
-                Components.stream(270).firstOrNull { it.actions().contains("All") }?.index()?.toString()
+            .addString("Obj") {
+                script.obj?.toString()
             }
             .build()
     }
@@ -146,5 +135,5 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 }
 
 fun main() {
-    TestScript().startScript("127.0.0.1", "GIM", true)
+    TestScript().startScript("127.0.0.1", "EKE", true)
 }

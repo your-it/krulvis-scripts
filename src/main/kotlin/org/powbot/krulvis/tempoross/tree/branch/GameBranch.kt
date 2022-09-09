@@ -2,6 +2,7 @@ package org.powbot.krulvis.tempoross.tree.branch
 
 import org.powbot.api.rt4.Combat
 import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.*
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -19,14 +20,15 @@ import kotlin.math.roundToInt
 
 class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
     override fun validate(): Boolean {
-        return Combat.specialPercentage() == 100
+        return script.spec &&
+                Combat.specialPercentage() == 100
                 && Equipment.stream().id(*SPEC_HARPOONS).isNotEmpty()
                 && (script.lastLeaf is Fish || script.lastLeaf is Kill)
     }
 
 
     override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Special Attack") {
-        if (Combat.specialAttack(true)) {
+        if (Game.tab(Game.Tab.ATTACK) && Combat.specialAttack(true)) {
             waitFor(5000) { Combat.specialPercentage() < 100 }
         }
     }
@@ -35,6 +37,7 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 
 class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
     override fun validate(): Boolean {
+        Game.tab(Game.Tab.INVENTORY)
         return !Equipment.containsOneOf(*SPEC_HARPOONS) && !Inventory.containsOneOf(*HARPOONS)
     }
 

@@ -3,7 +3,6 @@ package org.powbot.krulvis.fighter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.powbot.api.Events
-import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
@@ -17,11 +16,11 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
-import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
+import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat

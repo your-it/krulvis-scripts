@@ -26,7 +26,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {
-                    it.drawOnScreen( null, Color.RED)
+                    it.drawOnScreen(null, Color.RED)
                 }
             }
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {

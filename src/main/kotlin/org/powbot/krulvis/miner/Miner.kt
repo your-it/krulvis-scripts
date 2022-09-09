@@ -148,5 +148,5 @@ class Miner : ATScript() {
 }
 
 fun main() {
-    Miner().startScript("127.0.0.1", "krullieman", false)
+    Miner().startScript("127.0.0.1", "EKE", false)
 }
