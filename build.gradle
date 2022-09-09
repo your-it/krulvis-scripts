@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
 }
 
 
@@ -40,6 +40,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
 }
+
 
 compileJava {
     sourceCompatibility = JavaVersion.VERSION_1_8

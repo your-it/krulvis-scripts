@@ -1,10 +1,12 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.*
-import org.powbot.api.event.*
+import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameObjectActionEvent
+import org.powbot.api.event.InventoryChangeEvent
+import org.powbot.api.event.MessageEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.magic.Rune
-import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.rt4.magic.RunePouch.RUNE_AMOUNT_MASK
 import org.powbot.api.rt4.magic.RunePouch.RUNE_ID_MASK
 import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP
@@ -82,8 +84,8 @@ class TestScript : ATScript() {
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks") }
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
+    
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-
         sleep(2000)
     }
 
@@ -111,24 +113,10 @@ class TestScript : ATScript() {
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
-    val varp1 = Varpbits.varpbit(RUNE_POUCH_VARP)
-    val varp2 = Varpbits.varpbit(RUNE_POUCH_VARP2)
-
-    val runes = listOf(
-        Rune.forIndex(varp1 and RUNE_ID_MASK),
-        Rune.forIndex(varp1 shr 6 and RUNE_ID_MASK),
-        Rune.forIndex(varp1 shr 12 and RUNE_ID_MASK),
-    )
-    val amounts = listOf(
-        varp1 shr 18,
-        varp2 and RUNE_AMOUNT_MASK,
-        varp2 shr 14
-    )
-
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Comp") {
-                Components.stream(270).firstOrNull { it.actions().contains("All") }?.index()?.toString()
+            .addString("Obj") {
+                script.obj?.toString()
             }
             .build()
     }
