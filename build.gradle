@@ -28,17 +28,16 @@ repositories {
     mavenCentral()
     flatDir {
         dirs(powDeps)
-        dirs("/home/krulvis/IdeaProjects/mobile-v2/mobile-client/release")
     }
 }
 
 
 dependencies {
-    implementation name: "mobile-client"
-    implementation name: "scriptloader-all"
-    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation name: "client-sdk"
+    implementation name: "client-sdk-loader"
+    api 'com.google.guava:guava:31.1-jre'
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
 }
 
 

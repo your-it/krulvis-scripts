@@ -23,6 +23,7 @@ import org.powbot.krulvis.miner.tree.leaf.*
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
     override fun validate(): Boolean {
+        Game.tab(Game.Tab.INVENTORY)
         val hasHammer = Inventory.containsOneOf(Item.HAMMER)
         val brokenCount = Objects.stream(15).name("Broken strut").count().toInt()
         script.rockLocations
@@ -40,11 +41,14 @@ class ShouldCastHumidify(script: Miner) : Branch<Miner>(script, "Should Humidify
 
     override fun validate(): Boolean {
         return Data.hasEmptyWaterSkin() && !Data.hasWaterSkins() &&
-                Game.tab(Game.Tab.MAGIC) && Magic.ready(Magic.LunarSpell.HUMIDIFY)
+                Magic.LunarSpell.HUMIDIFY.canCast()
     }
 
     override val successComponent: TreeComponent<Miner> = SimpleLeaf(script, "Cast humidfy") {
-        if (Magic.cast(Magic.LunarSpell.HUMIDIFY)) {
+        if (Game.tab(Game.Tab.MAGIC)) {
+            waitFor { Game.tab() == Game.Tab.MAGIC }
+        }
+        if (Magic.LunarSpell.HUMIDIFY.cast()) {
             waitFor(long()) { !Data.hasEmptyWaterSkin() }
         }
     }
