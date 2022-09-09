@@ -1,19 +1,20 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.*
-import org.powbot.api.event.*
+import org.powbot.api.Tile
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.paint.*
+import org.powbot.api.script.paint.Paint
+import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 import org.powbot.util.TransientGetter2D
