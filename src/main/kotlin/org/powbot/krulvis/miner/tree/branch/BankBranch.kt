@@ -23,7 +23,8 @@ import org.powbot.krulvis.miner.tree.leaf.*
 class ShouldFixStrut(script: Miner) : Branch<Miner>(script, "Should fix strut") {
 
     override fun validate(): Boolean {
-        Game.tab(Game.Tab.INVENTORY)
+        if (!Bank.opened())
+            Game.tab(Game.Tab.INVENTORY)
         val hasHammer = Inventory.containsOneOf(Item.HAMMER)
         val brokenCount = Objects.stream(15).name("Broken strut").count().toInt()
         script.rockLocations
