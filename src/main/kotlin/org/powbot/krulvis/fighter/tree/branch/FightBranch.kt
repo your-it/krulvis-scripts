@@ -6,6 +6,8 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.slayer.*
 
@@ -50,7 +52,7 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             script.currentTarget = interacting as Npc
 
         val safespot = script.centerTile()
-        if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || interacting.healthPercent() == 0)) }) {
+        if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || TargetWidget.health() == 0)) }) {
             if (shouldReturnToSafespot()) {
                 Movement.walkTo(safespot)
             } else {
@@ -72,8 +74,7 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             val interacting = Players.local().interacting()
             if (interacting == Actor.Nil) return false
             if (!interacting.healthBarVisible()) return false
-            val hp = interacting.healthPercent()
-            return killItem != null || hp > 0
+            return killItem != null || TargetWidget.health() > 0
         }
 
 
@@ -101,7 +102,7 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
         return if (script.useSafespot) {
             target?.interact("Attack") == true
         } else {
-            Utils.walkAndInteract(target, "Attack")
+            ATContext.walkAndInteract(target, "Attack")
         }
     }
 

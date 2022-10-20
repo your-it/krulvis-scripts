@@ -5,7 +5,7 @@ import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.tithe.Data
 import org.powbot.krulvis.tithe.TitheFarmer
 import java.util.*
@@ -19,7 +19,7 @@ class Deposit(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Depositing") {
         val sack = getSack()
         println("Sack: $sack")
         sack.ifPresent {
-            if (interact(it, "Deposit", useMenu = false)) {
+            if (walkAndInteract(it, "Deposit", useMenu = false)) {
                 Condition.wait({ Inventory.stream().id(*Data.HARVEST).isEmpty() }, 150, 20)
             }
         }

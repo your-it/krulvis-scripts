@@ -4,6 +4,7 @@ import org.powbot.api.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.short
@@ -34,6 +35,7 @@ object ATContext {
             return true
         }
         if (Movement.energyLevel() >= Random.nextInt(1, 5)) {
+            debug("Turning run on")
             return Widgets.widget(Constants.MOVEMENT_MAP).component(Constants.MOVEMENT_RUN_ENERGY - 1).click()
         }
         return false
@@ -75,7 +77,7 @@ object ATContext {
     /**
      * Custom interaction function
      */
-    fun interact(
+    fun walkAndInteract(
         target: Interactive?,
         action: String,
         alwaysWalk: Boolean = false,
@@ -85,8 +87,9 @@ object ATContext {
     ): Boolean {
         val t = target ?: return false
         val name = (t as Nameable).name()
-        val pos = (t as Locatable).tile()
+        val pos = (t as Locatable).tile().getWalkableNeighbor()
         val destination = Movement.destination()
+
         turnRunOn()
         debug("Interacting with: $name at: $pos")
         if (Menu.opened() && Menu.contains {
@@ -98,18 +101,25 @@ object ATContext {
             debug("Clicking directly on opened menu")
             return handleMenu(action, name)
         }
-        if (!t.inViewport()
-            || (destination != pos && pos.distanceTo(if (destination == Tile.Nil) me else destination) > (if (alwaysWalk) 4 else 12))
-        ) {
-            if (allowWalk) {
-                debug("Walking before interacting... in viewport: ${t.inViewport()}")
-                if (pos.matrix().onMap()) {
-                    Movement.step(pos)
-                } else {
-                    walk(pos)
-                }
+
+        if (pos != null && allowWalk && destination != pos) {
+            val triggerDistance = if (alwaysWalk) 4 else 12
+            val targetTile = if (destination == Tile.Nil) Players.local() else destination
+            val distanceToTarget = pos.distanceTo(me)
+            if (distanceToTarget > triggerDistance || !pos.reachable() || !t.inViewport(true)) {
+                debug(
+                    "Walking before interacting: not reachable=${!pos.reachable()}, distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
+                        !t.inViewport(
+                            true
+                        )
+                    }"
+                )
+                debug("destination=${destination}, targetTile=${targetTile}, pos=${pos}, distanceToTarget=${distanceToTarget}")
+                Movement.step(pos)
+                Condition.wait({ t.inViewport(true) }, 250, 10)
             }
         }
+
         val selectedId = Inventory.selectedItem().id()
         if (selectedId != selectItem) {
             Game.tab(Game.Tab.INVENTORY)

@@ -15,10 +15,8 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.debugComponents
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
@@ -35,7 +33,6 @@ import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
 import org.powbot.krulvis.tempoross.tree.branch.ShouldEnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
-import java.util.*
 
 @ScriptManifest(
     name = "krul Tempoross",
@@ -121,7 +118,7 @@ class Tempoross : ATScript() {
             var path = LocalPathFinder.findPath(e.tile())
             if (path.isEmpty()) path = LocalPathFinder.findPath(destinationWhenNil)
             if (douseIfNecessary(path, allowCrossing)) {
-                return interact(e as Interactive, action)
+                return walkAndInteract(e as Interactive, action)
             }
         }
         return false

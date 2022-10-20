@@ -17,6 +17,7 @@ import org.powbot.krulvis.runecrafter.tree.branch.ShouldBank
     author = "Krulvis",
     version = "1.0.1",
     markdownFileName = "RC.md",
+    priv = true,
     category = ScriptCategory.Runecrafting
 )
 class Runecrafter : ATScript() {

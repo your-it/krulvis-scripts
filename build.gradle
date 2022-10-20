@@ -1,90 +1,22 @@
-import javax.swing.filechooser.FileSystemView
-
-
-buildscript {
-    dependencies {
-        classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.17"
-    }
-}
-
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.10'
 }
 
 
-ext.grpc_version = "1.38.0"
-ext.grpc_kt_version = "1.1.0"
 group 'org.powbot.krulvis'
-ext.clientName = "mobile-client-v2"
-version '1.0-SNAPSHOT'
 
-def powRoot = new File(FileSystemView.getFileSystemView().getDefaultDirectory(), ".powbot")
-def powDeps = new File(powRoot, "/client")
-def powScripts = new File(powRoot, "/scripts")
-def mobileClient = new File("/home/krulvis/Nextcloud/RSFarm")
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs(powDeps)
-    }
+    google()
+    maven { url = 'https://repo.repsy.io/mvn/const/pow' }
 }
 
 
 dependencies {
-    implementation name: "client-sdk"
-    implementation name: "client-sdk-loader"
-    api 'com.google.guava:guava:31.1-jre'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.powbot:client-sdk:+'
+    implementation 'org.powbot:client-sdk-loader:+'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
-}
-
-
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-compileKotlin {
-    kotlinOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        jvmTarget = "1.8"
-    }
-}
-
-task jarScriptsOutput(type: Jar) {
-    println(powScripts)
-    from(sourceSets.main.output.classesDirs, sourceSets.main.output.resourcesDir)
-}
-
-task copyScriptJar(type: Copy) {
-    group = "extras"
-    dependsOn(jarScriptsOutput)
-    from("build/libs")
-    include "*.jar"
-    into(mobileClient)
-//    into(powScripts)
-}
-
-task dexifyScripts(type: Exec) {
-    group = "extras"
-    dependsOn(copyScriptJar)
-    workingDir "/home/krulvis/Nextcloud/RSFarm"
-    commandLine '/home/krulvis/.powbot/android/build-tools/30.0.3/d8', 'powbotscripts-mobile-1.0-SNAPSHOT.jar', '--intermediate',
-            '--output', 'dexified_scripts.jar'
-//            '--lib', '/home/krulvis/Android/Sdk/platforms/android-29/android.jar'
-    doLast {
-        commandLine("echo \$(java -version)")
-        println "Dexified scripts!"
-    }
-}
-
-task placeDexedJarInResources(type: Copy) {
-    group = "extras"
-    dependsOn(dexifyScripts)
-    from("/home/krulvis/Nextcloud/RSFarm")
-    include "dexified_scripts.jar"
-    into("src/main/resources/org/powbot/krulvis")
 }

@@ -3,7 +3,7 @@ package org.powbot.krulvis.runecrafter.tree.leaf
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -18,7 +18,7 @@ class Craft(script: Runecrafter) : Leaf<Runecrafter>(script, "Craft runes") {
         } else {
             val altar = Objects.stream(30).name("Altar").findFirst()
             altar.ifPresent {
-                if (interact(it, "Craft")) {
+                if (walkAndInteract(it, "Craft")) {
                     waitFor { !Inventory.containsOneOf(PURE_ESSENCE) }
                     sleep(1000, 1500)
                 }

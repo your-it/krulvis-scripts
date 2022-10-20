@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Constants
 import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.Skills
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.Random
 import org.powbot.api.Tile
@@ -18,7 +18,7 @@ class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
         val target = script.getTarget()
         if (target != null && Bank.close()) {
             val xp = Skills.experience(Constants.SKILLS_THIEVING)
-            if (interact(target, "Pickpocket", script.useMenu)) {
+            if (walkAndInteract(target, "Pickpocket", script.useMenu)) {
                 script.lastTile = target.tile()
                 if (script.startNPCTile == Tile.Nil)
                     script.startNPCTile = script.lastTile

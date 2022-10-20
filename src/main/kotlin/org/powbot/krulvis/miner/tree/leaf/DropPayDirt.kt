@@ -7,7 +7,7 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -28,7 +28,7 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
                 Movement.moveTo(script.nearHopper)
             }
         } else if (hopper != null) {
-            if (interact(hopper, "Deposit")) {
+            if (walkAndInteract(hopper, "Deposit")) {
                 script.lastPayDirtDrop = System.currentTimeMillis()
                 sleep(600)
                 waitFor(long()) {

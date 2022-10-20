@@ -5,8 +5,7 @@ import org.powbot.api.rt4.Camera
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.api.rt4.walking.local.LocalPathFinder
@@ -40,7 +39,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
                 if (fireOptional.isPresent) {
                     script.log.info("Dousing nearby fire...")
                     val fire = fireOptional.get()
-                    if (interact(fire, "Douse")) {
+                    if (walkAndInteract(fire, "Douse")) {
                         waitFor { Npcs.stream().at(fire.tile()).name("Fire").isEmpty() }
                     }
                 }
@@ -87,7 +86,7 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
     }
 
     fun fishAtSpot(spot: Npc) {
-        if (interact(spot, "Harpoon")) {
+        if (walkAndInteract(spot, "Harpoon")) {
             waitFor(Random.nextInt(1000, 5000)) {
                 me.interacting().name() == "Fishing spot" || !spot.valid() || !script.waveTimer.isFinished()
             }

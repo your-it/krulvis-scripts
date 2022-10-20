@@ -2,7 +2,7 @@ package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.api.script.tree.Leaf
@@ -17,14 +17,14 @@ class Water(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
         val hasBucket = Inventory.containsOneOf(EMPTY_BUCKET)
         if (hasBucket && me.animation() != WATER_ANIM) {
             val waterPump = script.getWaterpump()
-            if (waterPump != null && interact(waterPump, "Use")
+            if (waterPump != null && walkAndInteract(waterPump, "Use")
                 && waitFor(long()) { me.animation() == WATER_ANIM }
             ) {
                 waitFor(long()) { !Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         } else if (!hasBucket) {
             val bucketCrate = script.getBucketCrate()
-            if (interact(bucketCrate, "Take-5")) {
+            if (walkAndInteract(bucketCrate, "Take-5")) {
                 waitFor(Random.nextInt(6500, 10000)) { Inventory.containsOneOf(EMPTY_BUCKET) }
             }
         }

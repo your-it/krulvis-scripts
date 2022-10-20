@@ -16,7 +16,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.2.3",
+    version = "1.2.4",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing
 )
@@ -100,5 +100,5 @@ class BlastFurnace : ATScript() {
 }
 
 fun main() {
-    BlastFurnace().startScript("127.0.0.1", "krullieman", false)
+    BlastFurnace().startScript("127.0.0.1", "GIM", false)
 }
