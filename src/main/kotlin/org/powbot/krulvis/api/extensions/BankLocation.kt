@@ -7,6 +7,7 @@ import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.api.rt4.walking.toRegularTile
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -170,7 +171,7 @@ enum class BankLocation(
                     }
                 }
             } else {
-                return Utils.walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
+                return ATContext.walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
             }
             return false
         }

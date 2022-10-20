@@ -1,5 +1,6 @@
 package org.powbot.krulvis.test
 
+import org.powbot.api.Color
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameObjectActionEvent
@@ -19,11 +20,18 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.*
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.mobile.BotManager
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
+import org.powerbot.bot.rt4.client.internal.IClient
+import org.powerbot.bot.rt4.client.internal.ICombatStatusData
+import kotlin.math.ceil
 import kotlin.math.pow
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
@@ -84,8 +92,10 @@ class TestScript : ATScript() {
     val rocks by lazy { getOption<List<GameObjectActionEvent>>("rocks") }
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
-    
+    var npc: Npc? = null
+
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+        Bank.withdraw(379, Bank.Amount.TEN)
         sleep(2000)
     }
 
@@ -113,17 +123,28 @@ class TestScript : ATScript() {
 
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
+    fun combatWidget(): Widget? {
+        return Widgets.stream().firstOrNull { it.components.any { c -> c.text() == "Bloodveld" } }
+    }
+
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Obj") {
-                script.obj?.toString()
+            .addString("Target") {
+                "Name=${TargetWidget.name()}, HP=${TargetWidget.health()}"
             }
             .build()
     }
 
     override fun paintCustom(g: Rendering) {
-        script.obj?.tile?.drawOnScreen()
-        g.setScale(1.0f)
+        val targetWidget = combatWidget() ?: return
+        g.setColor(Color.WHITE)
+        val x = 500
+        var y = 100
+        val yy = 20
+        targetWidget.components.forEach { comp ->
+            g.drawString("id=${comp.index()}, text=${comp.text()}", x, y)
+            y += yy
+        }
     }
 
     fun Tile.toWorld(): Tile {

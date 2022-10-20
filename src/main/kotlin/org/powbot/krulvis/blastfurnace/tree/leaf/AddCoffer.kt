@@ -9,7 +9,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -26,7 +26,7 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
             script.log.info("Not enough gold yet...")
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
-                chest.ifPresent { if (interact(it, "Use")) waitFor(long()) { Bank.opened() } }
+                chest.ifPresent { if (walkAndInteract(it, "Use")) waitFor(long()) { Bank.opened() } }
             } else if (!Inventory.emptyExcept(COAL_BAG_CLOSED, ICE_GLOVES, GOLD_GLOVES)) {
                 Bank.depositAllExcept(COAL_BAG_CLOSED, ICE_GLOVES, GOLD_GLOVES)
             } else if (Bank.withdraw(995, script.cofferAmount)) {

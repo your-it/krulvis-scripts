@@ -299,6 +299,7 @@ class Fighter : ATScript() {
                 (lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLoot)
     }
 
+
     fun loot(): List<GroundItem> =
         if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
 

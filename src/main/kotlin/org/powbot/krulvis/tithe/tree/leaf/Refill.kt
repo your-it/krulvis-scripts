@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -27,7 +27,7 @@ class Refill(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Refilling") {
             if (!stoppedMaking(WATER_CAN_FULL)) {
                 println("Already filling water...")
                 waitFor(long()) { Inventory.stream().noneMatch { item -> item.id() in EMPTY_CAN until WATER_CAN_FULL } }
-            } else if (Game.tab(Game.Tab.INVENTORY) && interact(
+            } else if (Game.tab(Game.Tab.INVENTORY) && walkAndInteract(
                     it,
                     "Use",
                     selectItem = emptyCan?.id ?: -1,

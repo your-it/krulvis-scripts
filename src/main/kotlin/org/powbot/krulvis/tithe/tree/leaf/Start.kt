@@ -7,7 +7,7 @@ import org.powbot.api.rt4.Constants
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Skills
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.tithe.TitheFarmer
 import org.powbot.mobile.script.ScriptManager
 
@@ -26,7 +26,7 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
                 val table = Objects.stream(25).name("Seed table").findFirst()
                 script.log.info("Interacting with seed table=${table.isPresent}")
                 table.ifPresent {
-                    if (interact(it, "Search", useMenu = false)) {
+                    if (walkAndInteract(it, "Search", useMenu = false)) {
                         Condition.wait({ Chat.chatting() }, 250, 10)
                     }
                 }
@@ -39,7 +39,7 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
         } else {
             script.log.info("Interacting with door")
             Objects.stream(25).name("Farm door").findFirst().ifPresent {
-                if (interact(it, "Open", useMenu = false)) {
+                if (walkAndInteract(it, "Open", useMenu = false)) {
                     Condition.wait({ script.getPoints() >= 0 }, 250, 40)
                 }
             }

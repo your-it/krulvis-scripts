@@ -3,6 +3,7 @@ package org.powbot.krulvis.blastfurnace
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
@@ -22,9 +23,18 @@ class BFPainter(script: BlastFurnace) : ATPaint<BlastFurnace>(script) {
         paintBuilder.trackSkill(Skill.Smithing)
         paintBuilder.trackInventoryItem(script.bar.id)
 
+        if (ATContext.debugComponents) {
+            paintBuilder.addString("CofferCount") {script.cofferCount().toString()}
+        }
         return paintBuilder.build()
     }
 
     override fun paintCustom(g: Rendering) {
+        var y = 100
+        val x = 800
+        if (ATContext.debugComponents) {
+//            g.drawString("Coffer count: ${script.cofferCount()}", x, y)
+//            y += yy
+        }
     }
 }

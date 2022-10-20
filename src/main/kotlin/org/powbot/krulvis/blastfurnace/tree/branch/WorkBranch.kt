@@ -5,6 +5,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
@@ -80,7 +81,7 @@ class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script,
         if (walkTile.distance() >= 2) {
             Movement.step(walkTile)
             if (waitFor(long()) { Skills.experience(Constants.SKILLS_SMITHING) > xp && script.bar.blastFurnaceCount >= 27 }) {
-                Inventory.stream().id(ICE_GLOVES).firstOrNull()?.interact("Wear")
+                debug("Waited for bars to smelt before equipping ice gloves")
             }
         }
     }

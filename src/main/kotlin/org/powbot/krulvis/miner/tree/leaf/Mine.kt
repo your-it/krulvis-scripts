@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.mined
@@ -24,7 +24,7 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
             if (path.containsSpecialNode()) {
                 path.traverse()
             } else {
-                if ((script.fastMine || script.mineDelay.isFinished()) && interact(rock, "Mine")) {
+                if ((script.fastMine || script.mineDelay.isFinished()) && walkAndInteract(rock, "Mine")) {
                     if (waitFor(long()) { me.animation() > 0 || rock.mined() }) {
                         script.mineDelay.resetTimer()
                     }

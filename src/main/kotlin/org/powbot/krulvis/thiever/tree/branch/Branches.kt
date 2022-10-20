@@ -8,8 +8,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.ATContext.interact
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -87,7 +86,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
         Bank.close()
         if (Players.local().tile().floor > 0) {
             script.log.info("Climbing down first...")
-            if (interact(Objects.stream().action("Climb-down").nearest().firstOrNull(), "Climb-down")) {
+            if (walkAndInteract(Objects.stream().action("Climb-down").nearest().firstOrNull(), "Climb-down")) {
                 waitFor(long()) { validate() }
             }
         } else {

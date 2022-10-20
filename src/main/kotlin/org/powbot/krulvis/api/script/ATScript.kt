@@ -55,7 +55,7 @@ abstract class ATScript : TreeScript() {
      */
     fun settingsFolder(): File {
         val pb = powbotFolder()
-        return File(pb + File.separator + "ScriptSettings" + File.separator + (manifest?.name ?: "EmptyScript"))
+        return File(pb + File.separator + "ScriptSettings" + File.separator + manifest.name)
     }
 
     @com.google.common.eventbus.Subscribe
