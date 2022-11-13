@@ -15,14 +15,12 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Rendering
-import kotlin.math.floor
 
 @ScriptManifest(
     name = "krul ColorFinder",
     description = "Helps find colors of non-working miner rocks",
     author = "Krulvis",
     version = "1.0.0",
-    scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
 )
