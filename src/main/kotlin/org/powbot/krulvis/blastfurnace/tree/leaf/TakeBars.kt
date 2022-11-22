@@ -28,6 +28,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
     override fun execute() {
         val gloves = Inventory.stream().id(ICE_GLOVES).firstOrNull()
         val takeWidget = takeWidget()
+        debug("Take widget=$takeWidget")
         Bank.close()
         if (gloves != null) {
             val equip = gloves.interact("Wear")

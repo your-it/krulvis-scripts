@@ -1,23 +1,14 @@
 package org.powbot.krulvis.tithe.tree.leaf
 
 import org.powbot.api.Condition
-import org.powbot.api.rt4.Component
-import org.powbot.api.rt4.Game
-import org.powbot.api.rt4.Widgets
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.closeOpenHUD
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.tithe.Patch
+import org.powbot.krulvis.tithe.Patch.Companion.refresh
 import org.powbot.krulvis.tithe.TitheFarmer
 
 class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling patch") {
-
-    fun closeOpenHUD(): Boolean {
-        val tab = Game.tab()
-        if (tab == Game.Tab.NONE) {
-            return true
-        }
-        val c: Component = Widgets.widget(601).firstOrNull { (it?.textureId() ?: -1) in tab.textures } ?: return true
-        return c.click()
-    }
 
     override fun execute() {
 //        if (!waitFor(long()) { !ctx.movement.moving() }) {
@@ -28,21 +19,23 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
         script.getPatchTiles()
         closeOpenHUD()
         val hasEnoughWater = script.getWaterCount() > 0
-        val patches = script.patches.sortedWith(compareBy(Patch::id, Patch::index))
-        if (script.lastPatch?.needsAction(true) == false)
+        if (Condition.wait({ script.lastPatch?.needsAction(true) == false }, 100, 20)) {
+            debug("Last patch: ${script.lastPatch?.index} = handled!")
             script.lastPatch = null
-        val patch = patches.filterNot { it.tile == script.lastPatch?.tile }
-            .firstOrNull {
-                it.needsAction() && (hasEnoughWater || it.isDone())
-            } ?: script.lastPatch ?: return
-        if (patch.handle(script.patches) && Condition.wait({ !patch.needsAction(true) }, 500, 10)) {
+        }
+        val patches = script.patches.refresh().sortedWith(compareBy(Patch::id, Patch::index))
+        val patch = patches.firstOrNull {
+            it.needsAction() && (hasEnoughWater || it.isDone())
+        } ?: script.lastPatch ?: return
+        debug("Refreshed and selected next patch! INTERACTING")
+
+        if (patch.handle(script.patches)) {
+            val lastTick = script.currentTick
             val nextPatchIndex = script.patches.indexOfFirst { it.tile == patch.tile } + 1
-            val nextPatch = if (nextPatchIndex == script.patches.size) null
-            else script.patches[nextPatchIndex]
-            script.log.info("Current patcht index=$nextPatchIndex, nextPatch at tile=${nextPatch?.tile}")
+            val nextPatch = if (nextPatchIndex == script.patches.size) null else script.patches[nextPatchIndex]
+            debug("Next patch index=$nextPatchIndex, nextPatch at tile=${nextPatch?.tile}")
             if (nextPatch != null) {
-                nextPatch.walkBetween(patches)
-                Condition.wait({ nextPatch.needsAction(true) }, 150, 20)
+                script.nextPatch = nextPatch
             }
         }
     }

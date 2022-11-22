@@ -39,11 +39,11 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
             if (depositButton.get().select()) {
                 waitFor(long()) { Chat.pendingInput() }
             }
-        } else if (Chat.pendingInput()) {
+        } else if (Bank.close() && Chat.pendingInput()) {
             script.log.info("Pending deposit input...")
             Input.sendln("${script.cofferAmount / 1000 + 1}k")
             waitFor { script.cofferCount() > 100 }
-        } else if (Bank.close()) {
+        } else {
             val matrix = Tile(1946, 4957, 0).matrix()
             if (script.interact(matrix, "Use")) {
                 waitFor(long()) { chatOpen() }

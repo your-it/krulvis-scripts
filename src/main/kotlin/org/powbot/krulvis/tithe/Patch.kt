@@ -4,6 +4,7 @@ import org.powbot.api.Condition
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.mobile.script.ScriptManager
 
 class Patch(var go: GameObject, val tile: Tile, val index: Int) {
@@ -88,13 +89,13 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
     fun harvest(): Boolean = interact("Harvest")
 
     fun walkBetween(patches: List<Patch>): Boolean {
-        if (!go.inViewport() || go.tile.distance() > 6) {
+        if (!go.inViewport()) {
             val minX = patches.minOf { it.tile.x() }
             val maxX = patches.maxOf { it.tile.x() }
             val x = if (tile.x < maxX) minX + 2 else maxX - 2
             val tile = Tile(x, tile.y(), 0)
+            debug("Walking to next patch with index=$index, tile=$tile")
             if (tile.matrix().onMap()) {
-                ScriptManager.script()?.log?.info("Walking on minimap")
                 if (!Movement.running() && Movement.energyLevel() >= 3)
                     Movement.running(true)
                 Movement.step(tile)

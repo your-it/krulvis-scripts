@@ -17,22 +17,16 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
             script.planting = true
             val seed = script.getSeed()
             if (patch.walkBetween(script.patches) && patch.plant(seed)) {
-                val doneDidIt = Condition.wait({
-                    !patch.isEmpty(true)
-                }, 250, 20)
+                val doneDidIt = Condition.wait({ !patch.isEmpty(true) }, 250, 20)
                 script.log.info("Planted on $patch: $doneDidIt")
                 if (doneDidIt) {
-                    val tick = script.lastTick
-                    val start = System.currentTimeMillis()
-
-                    if (Condition.wait({ script.lastTick > tick || System.currentTimeMillis() > start + 600 }, 250, 20)
-                        && patch.water()
-                    ) {
+                    if (patch.water()) {
+                        val tick = script.currentTick
                         if (patch.index < script.patchCount - 1) {
                             Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use", false) }
                         }
-                        val watered = Condition.wait({ !patch.needsAction(true) }, 200, 20)
-                        script.log.info("Watered as well.. $patch: $watered")
+                        Condition.wait({ script.currentTick > tick + 1 }, 200, 7)
+                        script.log.info("Watered as well.. $patch")
                     }
                 }
             }
