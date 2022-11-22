@@ -14,6 +14,7 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.local.Utils.turnRunOn
 import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -31,6 +32,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
             }
             val interaction = when (event) {
                 is InventoryItemActionEvent -> {
+                    debug("Event item=${event.item()}")
                     Inventory.open() && event.item()
                         ?.interact(event.interaction, useMenu)
                             ?: false

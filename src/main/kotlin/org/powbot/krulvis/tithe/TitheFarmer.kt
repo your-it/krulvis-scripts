@@ -2,15 +2,15 @@ package org.powbot.krulvis.tithe
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.*
+import org.powbot.api.Random
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.*
-import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.api.script.paint.PaintFormatters
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.api.script.tree.TreeScript
+import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.tithe.Data.NAMES
 import org.powbot.krulvis.tithe.Patch.Companion.isPatch
@@ -18,16 +18,20 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powbot.krulvis.tithe.tree.leaf.Refill
 import org.powbot.krulvis.tithe.tree.leaf.Start
 import org.powbot.mobile.script.ScriptManager
+import java.util.*
+import java.util.logging.LogRecord
+import java.util.logging.SimpleFormatter
 import kotlin.math.min
 
 @ScriptManifest(
     name = "krul Tithe",
     description = "Tithe farming mini-game",
     author = "Krulvis",
-    version = "1.1.3",
+    version = "1.1.4",
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming,
+    priv = true,
     singleTapRequired = false
 )
 @ScriptConfiguration.List(
@@ -52,14 +56,16 @@ import kotlin.math.min
         )
     ]
 )
-class TitheFarmer : TreeScript() {
+class TitheFarmer : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
-    val patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
+    val _patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
     val smartPatches by lazy { getOption<Boolean>("Smart Patches") }
     val crashWatcher by lazy { getOption<Boolean>("Crash Watcher") }
+    var currentTick = -1L
     var lastPatch: Patch? = null
+    var nextPatch: Patch? = null
     var lastRound = false
     var startPoints = -1
     var gainedPoints = 0
@@ -67,22 +73,16 @@ class TitheFarmer : TreeScript() {
     val chillTimer = Timer(5000)
     var planting = false
 
+    val patchCount
+        get() = if (_patchCount == 16 && smartPatches && seedCount() >= 32) 17 else _patchCount
+
     override fun onStart() {
         super.onStart()
-        addPaint(PaintBuilder()
-            .addString("Last leaf:") { lastLeaf.name }
-            .addString("Gained points:") {
-                "${gainedPoints}, (${
-                    PaintFormatters.perHour(
-                        gainedPoints,
-                        ScriptManager.getRuntime(true)
-                    )
-                }/hr)"
-            }
-            .addString("Single-tap") { Game.singleTapEnabled().toString() }
-            .trackSkill(Skill.Farming)
-            .addCheckbox("Last round:", "lastRound", false)
-            .build())
+        val format = "[%1\$tT] [%4$-7s] %5\$s %n"
+    }
+
+    override fun createPainter(): ATPaint<*> {
+        return TithePainter(this)
     }
 
     fun getCornerPatchTile(): Tile {
@@ -109,14 +109,14 @@ class TitheFarmer : TreeScript() {
         }
 
         //Do 17 for the first couple rounds to skip the round where you do just 4 plants
-        val patchCount = if (patchCount == 16 && smartPatches && seedCount() >= 32) 17 else patchCount
         return columns.toList().subList(0, patchCount)
     }
 
     fun refreshPatches() {
         val tiles = getPatchTiles()
         val onorderedPatches =
-            Objects.stream(35).filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
+            Objects.stream(35)
+                .filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
                 .list()
         patches = tiles.mapIndexed { index, tile ->
             Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.Nil, tile, index)
@@ -184,11 +184,9 @@ class TitheFarmer : TreeScript() {
         }
     }
 
-    var lastTick = -1L
-
     @Subscribe
     fun onGameTick(e: TickEvent) {
-        lastTick = System.currentTimeMillis()
+        currentTick = System.currentTimeMillis()
     }
 
     private fun Tile.globalTile(): Tile {

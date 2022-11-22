@@ -7,6 +7,7 @@ import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.api.Random
+import org.powbot.api.Tile
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -30,9 +31,18 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
         val belt = Objects.stream().name("Conveyor belt").action("Put-ore-on").firstOrNull()
         debug("Found gloves=$gloves, bankComp=$bankComp, belt=$belt")
         if (belt == null) {
+            debug(
+                "Belt is null... beltTile=$beltTile, objects on tile=${
+                    Objects.stream().at(beltTile).list().joinToString { it.name }
+                }"
+            )
             return
+        } else {
+            beltTile = belt.tile
         }
+
         if (gloves != null) {
+            debug("Going to equip gloves..")
             val equip = gloves.interact("Wear")
             debug("Equipping gold gloves=$equip")
             if (equip) {
@@ -81,5 +91,9 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
         if (it.interact("Empty") && waitFor { Inventory.containsOneOf(Ore.COAL.id) }) {
             script.filledCoalBag = false
         }
+    }
+
+    companion object {
+        var beltTile: Tile = Tile(0, 0, 0)
     }
 }

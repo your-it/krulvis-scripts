@@ -29,14 +29,14 @@ import org.powbot.mobile.script.ScriptManager
             name = "Inventory items",
             description = "Put the correct amount in inventory and click the button",
             optionType = OptionType.INVENTORY,
-            defaultValue = "{\"1785\":1,\"1775\":27}"
+            defaultValue = "{\"946\":1,\"1517\":27}"
 //            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
             name = "Combine Items",
             description = "Perform the Game Actions to start combining",
             optionType = OptionType.GAME_ACTIONS,
-            defaultValue = "[{\"id\":1785,\"interaction\":\"Use\",\"mouseX\":685,\"mouseY\":248,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe\",\"rawOpcode\":38,\"var0\":0,\"widgetId\":9764864,\"name\":\"Glassblowing pipe\",\"strippedName\":\"Glassblowing pipe\"},{\"id\":1775,\"interaction\":\"Use\",\"mouseX\":723,\"mouseY\":250,\"rawEntityName\":\"<col=ff9040>Glassblowing pipe<col=ffffff> -> <col=ff9040>Molten glass\",\"rawOpcode\":31,\"var0\":1,\"widgetId\":9764864,\"name\":\"Molten glass\",\"strippedName\":\"Glassblowing pipe -> Molten glass\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":365,\"mouseY\":94,\"rawEntityName\":\"<col=ff9040>Unpowered staff orb</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694739,\"componentIndex\":19,\"widgetIndex\":270,\"name\":\"Unpowered staff orb\",\"strippedName\":\"Unpowered staff orb\"}]"
+            defaultValue = "[{\"id\":946,\"interaction\":\"Use\",\"mouseX\":869,\"mouseY\":238,\"rawEntityName\":\"<col=ff9040>Knife</col>\",\"rawOpcode\":25,\"var0\":0,\"widgetId\":9764864,\"name\":\"Knife\",\"strippedName\":\"Knife\"},{\"id\":1517,\"interaction\":\"Use\",\"mouseX\":915,\"mouseY\":230,\"rawEntityName\":\"<col=ff9040>Knife</col><col=ffffff> -> <col=ff9040>Maple logs</col>\",\"rawOpcode\":58,\"var0\":1,\"widgetId\":9764864,\"name\":\"Maple logs\",\"strippedName\":\"Knife -> Maple logs\"},{\"id\":1,\"interaction\":\"Make\",\"mouseX\":291,\"mouseY\":85,\"rawEntityName\":\"<col=ff9040>Maple longbow</col>\",\"rawOpcode\":57,\"var0\":-1,\"widgetId\":17694736,\"componentIndex\":-1,\"widgetIndex\":-1,\"name\":\"Maple longbow\",\"strippedName\":\"Maple longbow\"}]"
         ),
         ScriptConfiguration(
             name = "Spam Click",

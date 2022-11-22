@@ -51,7 +51,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
 
                 val nextOre = nextOre()
                 debug("Withdrawing ore=$nextOre")
-                if (Bank.withdraw(nextOre, Bank.Amount.ALL_BUT_ONE)) {
+                if (Bank.withdraw(nextOre, Bank.Amount.ALL)) {
                     val waited = waitFor { Inventory.containsOneOf(nextOre) }
                     debug("Waited for ore in inv=$waited")
                 } else {
