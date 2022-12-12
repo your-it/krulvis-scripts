@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
+import kotlinx.coroutines.isActive
 import org.powbot.api.Condition
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Utils
@@ -7,7 +8,10 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.extensions.TargetWidget
+import org.powbot.krulvis.api.extensions.watcher.LootWatcher
+import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.slayer.*
 
@@ -51,13 +55,21 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
         if (script.currentTarget == null)
             script.currentTarget = interacting as Npc
 
+        if (interacting is Npc) {
+            debug("Current NpcWatcher=${script.npcWatcher}, active=${script.npcWatcher?.active}, same npc=${script.npcWatcher?.npc == interacting}")
+            val watcher = script.npcWatcher
+            if (watcher == null || !watcher.active || watcher.npc != interacting) {
+                script.npcWatcher?.latch?.countDown()
+                script.npcWatcher = NpcDeathWatcher(interacting) { script.watchLootDrop(interacting.tile()) }
+            }
+        }
+
         val safespot = script.centerTile()
         if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || TargetWidget.health() == 0)) }) {
             if (shouldReturnToSafespot()) {
                 Movement.walkTo(safespot)
             } else {
                 script.currentTarget = null
-                script.watchLootDrop(interacting.tile())
             }
         }
     }

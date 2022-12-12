@@ -4,27 +4,36 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.Npc
+import org.powbot.krulvis.api.ATContext.debug
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class NpcDeathWatcher(private val npc: Npc, private val onDeath: () -> Unit) : Watcher() {
+class NpcDeathWatcher(val npc: Npc, private val onDeath: () -> Unit) : Watcher() {
 
     val latch = CountDownLatch(1)
 
+    val active get() = latch.count > 0
+
     init {
+        debug("Starting Npc Death Watcher for npc=$npc")
         GlobalScope.launch {
-            latch.await(60, TimeUnit.SECONDS)
+            awaitDeath()
             unregister()
         }
     }
 
+    fun awaitDeath() = latch.await(60, TimeUnit.SECONDS)
+
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
         if (npc.healthBarVisible() && npc.healthPercent() == 0) {
+            debug("NpcWatcher found death=$npc")
             onDeath()
             latch.countDown()
         } else if (!npc.valid()) {
+            debug("NpcWatcher stopped=$npc")
             latch.countDown()
         }
     }
+
 }
