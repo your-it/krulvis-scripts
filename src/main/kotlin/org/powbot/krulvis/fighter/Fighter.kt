@@ -1,9 +1,7 @@
 package org.powbot.krulvis.fighter
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.powbot.api.Events
-import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
@@ -12,16 +10,19 @@ import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.script.*
-import org.powbot.api.script.paint.*
+import org.powbot.api.script.paint.CheckboxPaintItem
+import org.powbot.api.script.paint.InventoryItemPaintItem
+import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
-import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
+import org.powbot.krulvis.api.extensions.watcher.LootWatcher
+import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
@@ -35,7 +36,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
-    version = "1.3.5",
+    version = "1.3.6",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -114,8 +115,6 @@ class Fighter : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
 
-    lateinit var slayer: Slayer
-    fun killItem() = if (doSlayer) slayer.killItem() else null
 
     @ValueChanged("Warrior guild")
     fun onWGChange(inWG: Boolean) {
@@ -157,7 +156,6 @@ class Fighter : ATScript() {
         }
     }
 
-    val doSlayer by lazy { getOption<Boolean>("Slayer") }
 
     override fun onStart() {
         super.onStart()
@@ -176,6 +174,13 @@ class Fighter : ATScript() {
             painter.paintBuilder.addString("Current Task") { slayer.currentTask?.target?.name?.lowercase() }
         }
     }
+
+    var npcWatcher: NpcDeathWatcher? = null
+
+    //Slayer
+    val doSlayer by lazy { getOption<Boolean>("Slayer") }
+    lateinit var slayer: Slayer
+    fun killItem() = if (doSlayer) slayer.killItem() else null
 
     //Warrior guild
     val warriorTokens = 8851
@@ -219,8 +224,11 @@ class Fighter : ATScript() {
         getOption<List<NpcActionEvent>>("Monsters").map { it.name }
     }
     val radius by lazy { getOption<Int>("Radius") }
+    var currentTarget: Npc? = null
+
 
     //Loot
+    val lootList = mutableListOf<GroundItem>()
     val ironman by lazy { getOption<Boolean>("Ironman") }
     val minLoot by lazy { getOption<Int>("Loot price") }
     val lootNameOptions by lazy {
@@ -257,8 +265,8 @@ class Fighter : ATScript() {
             BankLocation.valueOf(b)
         }
     }
-
     var forcedBanking = false
+
 
     fun centerTile() = if (doSlayer) slayer.currentTask!!.location.centerTile else safespot
 
@@ -268,7 +276,7 @@ class Fighter : ATScript() {
         } else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
     }
 
-    var currentTarget: Npc? = null
+
     fun target(): Npc? {
         val local = Players.local()
         val nearbyMonsters =
@@ -279,7 +287,6 @@ class Fighter : ATScript() {
 
     fun taskRemainder() = Varpbits.varpbit(394)
 
-    val lootList = mutableListOf<GroundItem>()
 
     fun watchLootDrop(tile: Tile) {
         log.info("Waiting for loot at $tile")

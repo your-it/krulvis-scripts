@@ -10,7 +10,7 @@ group 'org.powbot.krulvis'
 repositories {
     mavenCentral()
     google()
-    maven { url = 'https://repo.repsy.io/mvn/const/pow' }
+    maven { url = 'https://repo.powbot.org/releases' }
 }
 
 

@@ -4,6 +4,7 @@ import org.powbot.api.Tile
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
+import org.powbot.api.rt4.Npc
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
