@@ -27,9 +27,9 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Slayer)
             .addCheckbox("Stop after Slay task", "stopAfterTask", false)
             .withTotalLoot(true)
-            .addString("LootList") {
-                script.lootList.joinToString { "${it.name()}: ${it.stackSize()}" }
-            }
+//            .addString("LootList") {
+//                script.lootList.joinToString { "${it.name()}: ${it.stackSize()}" }
+//            }
         return paintBuilder.build()
     }
 
