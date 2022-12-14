@@ -4,7 +4,6 @@ import org.powbot.api.Tile
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
-import org.powbot.api.rt4.Npc
 import org.powbot.krulvis.api.ATContext.debug
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -21,10 +20,11 @@ class LootWatcher(private val tile: Tile, private val radius: Int = 4, private v
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
         val groundItems = groundItems()
-        val newLoot = groundItems.filterNot { it in startLoot }
-        if (newLoot.isNotEmpty()) {
-            debug("New loot found: [${newLoot.joinToString { it.name() }}]")
-            loot.addAll(newLoot.filter(isLoot))
+        val newItems = groundItems.filterNot { it in startLoot }
+        if (newItems.isNotEmpty()) {
+            val newLoot = newItems.filter(isLoot)
+            debug("New groundItems found: [${newItems.joinToString { it.name() }}], loot: [${newLoot.joinToString { it.name() }}]")
+            loot.addAll(newLoot)
             latch.countDown()
         }
     }
