@@ -3,10 +3,7 @@ package org.powbot.krulvis.fighter
 import kotlinx.coroutines.*
 import org.powbot.api.Events
 import org.powbot.api.Tile
-import org.powbot.api.event.InventoryChangeEvent
-import org.powbot.api.event.MessageEvent
-import org.powbot.api.event.NpcActionEvent
-import org.powbot.api.event.PaintCheckboxChangedEvent
+import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.script.*
@@ -14,7 +11,9 @@ import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.getPrice
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
@@ -26,6 +25,7 @@ import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.slayer.Master
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -36,7 +36,7 @@ import org.powbot.mobile.rscache.loader.ItemLoader
     name = "krul Fighter",
     description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
-    version = "1.3.6",
+    version = "1.3.7",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat
@@ -175,8 +175,6 @@ class Fighter : ATScript() {
         }
     }
 
-    var npcWatcher: NpcDeathWatcher? = null
-
     //Slayer
     val doSlayer by lazy { getOption<Boolean>("Slayer") }
     lateinit var slayer: Slayer
@@ -225,6 +223,7 @@ class Fighter : ATScript() {
     }
     val radius by lazy { getOption<Int>("Radius") }
     var currentTarget: Npc? = null
+    val targets = mutableListOf<Npc>()
 
 
     //Loot
@@ -309,6 +308,22 @@ class Fighter : ATScript() {
 
     fun loot(): List<GroundItem> =
         if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
+
+    var npcWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
+
+    @com.google.common.eventbus.Subscribe
+    fun onTickEvent(_e: TickEvent) {
+        val interacting = me.interacting()
+        if (interacting is Npc) {
+            currentTarget = interacting
+            val watcher = npcWatchers.firstOrNull { it.npc == interacting }
+//            ATContext.debug("Current NpcDeathWatcher=${watcher}, active=${watcher?.active}")
+            if (watcher == null || !watcher.active) {
+                npcWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
+            }
+        }
+        npcWatchers.removeAll { !it.active }
+    }
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryChange(evt: InventoryChangeEvent) {

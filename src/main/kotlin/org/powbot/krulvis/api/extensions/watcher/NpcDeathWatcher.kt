@@ -15,24 +15,27 @@ class NpcDeathWatcher(val npc: Npc, private val onDeath: () -> Unit) : Watcher()
     val active get() = latch.count > 0
 
     init {
-        debug("Starting Npc Death Watcher for npc=$npc")
+//        debug("Starting NpcDeathWatcher for npc=$npc")
         GlobalScope.launch {
             awaitDeath()
+            latch.countDown()
             unregister()
         }
     }
 
-    fun awaitDeath() = latch.await(60, TimeUnit.SECONDS)
+    fun awaitDeath() = latch.await(10, TimeUnit.SECONDS)
 
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
         if (npc.healthBarVisible() && npc.healthPercent() == 0) {
-            debug("NpcWatcher found death=$npc")
+//            debug("NpcWatcher found death=$npc")
             onDeath()
             latch.countDown()
         } else if (!npc.valid()) {
-            debug("NpcWatcher stopped=$npc")
+//            debug("NpcWatcher stopped=$npc")
             latch.countDown()
+        } else {
+//            debug("Watching NPC=${npc.name}, HP Visible=${npc.healthBarVisible()}, Percent=${npc.healthPercent()}")
         }
     }
 

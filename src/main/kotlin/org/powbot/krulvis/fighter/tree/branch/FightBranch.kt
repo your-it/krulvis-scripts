@@ -52,18 +52,6 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             Prayer.quickPrayer(true)
         }
 
-        if (script.currentTarget == null)
-            script.currentTarget = interacting as Npc
-
-        if (interacting is Npc) {
-            debug("Current NpcWatcher=${script.npcWatcher}, active=${script.npcWatcher?.active}, same npc=${script.npcWatcher?.npc == interacting}")
-            val watcher = script.npcWatcher
-            if (watcher == null || !watcher.active || watcher.npc != interacting) {
-                script.npcWatcher?.latch?.countDown()
-                script.npcWatcher = NpcDeathWatcher(interacting) { script.watchLootDrop(interacting.tile()) }
-            }
-        }
-
         val safespot = script.centerTile()
         if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || TargetWidget.health() == 0)) }) {
             if (shouldReturnToSafespot()) {
