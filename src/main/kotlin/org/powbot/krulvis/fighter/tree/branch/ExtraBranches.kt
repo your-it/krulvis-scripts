@@ -4,6 +4,7 @@ import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.api.rt4.Magic
+import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -44,10 +45,35 @@ class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Tr
         if (Inventory.stream().id(*TRASH).firstOrNull()?.interact("Drop") == true)
             waitFor { Inventory.stream().id(*TRASH).firstOrNull() == null }
     }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBuryBones(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldInsertRunes(script)
 
     override fun validate(): Boolean {
         return Inventory.stream().id(*TRASH).firstOrNull() != null
+    }
+}
+
+class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Insert Runes?") {
+
+    var inventoryRune: Item? = null
+
+    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Inserting runes") {
+        if (Inventory.selectedItem().id != inventoryRune?.id) {
+            inventoryRune?.interact("Use")
+        } else if (Inventory.stream().id(RunePouch.POUCH_ID).firstOrNull()?.interact("Use") == true) {
+            waitFor { getInsertableRune() == null }
+        }
+    }
+    override val failedComponent: TreeComponent<Fighter> = ShouldBuryBones(script)
+
+    fun getInsertableRune(): Item? {
+        val runes = RunePouch.runes()
+        return Inventory.stream()
+            .firstOrNull { invItem -> runes.any { invItem.id == it.first.id && it.second <= 16000 } }
+    }
+
+    override fun validate(): Boolean {
+        inventoryRune = getInsertableRune()
+        return inventoryRune != null
     }
 }
 
