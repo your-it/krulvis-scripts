@@ -71,7 +71,9 @@ object ATContext {
     }
 
     fun GenericItem.getPrice(): Int {
-        return GrandExchange.getItemPrice(if (noted()) id() - 1 else id())
+        val id = id()
+        if (id == 995) return 1
+        return GrandExchange.getItemPrice(if (noted()) id - 1 else id)
     }
 
     /**
