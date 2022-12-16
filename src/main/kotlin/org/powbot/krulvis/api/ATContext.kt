@@ -26,7 +26,7 @@ object ATContext {
 
     fun debug(msg: String) {
         if (debugComponents) {
-            ScriptManager.script()?.log?.info(msg)
+            ScriptManager.script()?.log?.fine(msg)
         }
     }
 

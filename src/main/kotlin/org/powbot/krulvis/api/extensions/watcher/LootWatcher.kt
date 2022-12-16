@@ -7,6 +7,7 @@ import org.powbot.api.rt4.GroundItems
 import org.powbot.krulvis.api.ATContext.debug
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.math.round
 
 class LootWatcher(private val tile: Tile, private val radius: Int = 4, private val isLoot: (GroundItem) -> Boolean) :
     Watcher() {
@@ -30,7 +31,7 @@ class LootWatcher(private val tile: Tile, private val radius: Int = 4, private v
     }
 
     fun waitForLoot(): List<GroundItem> {
-        latch.await(5, TimeUnit.SECONDS)
+        latch.await(10, TimeUnit.SECONDS)
         return loot
     }
 

@@ -27,7 +27,7 @@ class NpcDeathWatcher(val npc: Npc, private val onDeath: () -> Unit) : Watcher()
 
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
-        if (npc.healthBarVisible() && npc.healthPercent() == 0) {
+        if (npc.healthBarVisible() && npc.healthPercent() <= 8) {
 //            debug("NpcWatcher found death=$npc")
             onDeath()
             latch.countDown()

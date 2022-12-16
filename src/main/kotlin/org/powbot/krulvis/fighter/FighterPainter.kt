@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter
 
+import org.powbot.api.Color
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
@@ -37,8 +38,13 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
         val target = script.currentTarget
         target?.draw()
         if (target != null) {
-            g.drawString("HP: ${target.healthPercent()}", 500, 200)
+            g.drawString("Vis  : ${target.healthBarVisible()}", 500, 200)
+            g.drawString("HP   : ${target.healthPercent()}", 500, 220)
+            g.drawString("Anim : ${target.animation()}", 500, 240)
+            g.drawString("Valid: ${target.valid()}", 500, 260)
         }
+        val lootTile = script.waitingForLootTile
+        lootTile?.drawOnScreen(outlineColor = Color.CYAN)
 //        script.currentTarget?.tile()?.drawOnScreen(g)
     }
 }
