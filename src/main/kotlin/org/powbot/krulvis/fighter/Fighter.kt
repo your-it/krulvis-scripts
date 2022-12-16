@@ -31,6 +31,7 @@ import org.powbot.krulvis.fighter.slayer.Master
 import org.powbot.krulvis.fighter.slayer.Slayer
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
+import kotlin.math.round
 
 @ScriptManifest(
     name = "krul Fighter",
@@ -227,6 +228,7 @@ class Fighter : ATScript() {
 
 
     //Loot
+    var waitingForLootTile: Tile? = null
     val lootList = mutableListOf<GroundItem>()
     val ironman by lazy { getOption<Boolean>("Ironman") }
     val minLoot by lazy { getOption<Int>("Loot price") }
@@ -289,12 +291,16 @@ class Fighter : ATScript() {
 
     fun watchLootDrop(tile: Tile) {
         log.info("Waiting for loot at $tile")
+        val startMilis = System.currentTimeMillis()
+        waitingForLootTile = tile
         GlobalScope.launch {
             val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
             val loot = watcher.waitForLoot()
 //            Notifications.showNotification("Found loot=${loot.joinToString()}")
+            log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
             lootList.addAll(loot)
             watcher.unregister()
+            waitingForLootTile = null
         }
     }
 
@@ -348,7 +354,7 @@ class Fighter : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun messageReceived(msg: MessageEvent) {
-        if (msg.message.contains("so you can't take that.")) {
+        if (msg.message.contains("so you can't take ")) {
             lootList.clear()
         }
     }
