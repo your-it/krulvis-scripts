@@ -32,7 +32,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
                     lastXpGain = System.currentTimeMillis()
                     smithXp = Skills.experience(Skill.Smithing)
                 }
-                sleep(300)
+                sleep(150)
             }
             script.log.info(
                 "Stopping SMITH" +

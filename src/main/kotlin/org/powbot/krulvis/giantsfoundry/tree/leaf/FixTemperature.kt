@@ -42,8 +42,11 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                     script.log.info("Made $lastStepSize temperature step from=$lastTemp -> ${GiantsFoundry.getHeat()}, $ms ago to")
                     lastTempChangeMS = System.currentTimeMillis()
                     lastTemp = GiantsFoundry.getHeat()
+                    if (lastStepSize > 100) {
+                        interaction(actionObj, "Use")
+                    }
                 }
-                sleep(300)
+                sleep(150)
             }
             script.log.info(
                 "Stopping FIX" +
@@ -70,7 +73,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
     fun done(action: GiantsFoundry.Action, target: Int, cooling: Boolean, lastStepSize: Int): Boolean {
         val currentHeat = GiantsFoundry.getHeat()
         return if (cooling) {
-            currentHeat <= if (action.heats) target + lastStepSize else target + 5
+            currentHeat <= if (action.heats) target + lastStepSize + 5 else target + 5
         } else {
             currentHeat >= if (action.heats) target + lastStepSize else target - lastStepSize
         }

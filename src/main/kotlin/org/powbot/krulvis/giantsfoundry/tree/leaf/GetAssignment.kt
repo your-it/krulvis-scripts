@@ -23,9 +23,9 @@ class GetAssignment(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Gettin
         if (Chat.canContinue()) {
             Chat.clickContinue()
             sleep(1500)
-            waitFor { Chat.canContinue() }
+            waitFor { Chat.canContinue() || Chat.chatting() }
         } else if (Chat.chatting()) {
-            Chat.sendInput("Yes.")
+            Chat.completeChat("Yes.")
             waitFor { script.hasCommission() }
         } else {
             if (walkAndInteract(script.kovac(), "Commission")) {
