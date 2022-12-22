@@ -95,7 +95,7 @@ class TestScript : ATScript() {
     var npc: Npc? = null
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        Bank.withdraw(379, Bank.Amount.TEN)
+//        Bank.withdraw(379, Bank.Amount.TEN)
         sleep(2000)
     }
 
@@ -129,22 +129,28 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
-            .addString("Target") {
-                "Name=${TargetWidget.name()}, HP=${TargetWidget.health()}"
+            .addString("Container") {
+                val comp = Widgets.component(718, 9)
+                "scrollY=${comp.scrollY()}, screenPoint=${comp.screenPoint()}"
+            }
+            .addString("Component1") {
+                val comp = Widgets.component(718, 9).component(85)
+                "screenPoint=${comp.screenPoint()}"
             }
             .build()
     }
 
     override fun paintCustom(g: Rendering) {
-        val targetWidget = combatWidget() ?: return
-        g.setColor(Color.WHITE)
-        val x = 500
-        var y = 100
-        val yy = 20
-        targetWidget.components.forEach { comp ->
-            g.drawString("id=${comp.index()}, text=${comp.text()}", x, y)
-            y += yy
-        }
+        Widgets.component(718, 9).component(85).draw()
+//        val targetWidget = combatWidget() ?: return
+//        g.setColor(Color.WHITE)
+//        val x = 500
+//        var y = 100
+//        val yy = 20
+//        targetWidget.components.forEach { comp ->
+//            g.drawString("id=${comp.index()}, text=${comp.text()}", x, y)
+//            y += yy
+//        }
     }
 
     fun Tile.toWorld(): Tile {

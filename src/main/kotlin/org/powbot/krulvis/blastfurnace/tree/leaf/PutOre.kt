@@ -21,10 +21,6 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
 
     override fun execute() {
         ATContext.turnRunOn()
-        if (!Inventory.isFull() && script.filledCoalBag) {
-            debug("Emptying coal bag")
-            emptyCoalBag()
-        }
 
         val gloves = Inventory.stream().id(GOLD_GLOVES).firstOrNull()
         val bankComp = Widgets.widget(Constants.BANK_WIDGET).component(Constants.BANK_ITEMS)
@@ -54,9 +50,7 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
             debug("centerPoint=$centerPoint")
             val bankContainsBeltPoint = bankComp.boundingRect().contains(centerPoint)
             debug("bankContainsBeltPoint=$bankContainsBeltPoint")
-            val closedBank = Bank.close()
-            debug("closedBank=$closedBank")
-            if (!bankContainsBeltPoint || closedBank) {
+            if (!bankContainsBeltPoint || Bank.close()) {
                 val hasSpecialOres =
                     Inventory.containsOneOf(
                         Ore.ADAMANTITE.id,
@@ -66,30 +60,29 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
                         Ore.GOLD.id
                     )
 
-                val waitForTime = if (belt.distance() > 1) Random.nextInt(7500, 8000) else 2000
+                val waitForTime = if (belt.distance() > 1) Random.nextInt(10000, 12000) else 2000
                 debug("Walking and interacting with belt, hasSpecialOres=$hasSpecialOres, waitForTime=$waitForTime")
-
-                if (walkAndInteract(belt, "Put-ore-on") && waitFor(waitForTime) { !Inventory.isFull() }) {
-                    if (script.filledCoalBag) {
-                        sleep(600)
-                        emptyCoalBag()
-                    }
+                val hasOre = Inventory.containsOneOf(script.bar.primary.id, script.bar.secondary.id)
+                if (hasOre && walkAndInteract(belt, "Put-ore-on")) {
+                    waitFor(waitForTime) { !Inventory.isFull() }
                     if (hasSpecialOres) {
                         script.waitForBars = true
-                        if (Inventory.containsOneOf(Ore.COAL.id)) {
-                            belt.interact("Put-ore-on")
-                        }
+                    }
+                }
+
+                val coalBag = Inventory.stream().id(COAL_BAG_CLOSED, COAL_BAG_OPENED).firstOrNull()
+                if (coalBag != null) {
+                    debug("Emptying coal bag")
+                    sleep(150)
+                    coalBag.interact("Empty")
+                    if (waitFor { Inventory.containsOneOf(Ore.COAL.id) }) {
+                        belt.interact("Put-ore-on")
+                        waitFor { Inventory.isEmpty() }
                     }
                 }
             } else {
                 debug("Bank is still open & can't close & can't see belt")
             }
-        }
-    }
-
-    fun emptyCoalBag() = Inventory.stream().id(COAL_BAG_CLOSED, COAL_BAG_OPENED).findFirst().ifPresent {
-        if (it.interact("Empty") && waitFor { Inventory.containsOneOf(Ore.COAL.id) }) {
-            script.filledCoalBag = false
         }
     }
 

@@ -40,7 +40,8 @@ import kotlin.math.round
     version = "1.3.7",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
-    category = ScriptCategory.Combat
+    category = ScriptCategory.Combat,
+    priv = true
 )
 @ScriptConfiguration.List(
     [
@@ -144,7 +145,7 @@ class Fighter : ATScript() {
     @com.google.common.eventbus.Subscribe
     fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {
         if (pcce.checkboxId == "stopAfterTask") {
-
+            lastTask = pcce.checked
             val painter = painter as FighterPainter
             if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
                 val index =
@@ -320,7 +321,7 @@ class Fighter : ATScript() {
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
         val interacting = me.interacting()
-        if (interacting is Npc) {
+        if (interacting is Npc && interacting != Npc.Nil) {
             currentTarget = interacting
             val watcher = npcWatchers.firstOrNull { it.npc == interacting }
 //            ATContext.debug("Current NpcDeathWatcher=${watcher}, active=${watcher?.active}")
@@ -359,14 +360,8 @@ class Fighter : ATScript() {
         }
     }
 
-    var lastTask = false
+    var lastTask = true
 
-    @com.google.common.eventbus.Subscribe
-    fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
-        if (e.checkboxId == "stopAfterTask") {
-            lastTask = e.checked
-        }
-    }
 }
 
 

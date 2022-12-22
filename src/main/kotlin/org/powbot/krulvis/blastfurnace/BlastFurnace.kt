@@ -18,7 +18,8 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     author = "Krulvis",
     version = "1.2.4",
     markdownFileName = "BF.md",
-    category = ScriptCategory.Smithing
+    category = ScriptCategory.Smithing,
+    priv = true
 )
 @ScriptConfiguration.List(
     [
@@ -51,7 +52,6 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     ]
 )
 class BlastFurnace : ATScript() {
-    var filledCoalBag: Boolean = false
 
     val drinkPotion by lazy { getOption<Boolean>("Drink potions") }
     val potion by lazy { Potion.valueOf(getOption("Potion")) }
