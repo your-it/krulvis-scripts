@@ -12,7 +12,7 @@ enum class Bar(
     override val ids: IntArray,
     val shopId: Int,
     //settingId & shiftAmount are used for Blast furnace
-    val settingId: Int,
+    val bfSettingId: Int,
     val shiftAmount: Int,
     val primary: Ore,
     val secondary: Ore,
@@ -27,8 +27,11 @@ enum class Bar(
     ADAMANTITE(intArrayOf(2361), 112, 546, 0, Ore.ADAMANTITE, Ore.COAL, 6),
     RUNITE(intArrayOf(2363), 113, 546, 8, Ore.RUNITE, Ore.COAL, 8);
 
+    val giantsFoundryCount: Int
+        get() = Varpbits.varpbit(GIANTS_FOUNDRY_VARP, 5 * ELEMENTALS.indexOf(this), 31)
+
     val blastFurnaceCount: Int
-        get() = Varpbits.varpbit(settingId) shr shiftAmount and 0x1F
+        get() = Varpbits.varpbit(bfSettingId) shr shiftAmount and 0x1F
 
     fun getSmeltableCount(): Int {
         val prim = primary.getCount()
@@ -58,6 +61,11 @@ enum class Bar(
 
     override fun toString(): String {
         return name
+    }
+
+    companion object {
+        val ELEMENTALS = arrayOf(BRONZE, IRON, STEEL, MITHRIL, ADAMANTITE, RUNITE)
+        val GIANTS_FOUNDRY_VARP = 3431
     }
 }
 

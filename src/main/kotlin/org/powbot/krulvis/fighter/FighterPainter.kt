@@ -5,7 +5,6 @@ import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.paint.TextPaintItem
-import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -26,7 +25,8 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             .trackSkill(Skill.Magic)
             .trackSkill(Skill.Ranged)
             .trackSkill(Skill.Slayer)
-            .addCheckbox("Stop after Slay task", "stopAfterTask", false)
+            .add(slayerTracker)
+            .addCheckbox("Stop after Slay task", "stopAfterTask", true)
             .withTotalLoot(true)
 //            .addString("LootList") {
 //                script.lootList.joinToString { "${it.name()}: ${it.stackSize()}" }

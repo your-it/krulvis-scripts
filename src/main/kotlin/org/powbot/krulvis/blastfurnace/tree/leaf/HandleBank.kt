@@ -19,6 +19,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
         script.waitForBars = false
         if (Bank.opened()) {
             debug("Bank is open")
+            val coalCount = Bank.stream().id(Ore.COAL.id).count(true)
             if (Inventory.containsOneOf(*Bar.values().map { it.id }.toIntArray())) {
                 debug("Depositing bars")
                 Bank.depositAllExcept(COAL_BAG_CLOSED, COAL_BAG_OPENED, ICE_GLOVES, GOLD_GLOVES)
@@ -46,7 +47,6 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                 }
                 Inventory.stream().id(COAL_BAG_OPENED, COAL_BAG_CLOSED).findFirst().ifPresent {
                     it.click("Fill")
-                    script.filledCoalBag = true
                 }
 
                 val nextOre = nextOre()
