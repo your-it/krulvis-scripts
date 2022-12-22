@@ -44,18 +44,13 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
             val bonus = getComission()
             script.log.info("Setting moulds for types: [${bonus.joinToString(", ")}]")
 
-            val pageMoulds = getPageMoulds()
-//            script.log.info("Page moulds:")
-//            pageMoulds.forEach { mouldComp ->
-//                val name = mouldComp.first.name().replace(Regex("<.*?>"), "")
-//                val bonusStr = mouldComp.second.joinToString(separator = ", ") { "${it.type}: ${it.amount}" }
-//                script.log.info("$name:${mouldComp.first.index()} -> $bonusStr")
-//            }
+            val bestMould = getPageMoulds().maxByOrNull { mould ->
+                mould.second.filter { it.type in bonus }.sumOf { it.amount }
+            } ?: return
 
-            val bestMould =
-                pageMoulds.maxByOrNull { mould -> mould.second.filter { it.type in bonus }.sumOf { it.amount } }!!
             val bonusStr = bestMould.second.joinToString(separator = ", ") { "${it.type}: ${it.amount}" }
             script.log.info("Found max mould=${bonusStr}, isSelected=${bestMould.first.name().isBlank()}")
+
             if (bestMould.first.name().isNotBlank()) {
                 val scrollBar = script.mouldWidget().component(11).component(1)
                 if (verticalScrollTo(bestMould.first, mouldContainer(), scrollBar)) {
@@ -85,10 +80,7 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
 
     fun verticalScrollTo(component: Component, container: Component, scrollBar: Component): Boolean {
         val topY = container.screenPoint().y - 5
-        val bottomY = topY + container.height() + 5
-
-        //        val startTime = System.currentTimeMillis()
-//
+        val bottomY = topY + container.height() - 20
         fun visible() = component.screenPoint().y in topY..bottomY
         fun grabPoint(): Point {
             val point = scrollBar.screenPoint()
