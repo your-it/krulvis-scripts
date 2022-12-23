@@ -30,6 +30,10 @@ class CanPerform(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Can per
     override val successComponent: TreeComponent<GiantsFoundry> = SmithAndWait(script)
 
     override fun validate(): Boolean {
-        return script.currentAction?.canPerform() == true
+        val action = script.currentAction
+        if (action != null && action.min == -1) {
+            GiantsFoundry.Action.calculateMinMax()
+        }
+        return action?.canPerform() == true
     }
 }
