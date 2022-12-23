@@ -55,7 +55,8 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
                 val scrollBar = script.mouldWidget().component(11).component(1)
                 if (verticalScrollTo(bestMould.first, mouldContainer(), scrollBar)) {
                     bestMould.first.click()
-                    waitFor { mouldType.hasSelected() }
+                    val selected = waitFor { mouldType.hasSelected() }
+                    script.log.info("Selected bestMould successfully=$selected")
                 }
             }
         } else {

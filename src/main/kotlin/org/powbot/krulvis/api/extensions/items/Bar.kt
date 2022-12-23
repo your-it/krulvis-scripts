@@ -66,6 +66,8 @@ enum class Bar(
     companion object {
         val ELEMENTALS = arrayOf(BRONZE, IRON, STEEL, MITHRIL, ADAMANTITE, RUNITE)
         val GIANTS_FOUNDRY_VARP = 3431
+
+        fun forId(id: Int) = values().firstOrNull { it.id == id }
     }
 }
 
