@@ -98,13 +98,14 @@ class GiantsFoundry : ATScript() {
     enum class Action(
         val textureId: Int,
         val interactable: String,
+        val tile: Tile,
         val min: Int,
         val max: Int,
         val heats: Boolean = false
     ) {
-        HAMMER(4442, "Trip hammer", 711, 957),
-        GRIND(4443, "Grindstone", 376, 620, true),
-        POLISH(4444, "Polishing wheel", 45, 291);
+        HAMMER(4442, "Trip hammer", Tile(3367, 11497), 711, 957),
+        GRIND(4443, "Grindstone", Tile(3364, 11492), 378, 620, true),
+        POLISH(4444, "Polishing wheel", Tile(3365, 11485), 45, 291);
 
         fun canPerform() = getHeat() in min..max
 

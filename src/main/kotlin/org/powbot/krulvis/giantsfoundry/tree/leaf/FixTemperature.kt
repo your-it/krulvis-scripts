@@ -23,7 +23,6 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
 
         var lastStepSize = 5
         script.log.info("Performing: $actionStr, on obj=${actionObj.name}, targetHeat=$targetHeat")
-        val actionTile = action.getObj()?.tile
         if (interaction(actionObj, "Use")) {
             waitFor { tempStep(lastTemp, lastStepSize) }
             var lastTempChangeMS = System.currentTimeMillis()
@@ -55,7 +54,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                         "\n done=${done(action, targetHeat, shouldCool, lastStepSize)}," +
                         "\n last temp change was ${System.currentTimeMillis() - lastTempChangeMS} ms ago"
             )
-            script.stopActivity(actionTile)
+            script.stopActivity(action.tile)
         } else {
             script.log.info("Failed to even FIX interact....")
         }
