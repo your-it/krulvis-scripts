@@ -74,7 +74,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
     fun done(action: GiantsFoundry.Action, target: Int, cooling: Boolean, lastStepSize: Int): Boolean {
         val currentHeat = GiantsFoundry.getHeat()
         return if (cooling) {
-            currentHeat <= if (action.heats) target + lastStepSize + 6 else target + 5
+            currentHeat <= if (action.heats) target + lastStepSize + 6 else target + 3
         } else {
             currentHeat >= if (action.heats) target + lastStepSize else target - lastStepSize
         }

@@ -1,6 +1,7 @@
 package org.powbot.krulvis.giantsfoundry.tree.leaf
 
 import org.powbot.api.Condition.sleep
+import org.powbot.api.Random
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Skills
@@ -55,7 +56,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
         if (boostComp.componentCount() > 0) {
             val boostCompChild = boostComp.component(0)
             script.log.info("Can possibly click boost! col=${boostCompChild.textColor()}")
-            return boostCompChild.textColor() == 16570115
+            return boostCompChild.textColor() == 16570115 && Random.nextDouble() > 0.7
         }
         return false
     }
