@@ -109,7 +109,7 @@ class GiantsFoundry : ATScript() {
         GRIND(4443, "Grindstone", Tile(3364, 11492), -1, -1, 20, true),
         POLISH(4444, "Polishing wheel", Tile(3365, 11485), -1, -1, 19);
 
-        fun canPerform() = getHeat() in min..max
+        fun canPerform() = getHeat() in min + 4..max
 
         fun calculateMinMax() {
             val totalWidth = Widgets.component(ROOT, 8).width()
