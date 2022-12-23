@@ -4,6 +4,7 @@ import org.powbot.api.Condition.sleep
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Skills
+import org.powbot.api.rt4.Widgets
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
@@ -32,6 +33,9 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
                     lastXpGain = System.currentTimeMillis()
                     smithXp = Skills.experience(Skill.Smithing)
                 }
+                if (canBoost()) {
+                    actionObj.interact("Use")
+                }
                 sleep(150)
             }
             script.log.info(
@@ -40,10 +44,20 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
                         "\n canPerform=${action.canPerform()}," +
                         "\n lastXpGain was ${System.currentTimeMillis() - lastXpGain} ms ago"
             )
-            script.stopActivity()
+            script.stopActivity(null)
         } else {
             script.log.info("Failed to even SMITH interact...")
         }
+    }
+
+    fun canBoost(): Boolean {
+        val boostComp = Widgets.component(GiantsFoundry.ROOT, 4)
+        if (boostComp.componentCount() > 0) {
+            val boostCompChild = boostComp.component(0)
+            script.log.info("Can possibly click boost! col=${boostCompChild.textColor()}")
+            return boostCompChild.textColor() == 16570115
+        }
+        return false
     }
 
     fun interaction(obj: GameObject, action: String): Boolean {

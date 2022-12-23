@@ -23,7 +23,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
 
         var lastStepSize = 5
         script.log.info("Performing: $actionStr, on obj=${actionObj.name}, targetHeat=$targetHeat")
-
+        val actionTile = action.getObj()?.tile
         if (interaction(actionObj, "Use")) {
             waitFor { tempStep(lastTemp, lastStepSize) }
             var lastTempChangeMS = System.currentTimeMillis()
@@ -42,8 +42,10 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                     script.log.info("Made $lastStepSize temperature step from=$lastTemp -> ${GiantsFoundry.getHeat()}, $ms ago to")
                     lastTempChangeMS = System.currentTimeMillis()
                     lastTemp = GiantsFoundry.getHeat()
-                    if (lastStepSize > 100) {
+                    if (lastStepSize > 30 && abs(lastTemp - targetHeat) < lastStepSize) {
+                        script.log.info("Clicking again we're making BIG steps=$lastStepSize")
                         interaction(actionObj, "Use")
+                        lastStepSize = 5
                     }
                 }
                 sleep(150)
@@ -53,7 +55,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                         "\n done=${done(action, targetHeat, shouldCool, lastStepSize)}," +
                         "\n last temp change was ${System.currentTimeMillis() - lastTempChangeMS} ms ago"
             )
-            script.stopActivity()
+            script.stopActivity(actionTile)
         } else {
             script.log.info("Failed to even FIX interact....")
         }
@@ -73,7 +75,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
     fun done(action: GiantsFoundry.Action, target: Int, cooling: Boolean, lastStepSize: Int): Boolean {
         val currentHeat = GiantsFoundry.getHeat()
         return if (cooling) {
-            currentHeat <= if (action.heats) target + lastStepSize + 5 else target + 5
+            currentHeat <= if (action.heats) target + lastStepSize + 6 else target + 5
         } else {
             currentHeat >= if (action.heats) target + lastStepSize else target - lastStepSize
         }

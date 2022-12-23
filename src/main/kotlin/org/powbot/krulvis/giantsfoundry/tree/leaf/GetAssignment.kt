@@ -23,7 +23,7 @@ class GetAssignment(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Gettin
         if (Chat.canContinue()) {
             Chat.clickContinue()
             sleep(1000)
-            waitFor { Chat.canContinue() || Chat.chatting() }
+            waitFor { script.hasCommission() || Chat.canContinue() || Chat.chatting() }
         } else if (Chat.chatting()) {
             Chat.completeChat("Yes.")
             waitFor { script.hasCommission() }

@@ -1,8 +1,6 @@
 package org.powbot.krulvis.giantsfoundry.tree.leaf
 
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -15,15 +13,18 @@ class TakeBarsFromBank(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Tak
             val button = script.mouldWidget().firstOrNull { it?.text()?.contains("Set Mould") == true } ?: return
             button.click()
             waitFor { !script.mouldWidgetOpen() }
-        } else if (openBank()) {
-            script.barsToUse.forEach { (bar, amount) ->
-                val curCount = Inventory.stream().id(bar).count().toInt()
-                if (curCount <= amount) {
-                    if (Bank.withdraw(bar, amount - curCount)) {
-                        waitFor { Inventory.stream().id(bar).count().toInt() == amount }
+        }
+        if (openBank()) {
+            script.barsToUse
+                .map { Pair(it.first, it.second - script.crucibleBarCount(it.first)) }
+                .forEach { (bar, amount) ->
+                    val curCount = bar.getInventoryCount()
+                    if (curCount <= amount) {
+                        if (bar.withdrawExact(amount)) {
+                            waitFor { bar.getInventoryCount() == amount }
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -32,7 +33,6 @@ class TakeBarsFromBank(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Tak
             return true
         }
         val bankObj = Objects.stream().name("Bank chest").firstOrNull() ?: return false
-        if (bankObj.distance() > 3) Movement.step(bankObj.tile)
-        return waitFor { bankObj.inViewport() } && bankObj.interact("Use") && waitFor { Bank.opened() }
+        return script.interactObj(bankObj, "Use") && waitFor { Bank.opened() }
     }
 }
