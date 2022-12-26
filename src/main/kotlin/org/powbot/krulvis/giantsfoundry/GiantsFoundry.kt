@@ -21,7 +21,7 @@ import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
     name = "krul GiantFoundry",
     description = "Makes swords for big giant.",
     author = "Krulvis",
-    version = "1.0.2",
+    version = "1.0.3",
     category = ScriptCategory.Smithing,
     priv = true
 )
@@ -130,7 +130,7 @@ class GiantsFoundry : ATScript() {
 
     companion object {
         val ROOT = 754
-        fun getHeat(): Int = Varpbits.varpbit(3433, 2047)
+        fun getHeat(): Int = Varpbits.varpbit(3433, 1023)
 
     }
 
