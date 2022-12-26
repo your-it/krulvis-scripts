@@ -13,7 +13,9 @@ class GiantsFoundryPainter(script: GiantsFoundry) : ATPaint<GiantsFoundry>(scrip
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder.trackSkill(Skill.Smithing)
-            .addString("Heat") { "${GiantsFoundry.getHeat()}" }
+            .addString("Heat") {
+                "${GiantsFoundry.getHeat()}"
+            }
             .addString("Action") { "${script.currentAction}" }
             .addString("Can Perform") { "${script.currentAction?.canPerform()}" }
             .addString("Job") { Varpbits.varpbit(VARP).toString(2) }
