@@ -93,10 +93,11 @@ class TestScript : ATScript() {
     var path = emptyList<Edge<*>?>()
     var obj: GameObject? = null
     var npc: Npc? = null
+    var lastLoop = System.currentTimeMillis()
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-//        Bank.withdraw(379, Bank.Amount.TEN)
-        sleep(2000)
+        log.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
+        lastLoop = System.currentTimeMillis()
     }
 
     //Tile(x=3635, y=3362, floor=0)

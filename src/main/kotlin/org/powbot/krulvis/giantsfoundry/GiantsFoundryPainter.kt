@@ -14,11 +14,12 @@ class GiantsFoundryPainter(script: GiantsFoundry) : ATPaint<GiantsFoundry>(scrip
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder.trackSkill(Skill.Smithing)
             .addString("Heat") {
-                "${GiantsFoundry.getHeat()}"
+                "${currentTemp()}"
             }
             .addString("Action") { "${script.currentAction}" }
             .addString("Can Perform") { "${script.currentAction?.canPerform()}" }
-            .addString("Job") { Varpbits.varpbit(VARP).toString(2) }
+            .addString("Job") { Varpbits.varpbit(JOB_VARP).toString(2) }
+            .addString("Heat") { Varpbits.varpbit(HEAT_VARP, 10, 2147483647).toString(2) }
 //            .addString("Forte") { MouldType.Forte.selected().toString(2) }
 //            .addString("Blades") { MouldType.Blades.selected().toString(2) }
 //            .addString("Tips") { MouldType.Tips.selected().toString(2) }

@@ -1,6 +1,7 @@
 package org.powbot.krulvis.giantsfoundry.tree.leaf
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -32,7 +33,7 @@ class TakeBarsFromBank(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Tak
         if (Bank.opened()) {
             return true
         }
-        val bankObj = Objects.stream().name("Bank chest").firstOrNull() ?: return false
+        val bankObj = Objects.stream(30).type(GameObject.Type.INTERACTIVE).name("Bank chest").firstOrNull() ?: return false
         return script.interactObj(bankObj, "Use") && waitFor { Bank.opened() }
     }
 }
