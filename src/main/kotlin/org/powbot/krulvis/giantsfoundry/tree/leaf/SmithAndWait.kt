@@ -13,6 +13,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
+import org.powbot.krulvis.giantsfoundry.ROOT
 
 class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith and wait") {
 
@@ -52,7 +53,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
     }
 
     fun canBoost(): Boolean {
-        val boostComp = Widgets.component(GiantsFoundry.ROOT, 4)
+        val boostComp = Widgets.component(ROOT, 4)
         if (boostComp.componentCount() > 0) {
             val boostCompChild = boostComp.component(0)
             script.log.info("Can possibly click boost! col=${boostCompChild.textColor()}")

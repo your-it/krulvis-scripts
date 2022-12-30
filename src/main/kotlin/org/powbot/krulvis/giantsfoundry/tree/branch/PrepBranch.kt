@@ -1,9 +1,14 @@
 package org.powbot.krulvis.giantsfoundry.tree.branch
 
+import org.powbot.api.Random
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 import org.powbot.krulvis.giantsfoundry.MouldType
@@ -21,9 +26,9 @@ class HasAssignment(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Has 
 class CanTakeSword(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Can take sword?") {
     override val failedComponent: TreeComponent<GiantsFoundry> = HasSetupMoulds(script)
     override val successComponent: TreeComponent<GiantsFoundry> = SimpleLeaf(script, "Take Sword") {
-        val jig = Objects.stream().name("Mould jig (Poured metal)").firstOrNull() ?: return@SimpleLeaf
+        val jig = script.fullJig() ?: return@SimpleLeaf
         if (script.interactObj(jig, "Pick-up")) {
-            waitFor { script.isSmithing() }
+            waitFor(long()) { script.isSmithing() }
         }
     }
 
@@ -45,9 +50,16 @@ class HasSetupMoulds(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Has
 class IsCrucibleFull(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Is crucible full?") {
     override val failedComponent: TreeComponent<GiantsFoundry> = HasBars(script)
     override val successComponent: TreeComponent<GiantsFoundry> = SimpleLeaf(script, "Pour crucible") {
-        val crucible = Objects.stream().name("Crucible (full)").firstOrNull() ?: return@SimpleLeaf
+        val crucible = Objects.stream(30)
+            .type(GameObject.Type.INTERACTIVE)
+            .name("Crucible (full)").firstOrNull() ?: return@SimpleLeaf
         if (script.interactObj(crucible, "Pour")) {
-            waitFor { script.areBarsPoured() }
+            val jig = script.emptyJig()
+            if (jig != null) {
+                sleep(Random.nextInt(1000, 1500))
+                Movement.step(jig.tile)
+            }
+            waitFor(long()) { script.areBarsPoured() }
         }
     }
 

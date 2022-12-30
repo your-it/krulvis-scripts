@@ -2,10 +2,7 @@ package org.powbot.krulvis.giantsfoundry.tree.leaf
 
 import org.powbot.api.Input
 import org.powbot.api.Point
-import org.powbot.api.rt4.Component
-import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Varpbits
-import org.powbot.api.rt4.Widgets
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.BonusType
@@ -60,7 +57,7 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
                 }
             }
         } else {
-            val jig = Objects.stream().name("Mould jig (empty)").firstOrNull() ?: return
+            val jig = script.emptyJig() ?: return
             if (jig.interact("Setup")) {
                 waitFor { script.mouldWidgetOpen() }
             }

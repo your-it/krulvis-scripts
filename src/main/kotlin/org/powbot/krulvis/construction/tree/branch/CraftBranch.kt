@@ -2,26 +2,15 @@ package org.powbot.krulvis.construction.tree.branch
 
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.construction.Construction
+import org.powbot.krulvis.construction.tree.leaf.Build
+import org.powbot.krulvis.construction.tree.leaf.Remove
 
-class InHouse(script: Construction) : Branch<Construction>(script, "InHouse?") {
-    override val failedComponent: TreeComponent<Construction>
-        get() = TODO("Not yet implemented")
-    override val successComponent: TreeComponent<Construction> = BuildingModeOn(script)
-
-    override fun validate(): Boolean {
-        TODO("Not yet implemented")
-    }
-}
-
-class BuildingModeOn(script: Construction) : Branch<Construction>(script, "BuildingModeOn?") {
-    override val failedComponent: TreeComponent<Construction>
-        get() = TODO("Not yet implemented")
-    override val successComponent: TreeComponent<Construction>
-        get() = TODO("Not yet implemented")
+class CanBuild(script: Construction) : Branch<Construction>(script, "Can build?") {
+    override val failedComponent: TreeComponent<Construction> = Remove(script)
+    override val successComponent: TreeComponent<Construction> = Build(script)
 
     override fun validate(): Boolean {
-        return House.inBuildingMode()
+        return script.buildSpace() != null && script.hasMats()
     }
 }
