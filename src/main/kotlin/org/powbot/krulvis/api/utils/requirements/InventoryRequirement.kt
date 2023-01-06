@@ -69,7 +69,7 @@ class InventoryRequirement(
 //                "InvReq: ${item.itemName}: $amount"
 //            }
             else -> {
-                "InventoryRequirement(name=${item.itemName()}, amount=$amount)"
+                "InventoryRequirement(name=${item.id}, amount=$amount)"
             }
         }
     }

@@ -11,7 +11,6 @@ import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.BankLocation
@@ -25,7 +24,6 @@ import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.slayer.Master
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -37,7 +35,7 @@ import kotlin.math.round
     name = "krul Fighter",
     description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
-    version = "1.3.7",
+    version = "1.3.8",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat,
@@ -243,7 +241,7 @@ class Fighter : ATScript() {
         val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
         val ammo = equipment.firstOrNull { it.slot == Slot.QUIVER }
         if (ammo != null) {
-            names.add(ItemLoader.load(ammo.id)?.name?.lowercase() ?: "nulll")
+            names.add(ItemLoader.lookup(ammo.id)?.name()?.lowercase() ?: "nulll")
         }
         names.add("brimstone key")
         names.add("ancient shard")
@@ -291,17 +289,21 @@ class Fighter : ATScript() {
 
 
     fun watchLootDrop(tile: Tile) {
-        log.info("Waiting for loot at $tile")
-        val startMilis = System.currentTimeMillis()
-        waitingForLootTile = tile
-        GlobalScope.launch {
-            val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
-            val loot = watcher.waitForLoot()
+        if (waitingForLootTile != tile) {
+            log.info("Waiting for loot at $tile")
+            val startMilis = System.currentTimeMillis()
+            waitingForLootTile = tile
+            GlobalScope.launch {
+                val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
+                val loot = watcher.waitForLoot()
 //            Notifications.showNotification("Found loot=${loot.joinToString()}")
-            log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
-            lootList.addAll(loot)
-            watcher.unregister()
-            waitingForLootTile = null
+                log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
+                lootList.addAll(loot)
+                watcher.unregister()
+                waitingForLootTile = null
+            }
+        } else {
+            log.info("Already watching loot at tile: $tile for loot")
         }
     }
 
@@ -316,20 +318,21 @@ class Fighter : ATScript() {
     fun loot(): List<GroundItem> =
         if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
 
-    var npcWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
+    var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
 
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
         val interacting = me.interacting()
         if (interacting is Npc && interacting != Npc.Nil) {
             currentTarget = interacting
-            val watcher = npcWatchers.firstOrNull { it.npc == interacting }
+            val watcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
 //            ATContext.debug("Current NpcDeathWatcher=${watcher}, active=${watcher?.active}")
             if (watcher == null || !watcher.active) {
-                npcWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
+                log.info("Current watcher active=${watcher?.active}")
+                npcDeathWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
             }
         }
-        npcWatchers.removeAll { !it.active }
+        npcDeathWatchers.removeAll { !it.active }
     }
 
     @com.google.common.eventbus.Subscribe
@@ -344,7 +347,7 @@ class Fighter : ATScript() {
         ) {
             if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
                 painter.paintBuilder.trackInventoryItems(id)
-                log.info("Now tracking: ${ItemLoader.load(id)?.name} adding ${evt.quantityChange} as start")
+                log.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
                 painter.paintBuilder.items.forEach { row ->
                     val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
                     if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange

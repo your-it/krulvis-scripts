@@ -73,7 +73,7 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
 
     override fun validate(): Boolean {
         inventoryRune = getInsertableRune()
-        return inventoryRune != null
+        return RunePouch.inventory() && inventoryRune != null
     }
 }
 

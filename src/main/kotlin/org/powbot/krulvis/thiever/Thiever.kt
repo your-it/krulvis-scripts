@@ -155,7 +155,7 @@ class Thiever : ATScript() {
         val id = evt.itemId
         if (evt.quantityChange > 0 && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
             painter.paintBuilder.trackInventoryItems(id)
-            log.info("Now tracking: ${ItemLoader.load(id)?.name} adding ${evt.quantityChange} as start")
+            log.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
             painter.paintBuilder.items.forEach { row ->
                 val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
                 if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange

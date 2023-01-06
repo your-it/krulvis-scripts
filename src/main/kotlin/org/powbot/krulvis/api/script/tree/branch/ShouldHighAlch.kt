@@ -31,7 +31,7 @@ class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: Tree
     }
 
 
-    val spell = Magic.Spell.HIGH_ALCHEMY
+    val spell get() = Magic.Spell.HIGH_ALCHEMY
     var alchable: Item? = null
 
     fun alchable(): Item? {

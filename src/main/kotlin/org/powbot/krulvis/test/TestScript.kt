@@ -125,7 +125,7 @@ class TestScript : ATScript() {
 class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
     fun combatWidget(): Widget? {
-        return Widgets.stream().firstOrNull { it.components.any { c -> c.text() == "Bloodveld" } }
+        return Widgets.stream().firstOrNull { it.components().any { c -> c.text() == "Bloodveld" } }
     }
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {

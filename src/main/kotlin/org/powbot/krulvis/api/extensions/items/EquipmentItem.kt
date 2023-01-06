@@ -30,7 +30,7 @@ interface EquipmentItem : Item {
             ) {
                 waitFor(5000) { inInventory() }
             } else if (!inBank() && stopIfOut) {
-                ScriptManager.script()!!.log.warning("Stopping script due to being out of: ${itemName()}")
+                ScriptManager.script()!!.log.warning("Stopping script due to being out of: ${id}")
                 ScriptManager.stop()
             }
         }
@@ -50,7 +50,7 @@ interface EquipmentItem : Item {
         if (inInventory()) {
             val item = Inventory.stream().id(*ids).first()
             val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-            ScriptManager.script()!!.log.info("Equipping ${itemName()} action=$action")
+            ScriptManager.script()!!.log.info("Equipping ${id} action=$action")
             if (item.interact(action)) {
                 if (wait) waitFor(2000) { inEquipment() } else return true
             }

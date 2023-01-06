@@ -64,7 +64,7 @@ class Combiner : ATScript() {
         items.filter { it.value in 2..28 }.map { it.key }.first()
     }
 
-    val name by lazy { ItemLoader.load(id)?.name }
+//    val name by lazy { ItemLoader.lookup(id)?.name }
 
     override val rootComponent: TreeComponent<*> = ShouldBank(this)
 

@@ -1,13 +1,10 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.CacheItemConfig
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import java.util.*
-import java.util.stream.Collectors
 
 interface Item {
 
@@ -72,7 +69,7 @@ interface Item {
         return false
     }
 
-    fun itemName(): String = CacheItemConfig.load(id).name
+//    fun itemName(): String = CacheItemConfig.load(id).name
 
     companion object {
         val HAMMER = 2347
