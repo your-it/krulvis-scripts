@@ -1,7 +1,6 @@
 package org.powbot.krulvis.combiner.tree.leaf
 
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.CacheItemConfig
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -25,7 +24,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
             Bank.depositAllExcept(*keepItems)
         } else {
             script.items.forEach { (id, amount) ->
-                val stackable = ItemLoader.load(id)?.stackable == true
+                val stackable = ItemLoader.lookup(id)?.stackable() == true
                 if (stackable && amount > 1) {
                     Bank.withdraw(id, Bank.Amount.ALL)
                 } else if (!Bank.withdrawExact(id, amount, false) && amount <= 28) {
@@ -40,7 +39,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
                     }
                 }
             if (outOfItem != null) {
-                script.log.info("Out of: ${CacheItemConfig.load(outOfItem.key).name}, stopping script")
+                script.log.info("Out of: ${outOfItem.key}, stopping script")
                 ScriptManager.stop()
             }
         }

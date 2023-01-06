@@ -76,10 +76,12 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
         }
     }
 
-    fun verticalScrollTo(component: Component, container: Component, scrollBar: Component): Boolean {
+    fun verticalScrollTo(mouldButton: Component, container: Component, scrollBar: Component): Boolean {
         val topY = container.screenPoint().y - 5
         val bottomY = topY + container.height() - 20
-        fun visible() = component.screenPoint().y in topY..bottomY
+
+        fun visible() = mouldButton.screenPoint().y in topY..bottomY
+
         fun grabPoint(): Point {
             val point = scrollBar.screenPoint()
             return Point(
@@ -87,14 +89,9 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
                 point.y + Random.nextInt(3, scrollBar.height() - 3)
             )
         }
-//
-//        do {
-//            if (component.screenPoint().y < topY) {
-//                Input.drag(grabPoint())
-//            }
-//        } while (!visible() && System.currentTimeMillis() - startTime <= 5000)
+
         val grabPoint = grabPoint()
-        val scrollY = component.screenPoint().y
+        val scrollY = mouldButton.screenPoint().y
         val distance = abs(scrollY - topY)
         val minY = grabPoint.y - distance
         val maxY = grabPoint.y + distance

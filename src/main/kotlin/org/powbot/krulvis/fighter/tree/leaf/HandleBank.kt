@@ -9,9 +9,7 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.ATContext.withdrawExact
-import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.script.tree.branch.ShouldEat
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
@@ -39,7 +37,7 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
         } else {
             script.inventory.forEach { (id, amount) ->
                 if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
-                    script.log.info("Stopped because no ${ItemLoader.load(id)} in bank")
+                    script.log.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
                     ScriptManager.stop()
                 }
             }

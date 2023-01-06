@@ -104,5 +104,5 @@ class Woodcutter : ATScript() {
 }
 
 fun main() {
-    Woodcutter().startScript(false)
+    Woodcutter().startScript("127.0.0.1", "GIM", false)
 }

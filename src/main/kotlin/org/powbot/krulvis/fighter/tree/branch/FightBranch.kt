@@ -27,8 +27,8 @@ class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?
                 killItem!!.ids[0]
             )
         ) {
-            script.watchLootDrop(script.currentTarget!!.tile())
             if (Condition.wait({ Skills.experience(Constants.SKILLS_SLAYER) > currentXp }, 300, 10)) {
+                script.watchLootDrop(script.currentTarget!!.tile())
                 script.currentTarget = null
             }
         }
@@ -46,18 +46,15 @@ class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?
 class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
     override val failedComponent: TreeComponent<Fighter> = CanKill(script)
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Killing..") {
-        val interacting = Players.local().interacting()
         Chat.clickContinue()
         if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
             Prayer.quickPrayer(true)
         }
 
         val safespot = script.centerTile()
-        if (Condition.wait { shouldReturnToSafespot() || (script.killItem() == null && (interacting == Actor.Nil || TargetWidget.health() == 0)) }) {
+        if (Condition.wait { shouldReturnToSafespot() }) {
             if (shouldReturnToSafespot()) {
-                Movement.walkTo(safespot)
-            } else {
-                script.currentTarget = null
+                Movement.step(safespot, 0)
             }
         }
     }

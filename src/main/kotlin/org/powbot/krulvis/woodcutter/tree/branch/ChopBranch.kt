@@ -4,6 +4,7 @@ import org.powbot.api.Condition.sleep
 import org.powbot.api.Random
 import org.powbot.api.rt4.Combat
 import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -13,6 +14,18 @@ import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.krulvis.woodcutter.tree.leaf.Chop
 import org.powbot.krulvis.woodcutter.tree.leaf.Walk
+import org.powbot.mobile.script.ScriptManager
+
+class HasTools(script: Woodcutter) : Branch<Woodcutter>(script, "Has Tools?") {
+    override val failedComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Stopping Script") {
+        ScriptManager.stop()
+    }
+    override val successComponent: TreeComponent<Woodcutter> = AtSpot(script)
+
+    override fun validate(): Boolean {
+        return Inventory.stream().id(*script.TOOLS).isNotEmpty() || Equipment.stream().id(*script.TOOLS).isNotEmpty()
+    }
+}
 
 class AtSpot(script: Woodcutter) : Branch<Woodcutter>(script, "At Spot?") {
     override val failedComponent: TreeComponent<Woodcutter> = Walk(script)

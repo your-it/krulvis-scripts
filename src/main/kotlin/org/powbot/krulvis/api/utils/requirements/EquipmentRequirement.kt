@@ -19,5 +19,5 @@ class EquipmentRequirement(override val item: EquipmentItem, override val amount
         return item.inEquipment()
     }
 
-    override fun toString(): String = "EquipmentRequirement -> ${item.itemName()}: $amount"
+    override fun toString(): String = "EquipmentRequirement -> ${item.id}: $amount"
 }

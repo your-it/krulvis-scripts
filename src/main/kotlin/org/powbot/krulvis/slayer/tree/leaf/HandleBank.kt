@@ -42,8 +42,8 @@ import org.powbot.mobile.script.ScriptManager
 //            val currentAmount = Inventory.stream().id(id).count(true).toInt()
 //            if (currentAmount < amount) {
 //                if (!Bank.withdraw(id, amount - currentAmount) && Bank.stream().id(id).isEmpty()) {
-//                    script.log.info("Out of ${ItemLoader.load(id)?.name}")
-//                    Notifications.showNotification("Out of ${ItemLoader.load(id)?.name}")
+//                    script.log.info("Out of ${ItemLoader.lookup(id)?.name}")
+//                    Notifications.showNotification("Out of ${ItemLoader.lookup(id)?.name}")
 //                    ScriptManager.stop()
 //                }
 //            }

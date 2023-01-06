@@ -25,7 +25,7 @@ class ShouldBank(script: Woodcutter) : Branch<Woodcutter>(script, "Should Bank?"
 }
 
 class ShouldPickNest(script: Woodcutter) : Branch<Woodcutter>(script, "Should Pick nest?") {
-    override val failedComponent: TreeComponent<Woodcutter> = AtSpot(script)
+    override val failedComponent: TreeComponent<Woodcutter> = HasTools(script)
     override val successComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Pick nest") {
         val tile = nest!!.tile
         if (Utils.walkAndInteract(nest, "Take")) {
