@@ -12,6 +12,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Rendering
@@ -56,7 +57,7 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
         )
         tiles.forEach { tile ->
             val gos = Objects.stream().at(tile).filtered { it.name.isNotEmpty() }
-            gos.forEach { script.log.info("GO AT TILE=${tile}: ${it.name}, cols=${it.modifiedColors().joinToString()}") }
+            gos.forEach { script.log.info("GO AT TILE=${tile}: ${it.name}, has ores=${it.hasOre()}, cols=${it.modifiedColors().joinToString()}") }
             val colors = gos.firstOrNull { it.modifiedColors().isNotEmpty() }?.modifiedColors()
             if (colors != null) {
                 tile.drawOnScreen(colors.joinToString("\n"))

@@ -16,7 +16,7 @@ import org.powbot.krulvis.miner.Miner
 class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
 
     override fun execute() {
-        val rock = Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+        val rock = Objects.stream(50).filtered {
             it.tile() in script.rockLocations && it.hasOre()
         }.nearest().firstOrNull()
 
