@@ -21,7 +21,7 @@ import org.powbot.mobile.script.ScriptManager
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.3.8",
+    version = "1.3.9",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -75,15 +75,13 @@ class Miner : ATScript() {
     }
 
     val rockLocations by lazy {
-        val o = getOption<List<GameObjectActionEvent>>("Rocks")
-        log.info(o.toString())
-        o?.map { it.tile } ?: emptyList()
+        getOption<List<GameObjectActionEvent>>("Rocks").map { it.tile }
     }
 
-    val bankOres by lazy { getOption<Boolean>("Bank ores") ?: true }
-    val useDepositBox by lazy { getOption<Boolean>("Deposit box") ?: true }
-    val fastMine by lazy { getOption<Boolean>("Fast mine") ?: true }
-    val hopFromPlayers by lazy { getOption<Boolean>("Hop") ?: false }
+    val bankOres by lazy { getOption<Boolean>("Bank ores") }
+    val useDepositBox by lazy { getOption<Boolean>("Deposit box") }
+    val fastMine by lazy { getOption<Boolean>("Fast mine") }
+    val hopFromPlayers by lazy { getOption<Boolean>("Hop") }
 
     val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
@@ -103,9 +101,9 @@ class Miner : ATScript() {
     /**
      * Get the sack in the motherload mine
      */
-    fun getSack() = Objects.stream().name("Sack").action("Search").findFirst()
+    fun getSack() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Sack").action("Search").findFirst()
 
-    fun getBrokenStrut() = Objects.stream().name("Broken strut").nearest().firstOrNull()
+    fun getBrokenStrut() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Broken strut").nearest().firstOrNull()
 
     fun inTopFloorAreas(): Boolean {
         return inTopFloorAreas(Players.local().tile())

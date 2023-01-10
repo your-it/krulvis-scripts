@@ -30,6 +30,9 @@ class ColorFinder : ATScript() {
     }
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "Chill") {
+        Objects.stream(50).filtered { it.originalColors().isNotEmpty() }.forEach {
+            log.info("Found obj with colors: ${it.name}, ${it.originalColors().joinToString()}")
+        }
         sleep(1000)
     }
 }
@@ -52,11 +55,12 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
             Tile(myTile.x + 1, myTile.y - 1),
         )
         tiles.forEach { tile ->
-            val gos = Objects.stream(tile, 0).filter { it.name.isNotEmpty() }
-            gos.forEach { script.log.info("GO AT TILE=${tile}: ${it.name}") }
-            val colors = gos.firstOrNull()?.modifiedColors()
-            if (colors != null)
+            val gos = Objects.stream().at(tile).filtered { it.name.isNotEmpty() }
+            gos.forEach { script.log.info("GO AT TILE=${tile}: ${it.name}, cols=${it.modifiedColors().joinToString()}") }
+            val colors = gos.firstOrNull { it.modifiedColors().isNotEmpty() }?.modifiedColors()
+            if (colors != null) {
                 tile.drawOnScreen(colors.joinToString("\n"))
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner.tree.leaf
 
+import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
@@ -16,5 +17,5 @@ class DropSandstone(script: Miner) : Leaf<Miner>(script, "Drop sandstone") {
         }
     }
     
-    fun grinder() = Objects.stream().name("Grinder").action("Deposit").firstOrNull()
+    fun grinder() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Grinder").action("Deposit").firstOrNull()
 }

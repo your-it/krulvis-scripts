@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner.tree.leaf
 
+import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
@@ -15,7 +16,7 @@ import org.powbot.krulvis.miner.Miner
 class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
 
     override fun execute() {
-        val rock = Objects.stream().filtered {
+        val rock = Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
             it.tile() in script.rockLocations && it.hasOre()
         }.nearest().firstOrNull()
 

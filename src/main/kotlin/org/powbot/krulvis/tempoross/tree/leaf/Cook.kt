@@ -1,6 +1,7 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.rt4.Camera
+import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.api.script.tree.Leaf
@@ -15,7 +16,9 @@ class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
 
     override fun execute() {
         val walkSpot = script.side.cookLocation
-        val cookShrine = Objects.stream().within(script.side.cookLocation, 5.0).name("Shrine").firstOrNull()
+        val cookShrine = Objects.stream(50)
+            .type(GameObject.Type.INTERACTIVE)
+            .within(script.side.cookLocation, 5.0).name("Shrine").firstOrNull()
 
         if (me.animation() != FILLING_ANIM) {
             if (script.interactWhileDousing(cookShrine, "Cook-at", walkSpot, false)) {

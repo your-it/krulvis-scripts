@@ -134,7 +134,7 @@ class HasSandstone(script: Miner) : Branch<Miner>(script, "Has sandstone") {
 
     override fun validate(): Boolean {
         return Inventory.containsOneOf(*Ore.SANDSTONE.ids) &&
-                Objects.stream().name("Grinder").action("Deposit")
+                Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Grinder").action("Deposit")
                     .isNotEmpty()
     }
 

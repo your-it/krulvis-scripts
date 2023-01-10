@@ -1,6 +1,7 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
 import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
@@ -35,7 +36,7 @@ class ShouldChill(script: Tempoross) : Branch<Tempoross>(script, "Should Chill")
         if (script.side == Side.UNKNOWN) {
             if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                 script.log.info("Getting Side of minigame")
-                val mast = Objects.stream().name("Mast").nearest().first()
+                val mast = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Mast").nearest().first()
                 script.log.info("Mast found: $mast, orientation: ${mast.orientation()}")
                 script.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
                 script.side.mastLocation = mast.tile()

@@ -37,7 +37,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.2.0",
+    version = "1.2.1",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -289,12 +289,12 @@ class Tempoross : ATScript() {
         Npcs.stream().filtered { it.tile().distanceTo(side.mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
 
     fun getBucketCrate(): GameObject? =
-        Objects.stream().filtered {
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
             it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
         }.name("Buckets").nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
-        Objects.stream().filtered {
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
             it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
         }.name("Water pump").nearest().firstOrNull()
 
@@ -302,7 +302,7 @@ class Tempoross : ATScript() {
         val dest = Movement.destination()
         val destination = if (dest != Tile.Nil) dest else me.tile()
         val validTiles = listOf(side.totemLocation, side.mastLocation)
-        return Objects.stream().filtered {
+        return Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
             validTiles.contains(it.tile())
         }.action("Repair", "Tether").nearest(destination).firstOrNull()
     }
