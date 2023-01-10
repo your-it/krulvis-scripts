@@ -108,9 +108,9 @@ object ATContext {
             val triggerDistance = if (alwaysWalk) 4 else 12
             val targetTile = if (destination == Tile.Nil) Players.local() else destination
             val distanceToTarget = pos.distanceTo(me)
-            if (distanceToTarget > triggerDistance || !pos.reachable() || !t.inViewport(true)) {
+            if (distanceToTarget > triggerDistance || !t.inViewport(true)) {
                 debug(
-                    "Walking before interacting: not reachable=${!pos.reachable()}, distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
+                    "Walking before interacting distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
                         !t.inViewport(
                             true
                         )
