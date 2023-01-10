@@ -105,7 +105,7 @@ class Tempoross : ATScript() {
         allowCrossing: Boolean
     ): Boolean {
         if (e == null) {
-            debug("Can't find: $action")
+            log.info("Can't find: $action")
             if (destinationWhenNil != Tile.Nil) {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
