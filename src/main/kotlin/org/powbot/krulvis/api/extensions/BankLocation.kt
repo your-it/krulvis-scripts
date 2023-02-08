@@ -131,7 +131,7 @@ enum class BankLocation(
         } else if (CollectionBox.opened()) {
             CollectionBox.close()
         } else if (me.floor() != tile.floor || tile.distance() >= 14) {
-            WebWalking.moveTo(tile, false, { false }, 1, 100, false)
+            Movement.walkTo(tile)
             return false
         }
         return Bank.open()
@@ -182,23 +182,7 @@ enum class BankLocation(
         /**
          * @return the nearest bank according to the geographical distance
          */
-        fun Bank.getNearestBank(includeDepositBox: Boolean = false, enableTeleports: Boolean = true): BankLocation {
-            val player = WebWalking.playerState.player(false)
-            if (player != null) {
-                try {
-                    val path = WebWalkingService.getPathToNearestBank(
-                        player, enableTeleports
-                    ).filterNotNull()
-                    if (path.isNotEmpty()) {
-                        val to = path.last().to.toRegularTile()
-                        return getAllowedBanks()
-                            .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
-                            .minByOrNull { it.tile.distanceM(to) }!!
-                    }
-                } catch (e: Exception) {
-                    ScriptManager.script()?.log?.severe(e.stackTraceToString())
-                }
-            }
+        fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
             return getNearestBankWithoutWeb(includeDepositBox)
         }
 

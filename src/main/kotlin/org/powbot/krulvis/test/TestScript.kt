@@ -96,6 +96,8 @@ class TestScript : ATScript() {
     var lastLoop = System.currentTimeMillis()
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
+        val sack = Objects.stream(50).name("Sack").firstOrNull()
+        log.info("sack: $sack, type=${sack?.type}")
         log.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
         lastLoop = System.currentTimeMillis()
     }

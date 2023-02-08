@@ -21,7 +21,7 @@ import org.powbot.mobile.script.ScriptManager
     name = "krul Miner",
     description = "Mines & banks anything, anywhere (supports motherlode)",
     author = "Krulvis",
-    version = "1.4.0",
+    version = "1.4.1",
     scriptId = "04f61d39-3abc-420d-84f6-f39243cdf584",
     markdownFileName = "Miner.md",
     category = ScriptCategory.Mining
@@ -101,9 +101,10 @@ class Miner : ATScript() {
     /**
      * Get the sack in the motherload mine
      */
-    fun getSack() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Sack").action("Search").findFirst()
+    fun getSack() = Objects.stream(50).type(GameObject.Type.FLOOR_DECORATION).name("Sack").action("Search").findFirst()
 
-    fun getBrokenStrut() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Broken strut").nearest().firstOrNull()
+    fun getBrokenStrut() =
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Broken strut").nearest().firstOrNull()
 
     fun inTopFloorAreas(): Boolean {
         return inTopFloorAreas(Players.local().tile())
