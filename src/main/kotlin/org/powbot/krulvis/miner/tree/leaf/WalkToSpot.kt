@@ -1,9 +1,9 @@
 package org.powbot.krulvis.miner.tree.leaf
 
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.WebWalking
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils.walkAndInteract
 import org.powbot.api.script.tree.Leaf
@@ -38,14 +38,7 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
                 localPath.traverseUntilReached()
             } else {
                 script.log.info("WebWalking.moveTo loc=$loc, neighbor=$neighbor")
-                WebWalking.moveTo(
-                    loc,
-                    false,
-                    { script.getMotherloadCount() >= 82 },
-                    5,
-                    90,
-                    !script.inTopFloorAreas() && allTop
-                )
+                Movement.walkTo(loc)
             }
         }
     }
