@@ -40,6 +40,8 @@ class GiantsFoundry : ATScript() {
         return GiantsFoundryPainter(this)
     }
 
+    var coins = 0
+    var qualities = 0
     var currentAction: Action? = null
     val barsToUse by lazy {
         getOption<Map<Int, Int>>("Inventory")
@@ -97,6 +99,18 @@ class GiantsFoundry : ATScript() {
     }
 
     fun stopActivity(tile: Tile?) = Movement.step(tile ?: me.tile())
+
+    fun parseResults() {
+        val comp = Widgets.component(229, 1)
+        if (!comp.visible()) return
+        val text = comp.text()
+        if (!text.contains("Sword completed in:")) return
+        val quality = text.substring(text.indexOf("quality: ") + 9, text.indexOf("<br>")).toInt()
+        val smithingXp = text.substring(text.indexOf("You're awarded: ") + 16, text.indexOf(" Smithing XP")).toInt()
+        val coinsGained = text.substring(text.indexOf("XP and ") + 7, text.indexOf(" coins")).replace(",", "").toInt()
+        coins += coinsGained
+        qualities += quality
+    }
 
 
     enum class Action(

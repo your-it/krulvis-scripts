@@ -21,6 +21,7 @@ class GetAssignment(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Gettin
     //10000000 10011010
     override fun execute() {
         if (Chat.canContinue()) {
+            script.parseResults()
             Chat.clickContinue()
             sleep(1000)
             waitFor { script.hasCommission() || Chat.canContinue() || Chat.chatting() }

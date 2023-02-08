@@ -15,6 +15,7 @@ class HandIn(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Handing in") 
 
     override fun execute() {
         if (Chat.canContinue()) {
+            script.parseResults()
             Chat.clickContinue()
             sleep(1500)
             waitFor { Chat.canContinue() }
