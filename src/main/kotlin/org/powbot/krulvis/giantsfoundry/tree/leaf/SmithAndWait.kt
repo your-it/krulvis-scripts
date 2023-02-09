@@ -35,8 +35,8 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
                     lastXpGain = System.currentTimeMillis()
                     smithXp = Skills.experience(Skill.Smithing)
                 }
-                if (canBoost()) {
-                    actionObj.interact("Use")
+                if (canBoost() && Random.nextDouble() > 0.7 && actionObj.interact("Use")) {
+                    waitFor(mid()) { !canBoost() || !action.canPerform() }
                 }
                 sleep(150)
             }
@@ -57,7 +57,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
         if (boostComp.componentCount() > 0) {
             val boostCompChild = boostComp.component(0)
             script.log.info("Can possibly click boost! col=${boostCompChild.textColor()}")
-            return boostCompChild.textColor() == 16570115 && Random.nextDouble() > 0.7
+            return boostCompChild.textColor() == 16570115
         }
         return false
     }
