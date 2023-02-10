@@ -5,14 +5,17 @@ import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
 import org.powbot.krulvis.api.utils.requirements.ItemRequirement
+import org.powbot.krulvis.api.utils.requirements.PotionRequirement
 
 enum class Orb(
     val id: Int,
@@ -22,12 +25,19 @@ enum class Orb(
     vararg val requirements: ItemRequirement
 ) {
     WATER(
-        571, Tile(2845, 3424, 0), Magic.Spell.CHARGE_WATER_ORB, BankLocation.FALADOR_WEST_BANK,
-        InventoryRequirement(Rune.AIR.id, 3, allowMore = true), InventoryRequirement(Rune.LAW.id, 1, allowMore = true)
+        571,
+        Tile(2845, 3424, 0),
+        Magic.Spell.CHARGE_WATER_ORB,
+        BankLocation.FALADOR_WEST_BANK,
+        InventoryRequirement(RunePouch.POUCH_ID, 1),
     ),
     FIRE(
-        569, Tile.Nil, Magic.Spell.CHARGE_FIRE_ORB, BankLocation.FALADOR_WEST_BANK,
-        InventoryRequirement(Rune.AIR.id, 3, allowMore = true), InventoryRequirement(Rune.LAW.id, 1, allowMore = true)
+        569,
+        Tile(2818, 9828, 0),
+        Magic.Spell.CHARGE_FIRE_ORB,
+        BankLocation.FALADOR_WEST_BANK,
+        InventoryRequirement(Rune.AIR.id, 3, allowMore = true),
+        InventoryRequirement(RunePouch.POUCH_ID, 1),
     ),
     EARTH(
         575,

@@ -10,7 +10,7 @@ import org.powbot.krulvis.orbcharger.OrbCrafter
 class OpenBank(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Opening Bank") {
     override fun execute() {
         if (script.orb.bank == BankLocation.FALADOR_WEST_BANK && script.orb.bank.tile.distance() >= 50) {
-            Magic.cast(Magic.Spell.FALADOR_TELEPORT)
+            Magic.Spell.FALADOR_TELEPORT.cast()
             waitFor(long()) { script.orb.bank.tile.distance() <= 50 }
         } else {
             script.orb.bank.open()
