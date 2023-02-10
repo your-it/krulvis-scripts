@@ -2,6 +2,9 @@ package org.powbot.krulvis.orbcharger.tree.branch
 
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -17,9 +20,17 @@ class ShouldBank(script: OrbCrafter) : Branch<OrbCrafter>(script, "ShouldBank?")
     override val successComponent: TreeComponent<OrbCrafter> = IsBankOpen(script)
     override val failedComponent: TreeComponent<OrbCrafter> = AtObelisk(script)
 
+    fun hasCosmics(): Boolean {
+        if (Rune.COSMIC.inventoryCount() >= 3) {
+            return true
+        }
+        val cosmicsInPouch = RunePouch.runes().firstOrNull { it.first == Rune.COSMIC } ?: return false
+        return cosmicsInPouch.second >= 3
+    }
+
     override fun validate(): Boolean {
         return !Inventory.containsOneOf(Orb.UNPOWERED)
-                || Inventory.getCount(Orb.COSMIC) < 3
+                || !hasCosmics()
                 || !script.orb.staffEquipped()
     }
 }

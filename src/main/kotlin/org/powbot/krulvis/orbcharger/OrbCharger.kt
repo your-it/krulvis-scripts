@@ -10,7 +10,7 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.orbcharger.tree.branch.IsPoisoned
+import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 
 @ScriptManifest(
     name = "krul Orbs",
@@ -26,14 +26,14 @@ import org.powbot.krulvis.orbcharger.tree.branch.IsPoisoned
         ScriptConfiguration(
             name = "Orb",
             allowedValues = ["AIR", "WATER", "EARTH", "FIRE"],
-            defaultValue = "WATER",
+            defaultValue = "FIRE",
             description = "Choose orb type"
         ),
         ScriptConfiguration(
             name = "Fast charge",
             description = "Re-cast charge spell?",
             optionType = OptionType.BOOLEAN,
-            defaultValue = "true"
+            defaultValue = "false"
         ),
         ScriptConfiguration(
             name = "Antipoison",
@@ -55,11 +55,11 @@ class OrbCrafter : ATScript() {
     val orb by lazy { Orb.valueOf(getOption("Orb")) }
     val fastCharge by lazy { getOption<Boolean>("Fast charge") }
     val antipoison by lazy { getOption<Boolean>("Antipoison") }
-    val food by lazy { Food.valueOf(getOption<String>("Food")) }
+    val food by lazy { Food.valueOf(getOption("Food")) }
 
     override fun createPainter(): ATPaint<*> = OrbPainter(this)
 
-    override val rootComponent: TreeComponent<*> = IsPoisoned(this)
+    override val rootComponent: TreeComponent<*> = ShouldBank(this)
 
     val necessaries by lazy {
         intArrayOf(
@@ -74,5 +74,5 @@ class OrbCrafter : ATScript() {
 }
 
 fun main() {
-    OrbCrafter().startScript("127.0.0.1", "krullieman", true)
+    OrbCrafter().startScript("127.0.0.1", "GIM", true)
 }

@@ -2,6 +2,8 @@ package org.powbot.krulvis.orbcharger.tree.leaf
 
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
@@ -40,16 +42,21 @@ class HandleBank(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Handling Bank")
                     is InventoryRequirement -> it.withdraw(true)
                 }
             }
-        } else if (Inventory.getCount(COSMIC) < cosmicCount) {
-            script.log.info("Withdrawing cosmics=$cosmicCount")
-            Bank.withdrawExact(COSMIC, cosmicCount)
+        } else if (cosmicCount() < cosmicCountRequired) {
+            script.log.info("Withdrawing cosmics=$cosmicCountRequired")
+            Bank.withdrawExact(COSMIC, cosmicCountRequired)
         } else if (!Inventory.isFull()) {
             script.log.info("Withdrawing unpowered orbs")
             Bank.withdraw(UNPOWERED, Bank.Amount.ALL)
         }
     }
 
-    val cosmicCount by lazy {
+    fun cosmicCount(): Int {
+        val pouchCount = RunePouch.runes().firstOrNull { it.first == Rune.COSMIC }?.second ?: 0
+        return pouchCount + Inventory.getCount(COSMIC).toInt()
+    }
+
+    val cosmicCountRequired by lazy {
         val totalSlots = 27
         var occupiedSlots = script.orb.requirements.count { it is InventoryRequirement }
         if (script.antipoison) occupiedSlots++
