@@ -32,8 +32,9 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
             }
             val interaction = when (event) {
                 is InventoryItemActionEvent -> {
-                    debug("Event item=${event.item()}")
-                    Inventory.open() && event.item()
+                    val item = event.getItem()
+                    debug("Event item=${item}")
+                    Inventory.open() && item
                         ?.interact(event.interaction, useMenu)
                             ?: false
                 }
@@ -86,6 +87,11 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                 return
             }
         }
+    }
+
+    private fun InventoryItemActionEvent.getItem(): Item? {
+        val itemName = if (name.contains("->")) name.substring(name.indexOf("-> ") + 3) else name
+        return Inventory.stream().name(itemName).firstOrNull()
     }
 
     fun walkAndInteract(target: InteractableEntity?, action: String, useMenu: Boolean): Boolean {
