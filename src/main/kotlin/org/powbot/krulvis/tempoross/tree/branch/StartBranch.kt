@@ -15,12 +15,15 @@ import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
+import org.powbot.mobile.script.ScriptManager
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
-        ATContext.debugComponents = script.debugPaint
         if (Game.clientState() != 30) {
             return !waitFor(10000) { script.getEnergy() > -1 }
+        }
+        if (script.lastGame) {
+            ScriptManager.stop()
         }
         return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
                 && Npcs.stream().name("Ammunition crate").firstOrNull() == null

@@ -30,7 +30,6 @@ import org.powbot.mobile.script.ScriptManager
             description = "Put the correct amount in inventory and click the button",
             optionType = OptionType.INVENTORY,
             defaultValue = "{\"946\":1,\"1517\":27}"
-//            defaultValue = "[{\"id\":1391,\"interaction\":\"Use\",\"mouseX\":726,\"mouseY\":335,\"rawEntityName\":\"<col=ff9040>Battlestaff\",\"rawOpcode\":38,\"var0\":13,\"widgetId\":9764864,\"strippedName\":\"Battlestaff\"},{\"id\":571,\"interaction\":\"Use\",\"mouseX\":756,\"mouseY\":442,\"rawEntityName\":\"<col=ff9040>Battlestaff<col=ffffff> -> <col=ff9040>Water orb\",\"rawOpcode\":31,\"var0\":26,\"widgetId\":9764864,\"strippedName\":\"Battlestaff -> Water orb\"}]"
         ),
         ScriptConfiguration(
             name = "Combine Items",
@@ -84,7 +83,7 @@ class Combiner : ATScript() {
         if (ScriptManager.state() == ScriptState.Running && items.none { it.key == e.itemId }
             && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == e.itemId } }
             && !Bank.opened()) {
-            painter.paintBuilder.trackInventoryItems(e.itemId)
+//            painter.paintBuilder.trackInventoryItems(e.itemId)
         }
     }
 }

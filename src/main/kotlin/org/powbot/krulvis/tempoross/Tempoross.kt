@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Tile
 import org.powbot.api.event.MessageEvent
+import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPath
@@ -15,6 +16,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
@@ -37,7 +39,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.2.1",
+    version = "1.2.2",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -48,12 +50,6 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
             name = "Cook fish",
             description = "Cooking the fish gives more points at the cost of XP",
             defaultValue = "true",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-            name = "Debug Paint",
-            description = "Show debugging paint",
-            defaultValue = "false",
             optionType = OptionType.BOOLEAN
         ),
         ScriptConfiguration(
@@ -80,12 +76,13 @@ class Tempoross : ATScript() {
     var rewardGained = 0
     var pointsObtained = 0
     var rounds = 0
+    var lastGame = false
+    var debugPaint = false
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
     val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
 
     val cookFish by lazy { getOption<Boolean>("Cook fish") }
-    val debugPaint by lazy { getOption<Boolean>("Debug Paint") }
     val spec by lazy { getOption<Boolean>("Special Attack") }
 
     fun hasDangerousPath(end: Tile): Boolean {
@@ -229,6 +226,15 @@ class Tempoross : ATScript() {
             val reward = txt.substring(28, txt.indexOf("</col>")).toInt()
             log.info("Gained $reward points")
             rewardGained += reward
+        }
+    }
+
+    @com.google.common.eventbus.Subscribe
+    fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
+        if (e.checkboxId == "lastGame") {
+            lastGame = e.checked
+        }else if(e.checkboxId == "paintDebug"){
+            debugPaint = e.checked
         }
     }
 

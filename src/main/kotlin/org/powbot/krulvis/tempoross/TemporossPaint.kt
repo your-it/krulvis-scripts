@@ -14,21 +14,24 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
 
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder.addString("Reward credits:") { "${script.rewardGained}, ${script.timer.getPerHour(script.rewardGained)}/hr" }
-        paintBuilder.addString("Points obtained:") { "${if (script.rounds > 0) script.pointsObtained / script.rounds else "-"}/round" }
-        paintBuilder.trackSkill(Skill.Fishing)
+            .addString("Points obtained:") { "${if (script.rounds > 0) script.pointsObtained / script.rounds else "-"}/round" }
+            .trackSkill(Skill.Fishing)
+            .addCheckbox("Last game:", "lastGame", false)
+            .addCheckbox("Paint debug:", "paintDebug", false)
         return paintBuilder.build()
     }
 
     override fun paintCustom(g: Rendering) {
-        if (debugComponents) {
+        if (script.debugPaint) {
             val blockedTiles = script.burningTiles.toList()
             val paths = script.triedPaths.toList()
             blockedTiles.forEach {
                 val t = it
                 if (t != Tile.Nil) {
-                    it.drawOnScreen( null, Color.RED)
+                    it.drawOnScreen(null, Color.RED)
                 }
             }
+            script.log.info("There are ${blockedTiles.size} blocked tiles")
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
                     val dangerous = tiles.any { script.burningTiles.contains(it) }
