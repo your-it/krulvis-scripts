@@ -1,6 +1,5 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import kotlinx.coroutines.isActive
 import org.powbot.api.Condition
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Utils
@@ -8,12 +7,11 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.extensions.TargetWidget
-import org.powbot.krulvis.api.extensions.watcher.LootWatcher
-import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.fighter.Fighter
-import org.powbot.krulvis.fighter.slayer.*
+import org.powbot.krulvis.fighter.slayer.FISHING_EXPLOSIVE
+import org.powbot.krulvis.fighter.slayer.KillItemRequirement
+import org.powbot.krulvis.fighter.slayer.SLAYER_BELL
 
 class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?") {
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Using item") {
@@ -44,7 +42,7 @@ class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?
 }
 
 class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
-    override val failedComponent: TreeComponent<Fighter> = CanKill(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldReanimate(script)
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Killing..") {
         Chat.clickContinue()
         if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
@@ -73,8 +71,6 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             if (!interacting.healthBarVisible()) return false
             return killItem != null || TargetWidget.health() > 0
         }
-
-
     }
 }
 

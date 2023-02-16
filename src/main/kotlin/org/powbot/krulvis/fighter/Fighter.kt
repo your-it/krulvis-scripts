@@ -35,7 +35,7 @@ import kotlin.math.round
     name = "krul Fighter",
     description = "Fights anything, anywhere. Supports defender collecting.",
     author = "Krulvis",
-    version = "1.3.8",
+    version = "1.4.0",
     markdownFileName = "Fighter.md",
     scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
     category = ScriptCategory.Combat,
@@ -97,7 +97,7 @@ import kotlin.math.round
             defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale"
         ),
         ScriptConfiguration(
-            "Bury bones", "Bury bones (put the nammes in `Always loot` field).",
+            "Bury bones", "Bury, Scatter or Offer bones.",
             optionType = OptionType.BOOLEAN, defaultValue = "false"
         ),
         ScriptConfiguration(
