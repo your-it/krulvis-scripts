@@ -42,7 +42,7 @@ class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?
 }
 
 class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
-    override val failedComponent: TreeComponent<Fighter> = CanKill(script)
+    override val failedComponent: TreeComponent<Fighter> = ShouldReanimate(script)
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Killing..") {
         Chat.clickContinue()
         if (script.hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0) {
@@ -71,8 +71,6 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
             if (!interacting.healthBarVisible()) return false
             return killItem != null || TargetWidget.health() > 0
         }
-
-
     }
 }
 

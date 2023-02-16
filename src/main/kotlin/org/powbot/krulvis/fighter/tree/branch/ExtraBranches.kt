@@ -80,66 +80,6 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
     }
 }
 
-class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {
-
-    var bones = emptyList<Item>()
-    var ashes = emptyList<Item>()
-    val actions = mapOf("bones" to "bury", "ashes" to "scatter")
-
-    val offeringSpell = object : Magic.MagicSpell {
-        override val requirements: Array<out Requirement> = arrayOf(
-            RunePowerRequirement(RunePower.WRATH, 1),
-            RunePowerRequirement(RunePower.SOUL, 1)
-        )
-
-        override fun book(): Magic.Book = Magic.Book.ARCEUUS
-
-        override fun componentIndex(): Int = 174
-
-        override fun level(): Int = 84
-
-        override fun texture(): Int = -1
-    }
-
-    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
-        if (offeringSpell.canCast()) {
-            if (ashes.size >= 3 && offeringSpell.cast()) {
-                waitFor { filterBones().size < bones.size }
-            }
-        } else {
-            bones.forEachIndexed { i, bone ->
-                val count = Inventory.getCount(bone.id)
-                val action = bone.buryAction()
-                script.log.info("$action on ${bone.name()}")
-                if (bone.interact(action)) {
-                    waitFor { count > Inventory.getCount(bone.id) }
-                    if (i < this.bones.size - 1)
-                        sleep(1500)
-                }
-            }
-        }
-    }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
-
-
-    private fun Item.buryAction(): String = actions[actions.keys.first { name().contains(it, true) }] ?: "Bury"
-    private fun filterBones() = Inventory.stream().filter { item ->
-        val name = item.name().lowercase()
-        actions.keys.any { name.contains(it, true) }
-    }
-
-    override fun validate(): Boolean {
-        if (!script.buryBones) return false
-        bones = filterBones()
-        ashes = bones.filter { it.name().lowercase().contains("ashes") }
-        return if (offeringSpell.canCast()) {
-            ashes.size >= 3 || bones.any { it.name().lowercase().contains("bones") }
-        } else {
-            bones.isNotEmpty()
-        }
-    }
-}
-
 
 ///BANKING SITS IN BETWEEN HERE
 
