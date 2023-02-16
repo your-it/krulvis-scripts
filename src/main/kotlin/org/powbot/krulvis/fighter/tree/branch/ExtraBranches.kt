@@ -1,10 +1,13 @@
 package org.powbot.krulvis.fighter.tree.branch
 
+import org.powbot.api.requirement.Requirement
+import org.powbot.api.requirement.RunePowerRequirement
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -83,12 +86,24 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     var ashes = emptyList<Item>()
     val actions = mapOf("bones" to "bury", "ashes" to "scatter")
 
-    //TODO("Add Demonic offering spell")
-    val offeringSpell = Magic.ArceuusSpell.DARK_DEMONBANE
+    val offeringSpell = object : Magic.MagicSpell {
+        override val requirements: Array<out Requirement> = arrayOf(
+            RunePowerRequirement(RunePower.WRATH, 1),
+            RunePowerRequirement(RunePower.SOUL, 1)
+        )
+
+        override fun book(): Magic.Book = Magic.Book.ARCEUUS
+
+        override fun componentIndex(): Int = 174
+
+        override fun level(): Int = 84
+
+        override fun texture(): Int = -1
+    }
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
-        if (offeringSpell.canCast() && ashes.size >= 3) {
-            if (offeringSpell.cast()) {
+        if (offeringSpell.canCast()) {
+            if (ashes.size >= 3 && offeringSpell.cast()) {
                 waitFor { filterBones().size < bones.size }
             }
         } else {
