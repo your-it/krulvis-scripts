@@ -49,7 +49,7 @@ class ShouldReanimate(script: Fighter) : Branch<Fighter>(script, "Should Reanima
     override fun validate(): Boolean {
         ReanimateHead.values().forEach {
             val invItem = it.getInvItem()
-            script.log.info("Inv ensouled head for ${it.name} = ${invItem}")
+//            script.log.info("Inv ensouled head for ${it.name} = ${invItem}")
             if (invItem != null) {
                 spellHead = Pair(it.spell, invItem)
                 return it.spell.canCast()
