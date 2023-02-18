@@ -19,7 +19,20 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
     var ashes = emptyList<Item>()
     val actions = mapOf("bones" to "bury", "ashes" to "scatter")
 
-    val offeringSpell = Magic.ArceuusSpell.DEMONIC_OFFERING
+    val offeringSpell = object : Magic.MagicSpell {
+        override val requirements: Array<out Requirement> = arrayOf(
+            RunePowerRequirement(RunePower.WRATH, 1),
+            RunePowerRequirement(RunePower.SOUL, 1)
+        )
+
+        override fun book(): Magic.Book = Magic.Book.ARCEUUS
+
+        override fun componentIndex(): Int = 174
+
+        override fun level(): Int = 84
+
+        override fun texture(): Int = -1
+    }
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
         if (offeringSpell.canCast()) {

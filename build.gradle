@@ -15,7 +15,7 @@ repositories {
 
 
 dependencies {
-    implementation 'org.powbot:client-sdk:1.0.25-SNAPSHOT'
+    implementation 'org.powbot:client-sdk:1.0.24-SNAPSHOT'
     implementation 'org.powbot:client-sdk-loader:+'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
