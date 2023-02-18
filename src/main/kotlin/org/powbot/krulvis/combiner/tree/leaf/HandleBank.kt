@@ -25,7 +25,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
         } else {
             script.items.forEach { (id, amount) ->
                 val stackable = ItemLoader.lookup(id)?.stackable() == true
-                if (stackable && amount > 1) {
+                if (amount == 28 || (stackable && amount > 1)) {
                     Bank.withdraw(id, Bank.Amount.ALL)
                 } else if (!Bank.withdrawExact(id, amount, false) && amount <= 28) {
                     return

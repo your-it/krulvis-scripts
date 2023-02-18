@@ -16,7 +16,6 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Rendering
-import org.powbot.mobile.service.WebWalkingService.drawEdgeList
 import org.powbot.util.TransientGetter2D
 
 @ScriptManifest(name = "test Web", version = "1.0.1", description = "", priv = true)
@@ -64,7 +63,6 @@ class TestWebPainter(script: TestWeb) : ATPaint<TestWeb>(script) {
         script.origin.drawOnScreen()
         script.newDest.drawOnScreen()
         script.localPath.draw()
-        script.path.drawEdgeList()
 //        script.rocks.forEach {
 //            it.tile.drawOnScreen( outlineColor = Color.GREEN)
 //        }
