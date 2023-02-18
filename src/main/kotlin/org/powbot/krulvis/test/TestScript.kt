@@ -1,6 +1,8 @@
 package org.powbot.krulvis.test
 
 import org.powbot.api.Color
+import org.powbot.api.ModelInteractionType
+import org.powbot.api.Point
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameObjectActionEvent
@@ -95,11 +97,20 @@ class TestScript : ATScript() {
     var npc: Npc? = null
     var lastLoop = System.currentTimeMillis()
 
+    var ladder: GameObject? = null
+    val points = mutableListOf<Point>()
+
+
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val sack = Objects.stream(50).name("Sack").firstOrNull()
-        log.info("sack: $sack, type=${sack?.type}")
-        log.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
-        lastLoop = System.currentTimeMillis()
+        ladder = Objects.stream().name("Rope ladder").action("Climb").firstOrNull()
+        points.clear()
+        log.info("Cleared points = ${points.size}")
+        (0 until 300).forEach {
+            ladder?.interactionType(ModelInteractionType.Model)?.nextPoint()?.let {
+                points.add(it)
+            }
+        }
+
     }
 
     //Tile(x=3635, y=3362, floor=0)
@@ -130,6 +141,7 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
         return Widgets.stream().firstOrNull { it.components().any { c -> c.text() == "Bloodveld" } }
     }
 
+
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         return paintBuilder
             .addString("Container") {
@@ -144,16 +156,14 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
     }
 
     override fun paintCustom(g: Rendering) {
-        Widgets.component(718, 9).component(85).draw()
-//        val targetWidget = combatWidget() ?: return
-//        g.setColor(Color.WHITE)
-//        val x = 500
-//        var y = 100
-//        val yy = 20
-//        targetWidget.components.forEach { comp ->
-//            g.drawString("id=${comp.index()}, text=${comp.text()}", x, y)
-//            y += yy
+        g.setColor(Color.RED)
+        g.setScale(1.0f)
+        val ladder = script.ladder ?: return
+        ladder.model()?.draw(ladder.localX(), ladder.localY())
+//        script.points.forEach {
+//            g.drawRect(it.x - 1, it.y - 1, 2, 2)
 //        }
+        script.log.info("Points=${script.points.size}")
     }
 
     fun Tile.toWorld(): Tile {

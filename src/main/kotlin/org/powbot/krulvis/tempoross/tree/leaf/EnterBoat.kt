@@ -1,5 +1,7 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
+import org.powbot.api.Input
+import org.powbot.api.ModelInteractionType
 import org.powbot.api.Tile
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debug
@@ -22,9 +24,11 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
         if ((ropeLadder?.distance()?.roundToInt() ?: 6) > 5) {
             debug("Walking first")
             walk(Tile(3137, 2841, 0))
-        } else if (walkAndInteract(ropeLadder, "Quick-climb")) {
+        } else if (ropeLadder
+                ?.interactionType(ModelInteractionType.HullQuick)
+                ?.interact("Quick-climb") == true
+        ) {
             waitFor(long()) { BOAT_AREA.contains(ATContext.me.tile()) }
         }
-
     }
 }
