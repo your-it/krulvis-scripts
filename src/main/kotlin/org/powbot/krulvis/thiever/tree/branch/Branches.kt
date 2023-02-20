@@ -65,7 +65,7 @@ class ShouldOpenCoinPouch(script: Thiever, nextNode: TreeComponent<Thiever>, pri
     override val failedComponent: TreeComponent<Thiever> = nextNode
 
     override fun validate(): Boolean {
-        return (script.coinPouch()?.stack ?: 0) >= stackSize
+        return script.coinPouchCount() >= stackSize
     }
 }
 

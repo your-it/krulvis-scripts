@@ -14,6 +14,8 @@ import org.powbot.krulvis.thiever.Thiever
 import kotlin.system.measureTimeMillis
 
 class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
+
+
     override fun execute() {
         val target = script.getTarget()
         if (target != null && Bank.close()) {
@@ -24,10 +26,14 @@ class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
                     script.startNPCTile = script.lastTile
                 if (waitFor(Random.nextInt(1000, 1250)) {
                         Skills.experience(Constants.SKILLS_THIEVING) > xp ||
-                                Players.local().animation() == 424
+                                script.stunned()
                     }) {
-                    if (Players.local().animation() == 424) {
+                    if (script.stunned()) {
                         script.log.info("Waiting to repickpocket...")
+                        if (script.coinPouchCount() >= script.nextPouchOpening) {
+                            script.nextPouchOpening = Random.nextInt(1, 28)
+                            script.coinPouch()?.interact("Open-all")
+                        }
                         script.log.info(
                             "Waited for: ${
                                 measureTimeMillis {

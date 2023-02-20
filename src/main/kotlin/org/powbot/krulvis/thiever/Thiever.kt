@@ -1,6 +1,7 @@
 package org.powbot.krulvis.thiever
 
 import com.google.common.eventbus.Subscribe
+import org.powbot.api.Random
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameActionOpcode
@@ -17,13 +18,12 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
-import java.util.*
 
 @ScriptManifest(
     name = "krul Thiever",
     description = "Pickpockets any NPC",
     author = "Krulvis",
-    version = "1.1.2",
+    version = "1.1.3",
     markdownFileName = "Thiever.md",
     scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
     category = ScriptCategory.Thieving
@@ -111,6 +111,7 @@ class Thiever : ATScript() {
     var mobile = false
     var lastTile = Tile.Nil
     var startNPCTile = Tile.Nil
+    var nextPouchOpening = Random.nextInt(1, 28)
 
     fun getTarget(): Npc? {
         val farmerGuild = Tile(1249, 3735, 0)
@@ -128,6 +129,8 @@ class Thiever : ATScript() {
         }
         return Npcs.stream().name(*target.map { it.name }.toTypedArray()).nearest(tile).firstOrNull()
     }
+
+    fun stunned() = Players.local().animation() == 424
 
     @Subscribe
     fun onGameActionEvent(evt: GameActionEvent) {
@@ -164,6 +167,8 @@ class Thiever : ATScript() {
     }
 
     fun coinPouch(): org.powbot.api.rt4.Item? = Inventory.stream().name("Coin pouch").firstOrNull()
+
+    fun coinPouchCount() = coinPouch()?.stack ?: 0
 }
 
 fun main() {
