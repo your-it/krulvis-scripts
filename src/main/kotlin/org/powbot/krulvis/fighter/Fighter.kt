@@ -123,7 +123,7 @@ class Fighter : ATScript() {
             val npcAction = NpcActionEvent(
                 0, 0, 10, 13729,
                 "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
-                447, 447
+                447, 447, -1
             )
             updateOption("Monsters", listOf(npcAction), OptionType.NPC_ACTIONS)
             updateOption("Radius", 25, OptionType.INTEGER)
