@@ -19,7 +19,9 @@ class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {
 
     override fun validate(): Boolean {
         if (script.cannonballs) {
-            return !Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE) || !Inventory.containsOneOf(Bar.STEEL.id)
+            val shouldBank = !Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE) || !Inventory.containsOneOf(Bar.STEEL.id)
+            script.log.info("Should bank for balls = $shouldBank")
+            return shouldBank
         }
         return script.bar.getSmeltableCount() <= 0
     }

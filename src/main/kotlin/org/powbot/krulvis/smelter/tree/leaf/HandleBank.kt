@@ -44,6 +44,8 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                 } else {
                     Bank.withdraw(Bar.STEEL.id, Bank.Amount.ALL)
                 }
+            }else{
+                script.log.info("Should be done banking")
             }
         } else if (script.forgingRing && !ringOfForging.inEquipment()) {
             ringOfForging.withdrawAndEquip(true)
@@ -80,7 +82,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
             requirements.add(script.bar.secondary.id)
         }
         if (script.cannonballs) {
-            requirements.addAll(arrayOf(AMMO_MOULD, Bar.STEEL.id))
+            requirements.addAll(arrayOf(AMMO_MOULD, AMMO_MOULD_DOUBLE, Bar.STEEL.id))
         }
         return requirements.toIntArray()
     }

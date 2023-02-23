@@ -18,10 +18,13 @@ class ShouldSmelt(script: Smelter) : Branch<Smelter>(script, "Should Smelt") {
     override val successComponent: TreeComponent<Smelter> = IsWidgetOpen(script)
 
     override fun validate(): Boolean {
-        return if (script.cannonballs) Production.stoppedMaking(
-            CANNONBALL,
-            10000
-        ) else Production.stoppedMaking(script.bar.id)
+        return if (script.cannonballs) {
+            val stoppedMakingBalls = Production.stoppedMaking(
+                CANNONBALL, 10000
+            )
+            script.log.info("Stopped making balls = $stoppedMakingBalls")
+            stoppedMakingBalls
+        } else Production.stoppedMaking(script.bar.id)
     }
 }
 
@@ -29,23 +32,29 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
 
     override val failedComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Smelt Furnace") {
         val anvil = Objects.stream().name("Furnace").action("Smelt").nearest().firstOrNull()
+        script.log.info("Going to interact with anvil")
         if (anvil != null && Utils.walkAndInteract(anvil, "Smelt")) {
+            script.log.info("Interacted with anvil")
             waitFor(long()) { getComponent() != null }
         }
     }
 
     override val successComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Clicking Widget") {
-        val comp = getComponent()
         if (comp?.interact(if (script.cannonballs) "Make sets:" else "Smelt", false) == true) {
             waitFor(long()) { !Production.stoppedMaking(script.bar.id) }
         }
     }
 
+    var comp: Component? = null
+
     override fun validate(): Boolean {
-        return getComponent() != null
+        script.log.info("Getting component...")
+        comp = getComponent()
+        script.log.info("Component is open: ${comp?.visible()}")
+        return comp?.visible() == true
     }
 
-    fun getComponent(): Component? = if (script.cannonballs) Components.stream().action("Make sets:")
+    fun getComponent(): Component? = if (script.cannonballs) Components.stream(270).action("Make sets:")
         .firstOrNull() else script.bar.getSmeltComponent()
 
 }
