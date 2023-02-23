@@ -19,10 +19,11 @@ class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Cr
     override fun execute() {
         Bank.close()
         if (!widgetOpen()) {
-            val crucible = Objects.stream(30).type(GameObject.Type.INTERACTIVE).name("Crucible (empty)", "Crucible (partially full)").firstOrNull()
+            val crucible = Objects.stream(30).type(GameObject.Type.INTERACTIVE)
+                .name("Crucible (empty)", "Crucible (partially full)").firstOrNull()
             script.log.info("Clicking crucible=$crucible to fill it")
             if (crucible?.interact("Fill") == true) {
-                waitFor { widgetOpen() }
+                waitFor(2500) { widgetOpen() }
             }
         }
         if (widgetOpen()) {
@@ -32,7 +33,7 @@ class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Cr
             val barButton = barButton(bar.name())
             script.log.info("Adding bar by clicking on comp=${barButton}")
             if (barButton?.click() == true) {
-                waitFor(long()) { script.correctCrucibleCount(Bar.forId(bar.id)!!) }
+                waitFor(4000) { script.correctCrucibleCount(Bar.forId(bar.id)!!) }
             }
         }
     }
