@@ -15,7 +15,7 @@ import org.powbot.krulvis.smelter.tree.branch.ShouldBank
     description = "Smelt bars or cannonballs",
     author = "Krulvis",
     markdownFileName = "Smelter.md",
-    version = "1.1.2",
+    version = "1.1.3",
     category = ScriptCategory.Smithing
 )
 @ScriptConfiguration.List(

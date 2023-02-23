@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
+import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
 import org.powbot.krulvis.smelter.Smelter
 import org.powbot.krulvis.smelter.tree.leaf.HandleBank
 
@@ -18,7 +19,7 @@ class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {
 
     override fun validate(): Boolean {
         if (script.cannonballs) {
-            return !Inventory.containsOneOf(AMMO_MOULD) || !Inventory.containsOneOf(Bar.STEEL.id)
+            return !Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE) || !Inventory.containsOneOf(Bar.STEEL.id)
         }
         return script.bar.getSmeltableCount() <= 0
     }
