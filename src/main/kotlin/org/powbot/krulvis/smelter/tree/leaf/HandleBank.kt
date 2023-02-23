@@ -8,8 +8,10 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
+import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RING_OF_FORGING
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.smelter.Smelter
 import org.powbot.mobile.script.ScriptManager
@@ -25,10 +27,13 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
         val hasSecondary = script.bar.secondaryMultiplier >= 1
 
         if (script.cannonballs) {
-            if (!Inventory.containsOneOf(AMMO_MOULD)) {
-                if (!Bank.containsOneOf(AMMO_MOULD)) {
+            if (!Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE)) {
+                if (!Bank.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE)) {
                     script.log.info("No ammo mould found, stopping script")
                     ScriptManager.stop()
+                } else if (Bank.containsOneOf(AMMO_MOULD_DOUBLE)) {
+                    Bank.withdraw(AMMO_MOULD_DOUBLE, 1)
+                    waitFor(long()) { Inventory.containsOneOf(AMMO_MOULD_DOUBLE) }
                 } else {
                     Bank.withdraw(AMMO_MOULD, 1)
                 }

@@ -75,6 +75,7 @@ interface Item {
         val HAMMER = 2347
         val CANNONBALL = 2
         val AMMO_MOULD = 4
+        val AMMO_MOULD_DOUBLE = 27012
         val GRIMY_GUAM = 199
         val SAW = 8794
         val BOND_CHARGED = 13190
