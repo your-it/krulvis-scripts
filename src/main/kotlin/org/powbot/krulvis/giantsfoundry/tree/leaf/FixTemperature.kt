@@ -26,7 +26,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
 
         var lastStepSize = 5
         script.log.info("Performing: $actionStr, on obj=${actionObj.name}, targetHeat=$targetHeat")
-        if (actionObj.use()) {
+        if (actionObj.use(actionStr)) {
             waitFor { tempStep(lastTemp, currentTemp(), lastStepSize) }
             var lastTempChangeMS = System.currentTimeMillis()
 
@@ -47,7 +47,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                     lastTemp = newTemp
                     if (lastStepSize > 20 && lastStepSize > abs(lastTemp - targetHeat)) {
                         script.log.info("Clicking again we're making BIG steps=$lastStepSize")
-                        actionObj.use()
+                        actionObj.use(actionStr)
                         lastStepSize = 5
                     }
                 }
@@ -60,17 +60,16 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
             )
             script.stopActivity(action.tile)
         } else {
-            script.log.info("Failed to even FIX interact....")
+            script.log.info("Failed to even interact to FIX TEMPERATURE on ${actionObj.name}: $actionStr")
         }
     }
 
-    private fun GameObject.use(): Boolean {
+    private fun GameObject.use(action: String): Boolean {
         if (distance() >= 5) {
             Movement.step(tile)
             waitFor(long()) { distance() <= 5 }
         }
-        interact("Use", useMenu = false)
-        return true
+        return interact(action)
     }
 
     /**

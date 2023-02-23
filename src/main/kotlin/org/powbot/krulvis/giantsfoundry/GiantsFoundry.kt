@@ -21,7 +21,7 @@ import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
     name = "krul GiantFoundry",
     description = "Makes swords for big giant.",
     author = "Krulvis",
-    version = "1.0.4",
+    version = "1.0.5",
     scriptId = "6e058edd-cc5b-4b20-b4aa-6def55e9e903",
     category = ScriptCategory.Smithing,
     priv = true
