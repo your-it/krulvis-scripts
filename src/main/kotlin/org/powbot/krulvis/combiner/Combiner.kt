@@ -6,9 +6,11 @@ import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
@@ -18,7 +20,7 @@ import org.powbot.mobile.script.ScriptManager
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.1.0",
+    version = "1.1.1",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -77,6 +79,8 @@ class Combiner : ATScript() {
     }
 
     fun stoppedUsing() = Production.stoppedUsing(id)
+
+    fun shouldBank() = items.any { !Inventory.containsOneOf(it.key) }
 
     @com.google.common.eventbus.Subscribe
     fun onInventoryItem(e: InventoryChangeEvent) {
