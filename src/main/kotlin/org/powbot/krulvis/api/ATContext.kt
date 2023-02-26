@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.short
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.abs
 
@@ -207,16 +208,23 @@ object ATContext {
         debug("WithdrawExact: $id, $amount")
         val currentAmount = Inventory.getCount(true, id)
         if (currentAmount < amount) {
+            val withdrawCount = amount - currentAmount
             if (!containsOneOf(id)) {
 //                debug("No: ${CacheItemConfig.load(id).name} with id=$id in bank")
                 return false
-            } else if (amount - currentAmount >= stream().id(id).count(true)) {
+            } else if (withdrawCount >= stream().id(id).count(true)) {
                 debug("Withdrawing all: $id, since bank contains too few")
                 withdraw(id, Bank.Amount.ALL)
-//            } else if (amount - currentAmount >= Inventory.emptySlots() && !id.getItemDef().stackable) {
-//                debug("Withdrawing all: $id, since there's just enough space")
-//                withdraw(id, Bank.Amount.ALL)
-            } else if (!withdraw(id, amount - currentAmount)) {
+            } else if (withdrawCount >= Inventory.emptySlots() && ItemLoader.lookup(id)
+                    ?.stackable() == false
+            ) {
+                debug("Withdrawing all: $id, since there's just enough space")
+                withdraw(id, Bank.Amount.ALL)
+            } else if (withdrawCount in 2..4) {
+                repeat(withdrawCount) {
+                    withdraw(id, 1)
+                }
+            } else if (!withdraw(id, withdrawCount)) {
                 return false
             }
         } else if (currentAmount > amount) {

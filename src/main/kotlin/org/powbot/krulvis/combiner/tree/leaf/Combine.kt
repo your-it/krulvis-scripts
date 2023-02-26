@@ -19,6 +19,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
+import kotlin.random.Random
 
 class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
     override fun execute() {
@@ -64,6 +65,12 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                 script.log.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {
                     waitFor(long()) { script.spamClick || !script.stoppedUsing() }
+                    if (event is WidgetActionEvent && event.interaction == "Cast" && script.shouldBank()) {
+                        script.log.info("Casting spell as last action")
+                        val randomSleep = Random.nextInt(150, 600)
+                        sleep(randomSleep)
+                        script.log.info("Slept for $randomSleep")
+                    }
                 } else {
                     val wait = waitFor(long()) {
                         if (event.name.contains("->")) {
