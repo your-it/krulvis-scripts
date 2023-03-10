@@ -1,25 +1,20 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.requirement.Requirement
-import org.powbot.api.requirement.RunePowerRequirement
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
-import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.magic.RunePouch
-import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
+import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
-import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Loot
@@ -62,7 +57,7 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Inserting runes") {
         if (Inventory.selectedItem().id != inventoryRune?.id) {
             inventoryRune?.interact("Use")
-        } else if (Inventory.stream().id(RunePouch.POUCH_ID).firstOrNull()?.interact("Use") == true) {
+        } else if (Inventory.stream().id(RUNE_POUCH).firstOrNull()?.interact("Use") == true) {
             waitFor { getInsertableRune() == null }
         }
     }
