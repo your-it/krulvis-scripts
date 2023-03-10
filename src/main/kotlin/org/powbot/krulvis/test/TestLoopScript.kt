@@ -1,39 +1,18 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.Color
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
-import org.powbot.api.rt4.*
-import org.powbot.api.rt4.magic.Rune
-import org.powbot.api.rt4.magic.RunePouch.RUNE_AMOUNT_MASK
-import org.powbot.api.rt4.magic.RunePouch.RUNE_ID_MASK
-import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP
-import org.powbot.api.rt4.magic.RunePouch.RUNE_POUCH_VARP2
+import org.powbot.api.rt4.Component
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Npc
+import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.AbstractScript
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.paint.*
-import org.powbot.api.script.tree.SimpleLeaf
-import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.TargetWidget
-import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.mobile.BotManager
-import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.drawing.Rendering
-import org.powerbot.bot.rt4.client.internal.IClient
-import org.powerbot.bot.rt4.client.internal.ICombatStatusData
-import kotlin.math.ceil
-import kotlin.math.pow
 import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul Test Loop", version = "1.0.1", description = "", priv = true)

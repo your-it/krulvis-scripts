@@ -153,6 +153,7 @@ interface Item {
         val DRAGON_MED_HELM = 1149
         val DRAGON_SPEAR = 1249
         val HERB_SACK_OPEN = 24478
+        val RUNE_POUCH = 12791
     }
 
 }

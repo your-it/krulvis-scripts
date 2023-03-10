@@ -20,7 +20,7 @@ import org.powbot.mobile.script.ScriptManager
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.1.1",
+    version = "1.1.2",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
