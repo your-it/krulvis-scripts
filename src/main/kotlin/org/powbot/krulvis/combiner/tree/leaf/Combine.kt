@@ -67,7 +67,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                     waitFor(long()) { script.spamClick || !script.stoppedUsing() }
                     if (event is WidgetActionEvent && event.interaction == "Cast" && script.shouldBank()) {
                         script.log.info("Casting spell as last action")
-                        val randomSleep = Random.nextInt(150, 600)
+                        val randomSleep = Random.nextInt(600, 1200)
                         sleep(randomSleep)
                         script.log.info("Slept for $randomSleep")
                     }
