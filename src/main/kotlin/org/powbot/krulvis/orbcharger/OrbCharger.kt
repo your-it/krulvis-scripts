@@ -16,7 +16,7 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
     name = "krul Orbs",
     description = "Craft orbs",
     author = "Krulvis",
-    version = "1.0.1",
+    version = "1.0.2",
     markdownFileName = "Orb.md",
     priv = true,
     category = ScriptCategory.Magic
