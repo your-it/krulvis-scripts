@@ -1,6 +1,8 @@
 package org.powbot.krulvis.orbcharger
 
 import org.powbot.api.Tile
+import org.powbot.api.requirement.Requirement
+import org.powbot.api.requirement.RunePowerRequirement
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
@@ -37,7 +39,6 @@ enum class Orb(
         Tile(2818, 9828, 0),
         Magic.Spell.CHARGE_FIRE_ORB,
         BankLocation.FALADOR_WEST_BANK,
-        InventoryRequirement(Rune.AIR.id, 3, allowMore = true),
         InventoryRequirement(RUNE_POUCH, 1),
     ),
     EARTH(
