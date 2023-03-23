@@ -143,7 +143,6 @@ class TestPainter(script: TestScript) : ATPaint<TestScript>(script) {
 
     override fun paintCustom(g: Rendering) {
         g.setColor(Color.RED)
-        g.setScale(1.0f)
         val ladder = script.ladder ?: return
         ladder.model()?.draw(ladder.localX(), ladder.localY())
 //        script.points.forEach {
