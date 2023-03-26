@@ -40,7 +40,9 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
     override fun validate(): Boolean {
         Game.tab(Game.Tab.INVENTORY)
-        return !Equipment.containsOneOf(*SPEC_HARPOONS) && !Inventory.containsOneOf(*HARPOONS)
+        return !script.barbFishing
+                && !Equipment.containsOneOf(*SPEC_HARPOONS)
+                && !Inventory.containsOneOf(*HARPOONS)
     }
 
     override val successComponent: TreeComponent<Tempoross> = GetHarpoon(script)
@@ -65,13 +67,13 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
     override val failedComponent: TreeComponent<Tempoross> =
-        SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
-            script.burningTiles.clear()
-            script.triedPaths.clear()
-            script.detectDangerousTiles()
+            SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
+                script.burningTiles.clear()
+                script.triedPaths.clear()
+                script.detectDangerousTiles()
 
-            !script.hasOutfit && !Inventory.containsOneOf(ROPE)
-        }
+                !script.hasOutfit && !Inventory.containsOneOf(ROPE)
+            }
 }
 
 class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get water") {

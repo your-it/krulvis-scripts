@@ -39,7 +39,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.2.2",
+    version = "1.2.3",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -57,7 +57,13 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
             description = "Do Dragon Harpoon special",
             defaultValue = "false",
             optionType = OptionType.BOOLEAN
-        )
+        ),
+        ScriptConfiguration(
+                name = "Barb fishing",
+                description = "Barbarian fishing",
+                defaultValue = "false",
+                optionType = OptionType.BOOLEAN
+        ),
     ]
 )
 class Tempoross : ATScript() {
@@ -82,6 +88,7 @@ class Tempoross : ATScript() {
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
     val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
 
+    val barbFishing by lazy { getOption<Boolean>("Barb fishing") }
     val cookFish by lazy { getOption<Boolean>("Cook fish") }
     val spec by lazy { getOption<Boolean>("Special Attack") }
 
