@@ -24,12 +24,12 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
                 debug("Depositing bars")
                 Bank.depositAllExcept(COAL_BAG_CLOSED, COAL_BAG_OPENED, ICE_GLOVES, GOLD_GLOVES)
             } else if (!Inventory.isFull()) {
-                if (!Inventory.containsOneOf(ICE_GLOVES)
-                    && !Equipment.containsOneOf(ICE_GLOVES)
-                    && Bank.containsOneOf(ICE_GLOVES)
+                if (!Inventory.containsOneOf(ICE_GLOVES, SMITHS_GLOVES)
+                    && !Equipment.containsOneOf(ICE_GLOVES, SMITHS_GLOVES)
+                    && Bank.containsOneOf(ICE_GLOVES, SMITHS_GLOVES)
                 ) {
                     debug("Withdrawing ice gloves")
-                    Bank.withdraw(ICE_GLOVES, 1)
+                    Bank.withdraw(Bank.stream().id(ICE_GLOVES, SMITHS_GLOVES).first().id(), 1)
                 }
                 val bankBag = Bank.stream().id(COAL_BAG_OPENED, COAL_BAG_CLOSED).firstOrNull()
                 if (canUseCoalBag() && !Inventory.containsOneOf(COAL_BAG_OPENED, COAL_BAG_CLOSED)) {
