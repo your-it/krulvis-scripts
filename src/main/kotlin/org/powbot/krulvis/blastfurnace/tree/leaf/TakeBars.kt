@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.ICE_GLOVES
+import org.powbot.krulvis.blastfurnace.SMITHS_GLOVES
 
 class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
 
@@ -26,7 +27,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
     }
 
     override fun execute() {
-        val gloves = Inventory.stream().id(ICE_GLOVES).firstOrNull()
+        val gloves = Inventory.stream().id(ICE_GLOVES, SMITHS_GLOVES).firstOrNull()
         val takeWidget = takeWidget()
         debug("Take widget=$takeWidget")
         Bank.close()
@@ -34,7 +35,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
             val equip = gloves.interact("Wear")
             debug("Putting on ice gloves=$equip")
             if (equip) {
-                waitFor { !Inventory.containsOneOf(ICE_GLOVES) }
+                waitFor { !Inventory.containsOneOf(ICE_GLOVES, SMITHS_GLOVES) }
             }
         } else if (takeWidget.valid()) {
             val allButton = takeWidget.components().firstOrNull { it.actions().contains(Quantity.ALL.action) }
