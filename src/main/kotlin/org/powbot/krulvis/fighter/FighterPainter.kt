@@ -18,20 +18,20 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
         paintBuilder.addString("Target") {
             "Name=${TargetWidget.name()}, HP=${TargetWidget.health()}"
         }
-            .trackSkill(Skill.Attack)
-            .trackSkill(Skill.Strength)
-            .trackSkill(Skill.Defence)
-            .trackSkill(Skill.Hitpoints)
-            .trackSkill(Skill.Prayer)
-            .trackSkill(Skill.Magic)
-            .trackSkill(Skill.Ranged)
-            .trackSkill(Skill.Slayer)
-            .add(slayerTracker)
-            .addCheckbox("Stop after Slay task", "stopAfterTask", true)
-            .withTotalLoot(true)
-            .addString("Npc Death Watchers") {
-                script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
-            }
+                .trackSkill(Skill.Attack)
+                .trackSkill(Skill.Strength)
+                .trackSkill(Skill.Defence)
+                .trackSkill(Skill.Hitpoints)
+                .trackSkill(Skill.Prayer)
+                .trackSkill(Skill.Magic)
+                .trackSkill(Skill.Ranged)
+                .trackSkill(Skill.Slayer)
+                .add(slayerTracker)
+                .addCheckbox("Stop after Slay task", "stopAfterTask", true)
+                .withTotalLoot(true)
+                .addString("Npc Death Watchers") {
+                    script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
+                }
         return paintBuilder.build()
     }
 
@@ -45,13 +45,14 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
             g.drawString("Valid: ${target.valid()}", 500, 260)
             g.drawString("Interacting is me=${target.interacting() == me}", 500, 280)
             g.drawString(
-                "Watcher count total=${script.npcDeathWatchers.size}, target=${script.npcDeathWatchers.count { it.npc == target }}",
-                500,
-                300
+                    "Watcher count total=${script.npcDeathWatchers.size}, target=${script.npcDeathWatchers.count { it.npc == target }}",
+                    500,
+                    300
             )
         }
-        val lootTile = script.waitingForLootTile
-        lootTile?.drawOnScreen(outlineColor = Color.CYAN)
-//        script.currentTarget?.tile()?.drawOnScreen(g)
+        if (script.isWaitingForLoot()) {
+            val lootTile = script.waitingForLootTile
+            lootTile?.drawOnScreen(outlineColor = Color.CYAN)
+        }
     }
 }

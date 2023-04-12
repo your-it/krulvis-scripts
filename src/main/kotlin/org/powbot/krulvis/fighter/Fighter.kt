@@ -32,82 +32,86 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 import kotlin.math.round
 
 @ScriptManifest(
-    name = "krul Fighter",
-    description = "Fights anything, anywhere. Supports defender collecting.",
-    author = "Krulvis",
-    version = "1.4.0",
-    markdownFileName = "Fighter.md",
-    scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
-    category = ScriptCategory.Combat,
-    priv = true
+        name = "krul Fighter",
+        description = "Fights anything, anywhere. Supports defender collecting.",
+        author = "Krulvis",
+        version = "1.4.1",
+        markdownFileName = "Fighter.md",
+        scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
+        category = ScriptCategory.Combat,
+        priv = true
 )
 @ScriptConfiguration.List(
-    [
-        ScriptConfiguration(
-            "Warrior guild", "Collect defenders in the warrior guild",
-            optionType = OptionType.BOOLEAN, defaultValue = "false"
-        ),
+        [
+            ScriptConfiguration(
+                    "Warrior guild", "Collect defenders in the warrior guild",
+                    optionType = OptionType.BOOLEAN, defaultValue = "false"
+            ),
 
-        ScriptConfiguration(
-            "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
-        ),
-        ScriptConfiguration(
-            name = "Slayer Master",
-            //Fuck "KRYSTILIA" for now
-            allowedValues = ["TURAEL", "SPRIA", "MAZCHNA", "VANNAKA", "CHAELDAR", "KONAR", "NIEVE", "STEVE", "DURADEL"],
-            description = "What slayer master do you want to use?",
-            defaultValue = "KONAR",
-            visible = false
-        ),
-        ScriptConfiguration(
-            "Inventory", "What should your inventory look like?",
-            optionType = OptionType.INVENTORY
-        ),
-        ScriptConfiguration(
-            "Equipment", "What do you want to wear?",
-            optionType = OptionType.EQUIPMENT
-        ),
-        ScriptConfiguration(
-            "Monsters",
-            "Click the NPC's you want to kill",
-            optionType = OptionType.NPC_ACTIONS
-        ),
-        ScriptConfiguration(
-            "Radius", "Kill radius", optionType = OptionType.INTEGER, defaultValue = "10"
-        ),
-        ScriptConfiguration(
-            "Use safespot", "Do you want to force a safespot?",
-            optionType = OptionType.BOOLEAN, defaultValue = "false"
-        ),
-        ScriptConfiguration(
-            "Safespot", "Get safespot / centertile",
-            optionType = OptionType.TILE
-        ),
-        ScriptConfiguration(
-            "Ironman", description = "Only pick up your own drops.",
-            optionType = OptionType.BOOLEAN, defaultValue = "true"
-        ),
-        ScriptConfiguration(
-            "Loot price", "Min loot price?", optionType = OptionType.INTEGER, defaultValue = "1000"
-        ),
-        ScriptConfiguration(
-            "Always loot",
-            "Separate items with \",\" Start with \"!\" to never loot",
-            optionType = OptionType.STRING,
-            defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale"
-        ),
-        ScriptConfiguration(
-            "Bury bones", "Bury, Scatter or Offer bones.",
-            optionType = OptionType.BOOLEAN, defaultValue = "false"
-        ),
-        ScriptConfiguration(
-            "Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FEROX_ENCLAVE",
-            allowedValues = ["NEAREST", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "AL_KHARID_BANK", "BURTHORPE_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "CASTLE_WARS_BANK", "DRAYNOR_BANK", "EDGEVILLE_BANK",
-                "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "FARMING_GUILD_85", "FARMING_GUILD_65", "FEROX_ENCLAVE", "GRAND_EXCHANGE", "HOSIDIUS_BEST_BANK_SPOT", "MISCELLANIA_BANK", "KOUREND_TOP_BUILDING", "LUMBRIDGE_TOP", "LUMBRIDGE_CASTLE_BANK",
-                "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "GNOME_STRONGHOLD_BANK", "FISHING_GUILD_BANK", "MINING_GUILD", "MOTHERLOAD_MINE", "MOTHERLOAD_MINE_DEPOSIT", "PRIFIDDINAS", "PORT_SARIM_DB", "SEERS_BANK",
-                "SHAYZIEN_NORTH_CHEST", "SHAYZIEN_SOUTH_BOOTH", "SHANTAY_PASS_BANK", "SHILO_GEM_MINE", "TZHAAR_BANK", "WOODCUTTING_GUILD", "WARRIORS_GUILD", "WINTERTODT", "YANILLE_BANK"]
-        ),
-    ]
+            ScriptConfiguration(
+                    "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
+            ),
+            ScriptConfiguration(
+                    name = "Slayer Master",
+                    //Fuck "KRYSTILIA" for now
+                    allowedValues = ["TURAEL", "SPRIA", "MAZCHNA", "VANNAKA", "CHAELDAR", "KONAR", "NIEVE", "STEVE", "DURADEL"],
+                    description = "What slayer master do you want to use?",
+                    defaultValue = "KONAR",
+                    visible = false
+            ),
+            ScriptConfiguration(
+                    "Inventory", "What should your inventory look like?",
+                    optionType = OptionType.INVENTORY
+            ),
+            ScriptConfiguration(
+                    "Equipment", "What do you want to wear?",
+                    optionType = OptionType.EQUIPMENT
+            ),
+            ScriptConfiguration(
+                    "Monsters",
+                    "Click the NPC's you want to kill",
+                    optionType = OptionType.NPC_ACTIONS
+            ),
+            ScriptConfiguration(
+                    "Radius", "Kill radius", optionType = OptionType.INTEGER, defaultValue = "10"
+            ),
+            ScriptConfiguration(
+                    "Use safespot", "Do you want to force a safespot?",
+                    optionType = OptionType.BOOLEAN, defaultValue = "false"
+            ),
+            ScriptConfiguration(
+                    "Safespot", "Get safespot / centertile",
+                    optionType = OptionType.TILE
+            ),
+            ScriptConfiguration(
+                    "WaitForLoot", "Wait for loot after kill?",
+                    optionType = OptionType.BOOLEAN, defaultValue = "false"
+            ),
+            ScriptConfiguration(
+                    "Ironman", description = "Only pick up your own drops.",
+                    optionType = OptionType.BOOLEAN, defaultValue = "true"
+            ),
+            ScriptConfiguration(
+                    "Loot price", "Min loot price?", optionType = OptionType.INTEGER, defaultValue = "1000"
+            ),
+            ScriptConfiguration(
+                    "Always loot",
+                    "Separate items with \",\" Start with \"!\" to never loot",
+                    optionType = OptionType.STRING,
+                    defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale"
+            ),
+            ScriptConfiguration(
+                    "Bury bones", "Bury, Scatter or Offer bones.",
+                    optionType = OptionType.BOOLEAN, defaultValue = "false"
+            ),
+            ScriptConfiguration(
+                    "Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FEROX_ENCLAVE",
+                    allowedValues = ["NEAREST", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "AL_KHARID_BANK", "BURTHORPE_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "CASTLE_WARS_BANK", "DRAYNOR_BANK", "EDGEVILLE_BANK",
+                        "FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "FARMING_GUILD_85", "FARMING_GUILD_65", "FEROX_ENCLAVE", "GRAND_EXCHANGE", "HOSIDIUS_BEST_BANK_SPOT", "MISCELLANIA_BANK", "KOUREND_TOP_BUILDING", "LUMBRIDGE_TOP", "LUMBRIDGE_CASTLE_BANK",
+                        "VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "GNOME_STRONGHOLD_BANK", "FISHING_GUILD_BANK", "MINING_GUILD", "MOTHERLOAD_MINE", "MOTHERLOAD_MINE_DEPOSIT", "PRIFIDDINAS", "PORT_SARIM_DB", "SEERS_BANK",
+                        "SHAYZIEN_NORTH_CHEST", "SHAYZIEN_SOUTH_BOOTH", "SHANTAY_PASS_BANK", "SHILO_GEM_MINE", "TZHAAR_BANK", "WOODCUTTING_GUILD", "WARRIORS_GUILD", "WINTERTODT", "YANILLE_BANK"]
+            ),
+        ]
 )
 class Fighter : ATScript() {
 
@@ -121,9 +125,9 @@ class Fighter : ATScript() {
         if (inWG) {
             updateOption("Safespot", Defender.killSpot(), OptionType.TILE)
             val npcAction = NpcActionEvent(
-                0, 0, 10, 13729,
-                "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
-                447, 447, -1
+                    0, 0, 10, 13729,
+                    "Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
+                    447, 447, -1
             )
             updateOption("Monsters", listOf(npcAction), OptionType.NPC_ACTIONS)
             updateOption("Radius", 25, OptionType.INTEGER)
@@ -147,7 +151,7 @@ class Fighter : ATScript() {
             val painter = painter as FighterPainter
             if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
                 val index =
-                    painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
+                        painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
                 painter.paintBuilder.items.add(index, painter.slayerTracker)
             } else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
                 painter.paintBuilder.items.remove(painter.slayerTracker)
@@ -164,12 +168,12 @@ class Fighter : ATScript() {
             slayer = Slayer(Master.valueOf(getOption("Slayer Master")), log)
             Events.register(slayer)
             val taskCheckBoxIndex =
-                painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem } }
+                    painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem } }
             painter.paintBuilder.add(
-                listOf(
-                    TextPaintItem { "Task remainder:" },
-                    TextPaintItem { Slayer.taskRemainder().toString() }),
-                taskCheckBoxIndex
+                    listOf(
+                            TextPaintItem { "Task remainder:" },
+                            TextPaintItem { Slayer.taskRemainder().toString() }),
+                    taskCheckBoxIndex
             )
             painter.paintBuilder.addString("Current Task") { slayer.currentTask?.target?.name?.lowercase() }
         }
@@ -193,10 +197,10 @@ class Fighter : ATScript() {
     val inventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
     val potions by lazy {
         inventoryOptions.filter { Potion.isPotion(it.key) }
-            .mapNotNull { Pair(Potion.forId(it.key), it.value) }
-            .groupBy {
-                it.first
-            }.map { it.key!! to it.value.sumOf { pair -> pair.second } }
+                .mapNotNull { Pair(Potion.forId(it.key), it.value) }
+                .groupBy {
+                    it.first
+                }.map { it.key!! to it.value.sumOf { pair -> pair.second } }
     }
     val hasPrayPots by lazy { potions.any { it.first == Potion.PRAYER } }
 
@@ -205,9 +209,9 @@ class Fighter : ATScript() {
     val equipment by lazy {
         equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
             Equipment(
-                emptyList(),
-                Slot.forIndex(it.value),
-                it.key
+                    emptyList(),
+                    Slot.forIndex(it.value),
+                    it.key
             )
         }
     }
@@ -222,12 +226,15 @@ class Fighter : ATScript() {
         getOption<List<NpcActionEvent>>("Monsters").map { it.name }
     }
     val radius by lazy { getOption<Int>("Radius") }
+    val waitForLootAfterKill by lazy { getOption<Boolean>("WaitForLoot") }
     var currentTarget: Npc? = null
-    val targets = mutableListOf<Npc>()
 
 
     //Loot
     var waitingForLootTile: Tile? = null
+
+    fun isWaitingForLoot() = waitForLootJob?.isActive == true
+    var waitForLootJob: Job? = null
     val lootList = mutableListOf<GroundItem>()
     val ironman by lazy { getOption<Boolean>("Ironman") }
     val minLoot by lazy { getOption<Int>("Loot price") }
@@ -251,8 +258,8 @@ class Fighter : ATScript() {
     val neverLoot by lazy {
         val trimmed = mutableListOf<String>()
         lootNameOptions
-            .filter { it.startsWith("!") }
-            .forEach { trimmed.add(it.replace("!", "")) }
+                .filter { it.startsWith("!") }
+                .forEach { trimmed.add(it.replace("!", "")) }
         log.info("Not looting: [${trimmed.joinToString()}]")
         trimmed
     }
@@ -280,7 +287,7 @@ class Fighter : ATScript() {
     fun target(): Npc? {
         val local = Players.local()
         val nearbyMonsters =
-            nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
+                nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
         val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
         return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
     }
@@ -289,14 +296,13 @@ class Fighter : ATScript() {
 
 
     fun watchLootDrop(tile: Tile) {
-        if (waitingForLootTile != tile) {
+        if (waitForLootJob?.isActive != true) {
             log.info("Waiting for loot at $tile")
             val startMilis = System.currentTimeMillis()
             waitingForLootTile = tile
-            GlobalScope.launch {
+            waitForLootJob = GlobalScope.launch {
                 val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
                 val loot = watcher.waitForLoot()
-//            Notifications.showNotification("Found loot=${loot.joinToString()}")
                 log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
                 lootList.addAll(loot)
                 watcher.unregister()
@@ -316,7 +322,7 @@ class Fighter : ATScript() {
 
 
     fun loot(): List<GroundItem> =
-        if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
+            if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
 
     var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
 
@@ -326,9 +332,7 @@ class Fighter : ATScript() {
         if (interacting is Npc && interacting != Npc.Nil) {
             currentTarget = interacting
             val watcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
-//            ATContext.debug("Current NpcDeathWatcher=${watcher}, active=${watcher?.active}")
             if (watcher == null || !watcher.active) {
-                log.info("Current watcher active=${watcher?.active}")
                 npcDeathWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
             }
         }
@@ -341,9 +345,9 @@ class Fighter : ATScript() {
         val pot = Potion.forId(evt.itemId)
         val isTeleport = TeleportItem.isTeleportItem(id)
         if (evt.quantityChange > 0 && id != VIAL
-            && id !in Defender.defenders
-            && !inventory.containsKey(id) && !equipmentOptions.containsKey(id)
-            && !isTeleport && potions.none { it.first == pot }
+                && id !in Defender.defenders
+                && !inventory.containsKey(id) && !equipmentOptions.containsKey(id)
+                && !isTeleport && potions.none { it.first == pot }
         ) {
             if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
                 painter.paintBuilder.trackInventoryItems(id)

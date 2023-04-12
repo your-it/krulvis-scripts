@@ -18,12 +18,12 @@ class ShouldUseItem(script: Fighter) : Branch<Fighter>(script, "Should use item?
         val killItem = script.killItem()
         val currentXp = Skills.experience(Constants.SKILLS_SLAYER)
         if (Utils.walkAndInteract(
-                script.currentTarget,
-                "Use",
-                false,
-                true,
-                killItem!!.ids[0]
-            )
+                        script.currentTarget,
+                        "Use",
+                        false,
+                        true,
+                        killItem!!.ids[0]
+                )
         ) {
             if (Condition.wait({ Skills.experience(Constants.SKILLS_SLAYER) > currentXp }, 300, 10)) {
                 script.watchLootDrop(script.currentTarget!!.tile())
@@ -58,7 +58,7 @@ class Killing(script: Fighter) : Branch<Fighter>(script, "Killing?") {
     }
 
     fun shouldReturnToSafespot() =
-        script.useSafespot && script.centerTile() != Players.local().tile() && Players.local().healthBarVisible()
+            script.useSafespot && script.centerTile() != Players.local().tile() && Players.local().healthBarVisible()
 
     override fun validate(): Boolean {
         return killing(script.killItem())
@@ -100,9 +100,11 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
     }
 
     override fun validate(): Boolean {
-        if (script.useSafespot && script.centerTile() != Players.local().tile()) return false
+        if (script.useSafespot && script.centerTile() != Players.local().tile()) {
+            return false
+        }
         target = script.target()
-        return target != null
+        return target != null && (!script.isWaitingForLoot() || target?.healthPercent() in 0..8)
     }
 }
 
