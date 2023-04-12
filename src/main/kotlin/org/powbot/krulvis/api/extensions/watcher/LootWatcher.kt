@@ -1,5 +1,8 @@
 package org.powbot.krulvis.api.extensions.watcher
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.powbot.api.Tile
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.GroundItem
@@ -10,13 +13,14 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 class LootWatcher(private val tile: Tile, private val radius: Int = 4, private val isLoot: (GroundItem) -> Boolean) :
-    Watcher() {
+        Watcher() {
 
     private val latch = CountDownLatch(1)
     private val startLoot = groundItems()
     private val loot = mutableListOf<GroundItem>()
 
     private fun groundItems() = GroundItems.stream().within(tile, radius).list()
+    private var job: Job? = null
 
     @com.google.common.eventbus.Subscribe
     fun onTickEvent(_e: TickEvent) {
