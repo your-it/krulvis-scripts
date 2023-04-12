@@ -104,7 +104,7 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
             return false
         }
         target = script.target()
-        return target != null && (!script.isWaitingForLoot() || target?.healthPercent() in 0..8)
+        return target != null && (!script.waitForLootAfterKill || !script.isWaitingForLoot() || target?.healthPercent() in 0..8)
     }
 }
 

@@ -244,11 +244,13 @@ class Fighter : ATScript() {
         names.forEach { trimmed.add(it.trim().lowercase()) }
         trimmed
     }
+    var ammoId: Int = -1
     val lootNames by lazy {
         val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
         val ammo = equipment.firstOrNull { it.slot == Slot.QUIVER }
         if (ammo != null) {
-            names.add(ItemLoader.lookup(ammo.id)?.name()?.lowercase() ?: "nulll")
+            ammoId = ammo.id
+            names.add(ItemLoader.lookup(ammoId)?.name()?.lowercase() ?: "nulll")
         }
         names.add("brimstone key")
         names.add("ancient shard")
@@ -301,7 +303,7 @@ class Fighter : ATScript() {
             val startMilis = System.currentTimeMillis()
             waitingForLootTile = tile
             waitForLootJob = GlobalScope.launch {
-                val watcher = LootWatcher(tile, isLoot = { it.isLoot() })
+                val watcher = LootWatcher(tile, ammoId, isLoot = { it.isLoot() })
                 val loot = watcher.waitForLoot()
                 log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
                 lootList.addAll(loot)
