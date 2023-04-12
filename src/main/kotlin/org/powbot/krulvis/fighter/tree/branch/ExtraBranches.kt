@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.api.rt4.magic.RunePouch
@@ -13,7 +14,9 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
+import org.powbot.krulvis.api.extensions.items.Item.Companion.SEED_BOX_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
@@ -66,7 +69,7 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
     fun getInsertableRune(): Item? {
         val runes = RunePouch.runes()
         return Inventory.stream()
-            .firstOrNull { invItem -> runes.any { invItem.id == it.first.id && it.second <= 16000 } }
+                .firstOrNull { invItem -> runes.any { invItem.id == it.first.id && it.second <= 16000 } }
     }
 
     override fun validate(): Boolean {
@@ -89,5 +92,7 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
         }
         return !Inventory.isFull() || Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
                 || (Inventory.containsOneOf(HERB_SACK_OPEN) && loot.any { it.name().contains("grimy", true) })
+                || (Inventory.containsOneOf(SEED_BOX_OPEN) && loot.any { it.name().contains("seed", true) })
+                || (Potion.PRAYER.inInventory() && loot.any { GrandExchange.getItemPrice(it.id()) * it.stackSize() >= 10000 })
     }
 }

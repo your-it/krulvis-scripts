@@ -1,18 +1,16 @@
 package org.powbot.krulvis.api.extensions.watcher
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.powbot.api.Tile
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.GroundItem
 import org.powbot.api.rt4.GroundItems
 import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.krulvis.api.ATContext.getPrice
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import kotlin.math.round
 
-class LootWatcher(private val tile: Tile, private val radius: Int = 4, private val isLoot: (GroundItem) -> Boolean) :
+class LootWatcher(private val tile: Tile, private val ammo: Int, private val radius: Int = 4, private val isLoot: (GroundItem) -> Boolean) :
         Watcher() {
 
     private val latch = CountDownLatch(1)
@@ -26,9 +24,9 @@ class LootWatcher(private val tile: Tile, private val radius: Int = 4, private v
     fun onTickEvent(_e: TickEvent) {
         val groundItems = groundItems()
         val newItems = groundItems.filterNot { it in startLoot }
-        if (newItems.isNotEmpty()) {
+        if (newItems.count { it.id() != ammo } > 0) {
             val newLoot = newItems.filter(isLoot)
-            debug("New groundItems found: [${newItems.joinToString { it.name() }}], loot: [${newLoot.joinToString { it.name() }}]")
+            debug("New groundItems found: [${newItems.joinToString { it.name() + ": " + it.getPrice() * it.stackSize() }}], loot: [${newLoot.joinToString { it.name() }}]")
             loot.addAll(newLoot)
             latch.countDown()
         }
