@@ -2,6 +2,8 @@ package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.Condition
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPath
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -126,8 +128,14 @@ class ShouldSpawnTarget(script: Fighter) : Branch<Fighter>(script, "Should spawn
         Chat.clickContinue()
         val spot = script.centerTile()
         val nearby = script.nearbyMonsters()
-        if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius))
-            Movement.walkTo(spot)
+        if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius)) {
+            val path = LocalPathFinder.findPath(spot)
+            if (path.isNotEmpty()) {
+                path.traverseUntilReached(0.0)
+            } else {
+                Movement.walkTo(spot)
+            }
+        }
     }
 
     override fun validate(): Boolean {
