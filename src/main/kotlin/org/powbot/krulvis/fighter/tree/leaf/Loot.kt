@@ -35,13 +35,14 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
                     vial.interact("Drop")
                 } else if (edibleFood != null) {
                     edibleFood.eat()
-                } else {
-                    prayPot?.interact(if (prayPot.id == Potion.PRAYER.ids.last()) "Drink" else "Drop")
                 }
+//                else {
+//                    prayPot?.interact(if (prayPot.id == Potion.PRAYER.ids.last()) "Drink" else "Drop")
+//                }
                 waitFor { !Inventory.isFull() }
-                if (prayPot != null) {
-                    GroundItems.stream().id(prayPot.id).nearest().firstOrNull()?.let { script.lootList.add(it) }
-                }
+//                if (prayPot != null) {
+//                    GroundItems.stream().id(prayPot.id).nearest().firstOrNull()?.let { script.lootList.add(it) }
+//                }
             }
             val currentCount = Inventory.getCount(id)
             if ((!Inventory.isFull()

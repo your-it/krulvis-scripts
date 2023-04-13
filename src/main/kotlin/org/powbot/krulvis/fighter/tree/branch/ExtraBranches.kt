@@ -93,6 +93,6 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
         return !Inventory.isFull() || Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
                 || (Inventory.containsOneOf(HERB_SACK_OPEN) && loot.any { it.name().contains("grimy", true) })
                 || (Inventory.containsOneOf(SEED_BOX_OPEN) && loot.any { it.name().contains("seed", true) })
-                || (Potion.PRAYER.inInventory() && loot.any { GrandExchange.getItemPrice(it.id()) * it.stackSize() >= 10000 })
+//                || (Potion.PRAYER.inInventory() && loot.any { GrandExchange.getItemPrice(it.id()) * it.stackSize() >= 10000 })
     }
 }
