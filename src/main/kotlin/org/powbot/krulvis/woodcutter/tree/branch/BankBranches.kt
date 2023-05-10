@@ -1,16 +1,16 @@
 package org.powbot.krulvis.woodcutter.tree.branch
 
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.GroundItem
-import org.powbot.api.rt4.GroundItems
-import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.tithe.tree.leaf.Deposit
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.krulvis.woodcutter.tree.leaf.Drop
 import org.powbot.krulvis.woodcutter.tree.leaf.HandleBank
@@ -52,10 +52,19 @@ class ShouldDrop(script: Woodcutter) : Branch<Woodcutter>(script, "Should Drop?"
 }
 
 class IsBankOpen(script: Woodcutter) : Branch<Woodcutter>(script, "Is Bank Open?") {
-    override val failedComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Open bank") { Bank.openNearest() }
+    override val failedComponent: TreeComponent<Woodcutter> = SimpleLeaf(script, "Open bank") {
+        val depositBox = DepositBox.getDepositBox()
+        if (depositBox.valid()) {
+            if (walkAndInteract(depositBox, "Deposit")) {
+                waitFor(2000 + depositBox.distance().toInt() * 500) { DepositBox.opened() }
+            }
+        } else {
+            Bank.openNearest()
+        }
+    }
     override val successComponent: TreeComponent<Woodcutter> = HandleBank(script)
 
     override fun validate(): Boolean {
-        return Bank.opened()
+        return Bank.opened() || DepositBox.opened()
     }
 }

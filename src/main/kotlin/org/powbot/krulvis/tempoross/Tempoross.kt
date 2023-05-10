@@ -122,7 +122,7 @@ class Tempoross : ATScript() {
             var path = LocalPathFinder.findPath(e.tile())
             if (path.isEmpty()) path = LocalPathFinder.findPath(destinationWhenNil)
             if (douseIfNecessary(path, allowCrossing)) {
-                return walkAndInteract(e as Interactive, action)
+                return walkAndInteract(e, action)
             }
         }
         return false
