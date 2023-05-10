@@ -81,7 +81,7 @@ object ATContext {
      * Custom interaction function
      */
     fun walkAndInteract(
-        target: Interactive?,
+        target: InteractableEntity?,
         action: String,
         alwaysWalk: Boolean = false,
         allowWalk: Boolean = true,
@@ -90,7 +90,7 @@ object ATContext {
     ): Boolean {
         val t = target ?: return false
         val name = (t as Nameable).name()
-        val pos = (t as Locatable).tile().getWalkableNeighbor()
+        val pos = t.tile().getWalkableNeighbor()
         val destination = Movement.destination()
 
         turnRunOn()
