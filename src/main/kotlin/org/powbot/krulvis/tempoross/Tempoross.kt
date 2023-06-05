@@ -39,7 +39,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.2.3",
+    version = "1.2.4",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing

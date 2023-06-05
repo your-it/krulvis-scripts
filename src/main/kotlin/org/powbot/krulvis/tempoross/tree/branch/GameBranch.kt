@@ -12,6 +12,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.tempoross.Data.BARB_TAIL_HARPOON
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
@@ -41,7 +42,7 @@ class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should ge
     override fun validate(): Boolean {
         Game.tab(Game.Tab.INVENTORY)
         return !script.barbFishing
-                && !Equipment.containsOneOf(*SPEC_HARPOONS)
+                && !Equipment.containsOneOf(*SPEC_HARPOONS, BARB_TAIL_HARPOON)
                 && !Inventory.containsOneOf(*HARPOONS)
     }
 
