@@ -44,7 +44,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                 } else {
                     Bank.withdraw(Bar.STEEL.id, Bank.Amount.ALL)
                 }
-            }else{
+            } else {
                 script.log.info("Should be done banking")
             }
         } else if (script.forgingRing && !ringOfForging.inEquipment()) {
@@ -57,7 +57,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                 } else if (primCount > split.first) {
                     Bank.deposit(script.bar.primary.id, Bank.Amount.ALL)
                 } else {
-                    Bank.withdraw(script.bar.primary.id, if (hasSecondary) split.first - primCount else 0)
+                    Bank.withdraw(script.bar.primary.id, if (hasSecondary) split.first - primCount else Bank.Amount.ALL.value)
                 }
             }
             if (hasSecondary && !Inventory.isFull()) {
@@ -74,7 +74,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
     }
 
     val ringOfForging =
-        org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.RING, RING_OF_FORGING)
+            org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.RING, RING_OF_FORGING)
 
     fun getRequirements(): IntArray {
         val requirements = mutableListOf(script.bar.primary.id)
