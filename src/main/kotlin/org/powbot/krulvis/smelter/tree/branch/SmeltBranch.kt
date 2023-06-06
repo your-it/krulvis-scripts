@@ -24,7 +24,7 @@ class ShouldSmelt(script: Smelter) : Branch<Smelter>(script, "Should Smelt") {
             )
             script.log.info("Stopped making balls = $stoppedMakingBalls")
             stoppedMakingBalls
-        } else Production.stoppedMaking(script.bar.id)
+        } else Production.stoppedUsing(script.bar.primary.id)
     }
 }
 
@@ -41,7 +41,7 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
 
     override val successComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Clicking Widget") {
         if (comp?.interact(if (script.cannonballs) "Make sets:" else "Smelt", false) == true) {
-            waitFor(long()) { !Production.stoppedMaking(script.bar.id) }
+            waitFor(long()) { !Production.stoppedUsing(script.bar.primary.id) }
         }
     }
 

@@ -15,8 +15,12 @@ repositories {
 
 
 dependencies {
-    implementation 'org.powbot:client-sdk:1.0.29-SNAPSHOT'
+    implementation 'org.powbot:client-sdk:1.0.34-SNAPSHOT'
     implementation 'org.powbot:client-sdk-loader:+'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation "com.fasterxml.jackson.core:jackson-core:2.13.3"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.13.3"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3"
 }
