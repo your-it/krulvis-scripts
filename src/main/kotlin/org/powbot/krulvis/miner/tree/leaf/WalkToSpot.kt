@@ -21,11 +21,12 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
             script.log.warning("Script requires at least 1 rock location set in the Configuration")
             ScriptManager.stop()
         } else if (allTop
-            && !script.inTopFloorAreas()
-            && LocalPathFinder.findPath(Players.local().tile(), script.northOfLadder, true).isEmpty()
+                && !script.inTopFloorAreas()
+                && LocalPathFinder.findPath(Players.local().tile(), script.northOfLadder, true).isEmpty()
         ) {
             script.log.info("Climbing ladder manually")
-            val ladderGoingUp = Objects.stream().at(Tile(3755, 5673, 0)).name("Ladder").firstOrNull()
+            val ladderGoingUp = Objects.stream().at(Tile(3755, 5673, 0)).name("Ladder").action("Climb").firstOrNull()
+            ladderGoingUp?.bounds(-36,22,-264,0,58,62)
             if (ladderGoingUp != null && walkAndInteract(ladderGoingUp, "Climb")) {
                 waitFor { script.northOfLadder.distance() <= 1 }
             }
