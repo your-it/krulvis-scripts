@@ -69,7 +69,7 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
     fun getInsertableRune(): Item? {
         val runes = RunePouch.runes()
         return Inventory.stream()
-                .firstOrNull { invItem -> runes.any { invItem.id == it.first.id && it.second <= 16000 } }
+                .firstOrNull { invItem -> runes.any { invItem.id == it.first.id && it.second < 16000 - invItem.stack } }
     }
 
     override fun validate(): Boolean {
