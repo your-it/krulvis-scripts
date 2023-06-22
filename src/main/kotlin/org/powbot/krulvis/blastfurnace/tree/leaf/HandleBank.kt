@@ -16,7 +16,7 @@ class HandleBank(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Handle bank
 
     override fun execute() {
         //Reset waiting at dispenser
-        script.waitForBars = false
+        script.waitForBars.stop()
         if (Bank.opened()) {
             debug("Bank is open")
             val coalCount = Bank.stream().id(Ore.COAL.id).count(true)

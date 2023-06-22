@@ -47,7 +47,7 @@ class TakeBars(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Take bars") {
             val clickComp = takeWidget.components().maxByOrNull { it.componentCount() }
             debug("Clicking on Widget[${clickComp?.widgetId()}], $clickComp")
             if (clickComp != null && clickComp.click() && waitFor { Inventory.isFull() }) {
-                script.waitForBars = false
+                script.waitForBars.stop()
             }
         } else if (Chat.canContinue()) {
             debug("Can continue before taking bars.")

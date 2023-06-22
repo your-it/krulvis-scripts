@@ -16,7 +16,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
     name = "krul BlastFurnace",
     description = "Smelts bars at Blast Furnace",
     author = "Krulvis",
-    version = "1.2.5",
+    version = "1.2.6",
     markdownFileName = "BF.md",
     category = ScriptCategory.Smithing,
     priv = true
@@ -61,7 +61,7 @@ class BlastFurnace : ATScript() {
 
     override val rootComponent: TreeComponent<*> = ShouldPay(this)
 
-    var waitForBars = false
+    var waitForBars = Timer()
     val dispenserTile = Tile(1940, 4963, 0)
 
     fun interact(matrix: TileMatrix, action: String): Boolean {
