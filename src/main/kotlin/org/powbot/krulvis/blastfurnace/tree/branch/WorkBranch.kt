@@ -89,8 +89,8 @@ class ShouldWaitAtDispenser(script: BlastFurnace) : Branch<BlastFurnace>(script,
 
     override fun validate(): Boolean {
         if (Inventory.containsOneOf(script.bar.id)) {
-            script.waitForBars = false
+            script.waitForBars.stop()
         }
-        return !Inventory.isFull() && script.waitForBars
+        return !Inventory.isFull() && !script.waitForBars.isFinished()
     }
 }

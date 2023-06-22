@@ -28,9 +28,9 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
         debug("Found gloves=$gloves, bankComp=$bankComp, belt=$belt")
         if (belt == null) {
             debug(
-                "Belt is null... beltTile=$beltTile, objects on tile=${
-                    Objects.stream().at(beltTile).list().joinToString { it.name }
-                }"
+                    "Belt is null... beltTile=$beltTile, objects on tile=${
+                        Objects.stream().at(beltTile).list().joinToString { it.name }
+                    }"
             )
             return
         } else {
@@ -52,13 +52,13 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
             debug("bankContainsBeltPoint=$bankContainsBeltPoint")
             if (!bankContainsBeltPoint || Bank.close()) {
                 val hasSpecialOres =
-                    Inventory.containsOneOf(
-                        Ore.ADAMANTITE.id,
-                        Ore.RUNITE.id,
-                        Ore.IRON.id,
-                        Ore.MITHRIL.id,
-                        Ore.GOLD.id
-                    )
+                        Inventory.containsOneOf(
+                                Ore.ADAMANTITE.id,
+                                Ore.RUNITE.id,
+                                Ore.IRON.id,
+                                Ore.MITHRIL.id,
+                                Ore.GOLD.id
+                        )
 
                 val waitForTime = if (belt.distance() > 1) Random.nextInt(10000, 12000) else 2000
                 debug("Walking and interacting with belt, hasSpecialOres=$hasSpecialOres, waitForTime=$waitForTime")
@@ -66,7 +66,7 @@ class PutOre(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Put ore on belt
                 if (hasOre && walkAndInteract(belt, "Put-ore-on")) {
                     waitFor(waitForTime) { !Inventory.isFull() }
                     if (hasSpecialOres) {
-                        script.waitForBars = true
+                        script.waitForBars.reset(10000)
                     }
                 }
 
