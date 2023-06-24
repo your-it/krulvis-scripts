@@ -7,6 +7,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
+import org.powbot.proto.rt4.WebWalking
 
 class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
     override fun execute() {
@@ -17,6 +18,10 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
             ScriptManager.stop()
         } else {
             val tile = locs.minByOrNull { it.distance() }
+            if(script.forceWeb){
+                Movement.builder(tile).setForceWeb(true).move()
+                return
+            }
             if (tile != null && tile.distance() < 15) {
                 Movement.step(tile)
                 waitFor(long()) { tile.distance() < 5 }
