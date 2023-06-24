@@ -17,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.0.9",
+    version = "1.1.0",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -39,6 +39,12 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
             optionType = OptionType.BOOLEAN,
             description = "Burn the logs?",
             defaultValue = "false"
+        ),
+        ScriptConfiguration(
+                name = "ForceWeb",
+                optionType = OptionType.BOOLEAN,
+                description = "Force Web Walking?",
+                defaultValue = "false"
         ),
         ScriptConfiguration(
             name = "BoundaryID",
@@ -69,6 +75,7 @@ class Woodcutter : ATScript() {
     val derpedRedWoodY = listOf(3480, 3494)
     val bank by lazy { getOption<Boolean>("Bank") }
     val burn by lazy { getOption<Boolean>("Burn") }
+    val forceWeb by lazy { getOption<Boolean>("ForceWeb") }
     val boundaryId by lazy { getOption<Int>("BoundaryID") }
 
 
