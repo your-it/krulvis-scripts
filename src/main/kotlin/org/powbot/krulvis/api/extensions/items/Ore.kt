@@ -57,7 +57,7 @@ enum class Ore(
     companion object {
         fun GameObject.hasOre(vararg ores: Ore = values()): Boolean {
             val name = name()
-            val validNames = arrayOf("Ore vein", "Crystals", "Ash pile")
+            val validNames = arrayOf("Ore vein", "Amethyst crystals", "Ash pile")
             return name in validNames || ores.any { ore -> ore.colors.any { it.toShort() in modifiedColors() } }
         }
 
