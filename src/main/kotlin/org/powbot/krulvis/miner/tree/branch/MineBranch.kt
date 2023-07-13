@@ -28,7 +28,9 @@ class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
             ScriptManager.stop()
             return false
         }
-        return nearest.distance() <= 10 && nearest.getWalkableNeighbor(checkForWalls = false)?.reachable() == true
+        val walkableNeighbor = nearest.getWalkableNeighbor(allowSelf = false, checkForWalls = false)
+        script.log.info("Nearest=$nearest, walkableNeighbor=$walkableNeighbor")
+        return nearest.distance() <= 10 && walkableNeighbor?.reachable() == true
     }
 
     override val successComponent: TreeComponent<Miner> = ShouldHop(script)
@@ -44,7 +46,7 @@ class ShouldHop(script: Miner) : Branch<Miner>(script, "ShouldHop") {
         }
         val nearByPlayers = Players.stream().filtered {
             it.name() != Players.local().name() && it.tile()
-                .distanceTo(script.rockLocations[Random.nextInt(0, script.rockLocations.size)]) <= 5
+                    .distanceTo(script.rockLocations[Random.nextInt(0, script.rockLocations.size)]) <= 5
         }
         if (nearByPlayers.isNotEmpty()) {
             if (hopDelay.isFinished()) {
@@ -113,16 +115,16 @@ class IsMining(script: Miner) : Branch<Miner>(script, "IsMining") {
     var lastAnim: Long = 0
 
     override val successComponent: TreeComponent<Miner> =
-        SimpleLeaf(script, "Chilling") {
-            if (Random.nextBoolean())
-                sleep(Random.nextInt(500, 800))
-            else if (!waitFor(1500) {
-                    Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
-                }) {
-                if (me.animation() > 0) {
-                    lastAnim = System.currentTimeMillis()
+            SimpleLeaf(script, "Chilling") {
+                if (Random.nextBoolean())
+                    sleep(Random.nextInt(500, 800))
+                else if (!waitFor(1500) {
+                            Objects.stream().at(facingTile()).noneMatch { it.hasOre() }
+                        }) {
+                    if (me.animation() > 0) {
+                        lastAnim = System.currentTimeMillis()
+                    }
                 }
             }
-        }
     override val failedComponent: TreeComponent<Miner> = Mine(script)
 }

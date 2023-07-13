@@ -31,7 +31,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
                     it.drawOnScreen(null, Color.RED)
                 }
             }
-            script.log.info("There are ${blockedTiles.size} blocked tiles")
+            g.drawString("Blocked Tiles = ${blockedTiles.size}", 10, 200)
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
                     val dangerous = tiles.any { script.burningTiles.contains(it) }

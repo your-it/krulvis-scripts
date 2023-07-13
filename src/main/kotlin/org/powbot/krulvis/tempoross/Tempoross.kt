@@ -3,6 +3,8 @@ package org.powbot.krulvis.tempoross
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Tile
+import org.powbot.api.event.BreakEvent
+import org.powbot.api.event.BreakStartedEvent
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
@@ -37,34 +39,34 @@ import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 @ScriptManifest(
-    name = "krul Tempoross",
-    description = "Does tempoross minigame",
-    version = "1.2.4",
-    author = "Krulvis",
-    markdownFileName = "Tempoross.md",
-    category = ScriptCategory.Fishing
+        name = "krul Tempoross",
+        description = "Does tempoross minigame",
+        version = "1.2.5",
+        author = "Krulvis",
+        markdownFileName = "Tempoross.md",
+        category = ScriptCategory.Fishing
 )
 @ScriptConfiguration.List(
-    [
-        ScriptConfiguration(
-            name = "Cook fish",
-            description = "Cooking the fish gives more points at the cost of XP",
-            defaultValue = "true",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-            name = "Special Attack",
-            description = "Do Dragon Harpoon special",
-            defaultValue = "false",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-                name = "Barb fishing",
-                description = "Barbarian fishing",
-                defaultValue = "false",
-                optionType = OptionType.BOOLEAN
-        ),
-    ]
+        [
+            ScriptConfiguration(
+                    name = "Cook fish",
+                    description = "Cooking the fish gives more points at the cost of XP",
+                    defaultValue = "true",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
+                    name = "Special Attack",
+                    description = "Do Dragon Harpoon special",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
+                    name = "Barb fishing",
+                    description = "Barbarian fishing",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            ),
+        ]
 )
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
@@ -103,10 +105,10 @@ class Tempoross : ATScript() {
     }
 
     fun interactWhileDousing(
-        e: InteractableEntity?,
-        action: String,
-        destinationWhenNil: Tile,
-        allowCrossing: Boolean
+            e: InteractableEntity?,
+            action: String,
+            destinationWhenNil: Tile,
+            allowCrossing: Boolean
     ): Boolean {
         if (e == null) {
             log.info("Can't find: $action")
@@ -145,8 +147,8 @@ class Tempoross : ATScript() {
     fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
         val fire =
-            if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
-                .firstOrNull() else null
+                if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
+                        .firstOrNull() else null
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
@@ -185,7 +187,9 @@ class Tempoross : ATScript() {
     }
 
     override fun canBreak(): Boolean {
-        return lastLeaf is EnterBoat || lastLeaf is Leave
+        val canBreak = lastLeaf is EnterBoat || lastLeaf is Leave
+        log.info("canBreak() lastLeaf=${lastLeaf.name} canBreak=${canBreak}")
+        return canBreak
     }
 
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
@@ -194,18 +198,25 @@ class Tempoross : ATScript() {
 
     fun getEnergy(): Int {
         val text =
-            Widgets.widget(PARENT_WIDGET).firstOrNull { it != null && it.visible() && it.text().contains("Energy") }
-                ?.text()
-                ?: return -1
+                Widgets.widget(PARENT_WIDGET).firstOrNull { it != null && it.visible() && it.text().contains("Energy") }
+                        ?.text()
+                        ?: return -1
         return text.substring(8, text.indexOf("%")).toInt()
     }
 
     fun getHealth(): Int {
         val text =
-            Widgets.widget(PARENT_WIDGET).firstOrNull { it != null && it.visible() && it.text().contains("Essence") }
-                ?.text()
-                ?: return -1
+                Widgets.widget(PARENT_WIDGET).firstOrNull { it != null && it.visible() && it.text().contains("Essence") }
+                        ?.text()
+                        ?: return -1
         return text.substring(9, text.indexOf("%")).toInt()
+    }
+
+    @Subscribe
+    fun onBreakEvent(be: BreakEvent) {
+        if (!canBreak()) {
+            be.delay(1000)
+        }
     }
 
     @Subscribe
@@ -240,7 +251,7 @@ class Tempoross : ATScript() {
     fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
         if (e.checkboxId == "lastGame") {
             lastGame = e.checked
-        }else if(e.checkboxId == "paintDebug"){
+        } else if (e.checkboxId == "paintDebug") {
             debugPaint = e.checked
         }
     }
@@ -279,7 +290,7 @@ class Tempoross : ATScript() {
         fishSpots = Npcs.stream().filtered {
             rightSide(it)
         }.action("Harpoon").name("Fishing spot").list()
-            .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+                .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
@@ -296,20 +307,20 @@ class Tempoross : ATScript() {
     }
 
     fun getBossPool() =
-        Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
+            Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().filtered { it.tile().distanceTo(side.mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
+            Npcs.stream().filtered { it.tile().distanceTo(side.mastLocation) <= 5 }.name("Ammunition crate").firstOrNull()
 
     fun getBucketCrate(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
-        }.name("Buckets").nearest().firstOrNull()
+            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+                it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
+            }.name("Buckets").nearest().firstOrNull()
 
     fun getWaterpump(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
-        }.name("Water pump").nearest().firstOrNull()
+            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+                it.tile().distanceTo(side.mastLocation) <= 5 || it.tile().distanceTo(side.bossPoolLocation) <= 5
+            }.name("Water pump").nearest().firstOrNull()
 
     fun getTetherPole(): GameObject? {
         val dest = Movement.destination()
@@ -324,5 +335,5 @@ class Tempoross : ATScript() {
 }
 
 fun main() {
-    Tempoross().startScript()
+    Tempoross().startScript("127.0.0.1", "GIM", false)
 }
