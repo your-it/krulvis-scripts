@@ -117,6 +117,7 @@ class Tempoross : ATScript() {
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
                     walkPath(path)
                 } else {
+                    log.info(if (path.isEmpty()) "Path is empty" else "failed dousing")
                     walk(destinationWhenNil)
                 }
             }
@@ -165,7 +166,7 @@ class Tempoross : ATScript() {
                 return waitFor(long()) { Npcs.stream().at(fire).name("Fire").isEmpty() }
             }
         } else if (fire == null || allowCrossing) {
-            log.info("No fire on the way")
+            log.info(if (fire == null) "No fire on the way" else "allowCrossing=true")
             return true
         }
         return false
@@ -270,11 +271,13 @@ class Tempoross : ATScript() {
      */
     fun detectDangerousTiles() {
         Npcs.stream().filtered { it.animation() > 0 }.name("Lightning cloud").nearest().forEach {
+            log.info("Found lightning cloud at ${it.tile()}")
             addTile(it.tile())
         }
 
         val fires = Npcs.stream().name("Fire")
         fires.forEach { fire ->
+            log.info("Found fire at ${fire.tile()}")
             addTile(fire.tile())
         }
     }
