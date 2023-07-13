@@ -62,29 +62,21 @@ class TemporossDebug : ATScript() {
 
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
         override fun execute() {
-            val c =
-                Components.stream(Data.PARENT_WIDGET).filtered { it.text().contains("Energy") }.firstOrNull()
-            debugComp(c)
+//            val c =
+//                Components.stream(Data.PARENT_WIDGET).filtered { it.text().contains("Energy") }.firstOrNull()
+//            debugComp(c)
             if (tempoross.side == Side.UNKNOWN) {
+                log.info("Figuring out side...")
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                     val mast = Objects.stream().name("Mast").nearest().first()
-                    println("Mast found: $mast, orientation: ${mast.orientation()}")
+                    log.info("Mast found: $mast, orientation: ${mast.orientation()}")
                     tempoross.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
                     tempoross.side.mastLocation = mast.tile()
                 }
             } else if (tempoross.getEnergy() == -1) {
-                println("Not in game...")
+                log.info("Not in game...")
                 tempoross.side = Side.UNKNOWN
             } else {
-                //In game
-                val pole = Objects.stream(3).action("Untether").firstOrNull()
-                val mast = Objects.stream().name("Mast").nearest().firstOrNull()
-                val atMast = Objects.stream().at(tempoross.side.mastLocation).list()
-                log.info("Untether pole: $pole")
-                log.info("Mast: $mast, distance=${mast?.distance()}, actions=${mast?.actions()?.joinToString()}")
-                atMast.forEach {
-                    log.info("Found obj at mast: ${it.name()}, actions=${it.actions().joinToString()}")
-                }
 
                 tempoross.burningTiles.clear()
                 tempoross.triedPaths.clear()
@@ -94,9 +86,9 @@ class TemporossDebug : ATScript() {
                 val dest = Movement.destination()
                 val destination = if (dest != Tile.Nil) dest else me.tile()
                 val validTiles = listOf(tempoross.side.totemLocation, tempoross.side.mastLocation)
-                val tetherpoles = Objects.stream().filtered {
-                    validTiles.contains(it.tile())
-                }.forEach { log.info("Found ${it.name()}: ${it.actions().joinToString()}") }
+//                val tetherpoles = Objects.stream().filtered {
+//                    validTiles.contains(it.tile())
+//                }.forEach { log.info("Found ${it.name()}: ${it.actions().joinToString()}") }
                 cookSpot = tempoross.side.cookLocation
                 // In game
                 bucket = tempoross.getBucketCrate()
@@ -106,9 +98,9 @@ class TemporossDebug : ATScript() {
 
                 tempoross.collectFishSpots()
                 tempoross.bestFishSpot = tempoross.getFishSpot(tempoross.fishSpots)
-                checkPaths(bucket, tether)
-                checkPaths(ammo, tempoross.bestFishSpot)
-                tempoross.hasDangerousPath(tempoross.side.bossWalkLocation)
+//                checkPaths(bucket, tether)
+//                checkPaths(ammo, tempoross.bestFishSpot)
+//                tempoross.hasDangerousPath(tempoross.side.bossWalkLocation)
 
             }
             sleep(1000)
@@ -124,24 +116,17 @@ class TemporossDebug : ATScript() {
 class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(script) {
 
     override fun paintCustom(g: Rendering) {
-
-        val tether = script.tether
         if (script.tempoross.side != Side.UNKNOWN) {
-//            drawSide( tether?.tile())
+            drawSide(g)
         }
     }
 
-    fun drawSide(g: Rendering, tetherTile: Tile?) {
+    fun drawSide(g: Rendering) {
         drawEntity(script.bucket)
         drawEntity(script.bossPool)
         drawEntity(script.ammo)
         drawEntity(script.tether)
         drawEntity(script.tempoross.bestFishSpot)
-
-        if (tetherTile != null) {
-            val mm = tetherTile.mapPoint()
-            g.drawString("TP", mm.x, mm.y)
-        }
 
         script.cookSpot.drawOnScreen(null, CYAN)
         script.tempoross.side.anchorLocation.drawOnScreen(null, CYAN)
