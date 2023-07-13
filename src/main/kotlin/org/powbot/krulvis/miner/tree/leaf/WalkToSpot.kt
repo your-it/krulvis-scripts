@@ -32,7 +32,7 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
             }
         } else {
             var loc = locs.minByOrNull { it.distance() }!!
-            val neighbor = loc.getWalkableNeighbor(checkForWalls = false)
+            val neighbor = loc.getWalkableNeighbor(allowSelf = false, checkForWalls = false)
             loc = neighbor ?: loc
             val localPath = LocalPathFinder.findPath(loc)
             if (localPath.isNotEmpty()) {
