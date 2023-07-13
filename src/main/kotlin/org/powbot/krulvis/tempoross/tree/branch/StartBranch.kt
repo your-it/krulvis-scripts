@@ -22,9 +22,6 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
         if (Game.clientState() != 30) {
             return !waitFor(10000) { script.getEnergy() > -1 }
         }
-        if (script.lastGame) {
-            ScriptManager.stop()
-        }
         return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
                 && Npcs.stream().name("Ammunition crate").firstOrNull() == null
                 && Npcs.stream().noneMatch { it.actions().contains("Leave") }
