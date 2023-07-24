@@ -20,7 +20,7 @@ import org.powbot.mobile.script.ScriptManager
 @ScriptManifest(
     name = "krul Combiner",
     author = "Krulvis",
-    version = "1.1.2",
+    version = "1.1.3",
     markdownFileName = "Combiner.md",
     scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
     description = "Can do Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -62,7 +62,7 @@ class Combiner : ATScript() {
             log.info("Inventory in GUI cannot be empty!")
             ScriptManager.stop()
         }
-        items.filter { it.value in 2..28 }.map { it.key }.first()
+        items.filter { it.value >= 2 }.map { it.key }.first()
     }
 
 //    val name by lazy { ItemLoader.lookup(id)?.name }
