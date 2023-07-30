@@ -21,9 +21,9 @@ object Data {
 
     val BOAT_AREA = Area(Tile(3129, 2831), Tile(3135, 2843))
 
-    val HARPOONS = intArrayOf(311)
     val BARB_TAIL_HARPOON = 10129
     val SPEC_HARPOONS = intArrayOf(21028, 21031, 21033, 23762, 23764, 25059, 25373)
+    val HARPOONS = intArrayOf(311, *SPEC_HARPOONS)
 
 }
 
