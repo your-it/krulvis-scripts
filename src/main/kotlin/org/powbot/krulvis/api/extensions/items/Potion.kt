@@ -7,8 +7,8 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 enum class Potion(
-    val skill: Int, private val restore: Int,
-    override vararg val ids: Int
+        val skill: Int, private val restore: Int,
+        override vararg val ids: Int
 ) : Item {
 
     ENERGY(Constants.SKILLS_AGILITY, 10, 3008, 3010, 3012, 3014),
@@ -41,6 +41,8 @@ enum class Potion(
 
     val bestPot: Int = ids[0]
 
+    var lastSip = Timer()
+
     fun getRestore(): Int {
         return when (this) {
             OVERLOAD -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
@@ -50,6 +52,7 @@ enum class Potion(
             SUPER_ATTACK, SUPER_STRENGTH, SUPER_DEFENCE, SUPER_COMBAT,
             DIVINE_SUPER_COMBAT, DIVINE_SUPER_ATTACK, DIVINE_SUPER_STRENGTH, DIVINE_SUPER_DEFENCE
             -> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
+
             else -> {
                 restore
             }
@@ -63,12 +66,15 @@ enum class Potion(
             val id = item.id
             val drank = item.interact("Drink")
             if (drank && (this == ANTIFIRE_EXTENDED || this == ANTIFIRE)
-                && waitFor { id != (getInvItem()?.id ?: -1) }
+                    && waitFor { id != (getInvItem()?.id ?: -1) }
             ) {
                 antiFireTimer = Timer(if (this == ANTIFIRE_EXTENDED) 12 * 60 * 1000 else 5.8 * 60 * 1000)
-            } else {
-                return drank
             }
+            if (drank) {
+                lastSip = Timer()
+            }
+            return drank
+
         }
         return false
     }
@@ -87,6 +93,8 @@ enum class Potion(
                 val cl = Skills.level(skill)
                 cl <= 5 || rl - cl >= getRestore() * (percentage / 100.0)
             }
+
+            ABSORPTION -> getAbsorptionRemainder() < 50
             STAMINA, ENERGY, SUPER_ENERGY -> !isHighOnStamina() && Movement.energyLevel() <= percentage
             else -> {
                 val rl = if (skill == Constants.SKILLS_AGILITY) 100 else Skills.realLevel(skill)

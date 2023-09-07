@@ -2,9 +2,6 @@ package org.powbot.krulvis.api.script.tree.branch
 
 import org.powbot.api.Condition
 import org.powbot.api.Random
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
-import org.powbot.api.rt4.Magic
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -13,6 +10,7 @@ import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DARK_KEY
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils
 
 class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
