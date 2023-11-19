@@ -246,6 +246,7 @@ object ATContext {
         return c.click()
     }
 
+
     fun currentHP(): Int = Skills.level(Constants.SKILLS_HITPOINTS)
     fun maxHP(): Int = Skills.realLevel(Constants.SKILLS_HITPOINTS)
     fun missingHP(): Int = maxHP() - currentHP()
