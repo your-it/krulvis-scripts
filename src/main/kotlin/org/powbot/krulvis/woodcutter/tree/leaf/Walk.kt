@@ -7,7 +7,6 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
-import org.powbot.proto.rt4.WebWalking
 
 class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
     override fun execute() {

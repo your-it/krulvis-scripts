@@ -2,13 +2,11 @@ package org.powbot.krulvis.orbcharger.tree.branch
 
 import org.powbot.api.Condition.sleep
 import org.powbot.api.Production
+import org.powbot.api.Random
+import org.powbot.api.rt4.Combat
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.api.Random
-import org.powbot.api.rt4.Combat
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.orbcharger.OrbCrafter

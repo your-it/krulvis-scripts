@@ -18,7 +18,6 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
     author = "Krulvis",
     version = "1.0.2",
     markdownFileName = "Orb.md",
-    priv = true,
     category = ScriptCategory.Magic
 )
 @ScriptConfiguration.List(

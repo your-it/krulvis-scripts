@@ -11,13 +11,14 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.construction.tree.branch.InHouse
 
+//TODO("This script is unfinished. Only started")
 @ScriptManifest(
-    name = "krul Construction",
-    version = "1.0.0",
-    category = ScriptCategory.Construction,
-    description = "AIO Construction",
-    author = "Krulvis",
-    priv = true
+        name = "krul Construction",
+        version = "1.0.0",
+        category = ScriptCategory.Construction,
+        description = "AIO Construction",
+        author = "Krulvis",
+        priv = true
 )
 class Construction : ATScript() {
     override fun createPainter(): ATPaint<*> = ConstructionPainter(this)

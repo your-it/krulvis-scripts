@@ -2,27 +2,17 @@ package org.powbot.krulvis.thiever.blackjack
 
 import org.powbot.api.Notifications
 import org.powbot.api.Tile
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
-import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.api.script.paint.PaintFormatters
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.extensions.items.Item.Companion.BIRD_SNARE
-import org.powbot.krulvis.api.extensions.items.Item.Companion.BOX_TRAP
-import org.powbot.krulvis.api.extensions.items.Item.Companion.GRIMY_GUAM
-import org.powbot.krulvis.api.extensions.items.Item.Companion.MITHRIL_AXE
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils
-import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
     name = "blackjacking",

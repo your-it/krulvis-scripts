@@ -1,10 +1,10 @@
 package org.powbot.krulvis.blastfurnace.tree.branch
 
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
@@ -12,7 +12,6 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
-import org.powbot.krulvis.blastfurnace.ICE_GLOVES
 import org.powbot.krulvis.blastfurnace.tree.leaf.*
 
 class ShouldDrinkPotion(script: BlastFurnace) : Branch<BlastFurnace>(script, "Should take bars") {

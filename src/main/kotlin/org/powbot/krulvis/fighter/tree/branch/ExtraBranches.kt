@@ -1,7 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.GrandExchange
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.api.rt4.magic.RunePouch
@@ -16,7 +15,6 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SEED_BOX_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter

@@ -4,10 +4,7 @@ import org.powbot.api.Condition
 import org.powbot.api.Production
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
-import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
@@ -15,7 +12,6 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleBranch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 

@@ -1,16 +1,16 @@
 package org.powbot.krulvis.miner.tree.leaf
 
-import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.miner.Miner
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
+import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.utils.Utils.long
+import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.miner.Miner
 
 class FixStrut(script: Miner) : Leaf<Miner>(script, "Fixing strut") {
     override fun execute() {

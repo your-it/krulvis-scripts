@@ -2,15 +2,12 @@ package org.powbot.krulvis.test
 
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryItemActionEvent
-import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.api.script.tree.TreeScript
-import org.powbot.krulvis.api.ATContext
-import org.powbot.krulvis.combiner.Combiner
 
 
 @ScriptManifest(name = "Test InventoryItemActionEvent", version = "6.6.6", description = "", priv = true)

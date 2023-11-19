@@ -12,7 +12,10 @@ import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 import org.powbot.krulvis.giantsfoundry.MouldType
-import org.powbot.krulvis.giantsfoundry.tree.leaf.*
+import org.powbot.krulvis.giantsfoundry.tree.leaf.FillCrucible
+import org.powbot.krulvis.giantsfoundry.tree.leaf.GetAssignment
+import org.powbot.krulvis.giantsfoundry.tree.leaf.SetupMoulds
+import org.powbot.krulvis.giantsfoundry.tree.leaf.TakeBarsFromBank
 
 class HasAssignment(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "Has assignment?") {
     override val failedComponent: TreeComponent<GiantsFoundry> = GetAssignment(script)

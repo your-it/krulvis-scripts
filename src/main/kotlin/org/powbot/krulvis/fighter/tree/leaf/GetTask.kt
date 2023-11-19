@@ -4,7 +4,6 @@ import org.powbot.api.Condition
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.fighter.Fighter
-import org.powbot.krulvis.fighter.slayer.Slayer
 import org.powbot.krulvis.fighter.slayer.Slayer.Companion.sanitizeMultilineText
 import java.util.regex.Pattern
 

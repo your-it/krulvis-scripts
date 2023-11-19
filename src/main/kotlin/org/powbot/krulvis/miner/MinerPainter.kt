@@ -1,15 +1,10 @@
 package org.powbot.krulvis.miner
 
-import org.powbot.api.Color
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.miner.tree.leaf.WalkToSpot
-import org.powbot.mobile.drawing.Graphics
-import org.powbot.mobile.drawing.Rendering
 
 
 class MinerPainter(script: Miner) : ATPaint<Miner>(script) {

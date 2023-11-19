@@ -4,11 +4,9 @@ import com.google.common.eventbus.Subscribe
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Tile
 import org.powbot.api.event.BreakEvent
-import org.powbot.api.event.BreakStartedEvent
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.OptionType
@@ -17,12 +15,10 @@ import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.debugComponents
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint

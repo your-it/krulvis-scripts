@@ -3,9 +3,7 @@ package org.powbot.krulvis.miner
 import org.powbot.api.Condition.sleep
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Objects
-import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
-import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder

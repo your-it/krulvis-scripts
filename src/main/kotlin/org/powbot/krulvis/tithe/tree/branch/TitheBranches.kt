@@ -9,9 +9,9 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.tithe.Data
-import org.powbot.krulvis.tithe.tree.leaf.*
 import org.powbot.krulvis.tithe.Patch.Companion.sameState
 import org.powbot.krulvis.tithe.TitheFarmer
+import org.powbot.krulvis.tithe.tree.leaf.*
 
 class ShouldStart(script: TitheFarmer) : Branch<TitheFarmer>(script, "Should start") {
     override val successComponent: TreeComponent<TitheFarmer> = Start(script)

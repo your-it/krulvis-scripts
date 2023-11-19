@@ -2,10 +2,8 @@ package org.powbot.krulvis.tithe
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.*
-import org.powbot.api.Random
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
@@ -18,9 +16,6 @@ import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powbot.krulvis.tithe.tree.leaf.Refill
 import org.powbot.krulvis.tithe.tree.leaf.Start
 import org.powbot.mobile.script.ScriptManager
-import java.util.*
-import java.util.logging.LogRecord
-import java.util.logging.SimpleFormatter
 import kotlin.math.min
 
 @ScriptManifest(
@@ -31,7 +26,6 @@ import kotlin.math.min
     scriptId = "97078671-3780-4a44-b488-36ef241686dd",
     markdownFileName = "Tithe.md",
     category = ScriptCategory.Farming,
-    priv = true,
     singleTapRequired = false
 )
 @ScriptConfiguration.List(

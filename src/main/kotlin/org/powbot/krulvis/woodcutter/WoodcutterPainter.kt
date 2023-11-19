@@ -5,7 +5,6 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.woodcutter.tree.leaf.Burn
-import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
 
 class WoodcutterPainter(script: Woodcutter) : ATPaint<Woodcutter>(script) {

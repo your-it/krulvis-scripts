@@ -5,7 +5,6 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.mobile.drawing.Graphics
 
 class SmelterPainter(script: Smelter) : ATPaint<Smelter>(script) {
 

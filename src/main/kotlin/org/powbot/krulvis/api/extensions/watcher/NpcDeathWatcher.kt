@@ -4,7 +4,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.Npc
-import org.powbot.krulvis.api.ATContext.debug
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 

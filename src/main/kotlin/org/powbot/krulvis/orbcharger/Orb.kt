@@ -1,24 +1,18 @@
 package org.powbot.krulvis.orbcharger
 
 import org.powbot.api.Tile
-import org.powbot.api.requirement.Requirement
-import org.powbot.api.requirement.RunePowerRequirement
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.magic.Rune
-import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
-import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
 import org.powbot.krulvis.api.utils.requirements.ItemRequirement
-import org.powbot.krulvis.api.utils.requirements.PotionRequirement
 
 enum class Orb(
     val id: Int,

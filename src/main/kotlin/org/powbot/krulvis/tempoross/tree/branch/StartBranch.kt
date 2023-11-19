@@ -7,7 +7,6 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
@@ -15,7 +14,6 @@ import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
-import org.powbot.mobile.script.ScriptManager
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
