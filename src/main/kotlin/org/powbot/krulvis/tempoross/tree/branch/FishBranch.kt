@@ -3,12 +3,11 @@ package org.powbot.krulvis.tempoross.tree.branch
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.distance
-import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.debug
+import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Data.RAW

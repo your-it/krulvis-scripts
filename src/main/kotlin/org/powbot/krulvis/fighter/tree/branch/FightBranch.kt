@@ -2,7 +2,6 @@ package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.Condition
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch

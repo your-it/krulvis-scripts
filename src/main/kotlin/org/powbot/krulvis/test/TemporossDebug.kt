@@ -9,22 +9,17 @@ import org.powbot.api.InteractableEntity
 import org.powbot.api.Nameable
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Objects
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.krulvis.api.ATContext.mapPoint
-import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.tempoross.Data
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.input.Touchscreen
 

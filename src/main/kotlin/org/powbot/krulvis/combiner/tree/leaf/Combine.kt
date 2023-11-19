@@ -12,7 +12,6 @@ import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.rt4.walking.local.Utils.turnRunOn
-import org.powbot.api.script.selectors.GameObjectOption
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.utils.Utils.long

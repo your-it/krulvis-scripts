@@ -14,7 +14,6 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
-import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(

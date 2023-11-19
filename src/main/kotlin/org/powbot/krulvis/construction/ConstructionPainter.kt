@@ -1,6 +1,5 @@
 package org.powbot.krulvis.construction
 
-import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder

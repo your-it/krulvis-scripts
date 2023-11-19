@@ -3,9 +3,8 @@ package org.powbot.krulvis.tempoross.tree.leaf
 import org.powbot.api.rt4.Camera
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.distance
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.FILLING_ANIM

@@ -9,7 +9,6 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
-import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RING_OF_FORGING
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor

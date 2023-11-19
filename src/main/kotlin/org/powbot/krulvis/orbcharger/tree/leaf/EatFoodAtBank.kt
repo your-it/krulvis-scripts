@@ -3,7 +3,6 @@ package org.powbot.krulvis.orbcharger.tree.leaf
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.orbcharger.OrbCrafter
 

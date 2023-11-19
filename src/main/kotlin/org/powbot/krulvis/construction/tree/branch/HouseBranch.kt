@@ -6,7 +6,6 @@ import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.construction.Construction
 import org.powbot.krulvis.construction.tree.leaf.EnterHouse
 import org.powbot.krulvis.construction.tree.leaf.GoBuildingMode
-import kotlin.system.measureTimeMillis
 
 class InHouse(script: Construction) : Branch<Construction>(script, "InHouse?") {
     override val failedComponent: TreeComponent<Construction> = EnterHouse(script)

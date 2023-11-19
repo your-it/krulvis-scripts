@@ -8,7 +8,6 @@ import org.powbot.api.rt4.Skills
 import org.powbot.api.rt4.Widgets
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.mid
 import org.powbot.krulvis.api.utils.Utils.waitFor

@@ -5,7 +5,6 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.mobile.script.ScriptManager
 
 class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 

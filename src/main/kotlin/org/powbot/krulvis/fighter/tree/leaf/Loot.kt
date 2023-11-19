@@ -1,11 +1,9 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Item

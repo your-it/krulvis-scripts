@@ -2,14 +2,13 @@ package org.powbot.krulvis.blastfurnace.tree.leaf
 
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.emptyExcept
+import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.*
-import org.powbot.krulvis.blastfurnace.GOLD_GLOVES
 import org.powbot.mobile.script.ScriptManager
 
 class PayForeman(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Pay Foreman") {

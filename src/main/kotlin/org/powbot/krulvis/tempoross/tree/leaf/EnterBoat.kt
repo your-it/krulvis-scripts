@@ -1,13 +1,11 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
-import org.powbot.api.Input
 import org.powbot.api.ModelInteractionType
 import org.powbot.api.Tile
+import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.walk
-import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA

@@ -2,8 +2,8 @@ package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
 

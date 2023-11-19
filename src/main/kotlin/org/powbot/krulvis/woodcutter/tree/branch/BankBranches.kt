@@ -5,12 +5,10 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tithe.tree.leaf.Deposit
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.krulvis.woodcutter.tree.leaf.Drop
 import org.powbot.krulvis.woodcutter.tree.leaf.HandleBank

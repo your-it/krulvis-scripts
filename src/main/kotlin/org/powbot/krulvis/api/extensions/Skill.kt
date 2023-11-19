@@ -1,7 +1,5 @@
 package org.powbot.krulvis.api.extensions
 
-import org.powbot.api.rt4.Constants
-
 //enum class Skill(val index: Int) {
 //    ATTACK(Constants.SKILLS_ATTACK),
 //

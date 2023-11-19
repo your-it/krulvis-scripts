@@ -5,7 +5,6 @@ import org.powbot.api.Random
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Food.Companion.needsFood

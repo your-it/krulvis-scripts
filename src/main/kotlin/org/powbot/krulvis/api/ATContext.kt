@@ -4,7 +4,6 @@ import org.powbot.api.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.short

@@ -1,6 +1,8 @@
 package org.powbot.krulvis.fighter
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.powbot.api.Events
 import org.powbot.api.Tile
 import org.powbot.api.event.*
@@ -39,7 +41,6 @@ import kotlin.math.round
         markdownFileName = "Fighter.md",
         scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
         category = ScriptCategory.Combat,
-        priv = true
 )
 @ScriptConfiguration.List(
         [
