@@ -35,8 +35,9 @@ class HasCorrectInventory(script: NightmareZone) : Branch<NightmareZone>(script,
     override val successComponent: TreeComponent<NightmareZone> = EnterDream(script)
 
     override fun validate(): Boolean {
-        val inv = Inventory.items()
-        return script.inventoryItems.all { wi -> wi.value == inv.filter { it.id == wi.key }.sumOf { it.stack } }
+        return true
+//        val inv = Inventory.items()
+//        return script.inventoryItems.all { wi -> wi.value == inv.filter { it.id == wi.key }.sumOf { it.stack } }
     }
 }
 
