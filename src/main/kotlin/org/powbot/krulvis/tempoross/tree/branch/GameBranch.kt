@@ -58,7 +58,6 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         if (((count >= 1 && hp <= 5) || count > hp) && atAmmoCrate()) {
             return false
         }
-
         return script.canKill()
     }
 
@@ -78,7 +77,8 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         }
 }
 
-class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get water") {
+class ShouldGetWater(script: Tempoross) :
+    Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
         if (Inventory.containsOneOf(BUCKET_OF_WATER)) {
             return false
@@ -87,6 +87,16 @@ class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get 
         return (bucketCrate?.distance()?.roundToInt() ?: 6) <= 5
     }
 
-    override val successComponent: TreeComponent<Tempoross> = Water(script)
+    override val successComponent: TreeComponent<Tempoross> = CanFillEmptyBucket(script)
     override val failedComponent: TreeComponent<Tempoross> = ShouldShoot(script)
+}
+
+class CanFillEmptyBucket(script: Tempoross) :
+    Branch<Tempoross>(script, "Can Fill EmptyBucket") {
+    override fun validate(): Boolean {
+        return script.getBucketCount() >= script.buckets
+    }
+
+    override val successComponent: TreeComponent<Tempoross> = FillBuckets(script)
+    override val failedComponent: TreeComponent<Tempoross> = GetBuckets(script)
 }

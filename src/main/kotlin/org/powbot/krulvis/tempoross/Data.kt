@@ -3,6 +3,13 @@ package org.powbot.krulvis.tempoross
 import org.powbot.api.Area
 import org.powbot.api.Tile
 
+object UI {
+    const val EQUIPMENT = "equipment"
+    const val COOK_FISH = "cook"
+    const val SPECIAL_ATTACK = "special attack"
+    const val BARB_FISHING = "barb fishing"
+    const val BUCKETS = "buckets"
+}
 
 object Data {
 
