@@ -58,6 +58,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         if (((count >= 1 && hp <= 5) || count > hp) && atAmmoCrate()) {
             return false
         }
+
         return script.canKill()
     }
 
@@ -68,13 +69,13 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
     override val failedComponent: TreeComponent<Tempoross> =
-            SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
-                script.burningTiles.clear()
-                script.triedPaths.clear()
-                script.detectDangerousTiles()
+        SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
+            script.burningTiles.clear()
+            script.triedPaths.clear()
+            script.detectDangerousTiles()
 
-                !script.hasOutfit && !Inventory.containsOneOf(ROPE)
-            }
+            !script.hasOutfit && !Inventory.containsOneOf(ROPE)
+        }
 }
 
 class ShouldGetWater(script: Tempoross) : Branch<Tempoross>(script, "Should get water") {
