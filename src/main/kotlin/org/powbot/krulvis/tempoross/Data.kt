@@ -4,7 +4,9 @@ import org.powbot.api.Area
 import org.powbot.api.Tile
 
 object UI {
+    const val LOOTING = "looting"
     const val EQUIPMENT = "equipment"
+    const val INVENTORY = "inventory"
     const val COOK_FISH = "cook"
     const val SPECIAL_ATTACK = "special attack"
     const val BARB_FISHING = "barb fishing"
@@ -29,9 +31,11 @@ object Data {
 
     val BOAT_AREA = Area(Tile(3129, 2831), Tile(3135, 2843))
 
+    val HARPOON = 311
     val BARB_TAIL_HARPOON = 10129
     val SPEC_HARPOONS = intArrayOf(21028, 21031, 21033, 23762, 23764, 25059, 25373)
-    val HARPOONS = intArrayOf(311, *SPEC_HARPOONS)
+    val WEARABLE_HARPOONS = intArrayOf(BARB_TAIL_HARPOON, *SPEC_HARPOONS)
+    val HARPOONS = intArrayOf(HARPOON, *WEARABLE_HARPOONS)
 
 }
 

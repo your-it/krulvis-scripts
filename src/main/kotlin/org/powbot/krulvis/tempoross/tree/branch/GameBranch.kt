@@ -5,19 +5,18 @@ import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
-import org.powbot.api.script.tree.SimpleBranch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tempoross.Data.BARB_TAIL_HARPOON
 import org.powbot.krulvis.tempoross.Data.COOKED
+import org.powbot.krulvis.tempoross.Data.HARPOON
 import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
+import org.powbot.krulvis.tempoross.Data.WEARABLE_HARPOONS
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.*
 import kotlin.math.roundToInt
@@ -42,9 +41,7 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
     override fun validate(): Boolean {
         Game.tab(Game.Tab.INVENTORY)
-        return !script.barbFishing
-                && !Equipment.containsOneOf(*SPEC_HARPOONS, BARB_TAIL_HARPOON)
-                && !Inventory.containsOneOf(*HARPOONS)
+        return script.inventory.contains(HARPOON) && !Inventory.containsOneOf(HARPOON)
     }
 
     override val successComponent: TreeComponent<Tempoross> = GetHarpoon(script)

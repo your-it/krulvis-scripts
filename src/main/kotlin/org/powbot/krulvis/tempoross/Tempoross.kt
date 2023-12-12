@@ -22,6 +22,9 @@ import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
@@ -29,6 +32,8 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
+import org.powbot.krulvis.tempoross.Data.HARPOON
+import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
@@ -47,16 +52,22 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptConfiguration.List(
         [
             ScriptConfiguration(
+                    name = UI.LOOTING,
+                    description = "Loot the reward pool",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
                     name = UI.EQUIPMENT,
                     description = "What equipment to wear",
                     defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
                     optionType = OptionType.EQUIPMENT
             ),
             ScriptConfiguration(
-                    name = UI.BUCKETS,
-                    description = "How many buckets to take?",
-                    defaultValue = "5",
-                    optionType = OptionType.INTEGER
+                    name = UI.INVENTORY,
+                    description = "What inventory to take",
+                    defaultValue = """{"${BUCKET_OF_WATER}": 5, "${HAMMER}": 1}""",
+                    optionType = OptionType.INVENTORY
             ),
             ScriptConfiguration(
                     name = UI.COOK_FISH,
@@ -70,18 +81,6 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
                     defaultValue = "false",
                     optionType = OptionType.BOOLEAN
             ),
-            ScriptConfiguration(
-                    name = UI.BARB_FISHING,
-                    description = "Barbarian fishing",
-                    defaultValue = "false",
-                    optionType = OptionType.BOOLEAN
-            ),
-            ScriptConfiguration(
-                    name = UI.IMCANDO_HAMMER,
-                    description = "Take Imcando hammer",
-                    defaultValue = "false",
-                    optionType = OptionType.BOOLEAN
-            )
         ]
 )
 class Tempoross : ATScript() {
@@ -105,11 +104,17 @@ class Tempoross : ATScript() {
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
     val hasOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
 
-    val barbFishing by lazy { getOption<Boolean>(UI.BARB_FISHING) }
     val cookFish by lazy { getOption<Boolean>(UI.COOK_FISH) }
     val spec by lazy { getOption<Boolean>(UI.SPECIAL_ATTACK) }
-    val buckets by lazy { getOption<Int>(UI.BUCKETS) }
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
+    val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
+    val buckets by lazy { inventory.count { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) } }
+    val inventoryBankItems by lazy { inventory.filterNot { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET, ROPE, HARPOON) } }
+
+    fun getRelevantInventoryItems(): Map<Int, Int> =
+            Inventory.stream().filtered { it.id in inventory.keys }
+                    .groupBy { it.id }
+                    .mapValues { it.value.sumOf { i -> i.stack } }
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
