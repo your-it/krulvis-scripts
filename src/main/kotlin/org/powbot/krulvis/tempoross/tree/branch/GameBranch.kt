@@ -9,6 +9,7 @@ import org.powbot.api.script.tree.SimpleBranch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -67,18 +68,33 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
     }
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
-    override val failedComponent: TreeComponent<Tempoross> =
-        SimpleBranch(script, "Should get rope", GetRope(script), ShouldGetWater(script)) {
-            script.burningTiles.clear()
-            script.triedPaths.clear()
-            script.detectDangerousTiles()
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetRope(script)
+}
 
-            !script.hasOutfit && !Inventory.containsOneOf(ROPE)
-        }
+class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get rope") {
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHammer(script)
+    override val successComponent: TreeComponent<Tempoross> = GetRope(script)
+
+    override fun validate(): Boolean {
+        script.burningTiles.clear()
+        script.triedPaths.clear()
+        script.detectDangerousTiles()
+
+        return !script.hasOutfit && !Inventory.containsOneOf(ROPE)
+    }
+}
+
+class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get hammer") {
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
+    override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
+
+    override fun validate(): Boolean {
+        return !script.hasHammer() && (script.getHammerContainer()?.distance()?.roundToInt() ?: 7) <= 6
+    }
 }
 
 class ShouldGetWater(script: Tempoross) :
-    Branch<Tempoross>(script, "Should get water") {
+        Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
         if (Inventory.containsOneOf(BUCKET_OF_WATER)) {
             return false
@@ -92,7 +108,7 @@ class ShouldGetWater(script: Tempoross) :
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
-    Branch<Tempoross>(script, "Can Fill EmptyBucket") {
+        Branch<Tempoross>(script, "Can Fill EmptyBucket") {
     override fun validate(): Boolean {
         return script.getBucketCount() >= script.buckets
     }

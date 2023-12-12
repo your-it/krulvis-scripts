@@ -155,6 +155,7 @@ interface Item {
         val HERB_SACK_OPEN = 24478
         val RUNE_POUCH = 12791
         val SEED_BOX_OPEN = 24482
+        val IMCANDO_HAMMER = 25644
     }
 
 }

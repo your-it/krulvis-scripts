@@ -9,6 +9,7 @@ object UI {
     const val SPECIAL_ATTACK = "special attack"
     const val BARB_FISHING = "barb fishing"
     const val BUCKETS = "buckets"
+    const val IMCANDO_HAMMER = "imcando hammer"
 }
 
 object Data {

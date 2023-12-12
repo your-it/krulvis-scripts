@@ -20,6 +20,7 @@ import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -36,46 +37,52 @@ import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 @ScriptManifest(
-    name = "krul Tempoross",
-    description = "Does tempoross minigame",
-    version = "1.2.8",
-    author = "Krulvis",
-    markdownFileName = "Tempoross.md",
-    category = ScriptCategory.Fishing
+        name = "krul Tempoross",
+        description = "Does tempoross minigame",
+        version = "1.2.9",
+        author = "Krulvis",
+        markdownFileName = "Tempoross.md",
+        category = ScriptCategory.Fishing
 )
 @ScriptConfiguration.List(
-    [
-        ScriptConfiguration(
-            name = UI.EQUIPMENT,
-            description = "What equipment to wear",
-            defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
-            optionType = OptionType.EQUIPMENT
-        ),
-        ScriptConfiguration(
-            name = UI.BUCKETS,
-            description = "How many buckets to take?",
-            defaultValue = "5",
-            optionType = OptionType.INTEGER
-        ),
-        ScriptConfiguration(
-            name = UI.COOK_FISH,
-            description = "Cooking the fish gives more points at the cost of XP",
-            defaultValue = "true",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-            name = UI.SPECIAL_ATTACK,
-            description = "Do Dragon/Inferno Harpoon special",
-            defaultValue = "false",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-            name = UI.BARB_FISHING,
-            description = "Barbarian fishing",
-            defaultValue = "false",
-            optionType = OptionType.BOOLEAN
-        ),
-    ]
+        [
+            ScriptConfiguration(
+                    name = UI.EQUIPMENT,
+                    description = "What equipment to wear",
+                    defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
+                    optionType = OptionType.EQUIPMENT
+            ),
+            ScriptConfiguration(
+                    name = UI.BUCKETS,
+                    description = "How many buckets to take?",
+                    defaultValue = "5",
+                    optionType = OptionType.INTEGER
+            ),
+            ScriptConfiguration(
+                    name = UI.COOK_FISH,
+                    description = "Cooking the fish gives more points at the cost of XP",
+                    defaultValue = "true",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
+                    name = UI.SPECIAL_ATTACK,
+                    description = "Do Dragon/Inferno Harpoon special",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
+                    name = UI.BARB_FISHING,
+                    description = "Barbarian fishing",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            ),
+            ScriptConfiguration(
+                    name = UI.IMCANDO_HAMMER,
+                    description = "Take Imcando hammer",
+                    defaultValue = "false",
+                    optionType = OptionType.BOOLEAN
+            )
+        ]
 )
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
@@ -96,7 +103,7 @@ class Tempoross : ATScript() {
     var debugPaint = false
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
-    val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
+    val hasOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
 
     val barbFishing by lazy { getOption<Boolean>(UI.BARB_FISHING) }
     val cookFish by lazy { getOption<Boolean>(UI.COOK_FISH) }
@@ -115,10 +122,10 @@ class Tempoross : ATScript() {
     }
 
     fun interactWhileDousing(
-        e: InteractableEntity?,
-        action: String,
-        destinationWhenNil: Tile,
-        allowCrossing: Boolean
+            e: InteractableEntity?,
+            action: String,
+            destinationWhenNil: Tile,
+            allowCrossing: Boolean
     ): Boolean {
         if (e == null) {
             log.info("Can't find: $action")
@@ -156,8 +163,8 @@ class Tempoross : ATScript() {
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
         val fire =
-            if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
-                .firstOrNull() else null
+                if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
+                        .firstOrNull() else null
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
@@ -297,8 +304,8 @@ class Tempoross : ATScript() {
 
     fun collectFishSpots() {
         fishSpots = Npcs.stream().filtered { it.rightSide() }
-            .action("Harpoon").name("Fishing spot").list()
-            .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+                .action("Harpoon").name("Fishing spot").list()
+                .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
@@ -315,24 +322,34 @@ class Tempoross : ATScript() {
     }
 
     fun getBossPool() =
-        Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
+            Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().filtered { it.atCorrectSide() }.name("Ammunition crate").firstOrNull()
+            Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
+
+    fun hasHammer() = Inventory.containsOneOf(Item.HAMMER, Item.IMCANDO_HAMMER)
+    fun getHammerContainer(): GameObject? = Objects.stream()
+            .type(GameObject.Type.INTERACTIVE).name("Hammers")
+            .firstOrNull { it.atCorrectSide() }
 
     fun getBucketCrate(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            it.atCorrectSide()
-        }.name("Buckets").nearest().firstOrNull()
+            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+                it.atCorrectSide()
+            }.name("Buckets").nearest().firstOrNull()
+
+    fun getRopeContainer(): GameObject? = Objects.stream(50)
+            .type(GameObject.Type.INTERACTIVE)
+            .name("Ropes")
+            .firstOrNull { it.atCorrectSide(6) }
 
     fun getWaterpump(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            if (getEnergy() == -1) {
-                it.distance() <= 10
-            } else {
-                it.atCorrectSide()
-            }
-        }.name("Water pump").nearest().firstOrNull()
+            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+                if (getEnergy() == -1) {
+                    it.distance() <= 10
+                } else {
+                    it.atCorrectSide()
+                }
+            }.name("Water pump").nearest().firstOrNull()
 
     private fun Locatable.atCorrectSide(distance: Int = 5): Boolean {
         val tile = tile()
