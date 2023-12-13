@@ -10,6 +10,7 @@ import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.nodes.LocalEdge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -59,7 +60,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
             ScriptConfiguration(
                     name = UI.EQUIPMENT,
                     description = "What gear and harpoon to equip",
-                    defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
+                    defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10}""",
                     optionType = OptionType.EQUIPMENT
             ),
             ScriptConfiguration(
@@ -73,7 +74,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
             ScriptConfiguration(
                     name = UI.INVENTORY,
                     description = "What items to take in inventory",
-                    defaultValue = """{"$BUCKET_OF_WATER": 5, "$HAMMER": 1}""",
+                    defaultValue = """{"$BUCKET_OF_WATER": 2, "$HAMMER": 1}""",
                     optionType = OptionType.INVENTORY
             ),
             ScriptConfiguration(
@@ -174,9 +175,7 @@ class Tempoross : ATScript() {
 
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
-        val fire =
-                if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
-                        .firstOrNull() else null
+        val fire = getFireNear(blockedTile)
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
@@ -197,6 +196,14 @@ class Tempoross : ATScript() {
             return true
         }
         return false
+    }
+
+    private fun getFireNear(blockedTile: LocalEdge?): Npc? {
+        return if (blockedTile == null) {
+            null
+        } else {
+            Npcs.stream().name("Fire").nearest(blockedTile.destination).firstOrNull()
+        }
     }
 
     private fun walkPath(path: LocalPath): Boolean {

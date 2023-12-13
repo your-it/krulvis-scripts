@@ -18,7 +18,6 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
                 }
             }
         }
-
     }
 
     private fun getBucketInteraction(bucketCount: Int): String {
