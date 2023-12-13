@@ -13,10 +13,8 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.HARPOON
-import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
-import org.powbot.krulvis.tempoross.Data.WEARABLE_HARPOONS
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.*
 import kotlin.math.roundToInt
@@ -105,9 +103,9 @@ class ShouldGetWater(script: Tempoross) :
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
-        Branch<Tempoross>(script, "Can Fill EmptyBucket") {
+        Branch<Tempoross>(script, "Can fill empty buckets") {
     override fun validate(): Boolean {
-        return script.getBucketCount() >= script.buckets
+        return script.getEmptyBuckets() > 0
     }
 
     override val successComponent: TreeComponent<Tempoross> = FillBuckets(script)

@@ -20,10 +20,10 @@ import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.IMCANDO_HAMMER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -33,7 +33,6 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Data.HARPOON
-import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
@@ -59,19 +58,27 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
             ),
             ScriptConfiguration(
                     name = UI.EQUIPMENT,
-                    description = "What equipment to wear",
+                    description = "What gear and harpoon to equip",
                     defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
                     optionType = OptionType.EQUIPMENT
             ),
             ScriptConfiguration(
+                    name = "info",
+                    description = "Inventory setup for Tempoross: " +
+                            "\n- Amount of buckets" +
+                            "\n- Harpoon (if not equipped and not barb. fishing)" +
+                            "\n- (Imcando) hammer",
+                    optionType = OptionType.INFO
+            ),
+            ScriptConfiguration(
                     name = UI.INVENTORY,
-                    description = "What inventory to take",
-                    defaultValue = """{"${BUCKET_OF_WATER}": 5, "${HAMMER}": 1}""",
+                    description = "What items to take in inventory",
+                    defaultValue = """{"$BUCKET_OF_WATER": 5, "$HAMMER": 1}""",
                     optionType = OptionType.INVENTORY
             ),
             ScriptConfiguration(
                     name = UI.COOK_FISH,
-                    description = "Cooking the fish gives more points at the cost of XP",
+                    description = "Cooking the fish gives more points (reward) at the cost of XP",
                     defaultValue = "true",
                     optionType = OptionType.BOOLEAN
             ),
@@ -109,7 +116,7 @@ class Tempoross : ATScript() {
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
     val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
     val buckets by lazy { inventory.count { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) } }
-    val inventoryBankItems by lazy { inventory.filterNot { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET, ROPE, HARPOON) } }
+    val inventoryBankItems by lazy { inventory.filterNot { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET, ROPE, HARPOON, HAMMER) } }
 
     fun getRelevantInventoryItems(): Map<Int, Int> =
             Inventory.stream().filtered { it.id in inventory.keys }
@@ -332,7 +339,7 @@ class Tempoross : ATScript() {
     fun getAmmoCrate(): Npc? =
             Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
 
-    fun hasHammer() = Inventory.containsOneOf(Item.HAMMER, Item.IMCANDO_HAMMER)
+    fun hasHammer() = Inventory.containsOneOf(HAMMER, IMCANDO_HAMMER)
     fun getHammerContainer(): GameObject? = Objects.stream()
             .type(GameObject.Type.INTERACTIVE).name("Hammers")
             .firstOrNull { it.atCorrectSide() }
@@ -372,7 +379,9 @@ class Tempoross : ATScript() {
 
     fun getLadder(): GameObject? = Objects.stream().name("Rope ladder").action("Climb").firstOrNull()
 
-    fun getBucketCount(): Int = Inventory.stream().name("Bucket").count().toInt()
+    fun getEmptyBuckets(): Int = Inventory.stream().id(EMPTY_BUCKET).count().toInt()
+    fun getFilledBuckets(): Int = Inventory.stream().id(BUCKET_OF_WATER).count().toInt()
+    fun getTotalBuckets(): Int = Inventory.stream().id(EMPTY_BUCKET, BUCKET_OF_WATER).count().toInt()
 }
 
 fun main() {

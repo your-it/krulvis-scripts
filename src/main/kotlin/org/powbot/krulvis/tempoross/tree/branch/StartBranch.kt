@@ -13,7 +13,7 @@ import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.FillBuckets
-import org.powbot.krulvis.tempoross.tree.leaf.GetItems
+import org.powbot.krulvis.tempoross.tree.leaf.GetItemsFromBank
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
@@ -31,7 +31,7 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
 }
 
 class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items From Bank") {
-    override val failedComponent: TreeComponent<Tempoross> = GetItems(script)
+    override val failedComponent: TreeComponent<Tempoross> = GetItemsFromBank(script)
     override val successComponent: TreeComponent<Tempoross> = EnterBoat(script)
 
     override fun validate(): Boolean {
