@@ -42,54 +42,54 @@ import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 @ScriptManifest(
-        name = "krul Tempoross",
-        description = "Does tempoross minigame",
-        version = "1.2.9",
-        author = "Krulvis",
-        markdownFileName = "Tempoross.md",
-        category = ScriptCategory.Fishing
+    name = "krul Tempoross",
+    description = "Does tempoross minigame",
+    version = "1.3.0",
+    author = "Krulvis",
+    markdownFileName = "Tempoross.md",
+    category = ScriptCategory.Fishing
 )
 @ScriptConfiguration.List(
-        [
-            ScriptConfiguration(
-                    name = UI.LOOTING,
-                    description = "Loot the reward pool",
-                    defaultValue = "false",
-                    optionType = OptionType.BOOLEAN
-            ),
-            ScriptConfiguration(
-                    name = UI.EQUIPMENT,
-                    description = "What gear and harpoon to equip",
-                    defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10}""",
-                    optionType = OptionType.EQUIPMENT
-            ),
-            ScriptConfiguration(
-                    name = "info",
-                    description = "Inventory setup for Tempoross: " +
-                            "\n- Amount of buckets" +
-                            "\n- Harpoon (if not equipped and not barb. fishing)" +
-                            "\n- (Imcando) hammer",
-                    optionType = OptionType.INFO
-            ),
-            ScriptConfiguration(
-                    name = UI.INVENTORY,
-                    description = "What items to take in inventory",
-                    defaultValue = """{"$BUCKET_OF_WATER": 2, "$HAMMER": 1}""",
-                    optionType = OptionType.INVENTORY
-            ),
-            ScriptConfiguration(
-                    name = UI.COOK_FISH,
-                    description = "Cooking the fish gives more points (reward) at the cost of XP",
-                    defaultValue = "true",
-                    optionType = OptionType.BOOLEAN
-            ),
-            ScriptConfiguration(
-                    name = UI.SPECIAL_ATTACK,
-                    description = "Do Dragon/Inferno Harpoon special",
-                    defaultValue = "false",
-                    optionType = OptionType.BOOLEAN
-            ),
-        ]
+    [
+        ScriptConfiguration(
+            name = UI.LOOTING,
+            description = "Loot the reward pool",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            name = UI.EQUIPMENT,
+            description = "What gear and harpoon to equip",
+            defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10}""",
+            optionType = OptionType.EQUIPMENT
+        ),
+        ScriptConfiguration(
+            name = "info",
+            description = "Inventory setup for Tempoross: " +
+                    "\n- Amount of buckets" +
+                    "\n- Harpoon (if not equipped and not barb. fishing)" +
+                    "\n- (Imcando) hammer",
+            optionType = OptionType.INFO
+        ),
+        ScriptConfiguration(
+            name = UI.INVENTORY,
+            description = "What items to take in inventory",
+            defaultValue = """{"$BUCKET_OF_WATER": 2, "$HAMMER": 1}""",
+            optionType = OptionType.INVENTORY
+        ),
+        ScriptConfiguration(
+            name = UI.COOK_FISH,
+            description = "Cooking the fish gives more points (reward) at the cost of XP",
+            defaultValue = "true",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
+            name = UI.SPECIAL_ATTACK,
+            description = "Do Dragon/Inferno Harpoon special",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+    ]
 )
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
@@ -116,13 +116,23 @@ class Tempoross : ATScript() {
     val spec by lazy { getOption<Boolean>(UI.SPECIAL_ATTACK) }
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
     val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
-    val buckets by lazy { inventory.count { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) } }
-    val inventoryBankItems by lazy { inventory.filterNot { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET, ROPE, HARPOON, HAMMER) } }
+    val buckets by lazy { inventory.filter { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) }.values.sum() }
+    val inventoryBankItems by lazy {
+        inventory.filterNot {
+            it.key in intArrayOf(
+                BUCKET_OF_WATER,
+                EMPTY_BUCKET,
+                ROPE,
+                HARPOON,
+                HAMMER
+            )
+        }
+    }
 
     fun getRelevantInventoryItems(): Map<Int, Int> =
-            Inventory.stream().filtered { it.id in inventory.keys }
-                    .groupBy { it.id }
-                    .mapValues { it.value.sumOf { i -> i.stack } }
+        Inventory.stream().filtered { it.id in inventory.keys }
+            .groupBy { it.id }
+            .mapValues { it.value.sumOf { i -> i.stack } }
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
@@ -135,10 +145,10 @@ class Tempoross : ATScript() {
     }
 
     fun interactWhileDousing(
-            e: InteractableEntity?,
-            action: String,
-            destinationWhenNil: Tile,
-            allowCrossing: Boolean
+        e: InteractableEntity?,
+        action: String,
+        destinationWhenNil: Tile,
+        allowCrossing: Boolean
     ): Boolean {
         if (e == null) {
             log.info("Can't find: $action")
@@ -323,8 +333,8 @@ class Tempoross : ATScript() {
 
     fun collectFishSpots() {
         fishSpots = Npcs.stream().filtered { it.rightSide() }
-                .action("Harpoon").name("Fishing spot").list()
-                .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
+            .action("Harpoon").name("Fishing spot").list()
+            .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
     fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
@@ -341,34 +351,34 @@ class Tempoross : ATScript() {
     }
 
     fun getBossPool() =
-            Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
+        Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-            Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
+        Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
 
     fun hasHammer() = Inventory.containsOneOf(HAMMER, IMCANDO_HAMMER)
     fun getHammerContainer(): GameObject? = Objects.stream()
-            .type(GameObject.Type.INTERACTIVE).name("Hammers")
-            .firstOrNull { it.atCorrectSide() }
+        .type(GameObject.Type.INTERACTIVE).name("Hammers")
+        .firstOrNull { it.atCorrectSide() }
 
     fun getBucketCrate(): GameObject? =
-            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-                it.atCorrectSide()
-            }.name("Buckets").nearest().firstOrNull()
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+            it.atCorrectSide()
+        }.name("Buckets").nearest().firstOrNull()
 
     fun getRopeContainer(): GameObject? = Objects.stream(50)
-            .type(GameObject.Type.INTERACTIVE)
-            .name("Ropes")
-            .firstOrNull { it.atCorrectSide(6) }
+        .type(GameObject.Type.INTERACTIVE)
+        .name("Ropes")
+        .firstOrNull { it.atCorrectSide(6) }
 
     fun getWaterpump(): GameObject? =
-            Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-                if (getEnergy() == -1) {
-                    it.distance() <= 10
-                } else {
-                    it.atCorrectSide()
-                }
-            }.name("Water pump").nearest().firstOrNull()
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
+            if (getEnergy() == -1) {
+                it.distance() <= 10
+            } else {
+                it.atCorrectSide()
+            }
+        }.name("Water pump").nearest().firstOrNull()
 
     private fun Locatable.atCorrectSide(distance: Int = 5): Boolean {
         val tile = tile()

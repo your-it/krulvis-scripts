@@ -11,10 +11,11 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
         var bucketCount = script.getTotalBuckets()
         val bucketCrate = script.getBucketCrate()
         val timer = Timer(5000)
+        script.log.info("Getting ${script.buckets} buckets, currently have: $bucketCount")
         while (!timer.isFinished() && bucketCount < script.buckets) {
             if (walkAndInteract(bucketCrate, getBucketInteraction(bucketCount))) {
                 waitFor {
-                    bucketCount < script.getTotalBuckets().also { bucketCount = it }
+                    bucketCount != script.getTotalBuckets().also { bucketCount = it }
                 }
             }
         }
@@ -22,7 +23,7 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
 
     private fun getBucketInteraction(bucketCount: Int): String {
         val required = script.buckets - bucketCount
-        return if (required >= 5) "Take-5" else "Take-1"
+        return if (required >= 5) "Take-5" else "Take"
     }
 
 
