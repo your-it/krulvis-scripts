@@ -8,26 +8,22 @@ import org.powbot.krulvis.tempoross.Tempoross
 
 class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
     override fun execute() {
-        var bucketCount = script.getBucketCount()
+        var bucketCount = script.getTotalBuckets()
         val bucketCrate = script.getBucketCrate()
         val timer = Timer(5000)
+        script.log.info("Getting ${script.buckets} buckets, currently have: $bucketCount")
         while (!timer.isFinished() && bucketCount < script.buckets) {
             if (walkAndInteract(bucketCrate, getBucketInteraction(bucketCount))) {
                 waitFor {
-                    bucketCount = script.getBucketCount()
-                    bucketCount >= script.buckets
+                    bucketCount != script.getTotalBuckets().also { bucketCount = it }
                 }
             }
         }
-
     }
 
     private fun getBucketInteraction(bucketCount: Int): String {
         val required = script.buckets - bucketCount
-        if (required >= 5) {
-            return "Take-5"
-        }
-        return "Take-1"
+        return if (required >= 5) "Take-5" else "Take"
     }
 
 

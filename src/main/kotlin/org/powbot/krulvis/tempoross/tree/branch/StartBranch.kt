@@ -13,7 +13,7 @@ import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.FillBuckets
-import org.powbot.krulvis.tempoross.tree.leaf.GetEquipment
+import org.powbot.krulvis.tempoross.tree.leaf.GetItemsFromBank
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
@@ -26,18 +26,22 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
                 && Npcs.stream().noneMatch { it.actions().contains("Leave") }
     }
 
-    override val successComponent: TreeComponent<Tempoross> = WearingEquipment(script)
+    override val successComponent: TreeComponent<Tempoross> = HasAllItemsFromBank(script)
     override val failedComponent: TreeComponent<Tempoross> = WaitingForStart(script)
 }
 
-class WearingEquipment(script: Tempoross) : Branch<Tempoross>(script, "Wearing Equipment") {
-    override val failedComponent: TreeComponent<Tempoross> = GetEquipment(script)
+class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items From Bank") {
+    override val failedComponent: TreeComponent<Tempoross> = GetItemsFromBank(script)
     override val successComponent: TreeComponent<Tempoross> = EnterBoat(script)
 
     override fun validate(): Boolean {
         val equipment = Equipment.stream().toList().map { it.id }
-        return script.equipment.all { equipment.contains(it.key) }
+        val inventory = script.getRelevantInventoryItems()
+        return script.equipment.all { equipment.contains(it.key) } && script.inventoryBankItems.all {
+            it.value <= inventory.getOrDefault(it.key, 0)
+        }
     }
+
 
 }
 

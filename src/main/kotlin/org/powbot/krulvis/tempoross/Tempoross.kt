@@ -10,6 +10,7 @@ import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.api.rt4.walking.local.nodes.LocalEdge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -21,6 +22,10 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.IMCANDO_HAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
@@ -28,6 +33,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
+import org.powbot.krulvis.tempoross.Data.HARPOON
 import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
@@ -38,7 +44,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.2.8",
+    version = "1.3.0",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -46,32 +52,40 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(
+            name = UI.LOOTING,
+            description = "Loot the reward pool",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
+        ),
+        ScriptConfiguration(
             name = UI.EQUIPMENT,
-            description = "What equipment to wear",
-            defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10,"2554":12}""",
+            description = "What gear and harpoon to equip",
+            defaultValue = """{"25592":0,"21028":3,"25594":4,"25596":7,"25598":10}""",
             optionType = OptionType.EQUIPMENT
         ),
         ScriptConfiguration(
-            name = UI.BUCKETS,
-            description = "How many buckets to take?",
-            defaultValue = "5",
-            optionType = OptionType.INTEGER
+            name = "info",
+            description = "Inventory setup for Tempoross: " +
+                    "\n- Amount of buckets" +
+                    "\n- Harpoon (if not equipped and not barb. fishing)" +
+                    "\n- (Imcando) hammer",
+            optionType = OptionType.INFO
+        ),
+        ScriptConfiguration(
+            name = UI.INVENTORY,
+            description = "What items to take in inventory",
+            defaultValue = """{"$BUCKET_OF_WATER": 2, "$HAMMER": 1}""",
+            optionType = OptionType.INVENTORY
         ),
         ScriptConfiguration(
             name = UI.COOK_FISH,
-            description = "Cooking the fish gives more points at the cost of XP",
+            description = "Cooking the fish gives more points (reward) at the cost of XP",
             defaultValue = "true",
             optionType = OptionType.BOOLEAN
         ),
         ScriptConfiguration(
             name = UI.SPECIAL_ATTACK,
             description = "Do Dragon/Inferno Harpoon special",
-            defaultValue = "false",
-            optionType = OptionType.BOOLEAN
-        ),
-        ScriptConfiguration(
-            name = UI.BARB_FISHING,
-            description = "Barbarian fishing",
             defaultValue = "false",
             optionType = OptionType.BOOLEAN
         ),
@@ -96,13 +110,29 @@ class Tempoross : ATScript() {
     var debugPaint = false
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
-    val hasOutfit by lazy { Equipment.stream().id(25592, 25594, 25596, 25598).count().toInt() == 4 }
+    val hasOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
 
-    val barbFishing by lazy { getOption<Boolean>(UI.BARB_FISHING) }
     val cookFish by lazy { getOption<Boolean>(UI.COOK_FISH) }
     val spec by lazy { getOption<Boolean>(UI.SPECIAL_ATTACK) }
-    val buckets by lazy { getOption<Int>(UI.BUCKETS) }
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
+    val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
+    val buckets by lazy { inventory.filter { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) }.values.sum() }
+    val inventoryBankItems by lazy {
+        inventory.filterNot {
+            it.key in intArrayOf(
+                BUCKET_OF_WATER,
+                EMPTY_BUCKET,
+                ROPE,
+                HARPOON,
+                HAMMER
+            )
+        }
+    }
+
+    fun getRelevantInventoryItems(): Map<Int, Int> =
+        Inventory.stream().filtered { it.id in inventory.keys }
+            .groupBy { it.id }
+            .mapValues { it.value.sumOf { i -> i.stack } }
 
     fun hasDangerousPath(end: Tile): Boolean {
         val path = LocalPathFinder.findPath(end)
@@ -155,9 +185,7 @@ class Tempoross : ATScript() {
 
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
-        val fire =
-            if (blockedTile != null) Npcs.stream().name("Fire").nearest(blockedTile.destination)
-                .firstOrNull() else null
+        val fire = getFireNear(blockedTile)
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
@@ -178,6 +206,14 @@ class Tempoross : ATScript() {
             return true
         }
         return false
+    }
+
+    private fun getFireNear(blockedTile: LocalEdge?): Npc? {
+        return if (blockedTile == null) {
+            null
+        } else {
+            Npcs.stream().name("Fire").nearest(blockedTile.destination).firstOrNull()
+        }
     }
 
     private fun walkPath(path: LocalPath): Boolean {
@@ -318,12 +354,22 @@ class Tempoross : ATScript() {
         Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").firstOrNull()
 
     fun getAmmoCrate(): Npc? =
-        Npcs.stream().filtered { it.atCorrectSide() }.name("Ammunition crate").firstOrNull()
+        Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
+
+    fun hasHammer() = Inventory.containsOneOf(HAMMER, IMCANDO_HAMMER)
+    fun getHammerContainer(): GameObject? = Objects.stream()
+        .type(GameObject.Type.INTERACTIVE).name("Hammers")
+        .firstOrNull { it.atCorrectSide() }
 
     fun getBucketCrate(): GameObject? =
         Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
             it.atCorrectSide()
         }.name("Buckets").nearest().firstOrNull()
+
+    fun getRopeContainer(): GameObject? = Objects.stream(50)
+        .type(GameObject.Type.INTERACTIVE)
+        .name("Ropes")
+        .firstOrNull { it.atCorrectSide(6) }
 
     fun getWaterpump(): GameObject? =
         Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
@@ -350,7 +396,9 @@ class Tempoross : ATScript() {
 
     fun getLadder(): GameObject? = Objects.stream().name("Rope ladder").action("Climb").firstOrNull()
 
-    fun getBucketCount(): Int = Inventory.stream().name("Bucket").count().toInt()
+    fun getEmptyBuckets(): Int = Inventory.stream().id(EMPTY_BUCKET).count().toInt()
+    fun getFilledBuckets(): Int = Inventory.stream().id(BUCKET_OF_WATER).count().toInt()
+    fun getTotalBuckets(): Int = Inventory.stream().id(EMPTY_BUCKET, BUCKET_OF_WATER).count().toInt()
 }
 
 fun main() {
