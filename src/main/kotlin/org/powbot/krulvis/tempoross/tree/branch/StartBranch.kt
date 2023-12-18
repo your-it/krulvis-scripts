@@ -85,5 +85,5 @@ class ShouldLeave(script: Tempoross) : Branch<Tempoross>(script, "Should leave")
     }
 
     override val successComponent: TreeComponent<Tempoross> = Leave(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldUntether(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldTether(script)
 }

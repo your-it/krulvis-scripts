@@ -9,19 +9,21 @@ import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Tether
 import org.powbot.krulvis.tempoross.tree.leaf.Untether
 
-class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Untether") {
-    override fun validate(): Boolean {
-        return script.waveTimer.isFinished()
-                && script.isTethering()
-    }
-
-    override val successComponent: TreeComponent<Tempoross> = Untether(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldTether(script)
-}
+//class ShouldUntether(script: Tempoross) : Branch<Tempoross>(script, "Should Untether") {
+//    override fun validate(): Boolean {
+//        return script.waveTimer.isFinished()
+//                && script.isTethering()
+//    }
+//
+//    override val successComponent: TreeComponent<Tempoross> = Untether(script)
+//    override val failedComponent: TreeComponent<Tempoross> = ShouldTether(script)
+//}
 
 class ShouldTether(script: Tempoross) : Branch<Tempoross>(script, "Should Tether") {
     override fun validate(): Boolean {
-        return !script.waveTimer.isFinished() && (script.hasOutfit || Inventory.containsOneOf(ROPE))
+        return !script.waveTimer.isFinished() && !script.isTethering()
+                && (script.hasOutfit || Inventory.containsOneOf(ROPE))
+
     }
 
     override val successComponent: TreeComponent<Tempoross> = Tether(script)

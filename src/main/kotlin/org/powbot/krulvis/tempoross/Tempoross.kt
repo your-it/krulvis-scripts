@@ -11,10 +11,7 @@ import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.nodes.LocalEdge
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptCategory
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
@@ -74,8 +71,14 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
         ScriptConfiguration(
             name = UI.INVENTORY,
             description = "What items to take in inventory",
-            defaultValue = """{"$BUCKET_OF_WATER": 2, "$HAMMER": 1}""",
+            defaultValue = """{"$BUCKET_OF_WATER": 5, "$HAMMER": 1}""",
             optionType = OptionType.INVENTORY
+        ),
+        ScriptConfiguration(
+            name = UI.SOLO_METHOD,
+            description = "Solo method with 19 cooked fish",
+            defaultValue = "false",
+            optionType = OptionType.BOOLEAN
         ),
         ScriptConfiguration(
             name = UI.COOK_FISH,
@@ -93,6 +96,14 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 )
 class Tempoross : ATScript() {
     override val rootComponent: TreeComponent<*> = ShouldEnterBoat(this)
+
+    @ValueChanged(UI.SOLO_METHOD)
+    fun onValueChanged(solo: Boolean) {
+        if (solo) {
+            updateOption(UI.COOK_FISH, true, OptionType.BOOLEAN)
+        }
+        updateVisibility(UI.COOK_FISH, !solo)
+    }
 
     override fun createPainter(): ATPaint<*> {
         return TemporossPaint(this)
@@ -116,6 +127,7 @@ class Tempoross : ATScript() {
     val spec by lazy { getOption<Boolean>(UI.SPECIAL_ATTACK) }
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
     val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
+    val solo by lazy { getOption<Boolean>(UI.SOLO_METHOD) }
     val buckets by lazy { inventory.filter { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) }.values.sum() }
     val inventoryBankItems by lazy {
         inventory.filterNot {
@@ -242,6 +254,13 @@ class Tempoross : ATScript() {
         return text.substring(8, text.indexOf("%")).toInt()
     }
 
+    fun getIntensity(): Int {
+        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
+            it != null && it.visible() && it.text().contains("Storm Intensity")
+        }?.text() ?: return -1
+        return text.substring(17, text.indexOf("%")).toInt()
+    }
+
     fun getHealth(): Int {
         val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
             it != null && it.visible() && it.text().contains("Essence")
@@ -277,16 +296,24 @@ class Tempoross : ATScript() {
         } else if (txt.contains("A colossal wave closes in...")) {
             log.info("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
-            val fishId = if (cookFish) COOKED else RAW
-            val fish = Inventory.stream().id(fishId).count()
-            if (fish >= 15 || fish >= getHealth()) {
-                forcedShooting = true
-            }
+//            val fishId = if (cookFish) COOKED else RAW
+//            val fish = Inventory.stream().id(fishId).count()
+//            if (fish >= 15 || fish >= getHealth()) {
+//                forcedShooting = true
+//            }
+        } else if (isWaveOver(txt)) {
+            log.info("Wave is over")
+            waveTimer.stop()
         } else if (txt.contains("Reward permits: ") && txt.contains("Total permits:")) {
             val reward = txt.substring(28, txt.indexOf("</col>")).toInt()
             log.info("Gained $reward points")
             rewardGained += reward
         }
+    }
+
+    fun isWaveOver(msg: String): Boolean {
+        return msg.contains("...the rope keeps you securely upright as the wave washes over you")
+                || msg.contains("...the wave slams into you, knocking you to the ground.")
     }
 
     @com.google.common.eventbus.Subscribe
@@ -337,17 +364,13 @@ class Tempoross : ATScript() {
             .map { Pair(it, LocalPathFinder.findPath(it.tile().getWalkableNeighbor())) }
     }
 
-    fun getFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
-        val paths = spots.filter { !containsDangerousTile(it.second) }
-        val doublePath = paths.firstOrNull { it.first.id() == DOUBLE_FISH_ID }
+    fun getClosestFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
+        val doublePath = spots.firstOrNull { it.first.id() == DOUBLE_FISH_ID }
         if (doublePath != null) {
             return doublePath.first
         }
 
-        if (paths.isNotEmpty()) {
-            return paths.minByOrNull { it.second.actions.size }!!.first
-        }
-        return null
+        return spots.filter { !containsDangerousTile(it.second) }.minByOrNull { it.second.actions.size }?.first
     }
 
     fun getBossPool() =
