@@ -78,15 +78,37 @@ enum class Side {
         else
             Tile(mastLocation.x() - 8, mastLocation.y() - 9, 0)
 
+    //NORTH
     //BOAT, SW = Tile(51, 44, 0) SE = Tile(54, 44, 0),
     // DOCK = Tile(64, 57, 0), EAST = Tile(66, 66, 0), NORTH EAST = Tile(66, 80)
     //NORTH WEST = Tile(48, 80, 0)
+
+
+    //SOUTH
+    //BOAT NE = Tile(75, 54) / Tile(51, 62)
+    //SOUTH WEST = Tile(42, 22)
+    //WEST = Tile(45, 36)
+    //DOCK NW = Tile(62, 42)
     val polygon: Area
-        get() = if (this == NORTH) {
-            Area(
-                Tile(mastLocation.x() - 5, mastLocation.y() - 4)
-            )
-        } else {
-            Area()
+        get() {
+            val x = mastLocation.x()
+            val y = mastLocation.y()
+            return if (this == NORTH) {
+                Area(
+                        Tile(x - 4, y - 5),
+                        Tile(x + 5, y - 5),
+                        Tile()
+                )
+            } else {
+                Area(
+                        Tile(x + 4, y + 5),
+                        Tile(x - 3, y + 5),
+                        Tile(x - 10, y - 5),
+                        Tile(x - 20, y - 10),
+                        Tile(x - 20, y - 20),
+                        Tile(x + 2, y - 20),
+                        Tile(x + 4, y - 5)
+                )
+            }
         }
 }

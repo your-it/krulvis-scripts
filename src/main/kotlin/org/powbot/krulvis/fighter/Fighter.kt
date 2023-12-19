@@ -48,7 +48,6 @@ import kotlin.math.round
                     "Warrior guild", "Collect defenders in the warrior guild",
                     optionType = OptionType.BOOLEAN, defaultValue = "false"
             ),
-
             ScriptConfiguration(
                     "Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
             ),
