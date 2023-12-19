@@ -37,7 +37,7 @@ import kotlin.math.round
         name = "krul Fighter",
         description = "Fights anything, anywhere. Supports defender collecting.",
         author = "Krulvis",
-        version = "1.4.2",
+        version = "1.4.3",
         markdownFileName = "Fighter.md",
         scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
         category = ScriptCategory.Combat,
@@ -370,7 +370,7 @@ class Fighter : ATScript() {
         }
     }
 
-    var lastTask = true
+    var lastTask = false
 
 }
 
