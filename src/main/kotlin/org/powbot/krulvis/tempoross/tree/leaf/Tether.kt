@@ -20,8 +20,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
             script.log.info("Waiting for wave to pass..")
             if (waitForWave()) {
                 script.log.info("Done tethering...")
-                script.waveTimer.stop()
-                sleep(Random.nextInt(1000, 1200))
+                sleep(Random.nextInt(650, 750))
             }
             return
         }

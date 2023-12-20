@@ -1,13 +1,12 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
-import org.powbot.api.rt4.Combat
-import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.Game
-import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -80,7 +79,7 @@ class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get r
 }
 
 class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get hammer") {
-    override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldDouse(script)
     override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
 
     override fun validate(): Boolean {
@@ -88,14 +87,39 @@ class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get
     }
 }
 
-class ShouldGetWater(script: Tempoross) :
-        Branch<Tempoross>(script, "Should get water") {
+class ShouldDouse(script: Tempoross) :
+    Branch<Tempoross>(script, "Should douse fire") {
     override fun validate(): Boolean {
-        if (Inventory.containsOneOf(BUCKET_OF_WATER)) {
+        if (!Inventory.containsOneOf(BUCKET_OF_WATER)) {
             return false
         }
-        val bucketCrate = script.getBucketCrate()
-        return (bucketCrate?.distance()?.roundToInt() ?: 6) <= 5
+        fire = getNearestFire()
+        return fire != null
+    }
+
+    private fun getNearestFire() = Npcs.stream().within(9).within(script.side.area).name("Fire").nearest().firstOrNull()
+
+    var fire: Npc? = null
+
+    override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
+        if (fire!!.interact("Douse")) {
+            waitFor(5000) { getNearestFire() != fire }
+        }
+    }
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
+}
+
+class ShouldGetWater(script: Tempoross) :
+    Branch<Tempoross>(script, "Should get water") {
+    override fun validate(): Boolean {
+        if (script.getFilledBuckets() >= script.buckets || script.getEnergy() <= 10) {
+            return false
+        }
+        return if (script.getIntensity() == 0 && script.getHealth() == 100) {
+            true
+        } else {
+            (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6
+        }
     }
 
     override val successComponent: TreeComponent<Tempoross> = CanFillEmptyBucket(script)
@@ -103,7 +127,7 @@ class ShouldGetWater(script: Tempoross) :
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
-        Branch<Tempoross>(script, "Can fill empty buckets") {
+    Branch<Tempoross>(script, "Can fill empty buckets") {
     override fun validate(): Boolean {
         return script.getEmptyBuckets() > 0
     }
@@ -111,3 +135,5 @@ class CanFillEmptyBucket(script: Tempoross) :
     override val successComponent: TreeComponent<Tempoross> = FillBuckets(script)
     override val failedComponent: TreeComponent<Tempoross> = GetBuckets(script)
 }
+
+

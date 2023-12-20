@@ -9,7 +9,7 @@ object UI {
     const val INVENTORY = "inventory"
     const val COOK_FISH = "cook"
     const val SPECIAL_ATTACK = "special attack"
-    const val BARB_FISHING = "barb fishing"
+    const val SOLO_METHOD = "solo"
     const val BUCKETS = "buckets"
     const val IMCANDO_HAMMER = "imcando hammer"
 }
@@ -75,4 +75,31 @@ enum class Side {
             Tile(mastLocation.x() + 8, mastLocation.y() + 9, 0)
         else
             Tile(mastLocation.x() - 8, mastLocation.y() - 9, 0)
+
+    val area: Area
+        get() {
+            val x = mastLocation.x()
+            val y = mastLocation.y()
+            return if (this == NORTH) {
+                Area(
+                    Tile(x - 4, y - 5),
+                    Tile(x + 5, y - 5),
+                    Tile(x + 10, y + 6),
+                    Tile(x + 15, y + 10),
+                    Tile(x + 16, y + 20),
+                    Tile(x + 16, y + 30),
+                    Tile(x - 5, y + 30)
+                )
+            } else {
+                Area(
+                    Tile(x + 4, y + 5),
+                    Tile(x - 3, y + 5),
+                    Tile(x - 10, y - 5),
+                    Tile(x - 20, y - 10),
+                    Tile(x - 20, y - 20),
+                    Tile(x + 2, y - 20),
+                    Tile(x + 4, y - 5)
+                )
+            }
+        }
 }

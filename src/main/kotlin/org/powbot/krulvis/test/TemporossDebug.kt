@@ -92,7 +92,7 @@ class TemporossDebug : ATScript() {
                 tether = tempoross.getTetherPole()
 
                 tempoross.collectFishSpots()
-                tempoross.bestFishSpot = tempoross.getFishSpot(tempoross.fishSpots)
+                tempoross.bestFishSpot = tempoross.getClosestFishSpot(tempoross.fishSpots)
 //                checkPaths(bucket, tether)
 //                checkPaths(ammo, tempoross.bestFishSpot)
 //                tempoross.hasDangerousPath(tempoross.side.bossWalkLocation)
