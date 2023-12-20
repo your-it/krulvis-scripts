@@ -14,6 +14,7 @@ import org.powbot.api.rt4.walking.local.nodes.LocalEdge
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
@@ -111,7 +112,6 @@ class Tempoross : ATScript() {
 
     val waveTimer = Timer(0)
     var side = Side.UNKNOWN
-    var forcedShooting = false
     val burningTiles = mutableListOf<Tile>()
     val triedPaths = mutableListOf<LocalPath>()
     var rewardGained = 0
@@ -128,7 +128,14 @@ class Tempoross : ATScript() {
     val equipment by lazy { getOption<Map<Int, Int>>(UI.EQUIPMENT) }
     val inventory by lazy { getOption<Map<Int, Int>>(UI.INVENTORY) }
     val solo by lazy { getOption<Boolean>(UI.SOLO_METHOD) }
-    val buckets by lazy { inventory.filter { it.key in intArrayOf(BUCKET_OF_WATER, EMPTY_BUCKET) }.values.sum() }
+    val buckets by lazy {
+        if (solo) 5 else inventory.filter {
+            it.key in intArrayOf(
+                BUCKET_OF_WATER,
+                EMPTY_BUCKET
+            )
+        }.values.sum()
+    }
     val inventoryBankItems by lazy {
         inventory.filterNot {
             it.key in intArrayOf(
@@ -167,7 +174,9 @@ class Tempoross : ATScript() {
             if (destinationWhenNil != Tile.Nil) {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
-                    walkPath(path)
+                    if (walkPath(path)) {
+                        getExtraBucket()?.interact("Drop")
+                    }
                 } else {
                     log.info(if (path.isEmpty()) "Path is empty" else "failed dousing")
                     walk(destinationWhenNil)
@@ -189,11 +198,18 @@ class Tempoross : ATScript() {
 
     fun walkWhileDousing(path: LocalPath, allowCrossing: Boolean): Boolean {
         if (douseIfNecessary(path, allowCrossing)) {
-            return walkPath(path)
+            if (!walkPath(path)) {
+                return false
+            }
+            getExtraBucket()?.interact("Drop")
         }
         return true
     }
 
+    private fun getExtraBucket(): Item? {
+        if (getTotalBuckets() <= buckets) return null
+        return Inventory.stream().id(EMPTY_BUCKET, BUCKET_OF_WATER).firstOrNull()
+    }
 
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
@@ -243,9 +259,19 @@ class Tempoross : ATScript() {
         }
     }
 
+    public fun requiredFish(): Int {
+        if (!solo) return Inventory.getCount(RAW, COOKED) + Inventory.emptySlotCount()
+        val energy = getEnergy()
+        return when (energy) {
+            100 -> 16
+            10 -> 19
+            else -> (energy - 10) / 11
+        }
+    }
+
     fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
 
-    fun isTethering(): Boolean = (Varpbits.varpbit(2933) xor 7 and 7) != 7
+    fun isTethering(): Boolean = (Varpbits.varpbit(2933) and 1) == 1
 
     fun getEnergy(): Int {
         val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
@@ -311,7 +337,7 @@ class Tempoross : ATScript() {
         }
     }
 
-    fun isWaveOver(msg: String): Boolean {
+    private fun isWaveOver(msg: String): Boolean {
         return msg.contains("...the rope keeps you securely upright as the wave washes over you")
                 || msg.contains("...the wave slams into you, knocking you to the ground.")
     }

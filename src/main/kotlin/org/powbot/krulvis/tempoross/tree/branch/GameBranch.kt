@@ -79,12 +79,34 @@ class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get r
 }
 
 class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get hammer") {
-    override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldDouse(script)
     override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
 
     override fun validate(): Boolean {
         return !script.hasHammer() && (script.getHammerContainer()?.distance()?.roundToInt() ?: 7) <= 6
     }
+}
+
+class ShouldDouse(script: Tempoross) :
+    Branch<Tempoross>(script, "Should douse fire") {
+    override fun validate(): Boolean {
+        if (!Inventory.containsOneOf(BUCKET_OF_WATER)) {
+            return false
+        }
+        fire = getNearestFire()
+        return fire != null
+    }
+
+    private fun getNearestFire() = Npcs.stream().within(9).within(script.side.area).name("Fire").nearest().firstOrNull()
+
+    var fire: Npc? = null
+
+    override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
+        if (fire!!.interact("Douse")) {
+            waitFor(5000) { getNearestFire() != fire }
+        }
+    }
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
 }
 
 class ShouldGetWater(script: Tempoross) :
@@ -96,12 +118,12 @@ class ShouldGetWater(script: Tempoross) :
         return if (script.getIntensity() == 0 && script.getHealth() == 100) {
             true
         } else {
-            (script.getBucketCrate()?.distance()?.roundToInt() ?: 6) <= 5
+            (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6
         }
     }
 
     override val successComponent: TreeComponent<Tempoross> = CanFillEmptyBucket(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldDouse(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldShoot(script)
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
@@ -114,15 +136,4 @@ class CanFillEmptyBucket(script: Tempoross) :
     override val failedComponent: TreeComponent<Tempoross> = GetBuckets(script)
 }
 
-class ShouldDouse(script: Tempoross) :
-    Branch<Tempoross>(script, "Should douse fire") {
-    override fun validate(): Boolean {
-        fire = Npcs.stream().within(15).name("Fire").
-        return
-    }
 
-    var fire: Npc? = null
-
-    override val successComponent: TreeComponent<Tempoross> = Douse(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldShoot(script)
-}

@@ -22,24 +22,17 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
         val fish = if (script.solo) cooked else cooked + raw
         //Forced shooting happens after a tether attempt
-        if (script.forcedShooting) {
-            if (fish == 0) {
-                script.forcedShooting = false
-            }
-            return script.forcedShooting
-        }
 
         val energy = script.getEnergy()
         val hp = script.getHealth()
         val lowEnoughEnergy = energy / 2.5 < fish
 
         //If we are close to the ammo-box and have some fish, shoot em
-        val ammoCrate = script.getAmmoCrate()
-        val hasShootableFish = fish > 0
-        if (hasShootableFish) {
+        if (fish > 0) {
+            val ammoCrate = script.getAmmoCrate()
             if ((ammoCrate?.distance()?.roundToInt() ?: 8) < 7) {
-                script.log.info("ForcedShooting because close and hasShootableFish")
-                script.forcedShooting = true
+                script.log.info("Shooting because close and hasShootableFish")
+                return true
             } else if (script.solo) {
                 val requiredFish = when (energy) {
                     100 -> 16
@@ -51,8 +44,8 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
                     return true
                 }
             } else if (hp <= 75 && lowEnoughEnergy && energy > 13) {
-                script.log.info("ForcedShooting to empty inventory before last group harpoon")
-                script.forcedShooting = true
+                script.log.info("Shooting to empty inventory before last group harpoon")
+                return true
             } else if (Inventory.isFull() && (!script.cookFish || raw <= 0)) {
                 script.log.info("Shooting fish because inventory is full")
                 return true
@@ -70,8 +63,6 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
         val raw = Inventory.getCount(RAW)
-        val cooked = Inventory.getCount(COOKED)
-        val fish = raw + cooked
         script.collectFishSpots()
         script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
 
@@ -80,12 +71,11 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
 
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = script.side.cookLocation
-        val canFish = if (script.solo) fish < 19 else !Inventory.isFull()
 
-        if (doubleSpot && canFish) {
+        if (doubleSpot && !Inventory.isFull()) {
             debug("Fishing because double spot available")
             return false
-        } else if (raw > 0 && cookLocation.distance() <= 1.5) {
+        } else if (raw > 0 && cookLocation.distance() <= 2) {
             debug("Cooking because already there are no good fishing spots available...")
             return true
         } else if (raw >= 8 && !script.hasDangerousPath(cookLocation)) {
