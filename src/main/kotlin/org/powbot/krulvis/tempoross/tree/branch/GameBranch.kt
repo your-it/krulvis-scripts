@@ -32,16 +32,28 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
             waitFor(5000) { Combat.specialPercentage() < 100 }
         }
     }
-    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHarpoon(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldDouse(script)
 }
 
-class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
+
+class ShouldDouse(script: Tempoross) :
+    Branch<Tempoross>(script, "Should douse fire") {
     override fun validate(): Boolean {
-        Game.tab(Game.Tab.INVENTORY)
-        return script.inventory.contains(HARPOON) && !Inventory.containsOneOf(HARPOON)
+        if (!Inventory.containsOneOf(BUCKET_OF_WATER)) {
+            return false
+        }
+        fire = script.getNearestFire() ?: return false
+        return if (script.solo) true else fire!!.distance() <= 2
     }
 
-    override val successComponent: TreeComponent<Tempoross> = GetHarpoon(script)
+
+    var fire: Npc? = null
+
+    override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
+        if (fire!!.interact("Douse")) {
+            waitFor(5000) { script.getNearestFire() != fire }
+        }
+    }
     override val failedComponent: TreeComponent<Tempoross> = ShouldKill(script)
 }
 
@@ -53,7 +65,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         if (((count >= 1 && hp <= 5) || count > hp) && atAmmoCrate()) {
             return false
         }
-        return script.canKill()
+        return (!script.solo || !Inventory.containsOneOf(COOKED)) && script.canKill()
     }
 
     fun atAmmoCrate(): Boolean {
@@ -62,68 +74,26 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
     }
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldGetRope(script)
-}
-
-class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get rope") {
-    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHammer(script)
-    override val successComponent: TreeComponent<Tempoross> = GetRope(script)
-
-    override fun validate(): Boolean {
-        script.burningTiles.clear()
-        script.triedPaths.clear()
-        script.detectDangerousTiles()
-
-        return !script.hasOutfit && !Inventory.containsOneOf(ROPE)
-    }
-}
-
-class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get hammer") {
-    override val failedComponent: TreeComponent<Tempoross> = ShouldDouse(script)
-    override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
-
-    override fun validate(): Boolean {
-        return !script.hasHammer() && (script.getHammerContainer()?.distance()?.roundToInt() ?: 7) <= 6
-    }
-}
-
-class ShouldDouse(script: Tempoross) :
-    Branch<Tempoross>(script, "Should douse fire") {
-    override fun validate(): Boolean {
-        if (!Inventory.containsOneOf(BUCKET_OF_WATER)) {
-            return false
-        }
-        fire = getNearestFire()
-        return fire != null
-    }
-
-    private fun getNearestFire() = Npcs.stream().within(9).within(script.side.area).name("Fire").nearest().firstOrNull()
-
-    var fire: Npc? = null
-
-    override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
-        if (fire!!.interact("Douse")) {
-            waitFor(5000) { getNearestFire() != fire }
-        }
-    }
     override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
 }
+
 
 class ShouldGetWater(script: Tempoross) :
     Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
-        if (script.getFilledBuckets() >= script.buckets || script.getEnergy() <= 10) {
+        val filledBuckets = script.getFilledBuckets()
+        if (filledBuckets >= script.buckets || script.getEnergy() <= 10) {
             return false
+        } else if (script.getIntensity() == 0 && script.getHealth() == 100) {
+            return true
+        } else if (filledBuckets == 0 && script.getNearestFire() != null) {
+            return true
         }
-        return if (script.getIntensity() == 0 && script.getHealth() == 100) {
-            true
-        } else {
-            (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6
-        }
+        return (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6
     }
 
     override val successComponent: TreeComponent<Tempoross> = CanFillEmptyBucket(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldShoot(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetRope(script)
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
@@ -135,5 +105,39 @@ class CanFillEmptyBucket(script: Tempoross) :
     override val successComponent: TreeComponent<Tempoross> = FillBuckets(script)
     override val failedComponent: TreeComponent<Tempoross> = GetBuckets(script)
 }
+
+class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get rope") {
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHarpoon(script)
+    override val successComponent: TreeComponent<Tempoross> = GetRope(script)
+
+    override fun validate(): Boolean {
+        script.burningTiles.clear()
+        script.triedPaths.clear()
+        script.detectDangerousTiles()
+
+        return !script.hasOutfit && !Inventory.containsOneOf(ROPE)
+    }
+}
+
+class ShouldGetHarpoon(script: Tempoross) : Branch<Tempoross>(script, "Should get harpoon") {
+    override fun validate(): Boolean {
+        Game.tab(Game.Tab.INVENTORY)
+        return script.inventory.contains(HARPOON) && !Inventory.containsOneOf(HARPOON)
+    }
+
+    override val successComponent: TreeComponent<Tempoross> = GetHarpoon(script)
+    override val failedComponent: TreeComponent<Tempoross> = ShouldGetHammer(script)
+}
+
+class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get hammer") {
+    override val failedComponent: TreeComponent<Tempoross> = ShouldShoot(script)
+    override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
+
+    override fun validate(): Boolean {
+        return !script.hasHammer() && (script.getHammerContainer()?.distance()?.roundToInt() ?: 7) <= 6
+    }
+}
+
+
 
 

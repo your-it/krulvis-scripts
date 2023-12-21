@@ -42,7 +42,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.3.0",
+    version = "1.3.1",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -148,6 +148,9 @@ class Tempoross : ATScript() {
         }
     }
 
+    fun cookedToSubdue() = Math.round(getEnergy() / 5.625)
+
+    fun getNearestFire() = Npcs.stream().within(9).within(side.area).name("Fire").nearest().firstOrNull()
     fun getRelevantInventoryItems(): Map<Int, Int> =
         Inventory.stream().filtered { it.id in inventory.keys }
             .groupBy { it.id }
@@ -175,7 +178,7 @@ class Tempoross : ATScript() {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
                     if (walkPath(path)) {
-                        getExtraBucket()?.interact("Drop")
+                        getTrash()?.interact("Drop")
                     }
                 } else {
                     log.info(if (path.isEmpty()) "Path is empty" else "failed dousing")
@@ -201,14 +204,19 @@ class Tempoross : ATScript() {
             if (!walkPath(path)) {
                 return false
             }
-            getExtraBucket()?.interact("Drop")
+            getTrash()?.interact("Drop")
         }
         return true
     }
 
-    private fun getExtraBucket(): Item? {
-        if (getTotalBuckets() <= buckets) return null
-        return Inventory.stream().id(EMPTY_BUCKET, BUCKET_OF_WATER).firstOrNull()
+    private fun getTrash(): Item? {
+        val inventory = Inventory.stream().toList().groupBy { it.id }.mapValues { ig -> ig.value.sumOf { it.stack } }
+        val totalBuckets = inventory.getOrDefault(EMPTY_BUCKET, 0) + inventory.getOrDefault(BUCKET_OF_WATER, 0)
+        if (inventory.getOrDefault(HAMMER, 0) > 1) {
+            return Inventory.stream().id(HAMMER).firstOrNull()
+        } else if (totalBuckets > buckets)
+            return Inventory.stream().id(EMPTY_BUCKET, BUCKET_OF_WATER).firstOrNull()
+        return null
     }
 
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
@@ -410,24 +418,16 @@ class Tempoross : ATScript() {
         .type(GameObject.Type.INTERACTIVE).name("Hammers")
         .firstOrNull { it.atCorrectSide() }
 
-    fun getBucketCrate(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            it.atCorrectSide()
-        }.name("Buckets").nearest().firstOrNull()
-
     fun getRopeContainer(): GameObject? = Objects.stream(50)
         .type(GameObject.Type.INTERACTIVE)
         .name("Ropes")
         .firstOrNull { it.atCorrectSide(6) }
 
+    fun getBucketCrate(): GameObject? =
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Buckets").nearest().firstOrNull()
+
     fun getWaterpump(): GameObject? =
-        Objects.stream(50).type(GameObject.Type.INTERACTIVE).filtered {
-            if (getEnergy() == -1) {
-                it.distance() <= 10
-            } else {
-                it.atCorrectSide()
-            }
-        }.name("Water pump").nearest().firstOrNull()
+        Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Water pump").nearest().firstOrNull()
 
     private fun Locatable.atCorrectSide(distance: Int = 5): Boolean {
         val tile = tile()
