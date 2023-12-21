@@ -1,12 +1,10 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -62,10 +60,25 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         //Make sure that we keep shoot the leftovers
         val count = Inventory.stream().id(RAW, COOKED).count()
         val hp = script.getHealth()
-        if (((count >= 1 && hp <= 5) || count > hp) && atAmmoCrate()) {
+        val minHp = (if (script.solo) 25 else 5)
+        if (count >= 1 && hp <= minHp && atAmmoCrate()) {
+            //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
+            return false
+        } else if (hp <= getLowestHPAllowed()) {
+            //If we are below a certain threshold compared to when we started, return to fishing/cooking
             return false
         }
         return (!script.solo || !Inventory.containsOneOf(COOKED)) && script.canKill()
+    }
+
+    private fun getLowestHPAllowed(): Int {
+        if (!script.solo) return 0
+        val startHp = script.vulnerableStartHP
+        return when {
+            startHp > 65 -> 65
+            startHp > 33 -> 33
+            else -> 0
+        }
     }
 
     fun atAmmoCrate(): Boolean {

@@ -119,6 +119,7 @@ class Tempoross : ATScript() {
     var rounds = 0
     var lastGame = false
     var debugPaint = false
+    var vulnerableStartHP = 100
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
     val hasOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
@@ -327,6 +328,8 @@ class Tempoross : ATScript() {
             log.info("Finished round, gained: $points points")
             pointsObtained += points
             rounds++
+        } else if (txt.contains("Tempoross is vulnerable!")) {
+            vulnerableStartHP = getHealth()
         } else if (txt.contains("A colossal wave closes in...")) {
             log.info("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
