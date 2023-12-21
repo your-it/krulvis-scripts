@@ -77,10 +77,16 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
 
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = script.side.cookLocation
-        if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
-            debug("Cooking because need to bring to 10% energy")
-            return true
-        } else if (doubleSpot && Inventory.emptySlotCount() > if (cooking) 1 else 0) {
+        if (script.solo) {
+            if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
+                debug("Cooking because need to bring to 10% energy")
+                return true
+            } else if (raw >= 19 && script.getIntensity() >= 85 - (19 - cooked)) {
+                debug("Cooking because have more than 19 fish")
+                return true
+            }
+        }
+        if (doubleSpot && Inventory.emptySlotCount() > if (cooking) 1 else 0) {
             //If we are prioritizing fishing at double spot over cooking, we need to have at least 2 spaces
             debug("Fishing because double spot available")
             return false

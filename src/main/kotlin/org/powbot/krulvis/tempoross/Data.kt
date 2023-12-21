@@ -49,7 +49,7 @@ enum class Side {
 
     val cookLocation: Tile
         get() = if (this == NORTH)
-            Tile(mastLocation.x() + 6, mastLocation.y() + 22, 0)
+            Tile(mastLocation.x() + 5, mastLocation.y() + 22, 0)
         else Tile(mastLocation.x() - 22, mastLocation.y() - 21, 0)
 
     val northCookSpot: Tile get() = Tile(cookLocation.x() + 1, cookLocation.y() - 3, 0)
