@@ -19,10 +19,10 @@ class Shoot(script: Tempoross) : Leaf<Tempoross>(script, "Shooting") {
         val dest = Movement.destination()
         val nearAmmoBox = ammo != null && (ammo.distance() <= 2 || ammo.tile().distanceTo(dest) <= 2)
         val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
-        val offensiveLC = Npcs.stream().name("Lightning Cloud").nearest().first()
+        val offensiveLCTile = Npcs.stream().name("Lightning Cloud").nearest().first().tile().derive(0, -1)
         val myTile = me.tile()
         val safeTile = getSafeTile()
-        if (shooting && offensiveLC.tile() == myTile && myTile != safeTile) {
+        if (shooting && offensiveLCTile == myTile && myTile != safeTile) {
             if (Movement.step(safeTile)) {
                 waitFor { me.tile() == safeTile }
             }
