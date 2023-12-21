@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
+import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 
 
@@ -19,12 +20,14 @@ class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
         val cookShrine = Objects.stream(50)
             .type(GameObject.Type.INTERACTIVE)
             .within(script.side.cookLocation, 5.0).name("Shrine").firstOrNull()
+        val minDistanceToWalkFirst = if (script.side == Side.NORTH) 6 else 10
         if (cookShrine == null) {
             script.log.info("Walking to totem because cooking spot too far..")
             script.walkWhileDousing(script.side.totemLocation, false)
-        } else if (cookShrine.distance() > 10) {
+        } else if (cookShrine.distance() >= minDistanceToWalkFirst) {
             script.log.info("Walking to cooking spot because far away")
-            script.walkWhileDousing(cookShrine.tile, false)
+            val cookTile = if (script.side == Side.NORTH) script.side.cookLocation else cookShrine.tile
+            script.walkWhileDousing(cookTile, false)
         } else if (me.animation() != FILLING_ANIM) {
             if (script.interactWhileDousing(cookShrine, "Cook-at", walkSpot, false)) {
                 waitFor(long()) { me.animation() == FILLING_ANIM }

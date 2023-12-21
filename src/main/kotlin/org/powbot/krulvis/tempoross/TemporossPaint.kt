@@ -2,6 +2,7 @@ package org.powbot.krulvis.tempoross
 
 import org.powbot.api.Color
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Npcs
 import org.powbot.api.rt4.Varpbits
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
@@ -40,6 +41,8 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
                     it.drawOnScreen(null, Color.RED)
                 }
             }
+            val lc = Npcs.stream().name("Lightning Cloud").nearest().firstOrNull()
+            lc?.tile()?.drawOnScreen(lc.orientation().toString())
             g.drawString("Tethered=${script.isTethering()}, varp=${Varpbits.varpbit(2933)}", 50, 250)
             g.drawString("Blocked Tiles = ${blockedTiles.size}", 50, 260)
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
