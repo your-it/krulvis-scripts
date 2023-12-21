@@ -26,7 +26,7 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
         }
         val pole = script.getTetherPole() ?: return
         val poleTiles = pole.tile().getWalkableNeighbors(diagonalTiles = true)
-        val nearestTile = poleTiles.minByOrNull { it.distance() }
+        val nearestTile = poleTiles.minByOrNull { it.distance() } ?: return
         val safeTile = poleTiles.filterNot { script.burningTiles.contains(it) }.minByOrNull { it.distance() }
         if (safeTile == nearestTile) {
             if (pole.actions().contains("Repair") && script.hasHammer()) {
@@ -35,10 +35,10 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
                 }
             }
             if (walkAndInteract(pole, "Tether")) {
-                waitFor(2500) { script.isTethering() }
+                waitFor(2500 + 350 * pole.distance().toInt()) { script.isTethering() }
             }
         } else {
-            walk(safeTile)
+            script.walkWhileDousing(nearestTile, true)
         }
     }
 

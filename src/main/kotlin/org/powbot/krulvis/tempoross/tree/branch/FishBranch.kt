@@ -5,8 +5,10 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
+import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Cook
@@ -34,13 +36,15 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
                 script.log.info("Shooting because close and hasShootableFish")
                 return true
             } else if (script.solo) {
-                val requiredFish = when (energy) {
-                    100 -> 16
-                    10 -> 19
-                    else -> (energy - 10) / 11
+                val requiredToSubdue = script.cookedToSubdue()
+                //If its near failure, just make sure we get the energy to 0
+                if (script.getIntensity() >= 90) {
+                    return cooked >= requiredToSubdue
                 }
+                val requiredFish = if (energy <= 10) 19 else requiredToSubdue - 2
+
+                script.log.info("Shooting fish energy=$energy, requiredFish=$requiredFish cooked in inventory")
                 if (cooked >= requiredFish) {
-                    script.log.info("Shooting fish energy=$energy, requiredFish=$requiredFish cooked in inventory")
                     return true
                 }
             } else if (hp <= 75 && lowEnoughEnergy && energy > 13) {
@@ -62,17 +66,23 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
+        if (!script.cookFish) return false
+
         val raw = Inventory.getCount(RAW)
+        val cooked = Inventory.getCount(COOKED)
+        val cookedTo10 = script.cookedToSubdue() - 2
         script.collectFishSpots()
         script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
 
-        if (!script.cookFish)
-            return false
+        val cooking = me.animation() == FILLING_ANIM
 
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = script.side.cookLocation
-
-        if (doubleSpot && !Inventory.isFull()) {
+        if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
+            debug("Cooking because need to bring to 10% energy")
+            return true
+        } else if (doubleSpot && Inventory.emptySlotCount() > if (cooking) 1 else 0) {
+            //If we are prioritizing fishing at double spot over cooking, we need to have at least 2 spaces
             debug("Fishing because double spot available")
             return false
         } else if (raw > 0 && cookLocation.distance() <= 2) {

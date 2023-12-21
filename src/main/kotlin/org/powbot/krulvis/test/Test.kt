@@ -1,17 +1,8 @@
 package org.powbot.krulvis.test
 
-class Test {
-
-    var i = 0
-
-
-}
+class Test(val id: Int, val amount: Int)
 
 fun main() {
-    val test = Test()
-    var keeptrack = 0
-    for (i in 0..10) {
-        println("i=${i}, keeptrack=$keeptrack")
-        println(keeptrack < i.also { keeptrack = i })
-    }
+    val inventory = listOf(Test(1, 1), Test(1, 1), Test(2, 1), Test(3, 2))
+    print(inventory)
 }

@@ -9,7 +9,7 @@ import org.powbot.krulvis.tempoross.Tempoross
 class GetHammer(script: Tempoross) : Leaf<Tempoross>(script, "Getting Hammer") {
     override fun execute() {
         val hammers = script.getHammerContainer() ?: return
-        if (walkAndInteract(hammers, "Take")) {
+        if (script.interactWhileDousing(hammers, "Take", script.side.anchorLocation, false)) {
             waitFor { script.hasHammer() }
         }
     }

@@ -14,9 +14,9 @@ import org.powbot.krulvis.tempoross.Tempoross
 class FillBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
     override fun execute() {
         if (me.animation() != WATER_ANIM) {
-            val waterPump = script.getWaterpump()
-            if (waterPump != null && walkAndInteract(waterPump, "Use")
-                && waitFor(long()) { me.animation() == WATER_ANIM }
+            val waterPump = script.getWaterpump() ?: return
+            val action = if (waterPump.actions().contains("Use")) "Use" else "Fill-bucket"
+            if (walkAndInteract(waterPump, action) && waitFor(long()) { me.animation() == WATER_ANIM }
             ) {
                 waitFor(long()) { !Inventory.containsOneOf(EMPTY_BUCKET) }
             }

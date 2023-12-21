@@ -1,5 +1,6 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
+import org.powbot.api.Tile
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Timer
@@ -13,8 +14,14 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
         val timer = Timer(5000)
         script.log.info("Getting ${script.buckets} buckets, currently have: $bucketCount")
         while (!timer.isFinished() && bucketCount < script.buckets) {
-            if (walkAndInteract(bucketCrate, getBucketInteraction(bucketCount))) {
-                waitFor {
+            if (script.interactWhileDousing(
+                    bucketCrate,
+                    getBucketInteraction(bucketCount),
+                    script.side.anchorLocation,
+                    true
+                )
+            ) {
+                waitFor(3000 + (500 * (bucketCrate?.distance() ?: 10).toInt())) {
                     bucketCount != script.getTotalBuckets().also { bucketCount = it }
                 }
             }
