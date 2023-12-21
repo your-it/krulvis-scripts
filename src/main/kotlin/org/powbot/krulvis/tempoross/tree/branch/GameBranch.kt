@@ -60,7 +60,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         //Make sure that we keep shoot the leftovers
         val count = Inventory.stream().id(RAW, COOKED).count()
         val hp = script.getHealth()
-        val minHp = (if (script.solo) 25 else 5)
+        val minHp = (if (script.solo) 33 else 5)
         if (count >= 1 && hp <= minHp && atAmmoCrate()) {
             //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
             return false
