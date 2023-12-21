@@ -82,11 +82,12 @@ class ShouldGetWater(script: Tempoross) :
     Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
         val filledBuckets = script.getFilledBuckets()
-        if (filledBuckets >= script.buckets || script.getEnergy() <= 10) {
+        val nearestFire = script.getNearestFire()
+        if (nearestFire != null && filledBuckets == 0) {
+            return true
+        } else if (filledBuckets >= script.buckets || script.getEnergy() <= 10) {
             return false
         } else if (script.getIntensity() == 0 && script.getHealth() == 100) {
-            return true
-        } else if (filledBuckets == 0 && script.getNearestFire() != null) {
             return true
         }
         return (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6

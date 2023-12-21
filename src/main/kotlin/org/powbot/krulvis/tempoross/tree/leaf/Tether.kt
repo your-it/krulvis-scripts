@@ -31,11 +31,14 @@ class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
         if (safeTile == nearestTile) {
             if (pole.actions().contains("Repair") && script.hasHammer()) {
                 if (walkAndInteract(pole, "Repair")) {
-                    waitFor { !(script.getTetherPole()?.actions()?.contains("Repair") ?: true) }
+                    waitFor {
+                        script.waveTimer.isFinished() || !(script.getTetherPole()?.actions()?.contains("Repair")
+                            ?: true)
+                    }
                 }
             }
             if (walkAndInteract(pole, "Tether")) {
-                waitFor(2500 + 350 * pole.distance().toInt()) { script.isTethering() }
+                waitFor(2500 + 350 * pole.distance().toInt()) { script.waveTimer.isFinished() || script.isTethering() }
             }
         } else {
             script.walkWhileDousing(nearestTile, true)

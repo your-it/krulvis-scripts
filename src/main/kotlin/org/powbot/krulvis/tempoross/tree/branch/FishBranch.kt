@@ -42,7 +42,6 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
                     return cooked >= requiredToSubdue
                 }
                 val requiredFish = if (energy <= 10) 19 else requiredToSubdue - 2
-
                 script.log.info("Shooting fish energy=$energy, requiredFish=$requiredFish cooked in inventory")
                 if (cooked >= requiredFish) {
                     return true
