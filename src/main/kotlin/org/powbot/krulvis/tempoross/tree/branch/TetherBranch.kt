@@ -11,7 +11,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Tether
 class ShouldTether(script: Tempoross) : Branch<Tempoross>(script, "Should Tether") {
     override fun validate(): Boolean {
         return !script.waveTimer.isFinished()
-                && (script.hasOutfit || Inventory.containsOneOf(ROPE))
+                && (script.hasSpiritOutfit || Inventory.containsOneOf(ROPE))
 
     }
 

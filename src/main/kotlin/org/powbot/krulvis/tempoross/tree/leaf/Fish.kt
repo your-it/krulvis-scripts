@@ -79,13 +79,13 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
         }
     }
 
-    fun findSaveTile(tile: Tile): Tile? {
+    private fun findSaveTile(tile: Tile): Tile? {
         return tile.getWalkableNeighbor(diagonalTiles = true) {
             !script.burningTiles.contains(it)
         }
     }
 
-    fun fishAtSpot(spot: Npc) {
+    private fun fishAtSpot(spot: Npc) {
         if (walkAndInteract(spot, "Harpoon")) {
             waitFor(Random.nextInt(1000, 5000)) {
                 me.interacting().name() == "Fishing spot" || !spot.valid() || !script.waveTimer.isFinished()

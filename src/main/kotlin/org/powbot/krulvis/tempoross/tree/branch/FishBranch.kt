@@ -7,6 +7,7 @@ import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.tempoross.Data.COOKED
+import org.powbot.krulvis.tempoross.Data.CRYSTAL
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Data.RAW
@@ -20,7 +21,7 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
     override fun validate(): Boolean {
 
         val cooked = Inventory.getCount(COOKED)
-        val raw = Inventory.getCount(RAW)
+        val raw = Inventory.getCount(RAW, CRYSTAL)
 
         val fish = if (script.solo) cooked else cooked + raw
         //Forced shooting happens after a tether attempt
@@ -65,13 +66,13 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
+        script.collectFishSpots()
+        script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
         if (!script.cookFish) return false
 
         val raw = Inventory.getCount(RAW)
         val cooked = Inventory.getCount(COOKED)
         val cookedTo10 = script.cookedToSubdue() - 2
-        script.collectFishSpots()
-        script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
 
         val cooking = me.animation() == FILLING_ANIM
 
@@ -81,8 +82,8 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
                 debug("Cooking because need to bring to 10% energy")
                 return true
-            } else if (raw >= 19 && script.getIntensity() >= 85 - (19 - cooked)) {
-                debug("Cooking because have more than 19 fish")
+            } else if (cooked < 19 && script.getIntensity() >= 85 - (19 - cooked)) {
+                debug("Cooking because we need to reach 19 fish")
                 return true
             }
         }

@@ -129,7 +129,7 @@ class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get r
         script.triedPaths.clear()
         script.detectDangerousTiles()
 
-        return !script.hasOutfit && !Inventory.containsOneOf(ROPE)
+        return !script.hasSpiritOutfit && !Inventory.containsOneOf(ROPE)
     }
 }
 

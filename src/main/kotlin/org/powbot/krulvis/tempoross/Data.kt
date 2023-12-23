@@ -23,6 +23,7 @@ object Data {
     var DOUBLE_FISH_ID = 10569
     val RAW = 25564
     val COOKED = 25565
+    val CRYSTAL = 25566
 
     val TETHER_ANIM = 3705
     val FILLING_ANIM = 896
