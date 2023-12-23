@@ -42,7 +42,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.3.1",
+    version = "1.3.2",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -122,7 +122,7 @@ class Tempoross : ATScript() {
     var vulnerableStartHP = 100
     var bestFishSpot: Npc? = null
     var fishSpots: List<Pair<Npc, LocalPath>> = emptyList()
-    val hasOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
+    val hasSpiritOutfit by lazy { intArrayOf(25592, 25594, 25596, 25598).all { it in equipment.keys } }
 
     val cookFish by lazy { getOption<Boolean>(UI.COOK_FISH) }
     val spec by lazy { getOption<Boolean>(UI.SPECIAL_ATTACK) }
