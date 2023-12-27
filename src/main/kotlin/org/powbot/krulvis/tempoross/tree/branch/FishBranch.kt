@@ -68,9 +68,9 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
         script.collectFishSpots()
         script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
-        if (!script.cookFish) return false
-
         val raw = Inventory.getCount(RAW)
+        if (!script.cookFish || raw == 0) return false
+
         val cooked = Inventory.getCount(COOKED)
         val cookedTo10 = script.cookedToSubdue() - 2
 
@@ -103,7 +103,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val lowEnergy = if (script.solo) false else energy / 4 < Inventory.getCount(true, RAW, COOKED)
         val fullHealth = script.getHealth() == 100
         script.log.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$raw")
-        return raw > 0 && (Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null)
+        return Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null
     }
 
     override val successComponent: TreeComponent<Tempoross> = Cook(script)

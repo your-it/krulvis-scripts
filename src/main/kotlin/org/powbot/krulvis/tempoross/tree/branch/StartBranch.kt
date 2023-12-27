@@ -11,10 +11,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
-import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
-import org.powbot.krulvis.tempoross.tree.leaf.FillBuckets
-import org.powbot.krulvis.tempoross.tree.leaf.GetItemsFromBank
-import org.powbot.krulvis.tempoross.tree.leaf.Leave
+import org.powbot.krulvis.tempoross.tree.leaf.*
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
@@ -81,9 +78,19 @@ class ShouldFillBuckets(script: Tempoross) : Branch<Tempoross>(script, "Should F
 
 class ShouldLeave(script: Tempoross) : Branch<Tempoross>(script, "Should leave") {
     override fun validate(): Boolean {
-        return Npcs.stream().anyMatch { it.actions().contains("Leave") }
+        return Npcs.stream().action("Leave").isNotEmpty()
     }
 
-    override val successComponent: TreeComponent<Tempoross> = Leave(script)
+    override val successComponent: TreeComponent<Tempoross> = HasAllBuckets(script)
     override val failedComponent: TreeComponent<Tempoross> = ShouldTether(script)
+}
+
+class HasAllBuckets(script: Tempoross) : Branch<Tempoross>(script, "Should get buckets before leaving") {
+    override val failedComponent: TreeComponent<Tempoross> = GetBuckets(script)
+    override val successComponent: TreeComponent<Tempoross> = Leave(script)
+
+    override fun validate(): Boolean {
+        return script.getTotalBuckets() >= script.buckets
+    }
+
 }
