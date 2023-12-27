@@ -1,8 +1,6 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
-import org.powbot.api.Tile
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
