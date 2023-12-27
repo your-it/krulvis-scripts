@@ -2,6 +2,7 @@ package org.powbot.krulvis.tempoross
 
 import org.powbot.api.Area
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Widgets
 
 object UI {
     const val LOOTING = "looting"
@@ -37,6 +38,28 @@ object Data {
     val SPEC_HARPOONS = intArrayOf(21028, 21031, 21033, 23762, 23764, 25059, 25373)
     val WEARABLE_HARPOONS = intArrayOf(BARB_TAIL_HARPOON, *SPEC_HARPOONS)
     val HARPOONS = intArrayOf(HARPOON, *WEARABLE_HARPOONS)
+
+    fun getEnergy(): Int {
+        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
+            it != null && it.visible() && it.text().contains("Energy")
+        }?.text() ?: return -1
+        return text.substring(8, text.indexOf("%")).toInt()
+    }
+
+
+    fun getIntensity(): Int {
+        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
+            it != null && it.visible() && it.text().contains("Storm Intensity")
+        }?.text() ?: return -1
+        return text.substring(17, text.indexOf("%")).toInt()
+    }
+
+    fun getHealth(): Int {
+        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
+            it != null && it.visible() && it.text().contains("Essence")
+        }?.text() ?: return -1
+        return text.substring(9, text.indexOf("%")).toInt()
+    }
 
 }
 

@@ -7,6 +7,7 @@ import org.powbot.api.Tile
 import org.powbot.api.event.BreakEvent
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.PaintCheckboxChangedEvent
+import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.local.LocalPathFinder
@@ -14,7 +15,6 @@ import org.powbot.api.rt4.walking.local.nodes.LocalEdge
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walk
@@ -29,11 +29,8 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Data.HARPOON
-import org.powbot.krulvis.tempoross.Data.PARENT_WIDGET
-import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
 import org.powbot.krulvis.tempoross.tree.branch.ShouldEnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
@@ -149,7 +146,21 @@ class Tempoross : ATScript() {
         }
     }
 
-    fun cookedToSubdue() = Math.round(getEnergy() / 5.625)
+    var intensity = -1
+        private set
+    var energy = -1
+        private set
+    var health = -1
+        private set
+
+    @Subscribe
+    fun onGameTick(_e: TickEvent) {
+        intensity = Data.getIntensity()
+        energy = Data.getEnergy()
+        health = Data.getHealth()
+    }
+
+    fun cookedToSubdue() = Math.round(energy / 5.625)
 
     fun getNearestFire() = Npcs.stream().within(9).within(side.area).name("Fire").nearest().firstOrNull()
     fun getRelevantInventoryItems(): Map<Int, Int> =
@@ -162,7 +173,7 @@ class Tempoross : ATScript() {
         return containsDangerousTile(path)
     }
 
-    fun containsDangerousTile(path: LocalPath): Boolean {
+    private fun containsDangerousTile(path: LocalPath): Boolean {
         triedPaths.add(path)
         return path.actions.any { burningTiles.contains(it.destination) }
     }
@@ -222,7 +233,7 @@ class Tempoross : ATScript() {
 
     private fun douseIfNecessary(path: LocalPath, allowCrossing: Boolean = false): Boolean {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
-        val fire = getFireNear(blockedTile)
+        val fire = blockedTile?.getFire()
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
         log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
@@ -245,13 +256,7 @@ class Tempoross : ATScript() {
         return false
     }
 
-    private fun getFireNear(blockedTile: LocalEdge?): Npc? {
-        return if (blockedTile == null) {
-            null
-        } else {
-            Npcs.stream().name("Fire").nearest(blockedTile.destination).firstOrNull()
-        }
-    }
+    private fun LocalEdge.getFire(): Npc? = Npcs.stream().name("Fire").nearest(destination).firstOrNull()
 
     private fun walkPath(path: LocalPath): Boolean {
         if (path.isEmpty()) {
@@ -268,40 +273,10 @@ class Tempoross : ATScript() {
         }
     }
 
-    public fun requiredFish(): Int {
-        if (!solo) return Inventory.getCount(RAW, COOKED) + Inventory.emptySlotCount()
-        val energy = getEnergy()
-        return when (energy) {
-            100 -> 16
-            10 -> 19
-            else -> (energy - 10) / 11
-        }
-    }
-
-    fun canKill(): Boolean = getEnergy() in 0..2 || getBossPool() != null
+    fun canKill(): Boolean = energy in 0..2 || getBossPool() != null
 
     fun isTethering(): Boolean = (Varpbits.varpbit(2933) and 1) == 1
 
-    fun getEnergy(): Int {
-        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
-            it != null && it.visible() && it.text().contains("Energy")
-        }?.text() ?: return -1
-        return text.substring(8, text.indexOf("%")).toInt()
-    }
-
-    fun getIntensity(): Int {
-        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
-            it != null && it.visible() && it.text().contains("Storm Intensity")
-        }?.text() ?: return -1
-        return text.substring(17, text.indexOf("%")).toInt()
-    }
-
-    fun getHealth(): Int {
-        val text = Widgets.widget(PARENT_WIDGET).firstOrNull {
-            it != null && it.visible() && it.text().contains("Essence")
-        }?.text() ?: return -1
-        return text.substring(9, text.indexOf("%")).toInt()
-    }
 
     override fun canBreak(): Boolean {
         val canBreak = lastLeaf is EnterBoat || lastLeaf is Leave
@@ -329,7 +304,7 @@ class Tempoross : ATScript() {
             pointsObtained += points
             rounds++
         } else if (txt.contains("Tempoross is vulnerable!")) {
-            vulnerableStartHP = getHealth()
+            vulnerableStartHP = health
         } else if (txt.contains("A colossal wave closes in...")) {
             log.info("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)

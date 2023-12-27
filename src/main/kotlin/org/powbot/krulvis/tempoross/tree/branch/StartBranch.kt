@@ -16,9 +16,9 @@ import org.powbot.krulvis.tempoross.tree.leaf.*
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
     override fun validate(): Boolean {
         if (Game.clientState() != 30) {
-            return !waitFor(10000) { script.getEnergy() > -1 }
+            return !waitFor(10000) { script.energy > -1 }
         }
-        return script.getEnergy() == -1 && !BOAT_AREA.contains(me.tile())
+        return script.energy == -1 && !BOAT_AREA.contains(me.tile())
                 && Npcs.stream().name("Ammunition crate").firstOrNull() == null
                 && Npcs.stream().noneMatch { it.actions().contains("Leave") }
     }
@@ -72,7 +72,7 @@ class ShouldFillBuckets(script: Tempoross) : Branch<Tempoross>(script, "Should F
 
     override val successComponent: TreeComponent<Tempoross> = FillBuckets(script)
     override val failedComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Wait for game to start...") {
-        waitFor(60000) { script.getEnergy() > -1 }
+        waitFor(60000) { script.energy > -1 }
     }
 }
 

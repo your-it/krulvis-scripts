@@ -32,7 +32,7 @@ class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
                 waitFor(long()) { me.animation() == FILLING_ANIM }
             }
         } else if (me.animation() == FILLING_ANIM) {
-            script.log.info("Already filling, turning camera to tether pole")
+            script.log.info("Already cooking, turning camera to tether pole")
             val tetherPole = script.getTetherPole()
             if (tetherPole != null && !tetherPole.inViewport()) {
                 Camera.turnTo(tetherPole)
