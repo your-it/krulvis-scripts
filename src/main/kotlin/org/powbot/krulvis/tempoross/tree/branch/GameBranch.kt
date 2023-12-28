@@ -59,7 +59,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
     override fun validate(): Boolean {
         //Make sure that we keep shoot the leftovers
         val count = Inventory.stream().id(RAW, COOKED).count()
-        val hp = script.getHealth()
+        val hp = script.health
         val minHp = (if (script.solo) 33 else 5)
         if (count >= 1 && hp <= minHp && atAmmoCrate()) {
             //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
@@ -94,13 +94,14 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 class ShouldGetWater(script: Tempoross) :
     Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
+        if (script.intensity >= 90) return false
         val filledBuckets = script.getFilledBuckets()
         val nearestFire = script.getNearestFire()
         if (nearestFire != null && filledBuckets == 0) {
             return true
-        } else if (filledBuckets >= script.buckets || script.getEnergy() <= 10 || Inventory.isFull()) {
+        } else if (filledBuckets >= script.buckets || script.energy <= 10 || Inventory.isFull()) {
             return false
-        } else if (script.getIntensity() == 0 && script.getHealth() == 100) {
+        } else if (script.intensity == 0 && script.health == 100) {
             return true
         }
         return (script.getBucketCrate()?.distance()?.roundToInt() ?: 7) <= 6
@@ -129,7 +130,7 @@ class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get r
         script.triedPaths.clear()
         script.detectDangerousTiles()
 
-        return !script.hasSpiritOutfit && !Inventory.containsOneOf(ROPE)
+        return !script.hasSpiritOutfit && script.intensity < 90 && !Inventory.containsOneOf(ROPE)
     }
 }
 
@@ -148,7 +149,8 @@ class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get
     override val successComponent: TreeComponent<Tempoross> = GetHammer(script)
 
     override fun validate(): Boolean {
-        return !script.hasHammer() && (script.getHammerContainer()?.distance()?.roundToInt() ?: 7) <= 6
+        return !script.hasHammer() && script.intensity < 90 && (script.getHammerContainer()?.distance()
+            ?.roundToInt() ?: 7) <= 6
     }
 }
 

@@ -26,9 +26,8 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
         val fish = if (script.solo) cooked else cooked + raw
         //Forced shooting happens after a tether attempt
 
-        val energy = script.getEnergy()
-        val hp = script.getHealth()
-        val lowEnoughEnergy = energy / 2.5 < fish
+
+        val lowEnoughEnergy = script.energy / 2.5 < fish
 
         //If we are close to the ammo-box and have some fish, shoot em
         if (fish > 0) {
@@ -39,15 +38,15 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
             } else if (script.solo) {
                 val requiredToSubdue = script.cookedToSubdue()
                 //If its near failure, just make sure we get the energy to 0
-                if (script.getIntensity() >= 90) {
+                if (script.intensity >= 90) {
                     return cooked >= requiredToSubdue
                 }
-                val requiredFish = if (energy <= 10) 19 else requiredToSubdue - 2
-                script.log.info("Shooting fish energy=$energy, requiredFish=$requiredFish cooked in inventory")
+                val requiredFish = if (script.energy <= 10) 19 else requiredToSubdue - 2
+                script.log.info("Shooting fish energy=${script.energy}, requiredFish=$requiredFish cooked in inventory")
                 if (cooked >= requiredFish) {
                     return true
                 }
-            } else if (hp <= 75 && lowEnoughEnergy && energy > 13) {
+            } else if (script.health <= 75 && lowEnoughEnergy && script.energy > 13) {
                 script.log.info("Shooting to empty inventory before last group harpoon")
                 return true
             } else if (Inventory.isFull() && (!script.cookFish || raw <= 0)) {
@@ -82,7 +81,7 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
                 debug("Cooking because need to bring to 10% energy")
                 return true
-            } else if (cooked < 19 && script.getIntensity() >= 85 - (19 - cooked)) {
+            } else if (cooked < 19 && script.intensity >= 85 - (19 - cooked)) {
                 debug("Cooking because we need to reach 19 fish")
                 return true
             }
@@ -99,9 +98,9 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
             return true
         }
 
-        val energy = script.getEnergy()
+        val energy = script.energy
         val lowEnergy = if (script.solo) false else energy / 4 < Inventory.getCount(true, RAW, COOKED)
-        val fullHealth = script.getHealth() == 100
+        val fullHealth = script.health == 100
         script.log.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$raw")
         return Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null
     }
