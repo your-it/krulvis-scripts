@@ -55,6 +55,10 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
             }
         }
 
+        if (raw > 0 && script.isLowHP() && script.isVulnerable() && script.atAmmoCrate()) {
+            script.log.info("Shooting last fish at tempoross cuz low hp")
+            return true
+        }
         return false
     }
 

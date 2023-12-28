@@ -35,11 +35,12 @@ import org.powbot.krulvis.tempoross.Data.WAVE_TIMER
 import org.powbot.krulvis.tempoross.tree.branch.ShouldEnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.EnterBoat
 import org.powbot.krulvis.tempoross.tree.leaf.Leave
+import kotlin.math.roundToInt
 
 @ScriptManifest(
     name = "krul Tempoross",
     description = "Does tempoross minigame",
-    version = "1.3.3",
+    version = "1.3.4",
     author = "Krulvis",
     markdownFileName = "Tempoross.md",
     category = ScriptCategory.Fishing
@@ -273,7 +274,9 @@ class Tempoross : ATScript() {
         }
     }
 
-    fun canKill(): Boolean = energy in 0..2 || getBossPool() != null
+    fun isVulnerable(): Boolean = energy in 0..2 || getBossPool() != null
+
+    fun isLowHP(): Boolean = health <= if (solo) 33 else 5
 
     fun isTethering(): Boolean = (Varpbits.varpbit(2933) and 1) == 1
 
@@ -390,6 +393,11 @@ class Tempoross : ATScript() {
 
     fun getAmmoCrate(): Npc? =
         Npcs.stream().name("Ammunition crate").firstOrNull { it.atCorrectSide() }
+
+    fun atAmmoCrate(): Boolean {
+        val ammoCrate = getAmmoCrate()
+        return (ammoCrate?.distance()?.roundToInt() ?: 3) <= 2
+    }
 
     fun hasHammer() = Inventory.containsOneOf(HAMMER, IMCANDO_HAMMER)
     fun getHammerContainer(): GameObject? = Objects.stream()
