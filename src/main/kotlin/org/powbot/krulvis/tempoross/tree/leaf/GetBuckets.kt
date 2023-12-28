@@ -5,7 +5,7 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
 
-class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting water") {
+class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting Buckets") {
     override fun execute() {
         var bucketCount = script.getTotalBuckets()
         val bucketCrate = script.getBucketCrate()

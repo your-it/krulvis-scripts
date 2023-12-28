@@ -60,31 +60,29 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         //Make sure that we keep shoot the leftovers
         val count = Inventory.stream().id(RAW, COOKED).count()
         val hp = script.health
-        val minHp = (if (script.solo) 33 else 5)
-        if (count >= 1 && hp <= minHp && atAmmoCrate()) {
+        val lowestAllowedHP = getLowestHPAllowed()
+        if (count >= 1 && script.isLowHP() && script.atAmmoCrate()) {
             //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
+            script.log.info("Don't kill yet LOW HP, shooting last fish at tempoross, count=$count, hp=$hp")
             return false
-        } else if (hp <= getLowestHPAllowed()) {
+        } else if (hp <= lowestAllowedHP) {
+            script.log.info("We started killing at=${script.vulnerableStartHP}, hp=${hp} lower than allowed hp=$lowestAllowedHP")
             //If we are below a certain threshold compared to when we started, return to fishing/cooking
             return false
         }
-        return (!script.solo || !Inventory.containsOneOf(COOKED)) && script.canKill()
+        return (!script.solo || !Inventory.containsOneOf(COOKED)) && script.isVulnerable()
     }
 
     private fun getLowestHPAllowed(): Int {
         if (!script.solo) return 0
         val startHp = script.vulnerableStartHP
         return when {
-            startHp > 65 -> 65
-            startHp > 33 -> 33
+            startHp >= 95 -> 65
+            startHp >= 60 -> 33
             else -> 0
         }
     }
 
-    fun atAmmoCrate(): Boolean {
-        val ammoCrate = script.getAmmoCrate()
-        return (ammoCrate?.distance()?.roundToInt() ?: 3) <= 2
-    }
 
     override val successComponent: TreeComponent<Tempoross> = Kill(script)
     override val failedComponent: TreeComponent<Tempoross> = ShouldGetWater(script)
