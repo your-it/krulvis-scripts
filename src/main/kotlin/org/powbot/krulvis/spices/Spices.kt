@@ -27,7 +27,7 @@ import org.powbot.krulvis.spices.tree.branches.Killing
 //                    description = "Spice color?",
 //                    defaultValue = "Brown",
 //                    optionType = OptionType.STRING,
-//                    allowedValues = arrayOf("BROWN", "YELLOW")
+//                    allowedValues = arrayOf(BROWN_STR)
 //            ),
         ]
 )
