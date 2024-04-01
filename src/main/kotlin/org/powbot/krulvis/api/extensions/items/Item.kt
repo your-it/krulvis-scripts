@@ -156,6 +156,7 @@ interface Item {
         const val RUNE_POUCH = 12791
         const val SEED_BOX_OPEN = 24482
         const val IMCANDO_HAMMER = 25644
+        const val BLESSED_BONE_SHARD = 29381
     }
 
 }

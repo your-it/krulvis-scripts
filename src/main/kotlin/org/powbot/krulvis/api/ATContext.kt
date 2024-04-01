@@ -4,6 +4,7 @@ import org.powbot.api.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder
+import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.short
@@ -39,6 +40,17 @@ object ATContext {
             return Widgets.widget(Constants.MOVEMENT_MAP).component(Constants.MOVEMENT_RUN_ENERGY - 1).click()
         }
         return false
+    }
+
+    fun List<Tile>.atLastTile() = last().distance() <= 1
+    fun List<Tile>.traverse(): Boolean {
+        if (atLastTile()) return true
+        val walkableTile = lastOrNull { it.onMap() } ?: return false
+        val tileToClick = walkableTile.derive(kotlin.random.Random.nextInt(-2, 2), kotlin.random.Random.nextInt(-2, 2))
+        if (Movement.walkTo(tileToClick)) {
+            waitFor { lastOrNull { it.onMap() } != walkableTile }
+        }
+        return atLastTile()
     }
 
     fun Movement.moving(): Boolean = Movement.destination() != Tile.Nil

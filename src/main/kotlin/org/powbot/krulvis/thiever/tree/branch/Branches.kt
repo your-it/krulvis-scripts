@@ -84,7 +84,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
     override val successComponent: TreeComponent<Thiever> = ShouldStop(script)
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Walking") {
         Bank.close()
-        if (Players.local().tile().floor > 0) {
+        if (Players.local().tile().floor > 0 && script.centerTile.floor == 0) {
             script.log.info("Climbing down first...")
             if (walkAndInteract(Objects.stream().action("Climb-down").nearest().firstOrNull(), "Climb-down")) {
                 waitFor(long()) { validate() }
@@ -95,7 +95,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
     }
 
     override fun validate(): Boolean {
-        return script.centerTile.distance() <= 10
+        return script.centerTile.distance() <= script.maxDistance
                 && (script.getTarget()?.distance()?.roundToInt() ?: 99) < 20
     }
 }
