@@ -115,6 +115,7 @@ enum class BankLocation(
         Tile(1640, 3944, 0), BankType.CHEST,
     ),
     YANILLE_BANK(Tile(2613, 3094, 0), BankType.BOOTH),
+    FOSSIL_ISLAND_CAMP(Tile(3741, 3805), BankType.CHEST),
     ;
 
     /**

@@ -5,10 +5,12 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.COOKED
+import org.powbot.krulvis.tempoross.Data.CRYSTAL
 import org.powbot.krulvis.tempoross.Data.HARPOON
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Data.SPEC_HARPOONS
@@ -35,7 +37,7 @@ class ShouldSpec(script: Tempoross) : Branch<Tempoross>(script, "Should Spec") {
 
 
 class ShouldDouse(script: Tempoross) :
-    Branch<Tempoross>(script, "Should douse fire") {
+        Branch<Tempoross>(script, "Should douse fire") {
     override fun validate(): Boolean {
         if (!Inventory.containsOneOf(BUCKET_OF_WATER)) {
             return false
@@ -49,28 +51,34 @@ class ShouldDouse(script: Tempoross) :
 
     override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
         if (fire!!.interact("Douse")) {
-            waitFor(5000) { script.getNearestFire() != fire }
+            waitFor(600) { me.interacting() == fire }
+            waitFor(5000) { script.getNearestFire() != fire || me.interacting() != fire }
         }
     }
     override val failedComponent: TreeComponent<Tempoross> = ShouldKill(script)
 }
 
 class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
+
     override fun validate(): Boolean {
-        //Make sure that we keep shoot the leftovers
-        val count = Inventory.stream().id(RAW, COOKED).count()
+        if (!script.isVulnerable()) return false
         val hp = script.health
         val lowestAllowedHP = getLowestHPAllowed()
-        if (count >= 1 && script.isLowHP() && script.atAmmoCrate()) {
-            //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
-            script.log.info("Don't kill yet LOW HP, shooting last fish at tempoross, count=$count, hp=$hp")
-            return false
-        } else if (hp <= lowestAllowedHP) {
+        if (hp <= lowestAllowedHP) {
             script.log.info("We started killing at=${script.vulnerableStartHP}, hp=${hp} lower than allowed hp=$lowestAllowedHP")
             //If we are below a certain threshold compared to when we started, return to fishing/cooking
             return false
         }
-        return (!script.solo || !Inventory.containsOneOf(COOKED)) && script.isVulnerable()
+
+        //Make sure that we keep shoot the leftovers
+        val count = Inventory.stream().id(RAW, COOKED, CRYSTAL).count()
+        val lowHp = script.isLowHP()
+        if (count >= 1 && lowHp && script.atAmmoCrate()) {
+            //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
+            script.log.info("Don't kill yet LOW HP, shooting last fish at tempoross, count=$count, hp=$hp, energy=${script.energy}")
+            return script.solo && script.energy >= 30
+        }
+        return !script.solo || !Inventory.containsOneOf(COOKED)
     }
 
     private fun getLowestHPAllowed(): Int {
@@ -90,9 +98,9 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
 
 
 class ShouldGetWater(script: Tempoross) :
-    Branch<Tempoross>(script, "Should get water") {
+        Branch<Tempoross>(script, "Should get water") {
     override fun validate(): Boolean {
-        if (script.intensity >= 90) return false
+        if (script.intensity >= 90 || script.isVulnerable()) return false
         val filledBuckets = script.getFilledBuckets()
         val nearestFire = script.getNearestFire()
         if (nearestFire != null && filledBuckets == 0) {
@@ -110,7 +118,7 @@ class ShouldGetWater(script: Tempoross) :
 }
 
 class CanFillEmptyBucket(script: Tempoross) :
-    Branch<Tempoross>(script, "Can fill empty buckets") {
+        Branch<Tempoross>(script, "Can fill empty buckets") {
     override fun validate(): Boolean {
         return script.getEmptyBuckets() > 0
     }
@@ -148,7 +156,7 @@ class ShouldGetHammer(script: Tempoross) : Branch<Tempoross>(script, "Should get
 
     override fun validate(): Boolean {
         return !script.hasHammer() && script.intensity < 90 && (script.getHammerContainer()?.distance()
-            ?.roundToInt() ?: 7) <= 6
+                ?.roundToInt() ?: 7) <= 6
     }
 }
 
