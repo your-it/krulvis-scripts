@@ -3,7 +3,6 @@ package org.powbot.krulvis.miner
 import org.powbot.api.Condition.sleep
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Camera
-import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
 import org.powbot.api.script.ScriptCategory
@@ -12,13 +11,10 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.mobile.drawing.Graphics
 import org.powbot.mobile.drawing.Rendering
-import java.util.function.Predicate
 
 @ScriptManifest(
         name = "krul ColorFinder",
@@ -98,8 +94,10 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
 
         val facingTile = facingTile()
 
-        val orientation = Objects.stream().at(facingTile).name("Calcified rocks").firstOrNull()?.orientation()
-        facingTile.drawOnScreen("Orientation=${orientation}, angle=${Camera.yaw()}")
+        val rock = Objects.stream().at(facingTile).nameContains("rock").first()
+        facingTile.drawOnScreen("Orientation=${rock.name}, angle=${Camera.yaw()}, \n " +
+                "- modColors=${rock.modifiedColors().joinToString()}, \n " +
+                "- orgColors=${rock.originalColors().joinToString()}")
 
     }
 
