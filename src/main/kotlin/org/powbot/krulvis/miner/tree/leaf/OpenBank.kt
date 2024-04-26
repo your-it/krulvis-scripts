@@ -25,7 +25,7 @@ class OpenBank(script: Miner) : Leaf<Miner>(script, "Open Bank") {
     }
 
     override fun execute() {
-        GemBag.empty = false
+        GemBag.shouldEmpty = true
         if (script.escapeTopFloor()) {
             if (script.useDepositBox) DepositBox.openNearestDB()
             else if (script.inCamTorum()) openBankCamTorum()
