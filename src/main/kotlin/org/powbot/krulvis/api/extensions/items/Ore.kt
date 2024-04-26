@@ -34,7 +34,8 @@ enum class Ore(
     TE_SALT(intArrayOf(22593), 72, -1, -1, 960),
     EFH_SALT(intArrayOf(22595), 72, -1, -1, -22328),
     URT_SALT(intArrayOf(22597), 72, -1, -1, 21704),
-    BLURITE(intArrayOf(668), 1, -1, -1, 696969);
+    BLURITE(intArrayOf(668), 1, -1, -1, 696969),
+    SOFT_CLAY(intArrayOf(1761), 70, -1, -1, 7062);
 
     private val mask = 255
 
