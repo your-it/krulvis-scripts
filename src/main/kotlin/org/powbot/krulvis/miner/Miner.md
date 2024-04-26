@@ -5,14 +5,14 @@
 
 ## Features
 
+- Custom selection of any rock you want to mine.
 - Supports Motherlode mine (upper & lower level).
 - Supports Amethysts.
 - Supports Calcified rocks.
 - Supports Soft Clay rocks
-- Select any rock you want to mine by clicking on them.
 - Bank or powermine, fast or slow.
 - Recognizes if others have mined your rock.
-- Watches the centerTile with radius to walk back if player is too far away.
+- Empties gem bag when bank is opened.
 - Can hop from nearby players.
 - Supports Deposit Boxes and Mine Carts (prif).
 
