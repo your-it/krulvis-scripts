@@ -123,10 +123,12 @@ interface Item {
         const val JUG = 1935
         const val TAI_BWO_WANNAI_TELEPORT = 12409
         const val ANTI_DRAGON_SHIELD = 1540
+        const val IRON_WARHAMMER = 1335
         const val IRON_PLATELEGS = 1067
         const val IRON_PLATEBODY = 1115
         const val IRON_FULLHELM = 1153
         const val IRON_KITESHIELD = 1191
+        const val STEEL_WARHAMMER = 1339
         const val GOLD_BRACELET = 11069
         const val GOBLIN_STAFF = 11709
         const val ADAMANT_PLATELEGS = 1073
