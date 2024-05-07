@@ -20,7 +20,8 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         }
     }
 
-    val keep = arrayOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch", RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE)
+    val keep = arrayOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch",
+            RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE, "Air rune", "Earth rune", "Cosmic rune", "Law rune")
 
     private fun withdrawEssence(): Boolean = Bank.withdraw(script.essence, Bank.Amount.ALL)
 
