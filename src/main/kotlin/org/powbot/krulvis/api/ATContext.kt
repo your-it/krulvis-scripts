@@ -43,10 +43,10 @@ object ATContext {
     }
 
     fun List<Tile>.atLastTile() = last().distance() <= 1
-    fun List<Tile>.traverse(): Boolean {
+    fun List<Tile>.traverse(offset: Int = 2): Boolean {
         if (atLastTile()) return true
         val walkableTile = lastOrNull { it.onMap() } ?: return false
-        val tileToClick = walkableTile.derive(kotlin.random.Random.nextInt(-2, 2), kotlin.random.Random.nextInt(-2, 2))
+        val tileToClick = walkableTile.derive(kotlin.random.Random.nextInt(-offset, offset), kotlin.random.Random.nextInt(-offset, offset))
         if (Movement.walkTo(tileToClick)) {
             waitFor { lastOrNull { it.onMap() } != walkableTile }
         }
