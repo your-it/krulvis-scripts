@@ -4,15 +4,12 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.runecrafting.EssencePouch
-import org.powbot.krulvis.runecrafting.Runecrafter
+import org.powbot.krulvis.runecrafting.*
 
 class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank") {
     override fun execute() {
-        val rune = Inventory.stream().nameContains(script.alter.name).firstOrNull()
-        if (rune != null) {
-            Bank.deposit(rune.id, Bank.Amount.ALL)
-        } else if (EssencePouch.inInventory().all { it.filled() } && Inventory.isFull()) {
+        Bank.depositAllExcept(*keep)
+        if (EssencePouch.inInventory().all { it.filled() } && Inventory.isFull()) {
             Bank.close()
         } else {
             if (!Inventory.isFull() && withdrawEssence()) {
@@ -22,6 +19,8 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
             withdrawEssence()
         }
     }
+
+    val keep = arrayOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch", RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE)
 
     private fun withdrawEssence(): Boolean = Bank.withdraw(script.essence, Bank.Amount.ALL)
 
