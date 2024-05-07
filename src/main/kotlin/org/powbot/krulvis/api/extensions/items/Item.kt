@@ -21,7 +21,7 @@ interface Item {
 
     fun hasWith(): Boolean
 
-    fun inBank(): Boolean = Bank.stream().id(*ids).isNotEmpty()
+    fun inBank(): Boolean = Bank.stream().id(*ids).first().stack > 0
 
     fun getBankId(worse: Boolean = false): Int {
         val ids = if (worse) ids.reversed().toIntArray() else ids

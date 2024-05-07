@@ -1,16 +1,21 @@
 package org.powbot.krulvis.runecrafting.tree.leafs
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.*
+import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank") {
     override fun execute() {
         Bank.depositAllExcept(*keep)
         if (EssencePouch.inInventory().all { it.filled() } && Inventory.isFull()) {
             Bank.close()
+        } else if (Bank.stream().name(script.essence).count() <= 0) {
+            Notifications.showNotification("Out of essence, stopping script")
+            ScriptManager.stop()
         } else {
             if (!Inventory.isFull() && withdrawEssence()) {
                 waitFor { Inventory.isFull() }
