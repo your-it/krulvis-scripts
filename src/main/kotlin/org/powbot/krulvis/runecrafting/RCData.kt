@@ -7,7 +7,7 @@ import org.powbot.api.rt4.Objects
 
 const val FOOD_CONFIGURATION = "Food Config"
 const val ESSENCE_TYPE_CONFIGURATION = "Essence Config"
-const val DAEYALT_ESSENCE = "Deayalt essence"
+const val DAEYALT_ESSENCE = "Daeyalt essence"
 const val RUNE_ESSENCE = "Rune Essence"
 const val PURE_ESSENCE = "Pure essence"
 const val RUNE_ALTAR_CONFIGURATION = "Rune Altar Config"
