@@ -1,6 +1,7 @@
 package org.powbot.krulvis.runecrafting
 
 import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
@@ -14,7 +15,8 @@ import org.powbot.krulvis.runecrafting.tree.branches.ShouldRepair
         name = "krul Runecrafter", version = "1.0.1",
         description = "Crafts astral runes, Repairs pouches",
         scriptId = "329bdd0e-3813-4c39-917b-d943e79a0f47",
-        markdownFileName = "Runecrafter.md"
+        markdownFileName = "Runecrafter.md",
+        category = ScriptCategory.Runecrafting
 )
 @ScriptConfiguration.List([
     ScriptConfiguration(name = RUNE_ALTAR_CONFIGURATION, description = "Which rune to make?", optionType = OptionType.STRING, allowedValues = arrayOf(ASTRAL), defaultValue = ASTRAL),
