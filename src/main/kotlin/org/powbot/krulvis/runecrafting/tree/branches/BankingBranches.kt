@@ -1,6 +1,7 @@
 package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.InteractableEntity
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
@@ -18,6 +19,7 @@ import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.tree.leafs.HandleBank
 import org.powbot.krulvis.runecrafting.tree.leafs.MoveToBank
 import org.powbot.krulvis.runecrafting.tree.leafs.RepairPouches
+import org.powbot.mobile.script.ScriptManager
 import kotlin.math.ceil
 
 class ShouldRepair(script: Runecrafter) : Branch<Runecrafter>(script, "Should repair?") {
@@ -60,6 +62,10 @@ class ShouldEat(script: Runecrafter) : Branch<Runecrafter>(script, "Should eat f
 
 class HasFood(script: Runecrafter) : Branch<Runecrafter>(script, "Has food?") {
     override val failedComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Getting food") {
+        if (!script.food.inBank()) {
+            Notifications.showNotification("Out of food, stopping script")
+            ScriptManager.stop()
+        }
         script.food.withdrawExact(script.food.requiredAmount())
     }
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Eating") {

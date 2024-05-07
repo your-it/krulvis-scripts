@@ -193,7 +193,7 @@ object ATContext {
     }
 
     fun Equipment.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
-    fun Bank.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
+    fun Bank.containsOneOf(vararg ids: Int): Boolean = (stream().firstOrNull { it.id() in ids }?.stack ?: 0) > 0
     fun Inventory.containsOneOf(vararg ids: Int): Boolean = stream().anyMatch { it.id() in ids }
     fun Inventory.containsAll(vararg ids: Int): Boolean {
         val inv = stream().list()
