@@ -3,6 +3,7 @@ package org.powbot.krulvis.runecrafting.tree.branches
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Game.logout
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Branch
@@ -21,6 +22,23 @@ import org.powbot.krulvis.runecrafting.tree.leafs.MoveToBank
 import org.powbot.krulvis.runecrafting.tree.leafs.RepairPouches
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.ceil
+
+class ShouldLogout(script: Runecrafter) : Branch<Runecrafter>(script, "Should logout?") {
+    override val failedComponent: TreeComponent<Runecrafter> = ShouldRepair(script)
+    override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Logging out cuz death") {
+        if (logout()) {
+            ScriptManager.stop()
+        }
+    }
+
+    var died = false
+    override fun validate(): Boolean {
+        if (currentHP() == 0) {
+            died = true
+        }
+        return died
+    }
+}
 
 class ShouldRepair(script: Runecrafter) : Branch<Runecrafter>(script, "Should repair?") {
     override val failedComponent: TreeComponent<Runecrafter> = ShouldBank(script)

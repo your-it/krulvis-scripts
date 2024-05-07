@@ -6,7 +6,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 
-class CraftRunes(script: Runecrafter) : Leaf<Runecrafter>(script, "Repairing pouches") {
+class CraftRunes(script: Runecrafter) : Leaf<Runecrafter>(script, "Crafting runes") {
     override fun execute() {
         EssencePouch.inInventory().forEach { it.empty() }
         val altar = script.alter.getAltar() ?: return

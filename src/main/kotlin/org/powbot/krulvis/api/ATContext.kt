@@ -42,18 +42,18 @@ object ATContext {
         return false
     }
 
-    fun List<Tile>.atLastTile() = last().distance() <= 1
+    fun List<Tile>.atLastTile(offset: Int = 2) = last().distance() <= offset
     fun List<Tile>.traverse(offset: Int = 2): Boolean {
-        if (atLastTile()) return true
+        if (atLastTile(offset)) return true
         val walkableTile = lastOrNull { it.onMap() } ?: return false
         val tileToClick = walkableTile.derive(kotlin.random.Random.nextInt(-offset, offset), kotlin.random.Random.nextInt(-offset, offset))
-        if (Movement.walkTo(tileToClick)) {
+        if (Movement.step(tileToClick, minDistance = 0)) {
             waitFor { lastOrNull { it.onMap() } != walkableTile }
         }
-        return atLastTile()
+        return atLastTile(offset)
     }
 
-    fun Movement.moving(): Boolean = Movement.destination() != Tile.Nil
+    fun Movement.moving(): Boolean = destination() != Tile.Nil
 
     fun walk(position: Tile?, enableRun: Boolean = true, forceMinimap: Boolean = false): Boolean {
         if (position == null || position == Tile.Nil) {
@@ -185,7 +185,7 @@ object ATContext {
 
     fun Locatable.onMap(): Boolean = tile().matrix().onMap()
 
-    fun Locatable.mapPoint(): org.powbot.api.Point = Game.tileToMap(tile())
+    fun Locatable.mapPoint(): Point = Game.tileToMap(tile())
 
     fun Tile.toRegionTile(): Tile {
         val mos = Game.mapOffset()
