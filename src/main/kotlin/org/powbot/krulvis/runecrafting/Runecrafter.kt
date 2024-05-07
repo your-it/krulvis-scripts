@@ -7,6 +7,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.runecrafting.tree.branches.ShouldLogout
 import org.powbot.krulvis.runecrafting.tree.branches.ShouldRepair
 
 @ScriptManifest(
@@ -27,7 +28,7 @@ class Runecrafter : ATScript() {
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     override fun createPainter(): ATPaint<*> = RCPainter(this)
 
-    override val rootComponent: TreeComponent<*> = ShouldRepair(this)
+    override val rootComponent: TreeComponent<*> = ShouldLogout(this)
 }
 
 fun main() {
