@@ -6,9 +6,9 @@ Crafts runes at Astral or ZMI altar. Optimal setup is having Dust staff and rune
 ## Features
 
 - Astral Altar
-- ZMI/Ouriana Altar
+- ZMI/Ourania Altar
 - Fills&Repairs pouches
-- Teleports to Moonclan/Ouriana
+- Teleports to Moonclan/Ourania
 - Drinks stamina / Casts Vile Vigour
 - Eats food
 
