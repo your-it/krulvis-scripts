@@ -2,12 +2,14 @@ package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Notifications
-import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
-import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Potion
@@ -103,9 +105,9 @@ class AtBank(script: Runecrafter) : Branch<Runecrafter>(script, "At Bank?") {
         }
     }
 
-    var bankObj: GameObject = GameObject.Nil
+    var bankObj: InteractableEntity = GameObject.Nil
     override fun validate(): Boolean {
         bankObj = script.getBank()
-        return bankObj.valid()
+        return bankObj.distance() < 20
     }
 }

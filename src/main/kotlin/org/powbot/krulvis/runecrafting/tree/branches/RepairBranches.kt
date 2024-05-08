@@ -9,7 +9,7 @@ import org.powbot.krulvis.runecrafting.tree.leafs.GetNPCContactRunes
 import org.powbot.krulvis.runecrafting.tree.leafs.RepairPouches
 
 class ShouldRepair(script: Runecrafter) : Branch<Runecrafter>(script, "Should repair?") {
-    override val failedComponent: TreeComponent<Runecrafter> = ShouldBank(script)
+    override val failedComponent: TreeComponent<Runecrafter> = ShouldPrayAtAltar(script)
     override val successComponent: TreeComponent<Runecrafter> = HasRunes(script)
 
     override fun validate(): Boolean {
