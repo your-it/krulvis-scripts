@@ -1,6 +1,8 @@
 package org.powbot.krulvis.api.utils
 
+import org.powbot.api.Locatable
 import org.powbot.api.Random
+import org.powbot.krulvis.api.ATContext.distance
 
 
 object Utils {
@@ -23,10 +25,10 @@ object Utils {
 
     fun waitFor(min: Int, max: Int, condition: () -> Boolean): Boolean {
         return waitFor(
-            Random.nextInt(
-                min,
-                max
-            ), condition
+                Random.nextInt(
+                        min,
+                        max
+                ), condition
         )
     }
 
@@ -37,14 +39,16 @@ object Utils {
                 return true
             }
             sleep(
-                Random.nextInt(
-                    150,
-                    250
-                )
+                    Random.nextInt(
+                            150,
+                            250
+                    )
             )
         } while (totalDelay > System.currentTimeMillis())
         return false
     }
+
+    fun waitForDistance(locatable: Locatable, condition: () -> Boolean) = waitFor(locatable.distance().toInt() * 1000, condition)
 
 
 //    fun getItemImage(id: Int): BufferedImage? {

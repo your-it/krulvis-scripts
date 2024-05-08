@@ -60,7 +60,7 @@ interface Item {
             if (Bank.deposit(Inventory.stream().id(*ids).first().id, currentAmount - amount)) {
                 return !wait || waitFor { Inventory.getCount(*ids) == amount }
             }
-        } else if (currentAmount < amount) {
+        } else {
             val id = getBankId(worse)
             if (Bank.withdraw(id, amount - currentAmount)) {
                 return !wait || waitFor { Inventory.getCount(*ids) == amount }

@@ -1,18 +1,24 @@
 package org.powbot.krulvis.runecrafting
 
+import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.runecrafting.tree.branches.ShouldLogout
 import org.powbot.krulvis.runecrafting.tree.branches.ShouldRepair
+import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
-        name = "krul Runecrafter", version = "1.0.1",
+        name = "krul Runecrafter", version = "1.0.2",
         description = "Crafts astral runes, Repairs pouches",
         scriptId = "329bdd0e-3813-4c39-917b-d943e79a0f47",
         markdownFileName = "Runecrafter.md",
@@ -30,7 +36,24 @@ class Runecrafter : ATScript() {
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     override fun createPainter(): ATPaint<*> = RCPainter(this)
 
-    override val rootComponent: TreeComponent<*> = ShouldLogout(this)
+    fun getBank(): GameObject = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Bank booth").action("Bank").nearest().first()
+
+    override val rootComponent: TreeComponent<*> = object : Branch<Runecrafter>(this, "Should logout?") {
+        override val failedComponent: TreeComponent<Runecrafter> = ShouldRepair(script)//Pouch repair branches
+        override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Logging out cuz death") {
+            if (Game.logout()) {
+                ScriptManager.stop()
+            }
+        }
+
+        var died = false
+        override fun validate(): Boolean {
+            if (ATContext.currentHP() == 0) {
+                died = true
+            }
+            return died
+        }
+    }
 }
 
 fun main() {

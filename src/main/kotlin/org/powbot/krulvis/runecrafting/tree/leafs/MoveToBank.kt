@@ -11,7 +11,7 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
         val teleport = script.alter.bankTeleport
         if (teleport != null) {
             if (teleport.cast()) {
-                waitFor(5000) { Bank.getBank().valid() }
+                waitFor(5000) { script.getBank().valid() }
             }
         } else {
             Movement.moveToBank()
