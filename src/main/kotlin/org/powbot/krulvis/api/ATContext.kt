@@ -5,7 +5,6 @@ import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Skill
-import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.utils.Utils.short
@@ -16,7 +15,6 @@ import kotlin.math.abs
 
 
 object ATContext {
-
 
     val me: Player get() = Players.local()
 
@@ -45,15 +43,15 @@ object ATContext {
         return false
     }
 
-    fun List<Tile>.atLastTile(offset: Int = 2) = last().distance() <= offset
-    fun List<Tile>.traverse(offset: Int = 2): Boolean {
+    fun List<Tile>.atLastTile(distance: Int = 2) = last().distance() <= distance
+    fun List<Tile>.traverse(offset: Int = 2, distanceToLastTile: Int = 2): Boolean {
         if (atLastTile(offset)) return true
         val walkableTile = lastOrNull { it.onMap() } ?: return false
         val tileToClick = walkableTile.derive(kotlin.random.Random.nextInt(-offset, offset), kotlin.random.Random.nextInt(-offset, offset))
         if (Movement.step(tileToClick, minDistance = 0)) {
             waitFor { lastOrNull { it.onMap() } != walkableTile }
         }
-        return atLastTile(offset)
+        return atLastTile(distanceToLastTile)
     }
 
     fun Movement.moving(): Boolean = destination() != Tile.Nil
@@ -279,6 +277,8 @@ object ATContext {
         val walkableNeighbors = getWalkableNeighbors(allowSelf, diagonalTiles, checkForWalls)
         return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
     }
+
+    fun Locatable.canReach(): Boolean = getWalkableNeighbor(checkForWalls = false)?.reachable() == true
 
     @JvmOverloads
     fun Locatable.getWalkableNeighbors(
