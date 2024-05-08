@@ -27,7 +27,7 @@ class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank
     override val successComponent: TreeComponent<Runecrafter> = ShouldOpenBank(script)
 
     override fun validate(): Boolean {
-        if (Bank.getBank().valid()) {
+        if (script.getBank().valid()) {
             return !Inventory.isFull()
         }
         return Bank.opened() || EssencePouch.inInventory().all { it.getCount() <= 0 } && EssencePouch.essenceCount() == 0

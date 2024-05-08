@@ -22,7 +22,7 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
             if (ladder.distance() > 15) {
                 ouraniaPathToLadder.traverse(1)
             } else if (walkAndInteract(ladder, "Climb")) {
-                waitFor { script.getBank().valid() }
+                waitFor(2500) { script.getBank().valid() }
             }
         } else if (teleport != null) {
             if (teleport.cast()) {
