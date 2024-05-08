@@ -1,8 +1,14 @@
 package org.powbot.krulvis.runecrafting.tree.leafs
 
 import org.powbot.api.Notifications
+import org.powbot.api.requirement.RunePowerRequirement
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Magic
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePower
+import org.powbot.api.rt4.magic.Staff
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.*
@@ -11,6 +17,7 @@ import org.powbot.mobile.script.ScriptManager
 class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank") {
     override fun execute() {
         val invPouches = EssencePouch.inInventory()
+        if (script.altar == RuneAltar.ZMI) Bank.depositAllExcept(*keep)//Immediately deposit runes
         if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
             Bank.close()
         } else if (Bank.stream().name(script.essence).count() <= 0) {
@@ -26,9 +33,30 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         }
     }
 
-    val keep = arrayOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch",
-            RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE, "Air rune", "Earth rune", "Cosmic rune", "Law rune")
+    val keep: Array<String> by lazy {
+        val list = mutableListOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch", RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE)
+        val runes = script.altar.bankTeleport?.runes()?.toMutableList() ?: mutableListOf()
+        if (script.vileVigour) {
+            runes.addAll(Magic.ArceuusSpell.VILE_VIGOUR.runes())
+            runes.addAll(Magic.LunarSpell.SPELL_BOOK_SWAP.runes())
+        }
+        if (EssencePouch.inInventory().isNotEmpty()) {
+            runes.addAll(Magic.LunarSpell.NPC_CONTACT.runes())
+        }
+        when (script.altar) {
+            RuneAltar.ZMI -> list.add("${script.zmiPayment} rune")//Always keep rune to open bank with in inventory
+            else -> {}
+        }
+        val staffPowers = Staff.equippedPowers()
+        val pouchPowers = RunePouch.runes().flatMap { it.first.runePowers.toList() }
+        list.addAll(runes.filterNot { it in staffPowers || it in pouchPowers }.map { "${Rune.getForPower(it)} rune" })
+        script.log.info("KEEP=${list.distinct().joinToString()}")
+        list.distinct().toTypedArray()
+    }
+
+    private fun Magic.MagicSpell.runes(): List<RunePower> {
+        return requirements.filterIsInstance<RunePowerRequirement>().map { it.power }
+    }
 
     private fun withdrawEssence(): Boolean = Bank.withdraw(script.essence, Bank.Amount.ALL)
-
 }

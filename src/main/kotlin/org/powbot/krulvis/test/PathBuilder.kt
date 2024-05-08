@@ -14,7 +14,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.mobile.drawing.Rendering
 
-@ScriptManifest(name = "PathBuilder", version = "1.0.0", description = "", priv = true)
+@ScriptManifest(name = "PathBuilder", version = "1.0.0", description = "Build a tile path and prints it in log for manual pathing")
 class PathBuilder : ATScript() {
     override fun createPainter(): ATPaint<*> = PathBuilderPainter(this)
 
