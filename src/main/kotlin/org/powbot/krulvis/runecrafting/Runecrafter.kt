@@ -29,7 +29,7 @@ import org.powbot.mobile.script.ScriptManager
     ScriptConfiguration(name = VILE_VIGOUR_CONFIG, description = "Cast vile vigour?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false),
     ScriptConfiguration(name = ZMI_PAYMENT_RUNE_CONFIG, description = "Payment rune?", optionType = OptionType.STRING, allowedValues = arrayOf(AIR, WATER, EARTH, FIRE), defaultValue = EARTH, visible = false),
     ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
-    ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS), defaultValue = BASS)
+    ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS)
 ])
 class Runecrafter : ATScript() {
 
