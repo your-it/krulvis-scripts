@@ -10,17 +10,18 @@ import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank") {
     override fun execute() {
-        Bank.depositAllExcept(*keep)
-        if (EssencePouch.inInventory().all { it.filled() } && Inventory.isFull()) {
+        val invPouches = EssencePouch.inInventory()
+        if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
             Bank.close()
         } else if (Bank.stream().name(script.essence).count() <= 0) {
             Notifications.showNotification("Out of essence, stopping script")
             ScriptManager.stop()
-        } else {
+        } else if (invPouches.any { !it.filled() }) {
             if (!Inventory.isFull() && withdrawEssence()) {
                 waitFor { Inventory.isFull() }
             }
-            EssencePouch.inInventory().forEach { it.fill() }
+            invPouches.forEach { it.fill() }
+        } else if (Bank.depositAllExcept(*keep)) {
             withdrawEssence()
         }
     }

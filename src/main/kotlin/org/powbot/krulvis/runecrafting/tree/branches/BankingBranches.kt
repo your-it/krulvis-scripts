@@ -3,15 +3,14 @@ package org.powbot.krulvis.runecrafting.tree.branches
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Game.logout
 import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.missingHP
-import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -19,41 +18,16 @@ import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.tree.leafs.HandleBank
 import org.powbot.krulvis.runecrafting.tree.leafs.MoveToBank
-import org.powbot.krulvis.runecrafting.tree.leafs.RepairPouches
 import org.powbot.mobile.script.ScriptManager
-import kotlin.math.ceil
-
-class ShouldLogout(script: Runecrafter) : Branch<Runecrafter>(script, "Should logout?") {
-    override val failedComponent: TreeComponent<Runecrafter> = ShouldRepair(script)
-    override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Logging out cuz death") {
-        if (logout()) {
-            ScriptManager.stop()
-        }
-    }
-
-    var died = false
-    override fun validate(): Boolean {
-        if (currentHP() == 0) {
-            died = true
-        }
-        return died
-    }
-}
-
-class ShouldRepair(script: Runecrafter) : Branch<Runecrafter>(script, "Should repair?") {
-    override val failedComponent: TreeComponent<Runecrafter> = ShouldBank(script)
-    override val successComponent: TreeComponent<Runecrafter> = RepairPouches(script)
-
-    override fun validate(): Boolean {
-        return EssencePouch.inInventory().any { it.shouldRepair() }
-    }
-}
 
 class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank?") {
     override val failedComponent: TreeComponent<Runecrafter> = AtAltar(script)
     override val successComponent: TreeComponent<Runecrafter> = ShouldOpenBank(script)
 
     override fun validate(): Boolean {
+        if (Bank.getBank().valid()) {
+            return !Inventory.isFull()
+        }
         return Bank.opened() || EssencePouch.inInventory().all { it.getCount() <= 0 } && EssencePouch.essenceCount() == 0
     }
 }
@@ -101,7 +75,8 @@ class ShouldDrinkStamina(script: Runecrafter) : Branch<Runecrafter>(script, "Sho
     override val successComponent: TreeComponent<Runecrafter> = HasStamina(script)
 
     override fun validate(): Boolean {
-        return Movement.energyLevel() < 60 && !Potion.isHighOnStamina() && Potion.STAMINA.inBank()
+        if (Potion.STAMINA.hasWith()) return !Potion.isHighOnStamina()
+        return Movement.energyLevel() < 60 && Potion.STAMINA.inBank()
     }
 }
 
@@ -124,6 +99,7 @@ class AtBank(script: Runecrafter) : Branch<Runecrafter>(script, "At Bank?") {
     override val failedComponent: TreeComponent<Runecrafter> = MoveToBank(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Opening Bank") {
         Bank.open()
+        waitFor(4000) { Bank.opened() }
     }
 
     var bankObj: InteractableEntity = GameObject.Nil
