@@ -75,14 +75,14 @@ class ShouldDrinkStamina(script: Runecrafter) : Branch<Runecrafter>(script, "Sho
     override val successComponent: TreeComponent<Runecrafter> = HasStamina(script)
 
     override fun validate(): Boolean {
-        if (Potion.STAMINA.hasWith()) return !Potion.isHighOnStamina()
-        return Movement.energyLevel() < 60 && Potion.STAMINA.inBank()
+        if (Potion.isHighOnStamina()) return false
+        return Potion.STAMINA.hasWith() || (Movement.energyLevel() < 60 && Potion.STAMINA.inBank())
     }
 }
 
 class HasStamina(script: Runecrafter) : Branch<Runecrafter>(script, "Has stamina?") {
     override val failedComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Getting stamina") {
-        Potion.STAMINA.withdrawExact(1, worse = true)
+        Potion.STAMINA.withdrawExact(1, worse = true, wait = true)
     }
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Drinking stamina") {
         if (Potion.STAMINA.drink()) {
