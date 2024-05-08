@@ -11,6 +11,6 @@ import org.powbot.krulvis.runecrafting.Runecrafter
 class MoveToAltar(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving to Altar") {
     override fun execute() {
         if (script.altar == RuneAltar.ZMI && Skills.realLevel(Skill.Prayer) >= 37) Prayer.prayer(Prayer.Effect.PROTECT_FROM_MAGIC, true)
-        script.altar.pathToAltar.traverse(1)
+        script.altar.pathToAltar.traverse(1, 3)
     }
 }

@@ -6,15 +6,19 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.fullPrayer
+import org.powbot.krulvis.api.ATContext.traverse
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.runecrafting.Runecrafter
+import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
 
-class ShouldPrayAtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "Should pray at altar") {
+class ShouldPrayAtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "Should pray at Chaos Altar") {
     override val failedComponent: TreeComponent<Runecrafter> = ShouldCastVileVigour(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Pray at altar") {
-        if (walkAndInteract(altar, "Pray-at")) {
+        if (altar.distance() > 9) {
+            ouraniaPathToAltar.traverse(1, distanceToLastTile = 9)
+        } else if (walkAndInteract(altar, "Pray-at")) {
             waitForDistance(altar) { fullPrayer() }
         }
     }

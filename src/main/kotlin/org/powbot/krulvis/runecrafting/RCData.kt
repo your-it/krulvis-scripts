@@ -20,6 +20,8 @@ const val AIR = "AIR"
 const val FIRE = "FIRE"
 const val ZMI = "ZMI"
 
+val ouraniaPathToAltar = listOf(Tile(2471, 3242, 0), Tile(2468, 3247, 0), Tile(2463, 3249, 0), Tile(2457, 3249, 0), Tile(2454, 3243, 0), Tile(2454, 3238, 0), Tile(2454, 3233, 0))
+
 enum class RuneAltar(val tile: Tile, val bankTeleport: Magic.MagicSpell?, val pathToAltar: List<Tile>) {
     ASTRAL(Tile(2158, 3864, 0), Magic.LunarSpell.MOONCLAN_TELEPORT,
             pathToAltar = listOf(Tile(2099, 3919, 0), Tile(2103, 3915, 0), Tile(2109, 3915, 0), Tile(2112, 3910, 0), Tile(2112, 3904, 0), Tile(2113, 3898, 0), Tile(2114, 3892, 0), Tile(2114, 3886, 0), Tile(2117, 3880, 0), Tile(2122, 3876, 0), Tile(2127, 3872, 0), Tile(2132, 3870, 0), Tile(2134, 3865, 0), Tile(2139, 3861, 0), Tile(2145, 3861, 0), Tile(2150, 3863, 0), Tile(2155, 3864, 0))),

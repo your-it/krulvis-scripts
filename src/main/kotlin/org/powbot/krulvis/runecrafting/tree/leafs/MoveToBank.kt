@@ -5,13 +5,13 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.traverse
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.Runecrafter
+import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
 
 class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Bank") {
     override fun execute() {
@@ -20,9 +20,9 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
         if (ouraniaUpstairsArea.contains(me)) {
             val ladder = ouraniaLadder()
             if (ladder.distance() > 15) {
-                ouraniaPathToLadder.traverse(1)
+                ouraniaPathToAltar.traverse(1)
             } else if (walkAndInteract(ladder, "Climb")) {
-                waitFor(2500) { script.getBank().valid() }
+                waitFor(5000) { script.getBank().valid() }
             }
         } else if (teleport != null) {
             if (teleport.cast()) {
@@ -33,7 +33,6 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
         }
     }
 
-    val ouraniaPathToLadder = listOf(Tile(2471, 3242, 0), Tile(2468, 3247, 0), Tile(2463, 3249, 0), Tile(2457, 3249, 0), Tile(2455, 3243, 0), Tile(2455, 3238, 0), Tile(2455, 3233, 0))
 
     val ouraniaUpstairsArea = Area(Tile(2440, 3220), Tile(2486, 3255))
     fun ouraniaLadder(): GameObject = Objects.stream().at(Tile(2452, 3231, 0)).name("Ladder").action("Climb").first()
