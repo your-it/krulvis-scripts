@@ -17,24 +17,24 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
     override fun execute() {
         val teleport = script.altar.bankTeleport
         Prayer.prayer(Prayer.Effect.PROTECT_FROM_MAGIC, false)
-        if (ourianaUpstairsArea.contains(me)) {
-            val ladder = ourianaLadder()
+        if (ouraniaUpstairsArea.contains(me)) {
+            val ladder = ouraniaLadder()
             if (ladder.distance() > 15) {
-                ourianaPathToLadder.traverse(1)
+                ouraniaPathToLadder.traverse(1)
             } else if (walkAndInteract(ladder, "Climb")) {
                 waitFor { script.getBank().valid() }
             }
         } else if (teleport != null) {
             if (teleport.cast()) {
-                waitFor(5000) { ourianaUpstairsArea.contains(me) || script.getBank().valid() || script.getAltar().valid() }
+                waitFor(5000) { ouraniaUpstairsArea.contains(me) || script.getBank().valid() || script.getAltar().valid() }
             }
         } else {
             Movement.moveToBank()
         }
     }
 
-    val ourianaPathToLadder = listOf(Tile(2471, 3242, 0), Tile(2468, 3247, 0), Tile(2463, 3249, 0), Tile(2457, 3249, 0), Tile(2455, 3243, 0), Tile(2455, 3238, 0), Tile(2455, 3233, 0))
+    val ouraniaPathToLadder = listOf(Tile(2471, 3242, 0), Tile(2468, 3247, 0), Tile(2463, 3249, 0), Tile(2457, 3249, 0), Tile(2455, 3243, 0), Tile(2455, 3238, 0), Tile(2455, 3233, 0))
 
-    val ourianaUpstairsArea = Area(Tile(2440, 3220), Tile(2486, 3255))
-    fun ourianaLadder(): GameObject = Objects.stream().at(Tile(2452, 3231, 0)).name("Ladder").action("Climb").first()
+    val ouraniaUpstairsArea = Area(Tile(2440, 3220), Tile(2486, 3255))
+    fun ouraniaLadder(): GameObject = Objects.stream().at(Tile(2452, 3231, 0)).name("Ladder").action("Climb").first()
 }
