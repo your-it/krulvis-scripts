@@ -1,6 +1,8 @@
 package org.powbot.krulvis.runecrafting
 
 import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Objects
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -33,6 +35,8 @@ class Runecrafter : ATScript() {
     val essence by lazy { getOption<String>(ESSENCE_TYPE_CONFIGURATION) }
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     override fun createPainter(): ATPaint<*> = RCPainter(this)
+
+    fun getBank(): GameObject = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Bank booth").action("Bank").nearest().first()
 
     override val rootComponent: TreeComponent<*> = object : Branch<Runecrafter>(this, "Should logout?") {
         override val failedComponent: TreeComponent<Runecrafter> = ShouldRepair(script)//Pouch repair branches

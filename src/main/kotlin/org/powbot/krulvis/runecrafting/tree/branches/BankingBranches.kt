@@ -2,18 +2,18 @@ package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.InteractableEntity
 import org.powbot.api.Notifications
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Movement
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
+import org.powbot.krulvis.api.ATContext.distance
 import org.powbot.krulvis.api.ATContext.missingHP
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.tree.leafs.HandleBank
@@ -98,13 +98,14 @@ class HasStamina(script: Runecrafter) : Branch<Runecrafter>(script, "Has stamina
 class AtBank(script: Runecrafter) : Branch<Runecrafter>(script, "At Bank?") {
     override val failedComponent: TreeComponent<Runecrafter> = MoveToBank(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Opening Bank") {
-        Bank.open()
-        waitFor(4000) { Bank.opened() }
+        if (walkAndInteract(bankObj, "Bank")) {
+            waitForDistance(bankObj) { Bank.opened() }
+        }
     }
 
-    var bankObj: InteractableEntity = GameObject.Nil
+    var bankObj: GameObject = GameObject.Nil
     override fun validate(): Boolean {
-        bankObj = Bank.getBank()
+        bankObj = script.getBank()
         return bankObj.valid()
     }
 }
