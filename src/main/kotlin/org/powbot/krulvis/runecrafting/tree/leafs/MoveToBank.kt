@@ -16,13 +16,13 @@ import org.powbot.krulvis.runecrafting.Runecrafter
 class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Bank") {
     override fun execute() {
         val teleport = script.altar.bankTeleport
-        Prayer.prayer(Prayer.Effect.PROTECT_FROM_MAGIC, false)
+//        Prayer.prayer(Prayer.Effect.PROTECT_FROM_MAGIC, false)
         if (ouraniaUpstairsArea.contains(me)) {
             val ladder = ouraniaLadder()
             if (ladder.distance() > 15) {
                 ouraniaPathToLadder.traverse(1)
             } else if (walkAndInteract(ladder, "Climb")) {
-                waitFor { script.getBank().valid() }
+                waitFor(2500) { script.getBank().valid() }
             }
         } else if (teleport != null) {
             if (teleport.cast()) {
