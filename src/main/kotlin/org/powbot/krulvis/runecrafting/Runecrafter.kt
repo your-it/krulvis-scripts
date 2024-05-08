@@ -19,7 +19,7 @@ import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
         name = "krul Runecrafter", version = "1.0.3",
-        description = "Crafts astral runes, Repairs pouches",
+        description = "Supports Astral & ZMI, Repairs pouches, restores energy",
         scriptId = "329bdd0e-3813-4c39-917b-d943e79a0f47",
         markdownFileName = "Runecrafter.md",
         category = ScriptCategory.Runecrafting
