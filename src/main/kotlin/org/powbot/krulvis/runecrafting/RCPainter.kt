@@ -9,13 +9,13 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 class RCPainter(script: Runecrafter) : ATPaint<Runecrafter>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder.trackSkill(Skill.Runecrafting)
-                .trackInventoryItems(Rune.SOUL.id)
-                .trackInventoryItems(Rune.BLOOD.id)
-                .trackInventoryItems(Rune.DEATH.id)
-                .trackInventoryItems(Rune.NATURE.id)
-                .trackInventoryItems(Rune.ASTRAL.id)
-                .trackInventoryItems(Rune.COSMIC.id)
-                .trackInventoryItems(Rune.CHAOS.id)
+                .trackInventoryItemQ(Rune.SOUL.id)
+                .trackInventoryItemQ(Rune.BLOOD.id)
+                .trackInventoryItemQ(Rune.DEATH.id)
+                .trackInventoryItemQ(Rune.NATURE.id)
+                .trackInventoryItemQ(Rune.ASTRAL.id)
+                .trackInventoryItemQ(Rune.COSMIC.id)
+                .trackInventoryItemQ(Rune.CHAOS.id)
 
         return paintBuilder.build()
     }
