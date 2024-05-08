@@ -48,6 +48,12 @@ import org.powbot.mobile.script.ScriptManager
                     defaultValue = "true"
             ),
             ScriptConfiguration(
+                    "Top level Hopper",
+                    "Use top level Hopper in MLM",
+                    optionType = OptionType.BOOLEAN,
+                    defaultValue = "false"
+            ),
+            ScriptConfiguration(
                     "Deposit box",
                     "Use depositbox",
                     optionType = OptionType.BOOLEAN,
@@ -83,7 +89,7 @@ class Miner : ATScript() {
     val useDepositBox by lazy { getOption<Boolean>("Deposit box") }
     val fastMine by lazy { getOption<Boolean>("Fast mine") }
     val hopFromPlayers by lazy { getOption<Boolean>("Hop") }
-
+    val topLevelHopper by lazy { getOption<Boolean>("Top level Hopper") }
     val mineDelay = DelayHandler(2000, oddsModifier, "MineDelay")
     var lastPayDirtDrop = 0L
     var waterskins = false

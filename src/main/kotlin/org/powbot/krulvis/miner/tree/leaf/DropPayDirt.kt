@@ -1,5 +1,6 @@
 package org.powbot.krulvis.miner.tree.leaf
 
+import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
@@ -47,5 +48,7 @@ class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
 
     fun deposited() = Inventory.getCount(Ore.PAY_DIRT.id) == 0
 
-    fun getHopper() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Hopper").action("Deposit").nearest().firstOrNull()
+    fun getHopper() = Objects.stream(50).type(GameObject.Type.INTERACTIVE)
+            .at(if (script.topLevelHopper) Tile(3755, 5677, 0) else Tile(3748, 5672, 0))
+            .name("Hopper").action("Deposit").nearest().firstOrNull()
 }
