@@ -5,7 +5,6 @@ import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.canReach
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Ore
 import org.powbot.krulvis.api.utils.Utils.long
