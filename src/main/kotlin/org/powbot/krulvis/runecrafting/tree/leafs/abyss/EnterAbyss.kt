@@ -1,9 +1,8 @@
 package org.powbot.krulvis.runecrafting.tree.leafs.abyss
 
 import org.powbot.api.Tile
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Npcs
-import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.traverse
@@ -27,6 +26,8 @@ class EnterAbyss(script: Runecrafter) : Leaf<Runecrafter>(script, "Entering Abys
 
     private fun walkToMage() {
         if (acrossDitch()) {
+            if(Skills.level(Skill.Prayer) > 0 && Skills.realLevel(Skill.Prayer) > 21)
+                Prayer.prayer(Prayer.Effect.PROTECT_ITEM, true)
             toMage.traverse(2, 8)
         } else {
             val ditch = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Wilderness Ditch").action("Cross").nearest().first()
