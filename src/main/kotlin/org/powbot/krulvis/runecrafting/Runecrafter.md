@@ -12,6 +12,7 @@ Optimal setup for Astral/ZMI is having Dust staff and rune pouch filled with req
 - Teleports to Moonclan/Ourania
 - Drinks stamina / Casts Vile Vigour / Sips from PoH pool
 - Eats food
+- Teleports from players attacking me in wilderness
 
 ## Requirements
 

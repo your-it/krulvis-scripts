@@ -36,12 +36,8 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
 
     val keep: Array<String> by lazy {
         val list = mutableListOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch", RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE)
-        val bankTeleport = script.altar.bankTeleport
-        val runes = if (script.method == ALTAR && bankTeleport != null) {
-            bankTeleport.runes().toMutableList()
-        } else {
-            mutableListOf()
-        }
+        val bankTeleport = script.bankTeleport
+        val runes = bankTeleport?.runes()?.toMutableList() ?: mutableListOf()
 
         if (script.vileVigour) {
             runes.addAll(Magic.ArceuusSpell.VILE_VIGOUR.runes())

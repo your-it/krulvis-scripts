@@ -15,7 +15,7 @@ import org.powbot.krulvis.runecrafting.tree.branches.ShouldCastNPCContact
 import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
-        name = "krul Runecrafter", version = "1.0.4",
+        name = "krul Runecrafter", version = "1.0.5",
         description = "Supports Abyss, Astral & ZMI/Ourania, Repairs pouches, restores energy",
         scriptId = "329bdd0e-3813-4c39-917b-d943e79a0f47",
         markdownFileName = "Runecrafter.md",
@@ -41,6 +41,7 @@ class Runecrafter : ATScript() {
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     val zmiPayment by lazy { Rune.valueOf(getOption(ZMI_PAYMENT_RUNE_CONFIG)) }
     val vileVigour by lazy { getOption<Boolean>(VILE_VIGOUR_CONFIG) }
+    val bankTeleport by lazy { if(method == ABYSS) Magic.Spell.TELEPORT_TO_HOUSE else altar.bankTeleport }
     override fun createPainter(): ATPaint<*> = RCPainter(this)
 
     fun getBank(): InteractableEntity {
