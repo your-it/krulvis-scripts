@@ -16,8 +16,8 @@ import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
 class ShouldPrayAtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "Should pray at Chaos Altar") {
     override val failedComponent: TreeComponent<Runecrafter> = ShouldCastVileVigour(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Pray at altar") {
-        if (altar.distance() > 9) {
-            ouraniaPathToAltar.traverse(1, distanceToLastTile = 9)
+        if (altar.distance() > 4 || !altar.inViewport()) {
+            ouraniaPathToAltar.traverse(1, distanceToLastTile = 4)
         } else if (walkAndInteract(altar, "Pray-at")) {
             waitForDistance(altar) { fullPrayer() }
         }
@@ -27,7 +27,7 @@ class ShouldPrayAtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "Shou
 
     override fun validate(): Boolean {
         if (fullPrayer()) return false
-        altar = script.getAltar()
+        altar = script.getChaosAltar()
         return altar.valid()
     }
 }
@@ -53,7 +53,7 @@ class ShouldCastVileVigour(script: Runecrafter) : Branch<Runecrafter>(script, "S
     private fun arceuusComp() = Components.stream(219, 1).text("Arceuus").first()
 
     override fun validate(): Boolean {
-        if (!script.vileVigour || !fullPrayer() || script.getAltar().distance() > 5 || !vileVigour.canCast()) return false
+        if (!script.vileVigour || !fullPrayer() || script.getChaosAltar().distance() > 5 || !vileVigour.canCast()) return false
         return Movement.energyLevel() <= 90
     }
 }

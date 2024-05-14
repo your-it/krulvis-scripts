@@ -12,6 +12,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -19,6 +20,7 @@ import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.tree.leafs.HandleBank
+import org.powbot.krulvis.runecrafting.tree.leafs.HandleHouse
 import org.powbot.krulvis.runecrafting.tree.leafs.MoveToBank
 import org.powbot.mobile.script.ScriptManager
 
@@ -27,8 +29,9 @@ class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank
     override val successComponent: TreeComponent<Runecrafter> = ShouldOpenBank(script)
 
     override fun validate(): Boolean {
-        if (script.getBank().valid()) {
-            return !Inventory.isFull()
+        if (script.getBank().valid() && !Inventory.isFull()) {
+            script.log.info("At bank without full inventory")
+            return true
         }
         return Bank.opened() || EssencePouch.inInventory().all { it.getCount() <= 0 } && EssencePouch.essenceCount() == 0
     }
@@ -49,8 +52,7 @@ class ShouldEat(script: Runecrafter) : Branch<Runecrafter>(script, "Should eat f
 
     override fun validate(): Boolean {
         val hp = currentHP()
-        val canEat = missingHP() >= script.food.healing
-        return canEat && (hp < 50 || script.food.inInventory())
+        return hp <= script.eatAt || script.food.inInventory()
     }
 }
 
@@ -98,7 +100,7 @@ class HasStamina(script: Runecrafter) : Branch<Runecrafter>(script, "Has stamina
 }
 
 class AtBank(script: Runecrafter) : Branch<Runecrafter>(script, "At Bank?") {
-    override val failedComponent: TreeComponent<Runecrafter> = MoveToBank(script)
+    override val failedComponent: TreeComponent<Runecrafter> = InHouse(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Opening Bank") {
         if (walkAndInteract(bankObj, "Bank")) {
             waitForDistance(bankObj) { Bank.opened() }
@@ -109,5 +111,14 @@ class AtBank(script: Runecrafter) : Branch<Runecrafter>(script, "At Bank?") {
     override fun validate(): Boolean {
         bankObj = script.getBank()
         return bankObj.distance() < 20
+    }
+}
+
+class InHouse(script: Runecrafter) : Branch<Runecrafter>(script, "In House?") {
+    override val failedComponent: TreeComponent<Runecrafter> = MoveToBank(script)
+    override val successComponent: TreeComponent<Runecrafter> = HandleHouse(script)
+
+    override fun validate(): Boolean {
+        return House.isInside()
     }
 }

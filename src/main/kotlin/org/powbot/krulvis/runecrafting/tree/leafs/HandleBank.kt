@@ -19,6 +19,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         val invPouches = EssencePouch.inInventory()
         if (script.altar == RuneAltar.ZMI) Bank.depositAllExcept(*keep)//Immediately deposit runes
         if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
+            script.log.info("Closing bank...")
             Bank.close()
         } else if (Bank.stream().name(script.essence).count() <= 0) {
             Notifications.showNotification("Out of essence, stopping script")
@@ -35,7 +36,13 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
 
     val keep: Array<String> by lazy {
         val list = mutableListOf("Rune pouch", "Small pouch", "Medium pouch", "Large pouch", "Giant pouch", "Colossal pouch", RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE)
-        val runes = script.altar.bankTeleport?.runes()?.toMutableList() ?: mutableListOf()
+        val bankTeleport = script.altar.bankTeleport
+        val runes = if (script.method == ALTAR && bankTeleport != null) {
+            bankTeleport.runes().toMutableList()
+        } else {
+            mutableListOf()
+        }
+
         if (script.vileVigour) {
             runes.addAll(Magic.ArceuusSpell.VILE_VIGOUR.runes())
             runes.addAll(Magic.LunarSpell.SPELL_BOOK_SWAP.runes())

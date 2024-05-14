@@ -1,5 +1,6 @@
 package org.powbot.krulvis.runecrafting.tree.leafs
 
+import org.powbot.api.rt4.Game
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -12,6 +13,7 @@ class CraftRunes(script: Runecrafter) : Leaf<Runecrafter>(script, "Crafting rune
         val altar = script.altar.getAltar() ?: return
 
         if (walkAndInteract(altar, "Craft-rune")) {
+            Game.tab(Game.Tab.INVENTORY)
             waitFor { EssencePouch.essenceCount() == 0 }
         }
     }
