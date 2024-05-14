@@ -1,10 +1,7 @@
 package org.powbot.krulvis.runecrafting
 
 import org.powbot.api.InteractableEntity
-import org.powbot.api.rt4.Game
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Npcs
-import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.*
 import org.powbot.api.rt4.magic.Rune
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.Branch
@@ -29,12 +26,14 @@ import org.powbot.mobile.script.ScriptManager
     ScriptConfiguration(name = RUNE_ALTAR_CONFIGURATION, description = "Which altar to make runes at?", optionType = OptionType.STRING, allowedValues = arrayOf(COSMIC, NATURE, LAW, CHAOS, DEATH, BLOOD, SOUL), defaultValue = NATURE),
     ScriptConfiguration(name = VILE_VIGOUR_CONFIG, description = "Cast vile vigour?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false),
     ScriptConfiguration(name = ZMI_PAYMENT_RUNE_CONFIG, description = "Payment rune?", optionType = OptionType.STRING, allowedValues = arrayOf(AIR, WATER, EARTH, FIRE), defaultValue = EARTH, visible = false),
+    ScriptConfiguration(name = ZMI_PROTECT_CONFIG, description = "Protection prayer?", optionType = OptionType.STRING, allowedValues = arrayOf("NONE", "PROTECT_FROM_MAGIC", "PROTECT_FROM_MISSILES", "PROTECT_FROM_MELEE"), defaultValue = "NONE", visible = false),
     ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
     ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS),
     ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP", optionType = OptionType.INTEGER, defaultValue = "70")
 ])
 class Runecrafter : ATScript() {
 
+    val prayer by lazy { Prayer.Effect.values().firstOrNull { it.name == getOption<String>(ZMI_PROTECT_CONFIG) } }
     val altar by lazy { RuneAltar.valueOf(getOption(RUNE_ALTAR_CONFIGURATION)) }
     val method by lazy { getOption<String>(METHOD_CONFIGURATION) }
     val eatAt by lazy { getOption<Int>(EAT_AT_CONFIG) }
@@ -84,7 +83,11 @@ class Runecrafter : ATScript() {
     fun onAltarChange(altar: String) {
         updateVisibility(VILE_VIGOUR_CONFIG, altar == ZMI)
         updateVisibility(ZMI_PAYMENT_RUNE_CONFIG, altar == ZMI)
-        if (altar != ZMI) updateOption(VILE_VIGOUR_CONFIG, false, OptionType.BOOLEAN)
+        updateVisibility(ZMI_PROTECT_CONFIG, altar == ZMI)
+        if (altar != ZMI) {
+            updateOption(VILE_VIGOUR_CONFIG, false, OptionType.BOOLEAN)
+            updateOption(ZMI_PROTECT_CONFIG, "NONE", OptionType.STRING)
+        }
     }
 }
 
