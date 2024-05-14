@@ -30,12 +30,14 @@ import org.powbot.mobile.script.ScriptManager
     ScriptConfiguration(name = VILE_VIGOUR_CONFIG, description = "Cast vile vigour?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false),
     ScriptConfiguration(name = ZMI_PAYMENT_RUNE_CONFIG, description = "Payment rune?", optionType = OptionType.STRING, allowedValues = arrayOf(AIR, WATER, EARTH, FIRE), defaultValue = EARTH, visible = false),
     ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
-    ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS)
+    ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS),
+    ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP", optionType = OptionType.INTEGER, defaultValue = "70")
 ])
 class Runecrafter : ATScript() {
 
     val altar by lazy { RuneAltar.valueOf(getOption(RUNE_ALTAR_CONFIGURATION)) }
     val method by lazy { getOption<String>(METHOD_CONFIGURATION) }
+    val eatAt by lazy { getOption<Int>(EAT_AT_CONFIG) }
     val essence by lazy { getOption<String>(ESSENCE_TYPE_CONFIGURATION) }
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     val zmiPayment by lazy { Rune.valueOf(getOption(ZMI_PAYMENT_RUNE_CONFIG)) }

@@ -52,8 +52,7 @@ class ShouldEat(script: Runecrafter) : Branch<Runecrafter>(script, "Should eat f
 
     override fun validate(): Boolean {
         val hp = currentHP()
-        val canEat = missingHP() >= script.food.healing
-        return canEat && (hp < 50 || script.food.inInventory())
+        return hp <= script.eatAt || script.food.inInventory()
     }
 }
 
