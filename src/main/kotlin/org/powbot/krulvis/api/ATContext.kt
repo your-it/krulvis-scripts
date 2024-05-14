@@ -50,8 +50,8 @@ object ATContext {
         if (atLastTile(offset)) return true
         val walkableTile = lastOrNull { it.onMap() } ?: return false
         val tileToClick = walkableTile.derive(
-            kotlin.random.Random.nextInt(-offset, offset),
-            kotlin.random.Random.nextInt(-offset, offset)
+                kotlin.random.Random.nextInt(-offset, offset),
+                kotlin.random.Random.nextInt(-offset, offset)
         )
         if (Movement.step(tileToClick, minDistance = 0)) {
             waitForWhile(mid(), { lastOrNull { it.onMap() } != walkableTile }) { whileWaiting() }
@@ -77,7 +77,7 @@ object ATContext {
         }
         if (!Movement.moving() || walkDelay.isFinished()) {
             if (forceMinimap && position.onMap()
-                && LocalPathFinder.findWalkablePath(Players.local().tile(), position).isNotEmpty()
+                    && LocalPathFinder.findWalkablePath(Players.local().tile(), position).isNotEmpty()
             ) {
                 Movement.step(position)
             } else {
@@ -98,13 +98,13 @@ object ATContext {
      * Custom interaction function
      */
     fun walkAndInteractWhile(
-        target: InteractableEntity?,
-        action: String,
-        alwaysWalk: Boolean = false,
-        allowWalk: Boolean = true,
-        selectItem: Int = -1,
-        useMenu: Boolean = true,
-        whileWaiting: () -> Any = {}
+            target: InteractableEntity?,
+            action: String,
+            alwaysWalk: Boolean = false,
+            allowWalk: Boolean = true,
+            selectItem: Int = -1,
+            useMenu: Boolean = true,
+            whileWaiting: () -> Any = {}
     ): Boolean {
         val t = target ?: return false
         val name = (t as Nameable).name()
@@ -114,11 +114,11 @@ object ATContext {
         turnRunOn()
         debug("Interacting with: $name at: $pos")
         if (Menu.opened() && Menu.contains {
-                it.action.equals(action, true) && (name == null || it.option.contains(
-                    name,
-                    true
-                ))
-            }) {
+                    it.action.equals(action, true) && (name == null || it.option.contains(
+                            name,
+                            true
+                    ))
+                }) {
             debug("Clicking directly on opened menu")
             return handleMenu(action, name)
         }
@@ -129,15 +129,18 @@ object ATContext {
             val distanceToTarget = pos.distanceTo(me)
             if (distanceToTarget > triggerDistance || !t.inViewport(true)) {
                 debug(
-                    "Walking before interacting distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
-                        !t.inViewport(
-                            true
-                        )
-                    }"
+                        "Walking before interacting distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
+                            !t.inViewport(
+                                    true
+                            )
+                        }"
                 )
                 debug("destination=${destination}, targetTile=${targetTile}, pos=${pos}, distanceToTarget=${distanceToTarget}")
                 Movement.step(pos)
-                waitForWhile(2500, { t.inViewport(true) }, whileWaiting)
+                if (!waitForWhile(1000, { Movement.destination().distanceTo(pos) <= 2 })) {
+                    return false
+                }
+                waitForWhile(mid(), { t.inViewport(true) }, whileWaiting)
             }
         }
 
@@ -152,11 +155,11 @@ object ATContext {
 
         }
         val interactBool =
-            if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(
-                action,
-                name,
-                useMenu
-            )
+                if (name == null || name == "null" || name.isEmpty()) t.interact(action, useMenu) else t.interact(
+                        action,
+                        name,
+                        useMenu
+                )
         return waitForWhile(short(), {
             Inventory.selectedItemIndex() == -1 || Inventory.selectedItem().id() == selectItem
         }, whileWaiting) && interactBool
@@ -166,12 +169,12 @@ object ATContext {
      * Custom interaction function
      */
     fun walkAndInteract(
-        target: InteractableEntity?,
-        action: String,
-        alwaysWalk: Boolean = false,
-        allowWalk: Boolean = true,
-        selectItem: Int = -1,
-        useMenu: Boolean = true
+            target: InteractableEntity?,
+            action: String,
+            alwaysWalk: Boolean = false,
+            allowWalk: Boolean = true,
+            selectItem: Int = -1,
+            useMenu: Boolean = true
     ): Boolean {
         return walkAndInteractWhile(target, action, alwaysWalk, allowWalk, selectItem, useMenu)
     }
@@ -184,11 +187,11 @@ object ATContext {
             return false
         }
         if (!Menu.contains {
-                it.action.equals(action, true) && (name == null || it.option.contains(
-                    name,
-                    true
-                ))
-            }) {
+                    it.action.equals(action, true) && (name == null || it.option.contains(
+                            name,
+                            true
+                    ))
+                }) {
             debug("Closing menu in: handleMenu()")
             Menu.click { it.action == "Cancel" }
             waitFor { !Menu.opened() }
@@ -198,7 +201,7 @@ object ATContext {
     }
 
     fun Locatable.distance(): Int =
-        tile().distanceTo(Players.local()).toInt()
+            tile().distanceTo(Players.local()).toInt()
 
     fun Tile.distanceM(dest: Locatable): Int {
         return abs(dest.tile().x() - x()) + abs(dest.tile().y() - y())
@@ -250,7 +253,7 @@ object ATContext {
                 debug("Withdrawing all: $id, since bank contains too few")
                 withdraw(id, Bank.Amount.ALL)
             } else if (withdrawCount >= Inventory.emptySlots() && ItemLoader.lookup(id)
-                    ?.stackable() == false
+                            ?.stackable() == false
             ) {
                 debug("Withdrawing all: $id, since there's just enough space")
                 withdraw(id, Bank.Amount.ALL)
@@ -289,10 +292,10 @@ object ATContext {
 
     @JvmOverloads
     fun Locatable.getWalkableNeighbor(
-        allowSelf: Boolean = true,
-        diagonalTiles: Boolean = false,
-        checkForWalls: Boolean = true,
-        filter: (Tile) -> Boolean = { true },
+            allowSelf: Boolean = true,
+            diagonalTiles: Boolean = false,
+            checkForWalls: Boolean = true,
+            filter: (Tile) -> Boolean = { true },
     ): Tile? {
         val walkableNeighbors = getWalkableNeighbors(allowSelf, diagonalTiles, checkForWalls)
         return walkableNeighbors.filter(filter).minByOrNull { it.distance() }
@@ -302,9 +305,9 @@ object ATContext {
 
     @JvmOverloads
     fun Locatable.getWalkableNeighbors(
-        allowSelf: Boolean = true,
-        diagonalTiles: Boolean = false,
-        checkForWalls: Boolean = true,
+            allowSelf: Boolean = true,
+            diagonalTiles: Boolean = false,
+            checkForWalls: Boolean = true,
     ): MutableList<Tile> {
 
         val t = tile()
@@ -333,8 +336,8 @@ object ATContext {
         walkableNeighbors.addAll(straight.filterIndexed { i, it ->
             if (checkForWalls) {
                 !it.blocked(
-                    cm,
-                    straightFlags[i]
+                        cm,
+                        straightFlags[i]
                 )
             } else !it.blocked(cm)
         })
