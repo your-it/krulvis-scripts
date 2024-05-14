@@ -25,30 +25,37 @@ object Utils {
 
     fun waitFor(min: Int, max: Int, condition: () -> Boolean): Boolean {
         return waitFor(
-                Random.nextInt(
-                        min,
-                        max
-                ), condition
+            Random.nextInt(
+                min,
+                max
+            ), condition
         )
     }
 
-    fun waitFor(timeOut: Int = mid(), condition: () -> Boolean): Boolean {
+    fun waitForWhile(timeOut: Int = mid(), condition: () -> Boolean, whileWaiting: () -> Any = {}): Boolean {
         val totalDelay = System.currentTimeMillis() + timeOut
         do {
+            whileWaiting()
             if (condition.invoke()) {
                 return true
             }
             sleep(
-                    Random.nextInt(
-                            150,
-                            250
-                    )
+                Random.nextInt(
+                    150,
+                    250
+                )
             )
         } while (totalDelay > System.currentTimeMillis())
         return false
     }
 
-    fun waitForDistance(locatable: Locatable, condition: () -> Boolean) = waitFor(locatable.distance().toInt() * 1000, condition)
+    fun waitFor(timeOut: Int = mid(), condition: () -> Boolean): Boolean = waitForWhile(timeOut, condition)
+
+    fun waitForDistanceWhile(locatable: Locatable, condition: () -> Boolean, whileWaiting: () -> Any = {}) =
+        waitForWhile(locatable.distance().toInt() * 1000, condition, whileWaiting)
+
+    fun waitForDistance(locatable: Locatable, condition: () -> Boolean) =
+        waitForDistanceWhile(locatable, condition)
 
 
 //    fun getItemImage(id: Int): BufferedImage? {

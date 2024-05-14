@@ -18,7 +18,7 @@ import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
 
 class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Bank") {
     override fun execute() {
-        val teleport = if (script.method == ABYSS) Magic.Spell.TELEPORT_TO_HOUSE else script.altar.bankTeleport
+        val teleport = script.bankTeleport
         if (ouraniaUpstairsArea.contains(me)) {
             val ladder = ouraniaLadder()
             if (ladder.distance() > 15) {
@@ -28,7 +28,10 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
             }
         } else if (teleport != null) {
             if (teleport.cast()) {
-                waitFor(5000) { House.isInside() || ouraniaUpstairsArea.contains(me) || script.getBank().valid() || script.getChaosAltar().valid() }
+                waitFor(5000) {
+                    House.isInside() || ouraniaUpstairsArea.contains(me) || script.getBank()
+                        .valid() || script.getChaosAltar().valid()
+                }
             }
         } else {
             Movement.moveToBank()
