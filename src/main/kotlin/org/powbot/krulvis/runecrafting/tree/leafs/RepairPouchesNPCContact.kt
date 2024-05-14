@@ -9,7 +9,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 
-class RepairPouches(script: Runecrafter) : Leaf<Runecrafter>(script, "Repairing pouches") {
+class RepairPouchesNPCContact(script: Runecrafter) : Leaf<Runecrafter>(script, "Repairing pouches NPC Contact") {
     override fun execute() {
         Bank.close()
         val repairComp = repairComponent()

@@ -14,18 +14,19 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.runecrafting.tree.branches.ShouldRepair
+import org.powbot.krulvis.runecrafting.tree.branches.ShouldCastNPCContact
 import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
-        name = "krul Runecrafter", version = "1.0.3",
-        description = "Supports Astral & ZMI/Ourania, Repairs pouches, restores energy",
+        name = "krul Runecrafter", version = "1.0.4",
+        description = "Supports Abyss, Astral & ZMI/Ourania, Repairs pouches, restores energy",
         scriptId = "329bdd0e-3813-4c39-917b-d943e79a0f47",
         markdownFileName = "Runecrafter.md",
         category = ScriptCategory.Runecrafting
 )
 @ScriptConfiguration.List([
-    ScriptConfiguration(name = RUNE_ALTAR_CONFIGURATION, description = "Which rune to make?", optionType = OptionType.STRING, allowedValues = arrayOf(ASTRAL, ZMI), defaultValue = ASTRAL),
+    ScriptConfiguration(name = METHOD_CONFIGURATION, description = "Which method of runecrafting?", optionType = OptionType.STRING, allowedValues = arrayOf(ABYSS, ALTAR), defaultValue = ABYSS),
+    ScriptConfiguration(name = RUNE_ALTAR_CONFIGURATION, description = "Which altar to make runes at?", optionType = OptionType.STRING, allowedValues = arrayOf(COSMIC, NATURE, LAW, CHAOS, DEATH, BLOOD, SOUL), defaultValue = NATURE),
     ScriptConfiguration(name = VILE_VIGOUR_CONFIG, description = "Cast vile vigour?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false),
     ScriptConfiguration(name = ZMI_PAYMENT_RUNE_CONFIG, description = "Payment rune?", optionType = OptionType.STRING, allowedValues = arrayOf(AIR, WATER, EARTH, FIRE), defaultValue = EARTH, visible = false),
     ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
@@ -34,6 +35,7 @@ import org.powbot.mobile.script.ScriptManager
 class Runecrafter : ATScript() {
 
     val altar by lazy { RuneAltar.valueOf(getOption(RUNE_ALTAR_CONFIGURATION)) }
+    val method by lazy { getOption<String>(METHOD_CONFIGURATION) }
     val essence by lazy { getOption<String>(ESSENCE_TYPE_CONFIGURATION) }
     val food by lazy { Food.valueOf(getOption(FOOD_CONFIGURATION)) }
     val zmiPayment by lazy { Rune.valueOf(getOption(ZMI_PAYMENT_RUNE_CONFIG)) }
@@ -46,10 +48,10 @@ class Runecrafter : ATScript() {
         return Objects.stream().type(GameObject.Type.INTERACTIVE).name("Bank booth").action("Bank").nearest().first()
     }
 
-    fun getAltar() = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Chaos altar").action("Pray-at").first()
+    fun getChaosAltar() = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Chaos altar").action("Pray-at").first()
 
     override val rootComponent: TreeComponent<*> = object : Branch<Runecrafter>(this, "Should logout?") {
-        override val failedComponent: TreeComponent<Runecrafter> = ShouldRepair(script)//Pouch repair branches
+        override val failedComponent: TreeComponent<Runecrafter> = ShouldCastNPCContact(script)//Pouch repair branches
         override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Logging out cuz death") {
             if (Game.logout()) {
                 ScriptManager.stop()
@@ -65,6 +67,15 @@ class Runecrafter : ATScript() {
         }
     }
 
+    @ValueChanged(METHOD_CONFIGURATION)
+    fun onMethodChange(method: String) {
+        val altars = if (method == ABYSS) {
+            arrayOf(COSMIC, NATURE, LAW, CHAOS, DEATH, BLOOD, SOUL)
+        } else {
+            arrayOf(ZMI, COSMIC, NATURE, LAW, CHAOS, ASTRAL, DEATH, BLOOD, SOUL)
+        }
+        updateAllowedOptions(RUNE_ALTAR_CONFIGURATION, altars)
+    }
 
     @ValueChanged(RUNE_ALTAR_CONFIGURATION)
     fun onAltarChange(altar: String) {

@@ -43,7 +43,7 @@ object ATContext {
         return false
     }
 
-    fun List<Tile>.atLastTile(distance: Int = 2) = last().distance() <= distance
+    fun List<Tile>.atLastTile(distance: Int = 2) = last().distanceTo(Movement.destination()) <= distance
     fun List<Tile>.traverse(offset: Int = 2, distanceToLastTile: Int = 2): Boolean {
         if (atLastTile(offset)) return true
         val walkableTile = lastOrNull { it.onMap() } ?: return false

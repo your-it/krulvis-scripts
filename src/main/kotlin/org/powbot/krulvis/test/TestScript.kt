@@ -87,7 +87,7 @@ class TestScript : ATScript() {
 
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        val ladder = Objects.stream().name("Altar").first()
+        val ladder = Objects.stream(50).type(GameObject.Type.WALL_DECORATION).name("NATURE rift").first()
 //        points.clear()
         log.info("Ladder= ${ladder}, tile=${ladder.tile}")
     }
