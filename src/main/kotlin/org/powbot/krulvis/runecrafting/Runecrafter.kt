@@ -74,7 +74,8 @@ class Runecrafter : ATScript() {
         val altars = if (method == ABYSS) {
             arrayOf(COSMIC, NATURE, LAW, CHAOS, DEATH, BLOOD, SOUL)
         } else {
-            arrayOf(ZMI, COSMIC, NATURE, LAW, CHAOS, ASTRAL, DEATH, BLOOD, SOUL)
+//            arrayOf(ZMI, COSMIC, NATURE, LAW, CHAOS, ASTRAL, DEATH, BLOOD, SOUL)
+            arrayOf(ZMI, ASTRAL)
         }
         updateAllowedOptions(RUNE_ALTAR_CONFIGURATION, altars)
     }
