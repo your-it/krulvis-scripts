@@ -5,7 +5,6 @@ import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
@@ -15,7 +14,8 @@ class EnterInnerPortal(script: Runecrafter) : Leaf<Runecrafter>(script, "Enterin
     override fun execute() {
         val pass = getPass()
         val neighbor = pass.tile
-        script.log.info("Found passthrough in abyss name=${pass.name}, action=${pass.actions()[0]}, neighbor=${neighbor}")
+        val action = pass.actions().firstOrNull()
+        script.log.info("Found passthrough in abyss name=${pass.name}, action=${action}, neighbor=${neighbor}")
         if (!pass.inViewport() || pass.distance() > 8) {
             Movement.step(neighbor)
         } else if (walkAndInteract(pass, pass.actions()[0])) {
