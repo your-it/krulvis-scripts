@@ -42,7 +42,7 @@ enum class EssencePouch(val capacity: Int, val perfectId: Int) {
         val invEssence = essenceCount()
         if (!pouch.valid()) return false
         if (pouch.interact("Empty")) {
-            waitFor { invEssence < essenceCount() }
+            waitFor { essenceCount() > invEssence }
             val essenceCount = essenceCount()
             if (essenceCount == 0) count = 0
             else count -= essenceCount - invEssence
