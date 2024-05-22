@@ -1,7 +1,9 @@
 package org.powbot.krulvis.api.script
 
+import com.google.common.eventbus.Subscribe
 import org.powbot.api.Preferences
 import org.powbot.api.Random
+import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.RenderEvent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.antiban.DelayHandler
