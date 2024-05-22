@@ -1,16 +1,11 @@
 package org.powbot.krulvis.test
 
 import org.powbot.api.Color
-import org.powbot.api.ModelInteractionType
-import org.powbot.api.Point
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
-import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.LocalPath
-import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
@@ -20,7 +15,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.mta.Alchemy
+import org.powbot.krulvis.mta.AlchemyRoom
 import org.powbot.mobile.drawing.Rendering
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)
@@ -73,7 +68,7 @@ class TestScript : ATScript() {
     var cupboards: List<GameObject> = emptyList()
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-        cupboards = Alchemy.getSortedCupboards()
+        cupboards = AlchemyRoom.getSortedCupboards()
     }
 
     //Tile(x=3635, y=3362, floor=0)

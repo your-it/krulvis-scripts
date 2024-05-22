@@ -48,7 +48,7 @@ class MTA : ATScript() {
     fun onMessageEvent(e: MessageEvent) {
         val txt = e.message
         if (txt == "The cupboard is empty.") {
-            Alchemy.EMPTY_CUPBOARD = Alchemy.getCupboard().id
+            AlchemyRoom.EMPTY_CUPBOARD = AlchemyRoom.getCupboard().id
         }
     }
 

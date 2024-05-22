@@ -2,7 +2,7 @@ package org.powbot.krulvis.mta
 
 import org.powbot.api.rt4.*
 
-object Alchemy {
+object EnchantingRoom {
     const val WIDGET_ID = 194
     const val ITEM_VALUE_START_ID = 12
 

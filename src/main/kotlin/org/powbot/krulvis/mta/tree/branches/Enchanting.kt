@@ -10,17 +10,18 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mta.AlchemyRoom
+import org.powbot.krulvis.mta.EnchantingRoom
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.tree.leafs.CastHighAlch
 import org.powbot.krulvis.mta.tree.leafs.SearchCupboard
 
-class CanCast(script: MTA) : Branch<MTA>(script, "Can Cast HA?") {
+class CanCastEnchant(script: MTA) : Branch<MTA>(script, "Can Cast Enchant?") {
     override val failedComponent: TreeComponent<MTA> = IsItemOnGround(script)
     override val successComponent: TreeComponent<MTA> = CastHighAlch(script)
 
     var lastBest = ""
     override fun validate(): Boolean {
-        AlchemyRoom.bestItemName = AlchemyRoom.getBestItem().itemName
+        EnchantingRoom.bestItemName = AlchemyRoom.getBestItem().itemName
 
         script.log.info("Best item = ${AlchemyRoom.bestItemName}, changed=${lastBest != AlchemyRoom.bestItemName}")
         if (lastBest != AlchemyRoom.bestItemName) {
