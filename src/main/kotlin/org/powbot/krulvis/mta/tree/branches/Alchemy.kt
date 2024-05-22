@@ -10,11 +10,21 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mta.AlchemyRoom
+import org.powbot.krulvis.mta.AlchemyRoom.ALCHEMY_METHOD
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.tree.leafs.CastHighAlch
 import org.powbot.krulvis.mta.tree.leafs.SearchCupboard
 
-class CanCast(script: MTA) : Branch<MTA>(script, "Can Cast HA?") {
+class ShouldAlchemy(script: MTA) : Branch<MTA>(script, "A") {
+    override val failedComponent: TreeComponent<MTA> = ShouldEnchant(script)
+    override val successComponent: TreeComponent<MTA> = CanCastHA(script)
+
+    override fun validate(): Boolean {
+        return script.method == ALCHEMY_METHOD
+    }
+}
+
+class CanCastHA(script: MTA) : Branch<MTA>(script, "Can Cast HA?") {
     override val failedComponent: TreeComponent<MTA> = IsItemOnGround(script)
     override val successComponent: TreeComponent<MTA> = CastHighAlch(script)
 

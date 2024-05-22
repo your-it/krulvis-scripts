@@ -1,66 +1,77 @@
 package org.powbot.krulvis.mta.tree.branches
 
-import org.powbot.api.rt4.GroundItem
-import org.powbot.api.rt4.GroundItems
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
+import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
-import org.powbot.krulvis.mta.AlchemyRoom
 import org.powbot.krulvis.mta.EnchantingRoom
+import org.powbot.krulvis.mta.EnchantingRoom.ENCHANTING_METHOD
 import org.powbot.krulvis.mta.MTA
-import org.powbot.krulvis.mta.tree.leafs.CastHighAlch
-import org.powbot.krulvis.mta.tree.leafs.SearchCupboard
+import org.powbot.krulvis.mta.tree.leafs.DepositOrbs
+import org.powbot.krulvis.mta.tree.leafs.PickupShape
+
+class ShouldEnchant(script: MTA) : Branch<MTA>(script, "E") {
+    override val failedComponent: TreeComponent<MTA> = ShouldGraveyard(script)
+    override val successComponent: TreeComponent<MTA> = CanCastEnchant(script)
+
+    override fun validate(): Boolean {
+        return script.method == ENCHANTING_METHOD
+    }
+}
 
 class CanCastEnchant(script: MTA) : Branch<MTA>(script, "Can Cast Enchant?") {
-    override val failedComponent: TreeComponent<MTA> = IsItemOnGround(script)
-    override val successComponent: TreeComponent<MTA> = CastHighAlch(script)
-
-    var lastBest = ""
-    override fun validate(): Boolean {
-        EnchantingRoom.bestItemName = AlchemyRoom.getBestItem().itemName
-
-        script.log.info("Best item = ${AlchemyRoom.bestItemName}, changed=${lastBest != AlchemyRoom.bestItemName}")
-        if (lastBest != AlchemyRoom.bestItemName) {
-            AlchemyRoom.EMPTY_CUPBOARD = -1
-            lastBest = AlchemyRoom.bestItemName
+    override val failedComponent: TreeComponent<MTA> = ShouldDepositOrbs(script)
+    override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Casting Enchant") {
+        val spell = EnchantingRoom.getEnchantSpell() ?: return@SimpleLeaf
+        if (Magic.magicspell() != spell) {
+            if (spell.cast()) {
+                waitFor { Magic.magicspell() == spell && Game.tab() == Game.Tab.INVENTORY }
+            }
         }
-        return Inventory.stream().name(AlchemyRoom.bestItemName).isNotEmpty()
-    }
-}
 
-class IsItemOnGround(script: MTA) : Branch<MTA>(script, "Is item on ground?") {
-    override val failedComponent: TreeComponent<MTA> = ShouldDrop(script)
-    override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Picking groundItem") {
-        if (groundItem.interact("Take")) {
-            waitForDistance(groundItem) { Inventory.stream().name(AlchemyRoom.bestItemName).isNotEmpty() }
+        sleep(150)
+        val slot = alchable.inventoryIndex
+
+        if (alchable.click()) {
+            waitFor { Inventory.itemAt(slot).name() != alchable.name() }
         }
     }
 
-    var groundItem: GroundItem = GroundItem.Nil
-
+    var alchable: Item = Item.Nil
     override fun validate(): Boolean {
-        groundItem = GroundItems.stream().name(AlchemyRoom.bestItemName).first()
-        return groundItem.valid() && !Inventory.isFull()
+        val bonusShape = EnchantingRoom.getBonusShape().toString()
+        alchable = Inventory.stream().name(bonusShape, "Dragonstone").first()
+        return alchable.valid()
     }
 }
 
-class ShouldDrop(script: MTA) : Branch<MTA>(script, "Should drop items?") {
-    override val failedComponent: TreeComponent<MTA> = SearchCupboard(script)
-    override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Dropping") {
-//        val count = Inventory.stream().name(droppable.first().name()).count()
-        droppables.forEach { it.interact("Drop") }
-        waitFor(600) { AlchemyRoom.getDroppables().isEmpty() }
-    }
 
-    var droppables: List<Item> = emptyList()
+class ShouldDepositOrbs(script: MTA) : Branch<MTA>(script, "Should deposit orbs") {
+    override val failedComponent: TreeComponent<MTA> = ShouldPickupDragonstone(script)
+    override val successComponent: TreeComponent<MTA> = DepositOrbs(script)
 
     override fun validate(): Boolean {
-        droppables = AlchemyRoom.getDroppables()
-        script.log.info("droppables=${droppables.count()}")
-        return droppables.isNotEmpty()
+        return Inventory.isFull()
+    }
+}
+
+class ShouldPickupDragonstone(script: MTA) : Branch<MTA>(script, "E") {
+    override val failedComponent: TreeComponent<MTA> = PickupShape(script)
+    override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Pickup Dragonstone") {
+        if (walkAndInteract(ds, "Take")) {
+            waitFor { getDragonStone() != ds }
+        }
+    }
+
+    var ds: GroundItem = GroundItem.Nil
+
+    private fun getDragonStone() = GroundItems.stream().name("Dragonstone").nearest().first()
+
+    override fun validate(): Boolean {
+        ds = getDragonStone()
+        return ds.valid()
     }
 }

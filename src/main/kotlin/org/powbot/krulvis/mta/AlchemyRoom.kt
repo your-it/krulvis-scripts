@@ -3,6 +3,7 @@ package org.powbot.krulvis.mta
 import org.powbot.api.rt4.*
 
 object AlchemyRoom {
+    const val ALCHEMY_METHOD = "Alchemy"
     const val WIDGET_ID = 194
     const val ITEM_VALUE_START_ID = 12
 

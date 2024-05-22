@@ -1,59 +1,48 @@
 package org.powbot.krulvis.mta.tree.branches
 
-import org.powbot.api.rt4.GroundItem
-import org.powbot.api.rt4.GroundItems
 import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
-import org.powbot.krulvis.mta.AlchemyRoom
+import org.powbot.krulvis.mta.GraveyardRoom
+import org.powbot.krulvis.mta.GraveyardRoom.GRAVEYARD_METHOD
+import org.powbot.krulvis.mta.GraveyardRoom.getEdible
+import org.powbot.krulvis.mta.GraveyardRoom.getFruitCount
 import org.powbot.krulvis.mta.MTA
-import org.powbot.krulvis.mta.tree.leafs.CastHighAlch
-import org.powbot.krulvis.mta.tree.leafs.SearchCupboard
+import org.powbot.krulvis.mta.tree.leafs.DepositBones
+import org.powbot.krulvis.mta.tree.leafs.TakeBones
 
-class CanCastB2P(script: MTA) : Branch<MTA>(script, "Can Cast B2P?") {
-	override val failedComponent: TreeComponent<MTA> = IsItemOnGround(script)
-	override val successComponent: TreeComponent<MTA> = CastHighAlch(script)
+class ShouldGraveyard(script: MTA) : Branch<MTA>(script, "G") {
+    override val failedComponent: TreeComponent<MTA> = InsideTelekinesis(script)
+    override val successComponent: TreeComponent<MTA> = CanDeposit(script)
 
-	var lastBest = ""
-	override fun validate(): Boolean {
-		val bones = Inventory.stream().nameContains("bones").count()
-		return bones > 12
-	}
+    override fun validate(): Boolean {
+        return script.method == GRAVEYARD_METHOD
+    }
 }
 
-class IsItemOnGround(script: MTA) : Branch<MTA>(script, "Is item on ground?") {
-	override val failedComponent: TreeComponent<MTA> = ShouldDrop(script)
-	override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Picking groundItem") {
-		if (groundItem.interact("Take")) {
-			waitForDistance(groundItem) { Inventory.stream().name(AlchemyRoom.bestItemName).isNotEmpty() }
-		}
-	}
+class CanDeposit(script: MTA) : Branch<MTA>(script, "Can convert bones?") {
+    override val failedComponent: TreeComponent<MTA> = CanConvertBones(script)
+    override val successComponent: TreeComponent<MTA> = DepositBones(script)
 
-	var groundItem: GroundItem = GroundItem.Nil
-
-	override fun validate(): Boolean {
-		groundItem = GroundItems.stream().name(AlchemyRoom.bestItemName).first()
-		return groundItem.valid() && !Inventory.isFull()
-	}
+    override fun validate(): Boolean {
+        return Inventory.isFull() && getEdible().valid()
+    }
 }
 
-class ShouldDrop(script: MTA) : Branch<MTA>(script, "Should drop items?") {
-	override val failedComponent: TreeComponent<MTA> = SearchCupboard(script)
-	override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Dropping") {
-//        val count = Inventory.stream().name(droppable.first().name()).count()
-		droppables.forEach { it.interact("Drop") }
-		waitFor(600) { AlchemyRoom.getDroppables().isEmpty() }
-	}
+class CanConvertBones(script: MTA) : Branch<MTA>(script, "Can convert bones?") {
+    override val failedComponent: TreeComponent<MTA> = TakeBones(script)
+    override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Converting bones") {
+        if (GraveyardRoom.getSpell().cast()) {
+            waitFor { GraveyardRoom.getBoneItems().isEmpty() }
+        }
+    }
 
-	var droppables: List<Item> = emptyList()
-
-	override fun validate(): Boolean {
-		droppables = AlchemyRoom.getDroppables()
-		script.log.info("droppables=${droppables.count()}")
-		return droppables.isNotEmpty()
-	}
+    override fun validate(): Boolean {
+        val bones = GraveyardRoom.getBoneItems()
+        val space = bones.count() + Inventory.emptySlotCount()
+        return bones.getFruitCount() >= space
+    }
 }
+

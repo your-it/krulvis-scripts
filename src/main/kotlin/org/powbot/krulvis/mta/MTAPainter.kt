@@ -13,4 +13,10 @@ class MTAPainter(script: MTA) : ATPaint<MTA>(script) {
             .addString("Points") { "${script.gainedPoints}, ${script.timer.getPerHour(script.gainedPoints)}/hr" }
             .build()
     }
+
+//    override fun paintCustom(g: Rendering) {
+//        if (!TelekineticRoom.shouldInstantiate()) {
+//            TelekineticRoom.paint()
+//        }
+//    }
 }

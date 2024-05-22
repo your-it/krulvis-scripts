@@ -1,9 +1,7 @@
 package org.powbot.krulvis.api.script
 
-import com.google.common.eventbus.Subscribe
 import org.powbot.api.Preferences
 import org.powbot.api.Random
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.event.RenderEvent
 import org.powbot.api.script.tree.TreeScript
 import org.powbot.krulvis.api.antiban.DelayHandler
@@ -13,7 +11,6 @@ import org.powbot.krulvis.api.extensions.randoms.RandomHandler
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.mobile.drawing.Rendering
-import java.io.File
 
 abstract class ATScript : TreeScript() {
 
