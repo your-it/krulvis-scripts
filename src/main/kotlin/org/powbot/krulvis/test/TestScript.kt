@@ -73,7 +73,6 @@ class TestScript : ATScript() {
 
     override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
 //        cupboards = AlchemyRoom.getSortedCupboards()
-        guardian = TelekineticRoom.getGuardian()
     }
 
     //Tile(x=3635, y=3362, floor=0)
