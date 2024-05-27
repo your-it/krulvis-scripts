@@ -9,21 +9,17 @@ import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mta.MTA
 
-class GoInside(script: MTA, private val room: String) : Leaf<MTA>(script, "Go Inside Room") {
+class GoInside(script: MTA) : Leaf<MTA>(script, "Go Inside Room") {
 	override fun execute() {
-
-		val entrance = Objects.stream(50).type(GameObject.Type.INTERACTIVE).nameContains(room).action("Enter").first()
+		val entrance = getEntrance()
 		if (!entrance.valid()) {
-			script.log.info("entrance can't be found, looking for $room")
-			Objects.stream(50).type(GameObject.Type.INTERACTIVE).action("Enter").toList().forEach {
-				script.log.info("Found $it")
-			}
+			script.log.info("entrance can't be found, looking for ${script.method}")
 			Movement.walkTo(Tile(3363, 3317, 0))
 		} else if (walkAndInteract(entrance, "Enter")) {
-			waitForDistance(entrance) { inside() }
+			waitForDistance(entrance) { script.room.inside() }
 		}
 	}
 
-	private fun inside() = !Objects.stream(50).type(GameObject.Type.INTERACTIVE).nameContains(room).action("Enter").first().valid()
+	private fun getEntrance() = Objects.stream(50).type(GameObject.Type.INTERACTIVE).nameContains(script.room.portalName).action("Enter").first()
 
 }

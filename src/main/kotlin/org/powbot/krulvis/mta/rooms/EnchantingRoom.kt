@@ -1,13 +1,19 @@
-package org.powbot.krulvis.mta
+package org.powbot.krulvis.mta.rooms
 
 import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
+import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.mta.MTA
+import org.powbot.krulvis.mta.tree.branches.CanCastEnchant
 
-object EnchantingRoom {
-	const val ENCHANTING_METHOD = "Enchanters"
-	const val WIDGET_ID = 195
+object EnchantingRoom : MTARoom {
+	override val WIDGET_ID = 195
+	override val portalName: String = "Enchanters"
+
+	override fun rootComponent(mta: MTA): TreeComponent<MTA> = CanCastEnchant(mta)
+
 	const val SHAPE_INDEX_START = 10
 	private val spells = listOf(
 		Magic.Spell.ENCHANT_LEVEL_7_JEWELLERY,

@@ -6,15 +6,13 @@ import org.powbot.api.event.MessageEvent
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.tree.SimpleBranch
+import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.mta.AlchemyRoom.ALCHEMY_METHOD
-import org.powbot.krulvis.mta.EnchantingRoom.ENCHANTING_METHOD
-import org.powbot.krulvis.mta.GraveyardRoom.GRAVEYARD_METHOD
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom.TELEKINETIC_METHOD
-import org.powbot.krulvis.mta.tree.branches.ShouldAlchemy
+import org.powbot.krulvis.mta.rooms.*
+import org.powbot.krulvis.mta.tree.leafs.GoInside
 
 @ScriptManifest(
 	name = "krul MagicTrainingArena",
@@ -36,6 +34,8 @@ class MTA : ATScript() {
 
 	val method by lazy { getOption<String>("Method") }
 
+	lateinit var room: MTARoom
+
 	var gainedPoints = 0
 	var startCash = 0
 	var gainedAlchemyPoints = 0
@@ -43,11 +43,21 @@ class MTA : ATScript() {
 
 	override fun createPainter(): ATPaint<*> = MTAPainter(this)
 
-	override val rootComponent: TreeComponent<*> = ShouldAlchemy(this)
+	private var methodBranch: TreeComponent<MTA> = SimpleLeaf(this, "Nil") {}
+
+	override val rootComponent: TreeComponent<*> = SimpleBranch(this, "Inside room",
+		successComponent = methodBranch,
+		failedComponent = GoInside(this)
+	) {
+		room.inside()
+	}
+
 
 	override fun onStart() {
 		super.onStart()
+		room = rooms[method]!!
 		TelekineticRoom.resetRoom()
+		methodBranch = room.rootComponent(this)
 	}
 
 	@Subscribe
@@ -65,16 +75,6 @@ class MTA : ATScript() {
 		}
 	}
 
-//    @Subscribe
-//    fun onGameTick(e: TickEvent) {
-//        if (TelekineticRoom.inside()) {
-//            if (!TelekineticRoom.shouldInstantiate()) {
-//                log.info("Building moves")
-//                TelekineticRoom.buildMoves()
-//                TelekineticRoom.paint()
-//            }
-//        }
-//    }
 }
 
 fun main() {

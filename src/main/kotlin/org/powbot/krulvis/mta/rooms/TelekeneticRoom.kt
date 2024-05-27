@@ -1,4 +1,4 @@
-package org.powbot.krulvis.mta.telekenesis
+package org.powbot.krulvis.mta.rooms
 
 
 import org.powbot.api.Area
@@ -10,7 +10,11 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Flag
+import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.mta.MTA
+import org.powbot.krulvis.mta.tree.branches.FinishedMaze
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.util.TransientGetter2D
 import org.slf4j.LoggerFactory
@@ -19,11 +23,16 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-object TelekineticRoom {
-
+object TelekineticRoom : MTARoom {
 	val log = LoggerFactory.getLogger(javaClass.simpleName)
-	const val TELEKINETIC_METHOD = "Telekinetic"
-	const val WIDGET_ID = 198
+
+
+	override val portalName: String = "Telekinetic"
+	override fun rootComponent(mta: MTA): TreeComponent<MTA> {
+		return FinishedMaze(mta)
+	}
+
+	override val WIDGET_ID = 198
 	const val MAZE_GUARDIAN_MOVING: Int = 6778
 	private val TELEKINETIC_WALL: Int = 10755
 	private val TELEKINETIC_FINISH: Int = 23672
@@ -107,10 +116,6 @@ object TelekineticRoom {
 				}
 			}
 		}
-	}
-
-	fun inside(): Boolean {
-		return Components.stream(WIDGET_ID).viewable().isNotEmpty()
 	}
 
 
@@ -303,6 +308,19 @@ object TelekineticRoom {
 
 	fun requiredStandingDirection(): Direction {
 		return getMove().second
+	}
+
+	fun Tile.walk(): Boolean {
+		val matrix = matrix()
+		if (!matrix.inViewport()) {
+			return Movement.step(this)
+		} else {
+			matrix.click()
+			if (Utils.waitFor(1000) { Movement.destination() == this }) {
+				return Utils.waitForDistance(this) { this == me.tile() }
+			}
+		}
+		return false
 	}
 
 

@@ -15,9 +15,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.mta.AlchemyRoom
-import org.powbot.krulvis.mta.EnchantingRoom
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom
+import org.powbot.krulvis.mta.rooms.TelekineticRoom
 import org.powbot.mobile.drawing.Rendering
 
 @ScriptManifest(name = "Krul TestScriptu", version = "1.0.1", description = "", priv = true)

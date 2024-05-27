@@ -8,19 +8,9 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mta.MTA
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom
+import org.powbot.krulvis.mta.rooms.TelekineticRoom
 import org.powbot.krulvis.mta.tree.leafs.CastTelekineticGrab
-import org.powbot.krulvis.mta.tree.leafs.GoInside
 import org.powbot.krulvis.mta.tree.leafs.MoveToTelekineticPosition
-
-class InsideTelekinesis(script: MTA) : Branch<MTA>(script, "Inside telekinesis?") {
-	override val failedComponent: TreeComponent<MTA> = GoInside(script, TelekineticRoom.TELEKINETIC_METHOD)
-	override val successComponent: TreeComponent<MTA> = FinishedMaze(script)
-
-	override fun validate(): Boolean {
-		return TelekineticRoom.inside()
-	}
-}
 
 class FinishedMaze(script: MTA) : Branch<MTA>(script, "Finished maze?") {
 	override val failedComponent: TreeComponent<MTA> = ShouldInitialize(script)

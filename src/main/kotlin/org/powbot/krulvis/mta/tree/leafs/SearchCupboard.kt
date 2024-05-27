@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.mta.AlchemyRoom
+import org.powbot.krulvis.mta.rooms.AlchemyRoom
 import org.powbot.krulvis.mta.MTA
 
 class SearchCupboard(script: MTA) : Leaf<MTA>(script, "Searching cupboard") {

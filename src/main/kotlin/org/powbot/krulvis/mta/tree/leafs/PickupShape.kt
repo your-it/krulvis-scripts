@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
-import org.powbot.krulvis.mta.EnchantingRoom
+import org.powbot.krulvis.mta.rooms.EnchantingRoom
 import org.powbot.krulvis.mta.MTA
 
 class PickupShape(script: MTA) : Leaf<MTA>(script, "Pickup Shape") {

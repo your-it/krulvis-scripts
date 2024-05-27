@@ -3,18 +3,15 @@ package org.powbot.krulvis.mta.tree.leafs
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Camera
 import org.powbot.api.rt4.Magic
-import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
-import org.powbot.api.waiter.Waiter
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.mta.MTA
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom.MAZE_GUARDIAN_MOVING
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom.getNextMove
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom.optimal
-import org.powbot.krulvis.mta.telekenesis.TelekineticRoom.optimalTileForDirection
+import org.powbot.krulvis.mta.rooms.TelekineticRoom
+import org.powbot.krulvis.mta.rooms.TelekineticRoom.MAZE_GUARDIAN_MOVING
+import org.powbot.krulvis.mta.rooms.TelekineticRoom.getNextMove
+import org.powbot.krulvis.mta.rooms.TelekineticRoom.optimalTileForDirection
+import org.powbot.krulvis.mta.rooms.TelekineticRoom.walk
 
 class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic grab") {
 
@@ -45,7 +42,7 @@ class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic 
 			script.log.info("Preparing for next move=${nextMove.first}")
 			if (nextMove.first != Tile.Nil) {
 				val tile = optimalTileForDirection(nextMove.second)
-				LocalPathFinder.findPath(tile).traverse()
+				tile.walk()
 			}
 			waitFor(long()) { TelekineticRoom.getGuardian(flags).id != MAZE_GUARDIAN_MOVING }
 		}
