@@ -22,7 +22,6 @@ class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic 
 		if (!guardian.inViewport()) {
 			script.log.info("Guardian not in viewport, moving camera")
 			Camera.turnTo(guardian)
-			return
 		}
 		if (!casting()) {
 			if (spell.cast()) {
@@ -39,12 +38,14 @@ class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic 
 				return
 			}
 			val nextMove = getNextMove()
-			script.log.info("Preparing for next move=${nextMove.first}")
 			if (nextMove.first != Tile.Nil) {
 				val tile = optimalTileForDirection(nextMove.second)
+				script.log.info("Preparing for next move tile=${tile}")
 				tile.walk()
 			}
-			waitFor(long()) { TelekineticRoom.getGuardian(flags).id != MAZE_GUARDIAN_MOVING }
+			script.log.info("Waiting for guardian to stop moving")
+			val stoppedMoving = waitFor(long()) { TelekineticRoom.getGuardian(flags).id != MAZE_GUARDIAN_MOVING }
+			script.log.info("Guardian stopped moving = $stoppedMoving")
 		}
 
 	}

@@ -120,8 +120,7 @@ object TelekineticRoom : MTARoom {
 
 
 	fun optimal(): Tile {
-		val next = getMove()
-		nextOptimal = optimalTileForDirection(next.second)
+		nextOptimal = optimalTileForDirection(currentMove.second)
 		return nextOptimal
 	}
 
@@ -311,6 +310,7 @@ object TelekineticRoom : MTARoom {
 	}
 
 	fun Tile.walk(): Boolean {
+		if (this == Tile.Nil) return false
 		val matrix = matrix()
 		if (!matrix.inViewport() || matrix.distance() > 10) {
 			return Movement.step(this)
@@ -330,10 +330,9 @@ object TelekineticRoom : MTARoom {
 		companion object {
 
 			fun fromGuardian(): Direction {
-				val orientation = mazeGuardian.orientation()
 				var dir: Direction?
 				do {
-					dir = fromOrientation(orientation)
+					dir = fromOrientation(mazeGuardian.orientation())
 				} while (dir == null)
 				return dir
 			}
