@@ -40,7 +40,6 @@ object GraveyardRoom : MTARoom {
 		;
 	}
 
-	//TODO("Make sure this is correct")
 	override val WIDGET_ID: Int = 196
 	override val portalName: String = "Graveyard"
 	override fun rootComponent(mta: MTA): TreeComponent<MTA> {

@@ -35,18 +35,22 @@ class MTA : ATScript() {
 	val method by lazy { getOption<String>("Method") }
 
 	lateinit var room: MTARoom
+	var started = false
 
 	var gainedPoints = 0
 	var startCash = 0
 	var gainedAlchemyPoints = 0
 
-
 	override fun createPainter(): ATPaint<*> = MTAPainter(this)
 
-	private var methodBranch: TreeComponent<MTA> = SimpleLeaf(this, "Nil") {}
+	private lateinit var methodComp: TreeComponent<MTA>
 
 	override val rootComponent: TreeComponent<*> = SimpleBranch(this, "Inside room",
-		successComponent = methodBranch,
+		successComponent = object : TreeComponent<MTA>(this, "RoomStart") {
+			override fun execute() {
+				methodComp.execute()
+			}
+		},
 		failedComponent = GoInside(this)
 	) {
 		room.inside()
@@ -57,7 +61,8 @@ class MTA : ATScript() {
 		super.onStart()
 		room = rooms[method]!!
 		TelekineticRoom.resetRoom()
-		methodBranch = room.rootComponent(this)
+		methodComp = room.rootComponent(this)
+		started = true
 	}
 
 	@Subscribe

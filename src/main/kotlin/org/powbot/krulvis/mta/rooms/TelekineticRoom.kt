@@ -312,7 +312,7 @@ object TelekineticRoom : MTARoom {
 
 	fun Tile.walk(): Boolean {
 		val matrix = matrix()
-		if (!matrix.inViewport()) {
+		if (!matrix.inViewport() || matrix.distance() > 10) {
 			return Movement.step(this)
 		} else {
 			matrix.click()
