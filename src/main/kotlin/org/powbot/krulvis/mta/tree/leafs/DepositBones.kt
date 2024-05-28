@@ -13,7 +13,7 @@ class DepositBones(script: MTA) : Leaf<MTA>(script, "Deposit bones") {
     override fun execute() {
         val edible = getEdible()
         val missingHealth = Combat.maxHealth() - Combat.health()
-        script.log.info("Depositing bones, have edible=${edible}, heals=${edible.healing()}, missingHealth=${missingHealth}")
+        script.logger.info("Depositing bones, have edible=${edible}, heals=${edible.healing()}, missingHealth=${missingHealth}")
         if (edible.valid() && missingHealth >= edible.healing()) {
             edible.interact("Eat")
         }

@@ -33,7 +33,7 @@ class SendDemon(script: Construction) : Leaf<Construction>(script, "Sending demo
 
     override fun execute() {
         if (script.plank.getInventoryCount(true) <= 25) {
-            script.log.info("Out of planks stopping script")
+            script.logger.info("Out of planks stopping script")
             ScriptManager.stop()
             return
         }
@@ -56,9 +56,9 @@ class SendDemon(script: Construction) : Leaf<Construction>(script, "Sending demo
         if (chatOption() != null) {
             handleChat()
             if (waitFor { demon() == null }) {
-                script.log.info("Waiting for demon to return....")
+                script.logger.info("Waiting for demon to return....")
                 val returned = waitFor(10000) { demon() != null }
-                script.log.info("Demon returned =$returned")
+                script.logger.info("Demon returned =$returned")
             }
         }
     }

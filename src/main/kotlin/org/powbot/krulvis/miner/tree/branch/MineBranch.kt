@@ -29,7 +29,7 @@ class AtSpot(script: Miner) : Branch<Miner>(script, "AtSpot") {
             return false
         }
         val walkableNeighbor = nearest.getWalkableNeighbor(allowSelf = false, checkForWalls = false)
-        script.log.info("Nearest=$nearest, walkableNeighbor=$walkableNeighbor")
+        script.logger.info("Nearest=$nearest, walkableNeighbor=$walkableNeighbor")
         return nearest.distance() <= 10 && walkableNeighbor?.reachable() == true
     }
 

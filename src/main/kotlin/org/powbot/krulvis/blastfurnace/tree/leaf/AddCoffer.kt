@@ -20,7 +20,7 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
     override fun execute() {
         val depositButton = Chat.stream().textContains("Deposit coins.").findFirst()
         if (Inventory.getCount(995) < script.cofferAmount) {
-            script.log.info("Not enough gold yet...")
+            script.logger.info("Not enough gold yet...")
             if (!Bank.opened()) {
                 val chest = Objects.stream().name("Bank chest").findFirst()
                 chest.ifPresent { if (walkAndInteract(it, "Use")) waitFor(long()) { Bank.opened() } }
@@ -37,7 +37,7 @@ class AddCoffer(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Adding to co
                 waitFor(long()) { Chat.pendingInput() }
             }
         } else if (Bank.close() && Chat.pendingInput()) {
-            script.log.info("Pending deposit input...")
+            script.logger.info("Pending deposit input...")
             Input.sendln("${script.cofferAmount / 1000 + 1}k")
             waitFor { script.cofferCount() > 100 }
         } else {

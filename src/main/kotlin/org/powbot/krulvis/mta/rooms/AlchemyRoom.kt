@@ -43,7 +43,7 @@ object AlchemyRoom : MTARoom {
 		return Alchable.values().zip(worth)
 	}
 
-	fun getBest(): Alchable = getItemsWorth().maxBy { it.second }.first
+	fun getBest(): Alchable = getItemsWorth().maxByOrNull { it.second }?.first ?: Alchable.NONE
 
 	fun getDroppables(): List<Item> =
 		Inventory.stream().name(*(Alchable.names - bestItem.itemName).toTypedArray()).toList()

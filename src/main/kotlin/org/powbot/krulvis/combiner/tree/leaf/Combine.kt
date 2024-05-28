@@ -56,19 +56,19 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                     event.widget().interact(event.interaction, false)
                 }
                 else -> {
-                    script.log.info("None of the handled types: $event")
+                    script.logger.info("None of the handled types: $event")
                     false
                 }
             }
             if (interaction || (next is WidgetActionEvent && next.widget().visible())) {
-                script.log.info("Interaction for event=$event successfull, next=$next")
+                script.logger.info("Interaction for event=$event successfull, next=$next")
                 if (next == null) {
                     waitFor(long()) { script.spamClick || !script.stoppedUsing() }
                     if (event is WidgetActionEvent && event.interaction == "Cast" && script.shouldBank()) {
-                        script.log.info("Casting spell as last action")
+                        script.logger.info("Casting spell as last action")
                         val randomSleep = Random.nextInt(600, 1200)
                         sleep(randomSleep)
-                        script.log.info("Slept for $randomSleep")
+                        script.logger.info("Slept for $randomSleep")
                     }
                 } else {
                     val wait = waitFor(long()) {
@@ -86,10 +86,10 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
                             }
                         }
                     }
-                    script.log.info("waitFor next=$next ${if (wait) "success" else "failed"}")
+                    script.logger.info("waitFor next=$next ${if (wait) "success" else "failed"}")
                 }
             } else {
-                script.log.info("FAILED interaction for event=$event, next=$next")
+                script.logger.info("FAILED interaction for event=$event, next=$next")
                 return
             }
         }

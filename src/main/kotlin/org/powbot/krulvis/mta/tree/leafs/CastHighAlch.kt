@@ -18,21 +18,21 @@ class CastHighAlch(script: MTA) : Leaf<MTA>(script, "Casting high alch") {
 		val coins = Inventory.stream().id(995).count(true)
 		if (castingDelay.isFinished()) {
 			if (Magic.Spell.HIGH_ALCHEMY.cast()) {
-				script.log.info("Selected HA")
+				script.logger.info("Selected HA")
 				waitFor { casting() && Game.tab() == Game.Tab.INVENTORY }
 				sleep(150)
 			}
 			val invOpen = Game.tab() == Game.Tab.INVENTORY
-			script.log.info("Game.tab() = ${Game.tab()}, invOpen=${invOpen}")
+			script.logger.info("Game.tab() = ${Game.tab()}, invOpen=${invOpen}")
 			if (invOpen && item.interact("Cast")) {
 				if (waitFor { Game.tab() == Game.Tab.MAGIC }) {
 					castingDelay.reset(Random.nextInt(1700, 1900))
-					script.log.info("Done casting HA")
+					script.logger.info("Done casting HA")
 				} else {
-					script.log.info("Failed to cast HA")
+					script.logger.info("Failed to cast HA")
 				}
 			} else {
-				script.log.info("Failed to click item")
+				script.logger.info("Failed to click item")
 			}
 		}
 

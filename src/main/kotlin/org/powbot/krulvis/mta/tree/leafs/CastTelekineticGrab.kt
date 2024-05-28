@@ -20,7 +20,7 @@ class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic 
 	override fun execute() {
 		val guardian = TelekineticRoom.mazeGuardian
 		if (!guardian.inViewport()) {
-			script.log.info("Guardian not in viewport, moving camera")
+			script.logger.info("Guardian not in viewport, moving camera")
 			Camera.turnTo(guardian)
 		}
 		if (!casting()) {
@@ -29,23 +29,23 @@ class CastTelekineticGrab(script: MTA) : Leaf<MTA>(script, "Casting telekinetic 
 			}
 		}
 
-		script.log.info("Casting=${casting()}")
+		script.logger.info("Casting=${casting()}")
 		if (casting() && guardian.interact("cast")) {
 			val flags = TelekineticRoom.getFlags()
 
 			if (!waitFor(2500) { TelekineticRoom.getGuardian(flags).id == MAZE_GUARDIAN_MOVING }) {
-				script.log.info("Casting failed?")
+				script.logger.info("Casting failed?")
 				return
 			}
 			val nextMove = getNextMove()
 			if (nextMove.first != Tile.Nil) {
 				val tile = optimalTileForDirection(nextMove.second)
-				script.log.info("Preparing for next move tile=${tile}")
+				script.logger.info("Preparing for next move tile=${tile}")
 				tile.walk()
 			}
-			script.log.info("Waiting for guardian to stop moving")
+			script.logger.info("Waiting for guardian to stop moving")
 			val stoppedMoving = waitFor(long()) { TelekineticRoom.getGuardian(flags).id != MAZE_GUARDIAN_MOVING }
-			script.log.info("Guardian stopped moving = $stoppedMoving")
+			script.logger.info("Guardian stopped moving = $stoppedMoving")
 		}
 
 	}

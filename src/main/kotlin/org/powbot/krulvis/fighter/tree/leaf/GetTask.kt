@@ -35,7 +35,7 @@ class GetTask(script: Fighter) : Leaf<Fighter>(script, "Getting task") {
             val textComp = widget.components()
                 .firstOrNull { it.text().contains("Your new task is") } ?: return
             val text = textComp.text().sanitizeMultilineText()
-            script.log.info("Parsing task from widget \n TEXT: $text")
+            script.logger.info("Parsing task from widget \n TEXT: $text")
             val assignMsg = NPC_ASSIGN_MESSAGE.matcher(text)
             val bossAssignMsg = NPC_ASSIGN_BOSS_MESSAGE.matcher(text)
             val firstAssignMsg = NPC_ASSIGN_FIRST_MESSAGE.matcher(text)

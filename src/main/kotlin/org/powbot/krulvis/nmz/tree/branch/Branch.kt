@@ -24,7 +24,7 @@ class OutsideNMZ(script: NightmareZone) : Branch<NightmareZone>(script, "Is outs
     override fun validate(): Boolean {
         val outside = script.outsideNMZ()
         if (outside && script.stopOutside) {
-            script.log.info("Stopping because outside of NMZ")
+            script.logger.info("Stopping because outside of NMZ")
             ScriptManager.stop()
         }
         return outside

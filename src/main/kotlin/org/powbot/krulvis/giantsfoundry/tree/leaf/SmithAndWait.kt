@@ -20,7 +20,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
     override fun execute() {
         val action = script.currentAction ?: return
         val actionObj = action.getObj() ?: return
-        script.log.info("Performing: $action, on obj=${actionObj.name}")
+        script.logger.info("Performing: $action, on obj=${actionObj.name}")
 
         var smithXp = Skills.experience(Skill.Smithing)
         if (interaction(actionObj, "Use")) {
@@ -28,9 +28,9 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
             smithXp = Skills.experience(Skill.Smithing)
             var lastXpGain = System.currentTimeMillis()
             while (action == script.currentAction && action.canPerform() && System.currentTimeMillis() - lastXpGain <= 4000) {
-                script.log.info("Still performing.... lastXpChange=${System.currentTimeMillis() - lastXpGain}ms")
+                script.logger.info("Still performing.... lastXpChange=${System.currentTimeMillis() - lastXpGain}ms")
                 if (smithXp < Skills.experience(Skill.Smithing)) {
-                    script.log.info("Got new experience after ${System.currentTimeMillis() - lastXpGain}ms")
+                    script.logger.info("Got new experience after ${System.currentTimeMillis() - lastXpGain}ms")
                     lastXpGain = System.currentTimeMillis()
                     smithXp = Skills.experience(Skill.Smithing)
                 }
@@ -39,7 +39,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
                 }
                 sleep(150)
             }
-            script.log.info(
+            script.logger.info(
                 "Stopping SMITH" +
                         "\n action changed=${action != script.currentAction}," +
                         "\n canPerform=${action.canPerform()}," +
@@ -47,7 +47,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
             )
             script.stopActivity(null)
         } else {
-            script.log.info("Failed to even SMITH interact...")
+            script.logger.info("Failed to even SMITH interact...")
         }
     }
 
@@ -55,7 +55,7 @@ class SmithAndWait(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Smith a
         val boostComp = Widgets.component(ROOT, 4)
         if (boostComp.componentCount() > 0) {
             val boostCompChild = boostComp.component(0)
-            script.log.info("Can possibly click boost! col=${boostCompChild.textColor()}")
+            script.logger.info("Can possibly click boost! col=${boostCompChild.textColor()}")
             return boostCompChild.textColor() == 16570115
         }
         return false

@@ -31,19 +31,19 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
             defender.withdrawExact(1)
         } else if (script.warriorGuild && !Inventory.containsOneOf(script.warriorTokens)) {
             if (!Bank.withdraw(script.warriorTokens, Bank.Amount.ALL) && !Bank.containsOneOf(script.warriorTokens)) {
-                script.log.info("Out of warrior tokens, stopping script")
+                script.logger.info("Out of warrior tokens, stopping script")
                 ScriptManager.stop()
             }
         } else {
             script.inventory.forEach { (id, amount) ->
                 if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
-                    script.log.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
+                    script.logger.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
                     ScriptManager.stop()
                 }
             }
             script.potions.forEach { (potion, amount) ->
                 if (!potion.withdrawExact(amount) && !potion.inBank()) {
-                    script.log.info("Stopped because no $potion in bank")
+                    script.logger.info("Stopped because no $potion in bank")
                     ScriptManager.stop()
                 }
             }

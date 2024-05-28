@@ -39,7 +39,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         }
 
         if (script.burnTile == null) {
-            script.log.info("Can't find good burning spot...")
+            script.logger.info("Can't find good burning spot...")
             script.burning = true
             return
         } else if (script.burnTile != Players.local().tile()) {
@@ -52,7 +52,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         if (Inventory.selectedItem() == Item.Nil) {
             val tinderBox = Inventory.stream().id(TINDERBOX).firstOrNull()
             if (tinderBox == null) {
-                script.log.info("No tinderbox, stopping script")
+                script.logger.info("No tinderbox, stopping script")
                 ScriptManager.stop()
             } else if (tinderBox.interact("Use")) {
                 waitFor { Inventory.selectedItem().id == TINDERBOX }
@@ -63,7 +63,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
             val floor = GroundItems.stream().at(script.burnTile!!).firstOrNull { it.id() in script.LOGS }
             val interaction = floor?.interact("Use") ?: logs.click()
             if (interaction) {
-                script.log.info(
+                script.logger.info(
                     "waitFor{} took=${
                         measureTimeMillis {
                             waitFor(long()) {
@@ -81,7 +81,7 @@ class Burn(script: Woodcutter) : Leaf<Woodcutter>(script, "Burning") {
         val blocked = blocked(flags)
         val objBlocking = Objects.stream().at(this).firstOrNull { it.name.isNotEmpty() }
         if (this == script.burnTile && (blocked || objBlocking != null)) {
-            script.log.info("Can't build fire on tile=${script.burnTile}, blocked=$blocked, obj exists=${objBlocking != null}, name=${objBlocking?.name}, id=${objBlocking?.id()}")
+            script.logger.info("Can't build fire on tile=${script.burnTile}, blocked=$blocked, obj exists=${objBlocking != null}, name=${objBlocking?.name}, id=${objBlocking?.id()}")
         }
         return !blocked && (objBlocking == null || objBlocking.id() == script.boundaryId)
     }

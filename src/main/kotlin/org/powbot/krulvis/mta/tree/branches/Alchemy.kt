@@ -22,7 +22,7 @@ class CanCastHA(script: MTA) : Branch<MTA>(script, "Can Cast HA?") {
 	override fun validate(): Boolean {
 		AlchemyRoom.bestItem = AlchemyRoom.getBest()
 
-		script.log.info("Best item = ${AlchemyRoom.bestItem}, changed=${lastBest != AlchemyRoom.bestItem}")
+		script.logger.info("Best item = ${AlchemyRoom.bestItem}, changed=${lastBest != AlchemyRoom.bestItem}")
 		if (lastBest != AlchemyRoom.bestItem) {
 			AlchemyRoom.order = emptyList()
 			lastBest = AlchemyRoom.bestItem
@@ -58,7 +58,7 @@ class ShouldDrop(script: MTA) : Branch<MTA>(script, "Should drop items?") {
 
 	override fun validate(): Boolean {
 		droppables = AlchemyRoom.getDroppables()
-		script.log.info("droppables=${droppables.count()}")
+		script.logger.info("droppables=${droppables.count()}")
 		return droppables.isNotEmpty()
 	}
 }

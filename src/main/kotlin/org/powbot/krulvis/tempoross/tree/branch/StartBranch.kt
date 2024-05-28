@@ -46,13 +46,13 @@ class WaitingForStart(script: Tempoross) : Branch<Tempoross>(script, "Waiting Fo
     override fun validate(): Boolean {
         if (script.side == Side.UNKNOWN) {
             if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
-                script.log.info("Getting Side of mini-game")
+                script.logger.info("Getting Side of mini-game")
                 val mast = Objects.stream(50).type(GameObject.Type.INTERACTIVE).name("Mast").nearest().first()
-                script.log.info("Mast found: $mast, orientation: ${mast.orientation()}")
+                script.logger.info("Mast found: $mast, orientation: ${mast.orientation()}")
                 script.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
                 script.side.mastLocation = mast.tile()
             } else {
-                script.log.info("Couldn't find ammunition crate")
+                script.logger.info("Couldn't find ammunition crate")
                 return true
             }
         }

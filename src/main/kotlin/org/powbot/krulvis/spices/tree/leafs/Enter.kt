@@ -11,7 +11,7 @@ class Enter(script: Spices) : Leaf<Spices>(script, "Enter") {
 
     override fun execute() {
         val curtain = Objects.stream().name("Curtain").action("Enter").nearest().firstOrNull() ?: return
-        script.log.info("Found curtain at tile=${curtain.tile}")
+        script.logger.info("Found curtain at tile=${curtain.tile}")
         if (curtain.interact("Enter")) {
             waitFor { script.enterComponent()?.visible() == true }
         }

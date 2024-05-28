@@ -23,7 +23,7 @@ class Build(script: Construction) : Leaf<Construction>(script, "Build cape") {
         if (craftComp?.visible() == true) {
             craftComp.click()
             val waitForBuild = waitFor { script.builtObj() != null }
-            script.log.info("Wait for build completed=$waitForBuild")
+            script.logger.info("Wait for build completed=$waitForBuild")
         }
     }
 }

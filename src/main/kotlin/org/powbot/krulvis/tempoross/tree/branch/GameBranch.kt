@@ -65,7 +65,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         val hp = script.health
         val lowestAllowedHP = getLowestHPAllowed()
         if (hp <= lowestAllowedHP) {
-            script.log.info("We started killing at=${script.vulnerableStartHP}, hp=${hp} lower than allowed hp=$lowestAllowedHP")
+            script.logger.info("We started killing at=${script.vulnerableStartHP}, hp=${hp} lower than allowed hp=$lowestAllowedHP")
             //If we are below a certain threshold compared to when we started, return to fishing/cooking
             return false
         }
@@ -75,7 +75,7 @@ class ShouldKill(script: Tempoross) : Branch<Tempoross>(script, "Should Kill") {
         val lowHp = script.isLowHP()
         if (count >= 1 && lowHp && script.atAmmoCrate()) {
             //If we are shooting and have fish left while tempoross is below a certain hp, keep shooting
-            script.log.info("Don't kill yet LOW HP, shooting last fish at tempoross, count=$count, hp=$hp, energy=${script.energy}")
+            script.logger.info("Don't kill yet LOW HP, shooting last fish at tempoross, count=$count, hp=$hp, energy=${script.energy}")
             return script.solo && script.energy >= 30
         }
         return !script.solo || !Inventory.containsOneOf(COOKED)

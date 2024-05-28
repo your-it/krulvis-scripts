@@ -35,25 +35,25 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
         if (script.mouldWidgetOpen()) {
             val mouldType = MouldType.values().firstOrNull { !it.hasSelected() } ?: return
             if (!selectPage(mouldType)) {
-                script.log.info("Unable to navigate to unselected mould page...")
+                script.logger.info("Unable to navigate to unselected mould page...")
                 return
             }
             val bonus = getComission()
-            script.log.info("Setting moulds for types: [${bonus.joinToString(", ")}]")
+            script.logger.info("Setting moulds for types: [${bonus.joinToString(", ")}]")
 
             val bestMould = getPageMoulds().maxByOrNull { mould ->
                 mould.second.filter { it.type in bonus }.sumOf { it.amount }
             } ?: return
 
             val bonusStr = bestMould.second.joinToString(separator = ", ") { "${it.type}: ${it.amount}" }
-            script.log.info("Found max mould=${bonusStr}, isSelected=${bestMould.first.name().isBlank()}")
+            script.logger.info("Found max mould=${bonusStr}, isSelected=${bestMould.first.name().isBlank()}")
 
             if (bestMould.first.name().isNotBlank()) {
                 val scrollBar = script.mouldWidget().component(11).component(1)
                 if (verticalScrollTo(bestMould.first, mouldContainer(), scrollBar)) {
                     bestMould.first.click()
                     val selected = waitFor { mouldType.hasSelected() }
-                    script.log.info("Selected bestMould successfully=$selected")
+                    script.logger.info("Selected bestMould successfully=$selected")
                 }
             }
         } else {
@@ -71,7 +71,7 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
             val bonuses = container.filterNotNull().filter { comp ->
                 comp.index() in button.index() + 1..button.index() + 16 && BonusType.isBonus(comp)
             }.map { Bonus(BonusType.forComp(it)!!, container.component(it.index() + 1).text().toInt()) }
-//            script.log.info("Children for ${button.text()}: size= ${children.size}, bonuses=${children.joinToString()}")
+//            script.logger.info("Children for ${button.text()}: size= ${children.size}, bonuses=${children.joinToString()}")
             Pair(button, bonuses)
         }
     }

@@ -19,23 +19,23 @@ import org.powbot.mobile.script.ScriptManager
 class HandleBank(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Handling Bank") {
     override fun execute() {
         if (!Inventory.emptyExcept(*script.necessaries)) {
-            script.log.info(
+            script.logger.info(
                 "Depositing because inventory contains: ${
                     Inventory.stream().firstOrNull { it.id() !in script.necessaries }
                 }"
             )
             Bank.depositAllExcept(*script.necessaries)
         } else if (script.antipoison && !Potion.hasAntipot()) {
-            script.log.info("Needs to withdraw antipot")
+            script.logger.info("Needs to withdraw antipot")
             val withdraw = if (Potion.ANTIPOISON.inBank())
                 Potion.ANTIPOISON.withdrawExact(1, worse = true, wait = true)
             else Potion.SUPER_ANTIPOISON.withdrawExact(1, worse = true, wait = true)
             if (!withdraw && !Potion.hasAntipotBank()) {
-                script.log.info("Out of antipots, stopping script")
+                script.logger.info("Out of antipots, stopping script")
                 ScriptManager.stop()
             }
         } else if (!script.orb.requirements.all { it.meets() }) {
-            script.log.info("Missing requirement: ${script.orb.requirements.first { !it.meets() }}")
+            script.logger.info("Missing requirement: ${script.orb.requirements.first { !it.meets() }}")
             script.orb.requirements.forEach {
                 when (it) {
                     is EquipmentRequirement -> it.item.withdrawAndEquip(true)
@@ -43,10 +43,10 @@ class HandleBank(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Handling Bank")
                 }
             }
         } else if (cosmicCount() < cosmicCountRequired) {
-            script.log.info("Withdrawing cosmics=$cosmicCountRequired")
+            script.logger.info("Withdrawing cosmics=$cosmicCountRequired")
             Bank.withdrawExact(COSMIC, cosmicCountRequired)
         } else if (!Inventory.isFull()) {
-            script.log.info("Withdrawing unpowered orbs")
+            script.logger.info("Withdrawing unpowered orbs")
             Bank.withdraw(UNPOWERED, Bank.Amount.ALL)
         }
     }

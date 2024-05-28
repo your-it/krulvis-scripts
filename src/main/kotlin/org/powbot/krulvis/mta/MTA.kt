@@ -24,7 +24,7 @@ import org.powbot.mobile.script.ScriptManager
             name = "Method",
             description = "Which room to gather points at?",
             allowedValues = arrayOf(ALCHEMY_METHOD, ENCHANTING_METHOD, GRAVEYARD_METHOD, TELEKINETIC_METHOD),
-            defaultValue = ALCHEMY_METHOD
+            defaultValue = TELEKINETIC_METHOD
         ),
         ScriptConfiguration(
             name = "Stop at points",

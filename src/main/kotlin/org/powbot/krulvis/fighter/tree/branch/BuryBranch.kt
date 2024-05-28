@@ -43,7 +43,7 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
             bones.forEachIndexed { i, bone ->
                 val count = Inventory.getCount(bone.id)
                 val action = bone.buryAction()
-                script.log.info("$action on ${bone.name()}")
+                script.logger.info("$action on ${bone.name()}")
                 if (bone.interact(action)) {
                     Utils.waitFor { count > Inventory.getCount(bone.id) }
                     if (i < this.bones.size - 1)

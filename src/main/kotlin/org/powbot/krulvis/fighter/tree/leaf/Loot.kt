@@ -20,7 +20,7 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 
         val loots = script.loot().sortedWith(compareBy<GroundItem> { it.distance() }
                 .thenByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() })
-        script.log.info("Looting=[${loots.joinToString()}]")
+        script.logger.info("Looting=[${loots.joinToString()}]")
 
         val edibleFood = Food.getFirstFood()
         val prayPot = Potion.PRAYER.getInvItem(true)
@@ -54,7 +54,7 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
         script.lootList.removeAll { loot ->
             GroundItems.stream().at(loot.tile).name(loot.name()).none { gi -> gi.stackSize() == loot.stackSize() }
         }
-        script.log.info("Remaining loot=[${script.lootList.joinToString()}]")
+        script.logger.info("Remaining loot=[${script.lootList.joinToString()}]")
     }
 
     fun isTargetDying(): Boolean {

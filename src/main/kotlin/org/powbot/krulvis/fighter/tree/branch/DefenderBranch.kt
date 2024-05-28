@@ -24,7 +24,7 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
         if (door != null && Utils.walkAndInteract(door, "Open")) {
             waitFor(long()) { Players.local().tile() == doorTile }
             if (Inventory.getCount(script.warriorTokens) < 10) {
-                script.log.info("Stopping script, out of token")
+                script.logger.info("Stopping script, out of token")
                 ScriptManager.stop()
             }
         }

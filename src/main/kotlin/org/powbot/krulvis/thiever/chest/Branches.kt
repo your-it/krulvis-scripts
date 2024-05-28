@@ -88,7 +88,7 @@ class Picklock(script: ChestThiever) : Leaf<ChestThiever>(script, "Picklock") {
         val xp = Skills.experience(Constants.SKILLS_THIEVING)
         if (chest.interact("Picklock")) {
             sleep(Random.nextInt(2000, 3000))
-//            script.log.info("Waited for skilldrop... success=${waitFor(long()) { xp < Skills.experience(Constants.SKILLS_THIEVING) }}")
+//            script.logger.info("Waited for skilldrop... success=${waitFor(long()) { xp < Skills.experience(Constants.SKILLS_THIEVING) }}")
         }
     }
 }

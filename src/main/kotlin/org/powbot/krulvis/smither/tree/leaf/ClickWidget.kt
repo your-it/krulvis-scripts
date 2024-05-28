@@ -11,10 +11,10 @@ class ClickWidget(script: Smither) : Leaf<Smither>(script, "Click Widget") {
     override fun execute() {
         val comp = Components.stream(312).text(script.item.toString()).firstOrNull()
         val clickable = comp?.parent() ?: return
-        script.log.info("Found widget with text: ${comp.text()}, parent: $clickable")
+        script.logger.info("Found widget with text: ${comp.text()}, parent: $clickable")
         if (clickable.interact("Smith", false)) {
             val notStoppedMaking = waitFor(long()) { !Production.stoppedUsing(script.bar.id) }
-            script.log.info("After widget click notStoppedMaking=$notStoppedMaking")
+            script.logger.info("After widget click notStoppedMaking=$notStoppedMaking")
         }
     }
 }

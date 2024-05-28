@@ -13,7 +13,7 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
         val locs = script.trees
         script.chopDelay.forceFinish()
         if (locs.isEmpty()) {
-            script.log.info("Script requires at least 1 Tree GameObject set in the Configuration")
+            script.logger.info("Script requires at least 1 Tree GameObject set in the Configuration")
             ScriptManager.stop()
         } else {
             val tile = locs.minByOrNull { it.distance() }

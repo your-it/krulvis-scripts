@@ -19,7 +19,7 @@ class FinishedMaze(script: MTA) : Branch<MTA>(script, "Finished maze?") {
 		if (!guardian.inViewport()) {
 			Camera.turnTo(guardian)
 		}
-		script.log.info("guardian in viewport = ${guardian.inViewport()}, actions=${guardian.actions}")
+		script.logger.info("guardian in viewport = ${guardian.inViewport()}, actions=${guardian.actions}")
 		if (guardian.interact("New-maze")) {
 			TelekineticRoom.resetRoom()
 			val flags = TelekineticRoom.getFlags()
@@ -43,12 +43,12 @@ class ShouldInitialize(script: MTA) : Branch<MTA>(script, "Should initialize roo
 
 class ShouldWalkToCenter(script: MTA) : Branch<MTA>(script, "Should walk to center?") {
 	override val failedComponent: TreeComponent<MTA> = SimpleLeaf(script, "Initialize") {
-		script.log.info("Maze guardian=${TelekineticRoom.mazeGuardian}")
+		script.logger.info("Maze guardian=${TelekineticRoom.mazeGuardian}")
 		TelekineticRoom.instantiateRoom()
 	}
 	override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Walk to center") {
 		val center = TelekineticRoom.nearestWall()
-		script.log.info("Walking to nearestWall=$center")
+		script.logger.info("Walking to nearestWall=$center")
 		Movement.step(center)
 	}
 

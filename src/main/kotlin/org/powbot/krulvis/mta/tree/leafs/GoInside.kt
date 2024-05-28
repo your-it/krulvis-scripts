@@ -13,7 +13,7 @@ class GoInside(script: MTA) : Leaf<MTA>(script, "Go Inside Room") {
 	override fun execute() {
 		val entrance = getEntrance()
 		if (!entrance.valid()) {
-			script.log.info("entrance can't be found, looking for ${script.method}")
+			script.logger.info("entrance can't be found, looking for ${script.method}")
 			Movement.walkTo(Tile(3363, 3317, 0))
 		} else if (walkAndInteract(entrance, "Enter")) {
 			waitForDistance(entrance) { script.room.inside() }

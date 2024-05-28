@@ -78,8 +78,8 @@ object TelekineticRoom : MTARoom {
 		log.info("Walls=$numMazeWalls")
 	}
 
-	fun nearestWall() =
-		if (telekineticWalls.isNotEmpty()) telekineticWalls.minBy { it.distance() }
+	fun nearestWall(): GameObject =
+		if (telekineticWalls.isNotEmpty()) telekineticWalls.minByOrNull { it.distance() } ?: GameObject.Nil
 		else Objects.stream().type(GameObject.Type.BOUNDARY).id(TELEKINETIC_WALL).nearest().first()
 
 	fun getGuardian(flags: TransientGetter2D<Int>): Npc {
