@@ -38,5 +38,5 @@ class SearchCupboard(script: MTA) : Leaf<MTA>(script, "Searching cupboard") {
 	}
 
 	private fun Inventory.itemCounts() =
-		Inventory.items().groupBy { it.name() }.map { it.key to it.value.sumOf { item -> item.stack } }
+		items().groupBy { it.name() }.map { it.key to it.value.sumOf { item -> item.stack } }
 }
