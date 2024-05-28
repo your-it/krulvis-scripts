@@ -7,6 +7,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.rooms.EnchantingRoom
 import org.powbot.krulvis.mta.tree.leafs.DepositOrbs
@@ -52,7 +53,7 @@ class ShouldPickupDragonstone(script: MTA) : Branch<MTA>(script, "E") {
 	override val failedComponent: TreeComponent<MTA> = PickupShape(script)
 	override val successComponent: TreeComponent<MTA> = SimpleLeaf(script, "Pickup Dragonstone") {
 		if (walkAndInteract(ds, "Take")) {
-			waitFor { getDragonStone() != ds }
+			waitForDistance(ds) { getDragonStone() != ds }
 		}
 	}
 
