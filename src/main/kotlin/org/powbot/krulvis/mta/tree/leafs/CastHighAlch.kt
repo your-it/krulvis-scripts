@@ -23,9 +23,12 @@ class CastHighAlch(script: MTA) : Leaf<MTA>(script, "Casting high alch") {
 			}
 			script.log.info("Game.tab() = ${Game.tab()}, invOpen=$invOpen")
 			if (invOpen && item.interact("Cast")) {
-				castingDelay.reset(Random.nextInt(1800, 2400))
-				waitFor { !casting() && coins < Inventory.stream().name("Coins").count(true) }
-				script.log.info("Done casting HA")
+				if (waitFor { !casting() && coins < Inventory.stream().name("Coins").count(true) }) {
+					castingDelay.reset(Random.nextInt(1700, 1900))
+					script.log.info("Done casting HA")
+				} else {
+					script.log.info("Failed to cast HA")
+				}
 			}
 		}
 

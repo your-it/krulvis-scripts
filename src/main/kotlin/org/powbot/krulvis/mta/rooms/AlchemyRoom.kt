@@ -58,7 +58,7 @@ object AlchemyRoom : MTARoom {
 		;
 
 		fun inventoryItem(): Item = Inventory.stream().name(itemName).first()
-		fun groundItem(): GroundItem = GroundItems.stream().name(itemName).first()
+		fun groundItem(): GroundItem = GroundItems.stream().name(itemName).nearest().first()
 
 		companion object {
 			val names = values().map { it.itemName }
