@@ -1,5 +1,6 @@
 package org.powbot.krulvis.mta.tree.leafs
 
+import org.powbot.api.Input
 import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Magic
@@ -16,19 +17,22 @@ class CastHighAlch(script: MTA) : Leaf<MTA>(script, "Casting high alch") {
 		val item = AlchemyRoom.bestItem.inventoryItem()
 		val coins = Inventory.stream().id(995).count(true)
 		if (castingDelay.isFinished()) {
-			var invOpen = false
 			if (Magic.Spell.HIGH_ALCHEMY.cast()) {
 				script.log.info("Selected HA")
-				invOpen = waitFor { Game.tab() == Game.Tab.INVENTORY }
+				waitFor { casting() && Game.tab() == Game.Tab.INVENTORY }
+				sleep(150)
 			}
-			script.log.info("Game.tab() = ${Game.tab()}, invOpen=$invOpen")
+			val invOpen = Game.tab() == Game.Tab.INVENTORY
+			script.log.info("Game.tab() = ${Game.tab()}, invOpen=${invOpen}")
 			if (invOpen && item.interact("Cast")) {
-				if (waitFor { !casting() && coins < Inventory.stream().name("Coins").count(true) }) {
+				if (waitFor { Game.tab() == Game.Tab.MAGIC }) {
 					castingDelay.reset(Random.nextInt(1700, 1900))
 					script.log.info("Done casting HA")
 				} else {
 					script.log.info("Failed to cast HA")
 				}
+			} else {
+				script.log.info("Failed to click item")
 			}
 		}
 
