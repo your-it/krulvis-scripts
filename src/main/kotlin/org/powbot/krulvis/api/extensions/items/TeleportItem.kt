@@ -2,17 +2,14 @@ package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.Random
 import org.powbot.api.requirement.Requirement
-import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Combat
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Widgets
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Equipment
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.api.rt4.Equipment as Equipment1
 
 
-enum class TeleportItem constructor(
+enum class TeleportItem(
     val itemName: String,
     override vararg val ids: Int,
     override val requirements: List<Requirement> = emptyList()
@@ -36,7 +33,7 @@ enum class TeleportItem constructor(
     }
 
     fun getCharges(): Int {
-        val item = Equipment1.stream().id(*ids).firstOrNull() ?: return 0
+        val item = Equipment.stream().id(*ids).firstOrNull() ?: return 0
         for (i in ids.indices.reversed()) {
             if (ids[i] == item.id) {
                 return ids.size - i
@@ -92,7 +89,7 @@ enum class TeleportItem constructor(
                 "fishing" -> teleport = "Fishing Guild"
                 "cooking" -> teleport = "Cooking Guild"
             }
-            return Equipment1.stream().id(*ids).firstOrNull()?.interact(teleport) == true
+            return Equipment.stream().id(*ids).firstOrNull()?.interact(teleport) == true
         }
         return false
     }

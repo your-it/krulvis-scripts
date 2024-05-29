@@ -53,7 +53,7 @@ enum class Orb(
 
     fun castOnObelisk(): Boolean {
         if (Magic.magicspell() != spell) {
-            if (Magic.cast(spell)) {
+            if (spell.cast()) {
                 waitFor { Magic.magicspell() == spell }
             }
         }

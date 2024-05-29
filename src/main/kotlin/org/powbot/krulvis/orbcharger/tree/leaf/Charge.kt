@@ -21,7 +21,7 @@ class Charge(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Charge Orbs") {
         if (chargeComponent?.visible() == true && chargeComponent.interact("Charge")) {
             sleep(600)
             if (script.fastCharge) {
-                Magic.cast(script.orb.spell)
+                script.orb.spell.cast()
             }
             waitFor(long()) { !Production.stoppedMaking(script.orb.id) }
         }

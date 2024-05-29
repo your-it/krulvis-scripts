@@ -18,7 +18,7 @@ class ShouldBank(script: OrbCrafter) : Branch<OrbCrafter>(script, "ShouldBank?")
     override val successComponent: TreeComponent<OrbCrafter> = IsBankOpen(script)
     override val failedComponent: TreeComponent<OrbCrafter> = AtObelisk(script)
 
-    fun hasCosmics(): Boolean {
+    private fun hasCosmics(): Boolean {
         if (Rune.COSMIC.inventoryCount() >= 3) {
             return true
         }
