@@ -2,6 +2,9 @@ package org.powbot.krulvis.api
 
 import org.powbot.api.*
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.magic.Rune
+import org.powbot.api.rt4.magic.RunePouch
+import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Skill
@@ -362,6 +365,11 @@ object ATContext {
 		}
 		return walkableNeighbors
 	}
+
+
+	fun RunePouch.count(power: RunePower) = runes().filter { it.first.runePowers.contains(power) }.sumOf { it.second }
+
+	fun RunePouch.count(rune: Rune) = runes().firstOrNull { it.first == rune }?.second ?: 0
 
 
 }

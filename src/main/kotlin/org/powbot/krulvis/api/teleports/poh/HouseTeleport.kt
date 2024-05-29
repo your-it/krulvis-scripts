@@ -1,10 +1,6 @@
 package org.powbot.krulvis.api.teleports.poh
 
-import org.powbot.api.rt4.Combat
 import org.powbot.api.rt4.Movement
-import org.powbot.api.rt4.Objects
-import org.powbot.api.rt4.Skills
-import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.api.teleports.SpellTeleport
