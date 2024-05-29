@@ -165,7 +165,7 @@ class Fighter : ATScript() {
 		super.onStart()
 		Defender.lastDefenderIndex = currentDefenderIndex()
 		if (doSlayer) {
-			slayer = Slayer(Master.valueOf(getOption("Slayer Master")), log)
+			slayer = Slayer(Master.valueOf(getOption("Slayer Master")), logger)
 			Events.register(slayer)
 			val taskCheckBoxIndex =
 				painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem } }
@@ -209,7 +209,6 @@ class Fighter : ATScript() {
 	val equipment by lazy {
 		equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
 			Equipment(
-				emptyList(),
 				Slot.forIndex(it.value),
 				it.key
 			)
@@ -254,7 +253,7 @@ class Fighter : ATScript() {
 		}
 		names.add("brimstone key")
 		names.add("ancient shard")
-		log.info("Looting: [${names.joinToString()}]")
+		logger.info("Looting: [${names.joinToString()}]")
 		names.toList()
 	}
 	val neverLoot by lazy {
@@ -262,7 +261,7 @@ class Fighter : ATScript() {
 		lootNameOptions
 			.filter { it.startsWith("!") }
 			.forEach { trimmed.add(it.replace("!", "")) }
-		log.info("Not looting: [${trimmed.joinToString()}]")
+		logger.info("Not looting: [${trimmed.joinToString()}]")
 		trimmed
 	}
 
@@ -299,19 +298,19 @@ class Fighter : ATScript() {
 
 	fun watchLootDrop(tile: Tile) {
 		if (waitForLootJob?.isActive != true) {
-			log.info("Waiting for loot at $tile")
+			logger.info("Waiting for loot at $tile")
 			val startMilis = System.currentTimeMillis()
 			waitingForLootTile = tile
 			waitForLootJob = GlobalScope.launch {
 				val watcher = LootWatcher(tile, ammoId, isLoot = { it.isLoot() })
 				val loot = watcher.waitForLoot()
-				log.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
+				logger.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
 				lootList.addAll(loot)
 				watcher.unregister()
 				waitingForLootTile = null
 			}
 		} else {
-			log.info("Already watching loot at tile: $tile for loot")
+			logger.info("Already watching loot at tile: $tile for loot")
 		}
 	}
 
@@ -353,7 +352,7 @@ class Fighter : ATScript() {
 		) {
 			if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
 				painter.paintBuilder.trackInventoryItems(id)
-				log.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
+				logger.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
 				painter.paintBuilder.items.forEach { row ->
 					val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
 					if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange

@@ -48,7 +48,7 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
 class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should show rune defender?") {
 
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Show rune defender") {
-        val runeDefender = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.OFF_HAND, Defender.defenders[6])
+        val runeDefender = Equipment(org.powbot.api.rt4.Equipment.Slot.OFF_HAND, Defender.defenders[6])
         val tile = Tile(2907, 9968, 0)
         if (runeDefender.inEquipment()) {
             runeDefender.dequip()

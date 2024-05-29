@@ -9,214 +9,214 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.mobile.script.ScriptManager
+import org.slf4j.LoggerFactory
 
 
 enum class BankType {
-    BOOTH, CHEST, NPC, DEPOSIT_BOX
+	BOOTH, CHEST, NPC, DEPOSIT_BOX
 }
 
 
 enum class BankLocation(
-        val tile: Tile,
-        val type: BankType,
-        private vararg val requirements: Requirement
+	val tile: Tile,
+	val type: BankType,
+	private vararg val requirements: Requirement
 ) {
-    ARDOUGNE_NORTH_BANK(Tile(2615, 3332, 0), BankType.BOOTH),
-    ARDOUGNE_SOUTH_BANK(Tile(2655, 3283, 0), BankType.BOOTH),
-    AL_KHARID_BANK(Tile(3269, 3167, 0), BankType.BOOTH),
-    BURTHORPE_BANK(
-            Tile(3047, 4974, 1), BankType.NPC
-    ),
-    CANIFIS_BANK(
-            Tile(3512, 3480, 0), BankType.BOOTH
-    ),
-    CATHERBY_BANK(Tile(2809, 3441, 0), BankType.BOOTH),
-    CASTLE_WARS_BANK(
-            Tile(2443, 3083, 0), BankType.CHEST
-    ),
-    DRAYNOR_BANK(Tile(3092, 3245, 0), BankType.BOOTH),
-    EDGEVILLE_BANK(Tile(3094, 3491, 0), BankType.BOOTH),
-    FALADOR_WEST_BANK(Tile(2947, 3368, 0), BankType.BOOTH),
-    FALADOR_EAST_BANK(Tile(3013, 3355, 0), BankType.BOOTH),
-    FARMING_GUILD_85(
-            Tile(1248, 3758, 0), BankType.BOOTH,
-    ),
-    FARMING_GUILD_65(
-            Tile(1253, 3741, 0), BankType.CHEST,
-    ),
-    FEROX_ENCLAVE(Tile(3135, 3628), BankType.CHEST),
-    GRAND_EXCHANGE(
-            Tile(3167, 3489, 0), BankType.NPC,
-    ),
-    HOSIDIUS_BEST_BANK_SPOT(
-            Tile(1676, 3615, 0), BankType.CHEST,
-    ),
-    KOUREND_TOP_BUILDING(Tile(1611, 3681, 2), BankType.BOOTH),
-    LUMBRIDGE_TOP(Tile(3208, 3221, 2), BankType.BOOTH),
-    LUMBRIDGE_CASTLE_BANK(Tile(3208, 3220, 2), BankType.BOOTH),
-    GNOME_STRONGHOLD_BANK(Tile(2445, 3424, 1), BankType.BOOTH),
-    FISHING_GUILD_BANK(
-            Tile(2586, 3419, 0), BankType.BOOTH,
-    ),
-    MISCELLANIA_BANK(
-            Tile(2618, 3895, 0), BankType.NPC,
-    ),
-    MINING_GUILD(
-            Tile(3013, 9718, 0), BankType.CHEST,
-    ),
-    MOTHERLOAD_MINE(
-            Tile(3760, 5666, 0), BankType.CHEST,
-    ),
-    MOTHERLOAD_MINE_DEPOSIT(
-            Tile(3758, 5664, 0), BankType.DEPOSIT_BOX,
-    ),
-    PRIFIDDINAS(
-            Tile(3256, 6108, 0), BankType.BOOTH,
-    ),
-    PRIFIDDINAS_MINE_CART(
-            Tile(3307, 12443, 0), BankType.DEPOSIT_BOX
-    ),
-    PORT_SARIM_DB(
-            Tile(3045, 3235, 0), BankType.DEPOSIT_BOX,
-    ),
-    SEERS_BANK(
-            Tile(2727, 3493, 0), BankType.BOOTH,
-    ),
-    SHAYZIEN_NORTH_CHEST(
-            Tile(1483, 3646, 0), BankType.CHEST,
-    ),
-    SHAYZIEN_SOUTH_BOOTH(
-            Tile(1488, 3592, 0), BankType.BOOTH,
-    ),
-    SHANTAY_PASS_BANK(
-            Tile(3308, 3120, 0), BankType.CHEST,
-    ),
-    SHILO_GEM_MINE(
-            Tile(2842, 9382, 0), BankType.DEPOSIT_BOX,
-    ),
-    TZHAAR_BANK(
-            Tile(2446, 5178, 0), BankType.NPC,
-    ),
-    VARROCK_WEST_BANK(Tile(3185, 3436, 0), BankType.BOOTH),
-    VARROCK_EAST_BANK(Tile(3253, 3420, 0), BankType.BOOTH),
-    WOODCUTTING_GUILD(
-            Tile(1592, 3476, 0), BankType.CHEST,
-    ),
-    WARRIORS_GUILD(
-            Tile(2843, 3543, 0), BankType.BOOTH,
-            requirements = arrayOf(object : Requirement {
-                override fun meets(): Boolean {
-                    return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
-                }
-            })
-    ),
-    WINTERTODT(
-            Tile(1640, 3944, 0), BankType.CHEST,
-    ),
-    YANILLE_BANK(Tile(2613, 3094, 0), BankType.BOOTH),
-    FOSSIL_ISLAND_CAMP(Tile(3741, 3805), BankType.CHEST),
-    MINE_CART_PRIF(Tile(3307, 12443, 0), BankType.DEPOSIT_BOX),
-    ;
+	ARDOUGNE_NORTH_BANK(Tile(2615, 3332, 0), BankType.BOOTH),
+	ARDOUGNE_SOUTH_BANK(Tile(2655, 3283, 0), BankType.BOOTH),
+	AL_KHARID_BANK(Tile(3269, 3167, 0), BankType.BOOTH),
+	BURTHORPE_BANK(
+		Tile(3047, 4974, 1), BankType.NPC
+	),
+	CANIFIS_BANK(
+		Tile(3512, 3480, 0), BankType.BOOTH
+	),
+	CATHERBY_BANK(Tile(2809, 3441, 0), BankType.BOOTH),
+	CASTLE_WARS_BANK(
+		Tile(2443, 3083, 0), BankType.CHEST
+	),
+	DRAYNOR_BANK(Tile(3092, 3245, 0), BankType.BOOTH),
+	EDGEVILLE_BANK(Tile(3094, 3491, 0), BankType.BOOTH),
+	FALADOR_WEST_BANK(Tile(2947, 3368, 0), BankType.BOOTH),
+	FALADOR_EAST_BANK(Tile(3013, 3355, 0), BankType.BOOTH),
+	FARMING_GUILD_85(
+		Tile(1248, 3758, 0), BankType.BOOTH,
+	),
+	FARMING_GUILD_65(
+		Tile(1253, 3741, 0), BankType.CHEST,
+	),
+	FEROX_ENCLAVE(Tile(3135, 3628), BankType.CHEST),
+	GRAND_EXCHANGE(
+		Tile(3167, 3489, 0), BankType.NPC,
+	),
+	HOSIDIUS_BEST_BANK_SPOT(
+		Tile(1676, 3615, 0), BankType.CHEST,
+	),
+	KOUREND_TOP_BUILDING(Tile(1611, 3681, 2), BankType.BOOTH),
+	LUMBRIDGE_TOP(Tile(3208, 3221, 2), BankType.BOOTH),
+	LUMBRIDGE_CASTLE_BANK(Tile(3208, 3220, 2), BankType.BOOTH),
+	GNOME_STRONGHOLD_BANK(Tile(2445, 3424, 1), BankType.BOOTH),
+	FISHING_GUILD_BANK(
+		Tile(2586, 3419, 0), BankType.BOOTH,
+	),
+	MISCELLANIA_BANK(
+		Tile(2618, 3895, 0), BankType.NPC,
+	),
+	MINING_GUILD(
+		Tile(3013, 9718, 0), BankType.CHEST,
+	),
+	MOTHERLOAD_MINE(
+		Tile(3760, 5666, 0), BankType.CHEST,
+	),
+	MOTHERLOAD_MINE_DEPOSIT(
+		Tile(3758, 5664, 0), BankType.DEPOSIT_BOX,
+	),
+	PRIFIDDINAS(
+		Tile(3256, 6108, 0), BankType.BOOTH,
+	),
+	PRIFIDDINAS_MINE_CART(
+		Tile(3307, 12443, 0), BankType.DEPOSIT_BOX
+	),
+	PORT_SARIM_DB(
+		Tile(3045, 3235, 0), BankType.DEPOSIT_BOX,
+	),
+	SEERS_BANK(
+		Tile(2727, 3493, 0), BankType.BOOTH,
+	),
+	SHAYZIEN_NORTH_CHEST(
+		Tile(1483, 3646, 0), BankType.CHEST,
+	),
+	SHAYZIEN_SOUTH_BOOTH(
+		Tile(1488, 3592, 0), BankType.BOOTH,
+	),
+	SHANTAY_PASS_BANK(
+		Tile(3308, 3120, 0), BankType.CHEST,
+	),
+	SHILO_GEM_MINE(
+		Tile(2842, 9382, 0), BankType.DEPOSIT_BOX,
+	),
+	TZHAAR_BANK(
+		Tile(2446, 5178, 0), BankType.NPC,
+	),
+	VARROCK_WEST_BANK(Tile(3185, 3436, 0), BankType.BOOTH),
+	VARROCK_EAST_BANK(Tile(3253, 3420, 0), BankType.BOOTH),
+	WOODCUTTING_GUILD(
+		Tile(1592, 3476, 0), BankType.CHEST,
+	),
+	WARRIORS_GUILD(
+		Tile(2843, 3543, 0), BankType.BOOTH,
+		requirements = arrayOf(object : Requirement {
+			override fun meets(): Boolean {
+				return Skills.realLevel(Constants.SKILLS_STRENGTH) + Skills.realLevel(Constants.SKILLS_ATTACK) >= 130
+			}
+		})
+	),
+	WINTERTODT(
+		Tile(1640, 3944, 0), BankType.CHEST,
+	),
+	YANILLE_BANK(Tile(2613, 3094, 0), BankType.BOOTH),
+	FOSSIL_ISLAND_CAMP(Tile(3741, 3805), BankType.CHEST),
+	MINE_CART_PRIF(Tile(3307, 12443, 0), BankType.DEPOSIT_BOX),
+	;
 
-    /**
-     * Opens the bank at the location
-     */
-    fun open(): Boolean {
-        val log = ScriptManager.script()?.log ?: return false
-        log.info("Banking at: $this")
-        if (Bank.opened()) {
-            return true
-        } else if (CollectionBox.opened()) {
-            CollectionBox.close()
-        } else if (me.floor() != tile.floor || tile.distance() >= 14) {
-            Movement.walkTo(tile)
-            return false
-        }
-        return Bank.open()
-    }
 
-    /**
-     *
-     * @return true if all the requirements are met to access this bank
-     */
-    fun canUse(): Boolean {
-        return requirements.all { it.meets() }
-    }
+	/**
+	 * Opens the bank at the location
+	 */
+	fun open(): Boolean {
+		logger.info("Banking at: $this")
+		if (Bank.opened()) {
+			return true
+		} else if (CollectionBox.opened()) {
+			CollectionBox.close()
+		} else if (me.floor() != tile.floor || tile.distance() >= 14) {
+			Movement.walkTo(tile)
+			return false
+		}
+		return Bank.open()
+	}
 
-    override fun toString(): String = "$name, tile=$tile, type=$type"
+	/**
+	 *
+	 * @return true if all the requirements are met to access this bank
+	 */
+	fun canUse(): Boolean {
+		return requirements.all { it.meets() }
+	}
 
-    companion object {
+	override fun toString(): String = "$name, tile=$tile, type=$type"
 
-        fun DepositBox.openNearestDB(): Boolean {
-            val log = ScriptManager.script()?.log ?: return false
-            val nearest = values()
-                    .filter { it.type == BankType.DEPOSIT_BOX }
-                    .minByOrNull { it.tile.distance() } ?: return false
-            val box = Objects.stream().name("Mine Cart", "Bank deposit box", "Bank deposit chest").action("Deposit").firstOrNull()
-            if (box == null || nearest.tile.distance() > 15 || !nearest.tile.reachable()) {
-                log.info("nearest=$nearest, distance=${nearest.tile.distance()} is not reachable!")
-                val localPath = LocalPathFinder.findPath(nearest.tile.getWalkableNeighbor())
-                if (localPath.isNotEmpty()) {
-                    log.info("LocalWalking to=${localPath.finalDestination()}")
-                    localPath.traverseUntilReached()
-                } else {
-                    try {
-                        log.info("WebWalking to=${nearest.tile}")
-                        Movement.walkTo(nearest.tile)
-                    } catch (e: Exception) {
-                        log.info("Failed to move to bank!")
-                        log.info(e.stackTraceToString())
-                    }
-                }
-            } else {
-                return ATContext.walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
-            }
-            return false
-        }
+	companion object {
 
-        private fun getAllowedBanks(): List<BankLocation> =
-                values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.meets() } }
+		private val logger = LoggerFactory.getLogger("BankLocation")
 
-        /**
-         * @return the nearest bank according to the geographical distance
-         */
-        fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
-            return getNearestBankWithoutWeb(includeDepositBox)
-        }
+		fun DepositBox.openNearestDB(): Boolean {
+			val nearest = values()
+				.filter { it.type == BankType.DEPOSIT_BOX }
+				.minByOrNull { it.tile.distance() } ?: return false
+			val box = Objects.stream().name("Mine Cart", "Bank deposit box", "Bank deposit chest").action("Deposit").firstOrNull()
+			if (box == null || nearest.tile.distance() > 15 || !nearest.tile.reachable()) {
+				logger.info("nearest=$nearest, distance=${nearest.tile.distance()} is not reachable!")
+				val localPath = LocalPathFinder.findPath(nearest.tile.getWalkableNeighbor())
+				if (localPath.isNotEmpty()) {
+					logger.info("LocalWalking to=${localPath.finalDestination()}")
+					localPath.traverseUntilReached()
+				} else {
+					try {
+						logger.info("WebWalking to=${nearest.tile}")
+						Movement.walkTo(nearest.tile)
+					} catch (e: Exception) {
+						logger.info("Failed to move to bank!")
+						logger.info(e.stackTraceToString())
+					}
+				}
+			} else {
+				return ATContext.walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
+			}
+			return false
+		}
 
-        fun Bank.getNearestBankWithoutWeb(includeDepositBox: Boolean = false): BankLocation {
-            val me = Players.local()
-            return getAllowedBanks()
-                    .filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
-                    .minByOrNull { it.tile.distanceM(me) }!!
-        }
+		private fun getAllowedBanks(): List<BankLocation> =
+			values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.meets() } }
 
-        fun Bank.openNearest(): Boolean {
-            val log = ScriptManager.script()?.log ?: return false
-            if (opened()) {
-                return true
-            }
-            val nearest = nearest()
-            log.info("Nearest bank: $nearest")
-            return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
-                open()
-            } else {
-                Movement.moveToBank()
-                false
-            }
-        }
-    }
+		/**
+		 * @return the nearest bank according to the geographical distance
+		 */
+		fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
+			return getNearestBankWithoutWeb(includeDepositBox)
+		}
+
+		fun Bank.getNearestBankWithoutWeb(includeDepositBox: Boolean = false): BankLocation {
+			val me = Players.local()
+			return getAllowedBanks()
+				.filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
+				.minByOrNull { it.tile.distanceM(me) }!!
+		}
+
+		fun Bank.openNearest(): Boolean {
+			if (opened()) {
+				return true
+			}
+			val nearest = nearest()
+			logger.info("Nearest bank: $nearest")
+			return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
+				open()
+			} else {
+				Movement.moveToBank()
+				false
+			}
+		}
+	}
 
 
 }
 
 fun main() {
-    println(
-            "[\"${
-                BankLocation.values().map {
-                    it.name
-                }.joinToString("\", \"")
-            }\"]"
-    )
+	println(
+		"[\"${
+			BankLocation.values().map {
+				it.name
+			}.joinToString("\", \"")
+		}\"]"
+	)
 }

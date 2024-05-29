@@ -73,7 +73,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
     }
 
     val ringOfForging =
-            org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.RING, RING_OF_FORGING)
+            org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.RING, RING_OF_FORGING)
 
     fun getRequirements(): IntArray {
         val requirements = mutableListOf(script.bar.primary.id)

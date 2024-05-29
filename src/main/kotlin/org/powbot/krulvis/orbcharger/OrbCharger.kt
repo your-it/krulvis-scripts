@@ -10,6 +10,12 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.teleports.EDGEVILLE_GLORY
+import org.powbot.krulvis.api.teleports.FALADOR_TELEPORT
+import org.powbot.krulvis.api.teleports.SpellTeleport
+import org.powbot.krulvis.api.teleports.poh.HouseTeleport
+import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
+import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
 import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 
 @ScriptManifest(
@@ -41,10 +47,11 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 			defaultValue = "true"
 		),
 		ScriptConfiguration(
-			name = "HouseTeleport",
-			description = "Go to house first?",
-			optionType = OptionType.BOOLEAN,
-			defaultValue = "true"
+			name = "BankTeleport",
+			description = "How to get to bank?",
+			optionType = OptionType.STRING,
+			allowedValues = [EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FALADOR_TELEPORT, FALADOR_TELEPORT_NEXUS],
+			defaultValue = FALADOR_TELEPORT_NEXUS
 		),
 		ScriptConfiguration(
 			name = "Food",
@@ -66,6 +73,11 @@ class OrbCrafter : ATScript() {
 	override fun createPainter(): ATPaint<*> = OrbPainter(this)
 
 	override val rootComponent: TreeComponent<*> = ShouldBank(this)
+
+	override fun onStart() {
+		super.onStart()
+		HouseTeleport.toHouseTeleport = SpellTeleport.HOUSE_TELEPORT
+	}
 
 	val necessaries by lazy {
 		intArrayOf(

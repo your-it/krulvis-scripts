@@ -103,7 +103,7 @@ class Thiever : ATScript() {
         super.onStart()
 //        NpcActionEvent()
         dodgyNeck = getOption("Dodgy necklace")
-        log.info("Droppables=[${droppables.all { it.isBlank() }}] empty=${droppables.isEmpty()}")
+        logger.info("Droppables=[${droppables.all { it.isBlank() }}] empty=${droppables.isEmpty()}")
     }
 
     val centerTile by lazy { getOption<Tile>("CenterTile") }
@@ -120,7 +120,7 @@ class Thiever : ATScript() {
     var dodgyNeck = false
 
 
-    val dodgy = Equipment(emptyList(), org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
+    val dodgy = Equipment(org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
     var nextPouchOpening = Random.nextInt(1, 28)
 
     fun getTarget(): Npc? {
@@ -151,7 +151,7 @@ class Thiever : ATScript() {
         val id = evt.itemId
         if (evt.quantityChange > 0 && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
             painter.paintBuilder.trackInventoryItems(id)
-            log.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
+            logger.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
             painter.paintBuilder.items.forEach { row ->
                 val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
                 if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange

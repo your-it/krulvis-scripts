@@ -187,7 +187,7 @@ class Tempoross : ATScript() {
             allowCrossing: Boolean
     ): Boolean {
         if (e == null) {
-            log.info("Can't find: $action")
+            logger.info("Can't find: $action")
             if (destinationWhenNil != Tile.Nil) {
                 val path = LocalPathFinder.findPath(destinationWhenNil)
                 if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
@@ -195,7 +195,7 @@ class Tempoross : ATScript() {
                         getTrash()?.interact("Drop")
                     }
                 } else {
-                    log.info(if (path.isEmpty()) "Path is empty" else "failed dousing")
+                    logger.info(if (path.isEmpty()) "Path is empty" else "failed dousing")
                     walk(destinationWhenNil)
                 }
             }
@@ -237,9 +237,9 @@ class Tempoross : ATScript() {
         val blockedTile = path.actions.firstOrNull { burningTiles.contains(it.destination) }
         val fire = blockedTile?.getFire()
         val hasBucket = Inventory.containsOneOf(BUCKET_OF_WATER)
-        log.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
+        logger.info("Blockedtile: $blockedTile fire: $fire, Bucket: $hasBucket")
         if (fire != null && hasBucket) {
-            log.info("Found fire on the way to: ${path.finalDestination()}")
+            logger.info("Found fire on the way to: ${path.finalDestination()}")
             if (!fire.inViewport()) {
                 val blockedIndex = path.actions.indexOf(blockedTile)
                 if (fire.distance() > 8 && blockedIndex >= 2) {
@@ -252,7 +252,7 @@ class Tempoross : ATScript() {
                 return waitFor(long()) { Npcs.stream().at(fire).name("Fire").isEmpty() }
             }
         } else if (fire == null || allowCrossing) {
-            log.info(if (fire == null) "No fire on the way" else "allowCrossing=true")
+            logger.info(if (fire == null) "No fire on the way" else "allowCrossing=true")
             return true
         }
         return false
@@ -284,7 +284,7 @@ class Tempoross : ATScript() {
 
     override fun canBreak(): Boolean {
         val canBreak = lastLeaf is EnterBoat || lastLeaf is Leave
-        log.info("canBreak() lastLeaf=${lastLeaf.name} canBreak=${canBreak}")
+        logger.info("canBreak() lastLeaf=${lastLeaf.name} canBreak=${canBreak}")
         return canBreak
     }
 
@@ -301,16 +301,16 @@ class Tempoross : ATScript() {
             return
         }
         val txt = me.message
-        log.info(txt)
+        logger.info(txt)
         if (txt.contains("Points: ") && txt.contains("Personal best", true)) {
             val points = txt.substring(20, txt.indexOf("</col>")).replace(",", "").toInt()
-            log.info("Finished round, gained: $points points")
+            logger.info("Finished round, gained: $points points")
             pointsObtained += points
             rounds++
         } else if (txt.contains("Tempoross is vulnerable!")) {
             vulnerableStartHP = health
         } else if (txt.contains("A colossal wave closes in...")) {
-            log.info("Should tether wave coming in!")
+            logger.info("Should tether wave coming in!")
             waveTimer.reset(WAVE_TIMER)
 //            val fishId = if (cookFish) COOKED else RAW
 //            val fish = Inventory.stream().id(fishId).count()
@@ -318,11 +318,11 @@ class Tempoross : ATScript() {
 //                forcedShooting = true
 //            }
         } else if (isWaveOver(txt)) {
-            log.info("Wave is over")
+            logger.info("Wave is over")
             waveTimer.stop()
         } else if (txt.contains("Reward permits: ") && txt.contains("Total permits:")) {
             val reward = txt.substring(28, txt.indexOf("</col>")).toInt()
-            log.info("Gained $reward points")
+            logger.info("Gained $reward points")
             rewardGained += reward
         }
     }
@@ -356,13 +356,13 @@ class Tempoross : ATScript() {
      */
     fun detectDangerousTiles() {
         Npcs.stream().filtered { it.animation() > 0 }.name("Lightning cloud").nearest().forEach {
-            log.info("Found lightning cloud at ${it.tile()}")
+            logger.info("Found lightning cloud at ${it.tile()}")
             addTile(it.tile())
         }
 
         val fires = Npcs.stream().name("Fire")
         fires.forEach { fire ->
-            log.info("Found fire at ${fire.tile()}")
+            logger.info("Found fire at ${fire.tile()}")
             addTile(fire.tile())
         }
     }

@@ -58,7 +58,7 @@ class Combiner : ATScript() {
     val id by lazy {
         if (items.isEmpty()) {
             Notifications.showNotification("Inventory in GUI cannot be empty!")
-            log.info("Inventory in GUI cannot be empty!")
+            logger.info("Inventory in GUI cannot be empty!")
             ScriptManager.stop()
         }
         items.filter { it.value >= 2 }.map { it.key }.first()
@@ -71,7 +71,7 @@ class Combiner : ATScript() {
     @ValueChanged("Items to combine")
     fun onItemsChange(items: ArrayList<InventoryItemActionEvent>) {
         val itemCount = items.size
-        log.info("Items to combine updated, size=$itemCount")
+        logger.info("Items to combine updated, size=$itemCount")
         for (x in 1..4) {
             updateVisibility("Item $x Amount", x <= itemCount)
         }

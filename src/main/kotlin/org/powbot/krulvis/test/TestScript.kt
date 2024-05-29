@@ -78,12 +78,12 @@ class TestScript : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
-        log.info("$e")
+        logger.info("$e")
     }
 
     @com.google.common.eventbus.Subscribe
     fun onMsg(e: MessageEvent) {
-        log.info("MSG: \n Type=${e.type}, msg=${e.message}")
+        logger.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
     @com.google.common.eventbus.Subscribe

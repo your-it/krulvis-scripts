@@ -36,7 +36,7 @@ class TestWeb : ATScript() {
 
         val walkableNeighbors = patch?.getWalkableNeighbors(allowSelf = false, checkForWalls = false) ?: emptyList()
 
-        log.info("Patch=$patch, neighbors=${walkableNeighbors.joinToString()}")
+        logger.info("Patch=$patch, neighbors=${walkableNeighbors.joinToString()}")
         neighbor = walkableNeighbors.firstOrNull()
 
         sleep(2000)
@@ -44,7 +44,7 @@ class TestWeb : ATScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
-        log.info("$e")
+        logger.info("$e")
     }
 
     @JvmOverloads
@@ -77,7 +77,7 @@ class TestWeb : ATScript() {
 
         val walkableNeighbors = mutableListOf<Tile>()
         straight.forEachIndexed { index, tile ->
-            log.info("Blocked[$index] tile=$tile blocked=${tile.blocked(cm)}, collisionFlag=${tile.collisionFlag(cm)}")
+            logger.info("Blocked[$index] tile=$tile blocked=${tile.blocked(cm)}, collisionFlag=${tile.collisionFlag(cm)}")
         }
         walkableNeighbors.addAll(straight.filterIndexed { i, it ->
             if (checkForWalls) {

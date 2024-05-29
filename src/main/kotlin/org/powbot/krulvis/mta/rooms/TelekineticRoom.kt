@@ -24,7 +24,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 object TelekineticRoom : MTARoom {
-	val log = LoggerFactory.getLogger(javaClass.simpleName)
+	val logger = LoggerFactory.getLogger(javaClass.simpleName)!!
 
 
 	override val portalName: String = "Telekinetic"
@@ -56,11 +56,11 @@ object TelekineticRoom : MTARoom {
 	fun shouldInstantiate() = finishLocation == Tile.Nil
 
 	fun instantiateRoom() {
-		log.info("Getting finish location")
+		logger.info("Getting finish location")
 		getFinish()
-		log.info("Getting walls")
+		logger.info("Getting walls")
 		getWalls()
-		log.info("Calculating bounds")
+		logger.info("Calculating bounds")
 		getBounds(telekineticWalls)
 		buildMoves()
 	}
@@ -69,13 +69,13 @@ object TelekineticRoom : MTARoom {
 
 	fun getFinish() {
 		finishLocation = Objects.stream().type(GameObject.Type.FLOOR_DECORATION).id(TELEKINETIC_FINISH).first().tile
-		log.info("FinishLocation=$finishLocation")
+		logger.info("FinishLocation=$finishLocation")
 	}
 
 	fun getWalls() {
 		telekineticWalls = Objects.stream().type(GameObject.Type.BOUNDARY).id(TELEKINETIC_WALL).toList()
 		numMazeWalls = telekineticWalls.size
-		log.info("Walls=$numMazeWalls")
+		logger.info("Walls=$numMazeWalls")
 	}
 
 	fun nearestWall(): GameObject =
@@ -92,9 +92,9 @@ object TelekineticRoom : MTARoom {
 	fun buildMoves() {
 		val flags = getFlags()
 		getGuardian(flags)
-		log.info("Calculating moves")
+		logger.info("Calculating moves")
 		build(flags)
-		log.info("Done building moves")
+		logger.info("Done building moves")
 		getMove()
 	}
 
@@ -186,7 +186,7 @@ object TelekineticRoom : MTARoom {
 			}
 			visitedN++
 		}
-		log.info("Done building edges visitedN=$visitedN")
+		logger.info("Done building edges visitedN=$visitedN")
 
 		return buildMoves(edges, finishLocation)
 	}
@@ -270,7 +270,7 @@ object TelekineticRoom : MTARoom {
 		}
 
 		bounds = Rectangle(minX, minY, maxX - minX, maxY - minY)
-		log.info("Bounds = $bounds")
+		logger.info("Bounds = $bounds")
 	}
 
 	fun standingDirection(): Direction? {
