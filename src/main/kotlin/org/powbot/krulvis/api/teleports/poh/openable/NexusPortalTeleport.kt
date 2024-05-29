@@ -4,6 +4,8 @@ import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.ScrollHelper
 import org.powbot.api.rt4.Widgets
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 private const val PORTAL_NEXUS = "Portal Nexus"
 private const val PORTAL_WIDGET = 17
@@ -49,12 +51,18 @@ enum class NexusPortalTeleport(override val action: String) : OpenableHouseTelep
 	Weiss("Weiss"),
 	TrollStronghold("Troll Stronghold");
 
+	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)
+
 	override val WIDGET_ID: Int = PORTAL_WIDGET
 	override val COMP_ID: Int = PORTAL_COMPONENT
 	override val OBJECT_NAMES = arrayOf(PORTAL_NEXUS)
 	override val requirements: List<Requirement> = emptyList()
 	private fun scrollComponent(): Component = Widgets.component(WIDGET_ID, 14)
 	private fun paneComponent(): Component = Widgets.component(WIDGET_ID, 11)
+
+	override fun toString(): String {
+		return "NexusPortalTeleport($name)"
+	}
 
 	override fun scroll(): Boolean {
 		val teleportComp = getTeleportComponent()
@@ -64,6 +72,6 @@ enum class NexusPortalTeleport(override val action: String) : OpenableHouseTelep
 	}
 
 	companion object {
-		fun forName(name: String) = JewelleryBoxTeleport.values().firstOrNull { name.replace(" ", "").contains(it.name, true) }
+		fun forName(name: String) = values().firstOrNull { name.replace(" ", "").contains(it.name, true) }
 	}
 }

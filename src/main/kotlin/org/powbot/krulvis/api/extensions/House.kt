@@ -52,26 +52,8 @@ object House {
 	//
 	fun inBuildingMode(): Boolean = Varpbits.varpbit(780) == 1
 
-	fun shouldRestorePool(): Boolean {
-		return Skills.level(Skill.Hitpoints) < Skills.realLevel(Skill.Hitpoints) ||
-			Skills.level(Skill.Prayer) < Skills.realLevel(Skill.Prayer) ||
-			Combat.isPoisoned() ||
-			Movement.energyLevel() < 60
-	}
 
-	fun useRestorePool(): Boolean {
-		if (!shouldRestorePool()) {
-			return true
-		}
-
-		val pool = Objects.stream().name(*allPools).first()
-
-		if (!pool.valid()) {
-			return true
-		}
-
-		return walkAndInteract(pool, "Drink") && waitForDistance(pool) { Movement.energyLevel() >= 99 }
-	}
+	fun getPool(): GameObject = Objects.stream().name(*allPools).first()
 
 	private const val ornatePool = "Ornate pool of Rejuvenation"
 	private const val restorationPool = "Pool of Restoration"

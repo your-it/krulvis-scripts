@@ -13,6 +13,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.teleports.EDGEVILLE_GLORY
 import org.powbot.krulvis.api.teleports.FALADOR_TELEPORT
 import org.powbot.krulvis.api.teleports.SpellTeleport
+import org.powbot.krulvis.api.teleports.Teleport
 import org.powbot.krulvis.api.teleports.poh.HouseTeleport
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
@@ -65,9 +66,9 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 class OrbCrafter : ATScript() {
 
 	val orb by lazy { Orb.valueOf(getOption("Orb")) }
+	val bankTeleport by lazy { Teleport.forName(getOption("BankTeleport"))!! }
 	val fastCharge by lazy { getOption<Boolean>("Fast charge") }
 	val antipoison by lazy { getOption<Boolean>("Antipoison") }
-	val goToHouse by lazy { getOption<Boolean>("HouseTeleport") }
 	val food by lazy { Food.valueOf(getOption("Food")) }
 
 	override fun createPainter(): ATPaint<*> = OrbPainter(this)
@@ -77,6 +78,7 @@ class OrbCrafter : ATScript() {
 	override fun onStart() {
 		super.onStart()
 		HouseTeleport.toHouseTeleport = SpellTeleport.HOUSE_TELEPORT
+		logger.info("BankTeleport = $bankTeleport")
 	}
 
 	val necessaries by lazy {
