@@ -16,14 +16,14 @@ class HandleBank(script: Smither) : Leaf<Smither>(script, "Handling Bank") {
         }
         if (!Inventory.containsOneOf(HAMMER)) {
             if (!Bank.containsOneOf(HAMMER)) {
-                script.log.info("No hammer found, stopping script")
+                script.logger.info("No hammer found, stopping script")
                 ScriptManager.stop()
             } else {
                 Bank.withdraw(HAMMER, 1)
             }
         }
         if (!Inventory.isFull() && !Bank.containsOneOf(script.bar.id)) {
-            script.log.info("Out of ${script.bar.name}, stopping script")
+            script.logger.info("Out of ${script.bar.name}, stopping script")
             ScriptManager.stop()
         } else if (Bank.withdraw(script.bar.id, Bank.Amount.ALL))
             Bank.close()

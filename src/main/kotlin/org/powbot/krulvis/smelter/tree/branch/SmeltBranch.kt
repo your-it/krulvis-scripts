@@ -22,7 +22,7 @@ class ShouldSmelt(script: Smelter) : Branch<Smelter>(script, "Should Smelt") {
             val stoppedMakingBalls = Production.stoppedMaking(
                 CANNONBALL, 10000
             )
-            script.log.info("Stopped making balls = $stoppedMakingBalls")
+            script.logger.info("Stopped making balls = $stoppedMakingBalls")
             stoppedMakingBalls
         } else Production.stoppedUsing(script.bar.primary.id)
     }
@@ -32,9 +32,9 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
 
     override val failedComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Smelt Furnace") {
         val anvil = Objects.stream().name("Furnace").action("Smelt").nearest().firstOrNull()
-        script.log.info("Going to interact with anvil")
+        script.logger.info("Going to interact with anvil")
         if (anvil != null && Utils.walkAndInteract(anvil, "Smelt")) {
-            script.log.info("Interacted with anvil")
+            script.logger.info("Interacted with anvil")
             waitFor(long()) { getComponent() != null }
         }
     }
@@ -48,9 +48,9 @@ class IsWidgetOpen(script: Smelter) : Branch<Smelter>(script, "IsWidgetOpen") {
     var comp: Component? = null
 
     override fun validate(): Boolean {
-        script.log.info("Getting component...")
+        script.logger.info("Getting component...")
         comp = getComponent()
-        script.log.info("Component is open: ${comp?.visible()}")
+        script.logger.info("Component is open: ${comp?.visible()}")
         return comp?.visible() == true
     }
 

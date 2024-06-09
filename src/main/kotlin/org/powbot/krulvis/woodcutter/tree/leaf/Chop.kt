@@ -17,7 +17,7 @@ class Chop(script: Woodcutter) : Leaf<Woodcutter>(script, "Chop Tree") {
             Objects.stream().at(it).action("Chop down", "Cut", "Chop").firstOrNull()
         }
 
-        script.log.info("Trees: ${trees.joinToString { "${it?.name}: ${it?.tile}" }}")
+        script.logger.info("Trees: ${trees.joinToString { "${it?.name}: ${it?.tile}" }}")
 
         val tree = trees.filterNotNull().minByOrNull { it.distance() }
         val action = tree?.actions()?.firstOrNull() ?: "Chop down"

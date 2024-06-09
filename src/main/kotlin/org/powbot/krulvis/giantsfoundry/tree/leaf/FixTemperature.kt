@@ -25,7 +25,7 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
         val actionStr = if (shouldCool) "Cool-preform" else "Heat-preform"
 
         var lastStepSize = 5
-        script.log.info("Performing: $actionStr, on obj=${actionObj.name}, targetHeat=$targetHeat")
+        script.logger.info("Performing: $actionStr, on obj=${actionObj.name}, targetHeat=$targetHeat")
         if (actionObj.use(actionStr)) {
             waitFor { tempStep(lastTemp, currentTemp(), lastStepSize) }
             var lastTempChangeMS = System.currentTimeMillis()
@@ -38,29 +38,29 @@ class FixTemperature(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fix t
                 ) && System.currentTimeMillis() - lastTempChangeMS <= 3500
             ) {
                 val ms = System.currentTimeMillis() - lastTempChangeMS
-                script.log.info("Still fixing.... lastTempStep=${ms}ms")
+                script.logger.info("Still fixing.... lastTempStep=${ms}ms")
                 val newTemp = currentTemp()
                 if (tempStep(lastTemp, newTemp, lastStepSize)) {
                     lastStepSize = abs(lastTemp - newTemp)
-                    script.log.info("Temperature step size=$lastStepSize, $lastTemp -> $newTemp, $ms ago with target=$targetHeat")
+                    script.logger.info("Temperature step size=$lastStepSize, $lastTemp -> $newTemp, $ms ago with target=$targetHeat")
                     lastTempChangeMS = System.currentTimeMillis()
                     lastTemp = newTemp
                     if (lastStepSize > 20 && lastStepSize > abs(lastTemp - targetHeat)) {
-                        script.log.info("Clicking again we're making BIG steps=$lastStepSize")
+                        script.logger.info("Clicking again we're making BIG steps=$lastStepSize")
                         actionObj.use(actionStr)
                         lastStepSize = 5
                     }
                 }
                 sleep(150)
             }
-            script.log.info(
+            script.logger.info(
                 "Stopping FIX" +
                         "\n done=${done(action, targetHeat, shouldCool, lastStepSize)}," +
                         "\n last temp change was ${System.currentTimeMillis() - lastTempChangeMS} ms ago"
             )
             script.stopActivity(action.tile)
         } else {
-            script.log.info("Failed to even interact to FIX TEMPERATURE on ${actionObj.name}: $actionStr")
+            script.logger.info("Failed to even interact to FIX TEMPERATURE on ${actionObj.name}: $actionStr")
         }
     }
 

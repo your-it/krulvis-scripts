@@ -30,7 +30,7 @@ class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank
 
     override fun validate(): Boolean {
         if (script.getBank().valid() && !Inventory.isFull()) {
-            script.log.info("At bank without full inventory")
+            script.logger.info("At bank without full inventory")
             return true
         }
         return Bank.opened() || EssencePouch.inInventory().all { it.getCount() <= 0 } && EssencePouch.essenceCount() == 0

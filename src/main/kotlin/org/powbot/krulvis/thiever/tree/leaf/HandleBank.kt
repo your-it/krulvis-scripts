@@ -22,7 +22,7 @@ class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
             Bank.depositInventory()
             waitFor { !Inventory.isFull() }
         } else if (script.food.getInventoryCount() < toTake) {
-            script.log.info("Taking out: $toTake, extra=$extra")
+            script.logger.info("Taking out: $toTake, extra=$extra")
             if (Bank.withdraw(script.food.getBankId(), toTake)) {
                 waitFor { script.food.inInventory() }
             }

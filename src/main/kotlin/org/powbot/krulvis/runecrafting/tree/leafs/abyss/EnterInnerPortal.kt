@@ -15,7 +15,7 @@ class EnterInnerPortal(script: Runecrafter) : Leaf<Runecrafter>(script, "Enterin
         val pass = getPass()
         val neighbor = pass.tile
         val action = pass.actions().firstOrNull()
-        script.log.info("Found passthrough in abyss name=${pass.name}, action=${action}, neighbor=${neighbor}")
+        script.logger.info("Found passthrough in abyss name=${pass.name}, action=${action}, neighbor=${neighbor}")
         if (!pass.inViewport() || pass.distance() > 8) {
             Movement.step(neighbor)
         } else if (walkAndInteract(pass, pass.actions()[0])) {

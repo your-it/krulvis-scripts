@@ -143,7 +143,7 @@ class Miner : ATScript() {
                     }
                 }
             } else {
-                log.info("Walking to top of ladder first...")
+                logger.info("Walking to top of ladder first...")
                 Movement.walkTo(northOfLadder)
             }
             return false

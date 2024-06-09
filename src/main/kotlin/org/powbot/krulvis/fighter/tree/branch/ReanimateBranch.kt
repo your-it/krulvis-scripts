@@ -26,7 +26,7 @@ class ShouldReanimate(script: Fighter) : Branch<Fighter>(script, "Should Reanima
         if (!spellHead!!.first.casting()) {
             if (!spellHead!!.first.cast()) {
                 waitFor { spellHead!!.first.casting() && Inventory.opened() }
-                script.log.info("Inv open=${Inventory.opened()}, casting=${spellHead!!.first.casting()}")
+                script.logger.info("Inv open=${Inventory.opened()}, casting=${spellHead!!.first.casting()}")
             }
         }
         if (spellHead!!.first.casting()) {
@@ -49,7 +49,7 @@ class ShouldReanimate(script: Fighter) : Branch<Fighter>(script, "Should Reanima
     override fun validate(): Boolean {
         ReanimateHead.values().forEach {
             val invItem = it.getInvItem()
-//            script.log.info("Inv ensouled head for ${it.name} = ${invItem}")
+//            script.logger.info("Inv ensouled head for ${it.name} = ${invItem}")
             if (invItem != null) {
                 spellHead = Pair(it.spell, invItem)
                 return it.spell.canCast()

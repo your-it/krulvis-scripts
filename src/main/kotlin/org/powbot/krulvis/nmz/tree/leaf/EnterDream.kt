@@ -13,7 +13,7 @@ class EnterDream(script: NightmareZone) : Leaf<NightmareZone>(script, "Entering 
         val rumbleSelector = rumbleSelector()
         val agreeComponent = agreeComponent()
         if (outOfMoney()) {
-            script.log.info("Out of money! stopping script")
+            script.logger.info("Out of money! stopping script")
             ScriptManager.stop()
         } else if (nmzWidget != null) {
             if (nmzWidget.click())
@@ -23,19 +23,19 @@ class EnterDream(script: NightmareZone) : Leaf<NightmareZone>(script, "Entering 
                 Utils.waitFor { nightmareZoneWidget() != null }
             }
         } else if (rumbleSelector != null) {
-            script.log.info("Found component with text = ${rumbleSelector.text()}")
+            script.logger.info("Found component with text = ${rumbleSelector.text()}")
             if (rumbleSelector.click())
                 Utils.waitFor { Chat.canContinue() }
         } else if (Chat.canContinue()) {
-            script.log.info("Continueing widget..")
+            script.logger.info("Continueing widget..")
             if (Chat.clickContinue())
                 Utils.waitFor { agreeComponent() != null }
         } else if (agreeComponent != null) {
-            script.log.info("Agree component up..")
+            script.logger.info("Agree component up..")
             if (agreeComponent.parent().component(1).click())
                 Utils.waitFor { dreamPotion() != null }
         } else if (Objects.stream().name("Empty Vial").isNotEmpty()) {
-            script.log.info("Couldn't find component ${Widgets.component(219, 1, 4).text()}")
+            script.logger.info("Couldn't find component ${Widgets.component(219, 1, 4).text()}")
             Npcs.stream().name("Dominic Onion").firstOrNull()?.interact("Dream")
         }
     }

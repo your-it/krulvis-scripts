@@ -25,12 +25,12 @@ class Pickpocket(script: Thiever) : Leaf<Thiever>(script, "Pickpocket") {
                                 script.stunned()
                     }) {
                     if (script.stunned()) {
-                        script.log.info("Waiting to repickpocket...")
+                        script.logger.info("Waiting to repickpocket...")
                         if (script.coinPouchCount() >= script.nextPouchOpening) {
                             script.nextPouchOpening = Random.nextInt(1, 28)
                             script.coinPouch()?.interact("Open-all")
                         }
-                        script.log.info(
+                        script.logger.info(
                             "Waited for: ${
                                 measureTimeMillis {
                                     sleep(Random.nextInt(4500, 5000))

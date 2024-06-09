@@ -26,14 +26,14 @@ class PathBuilder : ATScript() {
         if (distanceLast >= 5.0) {
             path.add(currentPosition)
         }
-        log.info("CURRENTLY WE HAVE")
-        log.info(path.joinToString(", ") { "Tile(${it.x}, ${it.y}, ${it.floor})" })
+        logger.info("CURRENTLY WE HAVE")
+        logger.info(path.joinToString(", ") { "Tile(${it.x}, ${it.y}, ${it.floor})" })
         sleep(500)
     }
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
-        log.info("$e")
+        logger.info("$e")
     }
 }
 

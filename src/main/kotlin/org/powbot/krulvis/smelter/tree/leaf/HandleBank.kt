@@ -28,7 +28,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
         if (script.cannonballs) {
             if (!Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE)) {
                 if (!Bank.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE)) {
-                    script.log.info("No ammo mould found, stopping script")
+                    script.logger.info("No ammo mould found, stopping script")
                     ScriptManager.stop()
                 } else if (Bank.containsOneOf(AMMO_MOULD_DOUBLE)) {
                     Bank.withdraw(AMMO_MOULD_DOUBLE, 1)
@@ -38,20 +38,20 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
                 }
             } else if (!Inventory.isFull()) {
                 if (!Bank.containsOneOf(Bar.STEEL.id)) {
-                    script.log.info("Out of steel bars, stopping script")
+                    script.logger.info("Out of steel bars, stopping script")
                     ScriptManager.stop()
                 } else {
                     Bank.withdraw(Bar.STEEL.id, Bank.Amount.ALL)
                 }
             } else {
-                script.log.info("Should be done banking")
+                script.logger.info("Should be done banking")
             }
         } else if (script.forgingRing && !ringOfForging.inEquipment()) {
             ringOfForging.withdrawAndEquip(true)
         } else {
             if (primCount != split.first) {
                 if (!Inventory.isFull() && !Bank.containsOneOf(script.bar.primary.id)) {
-                    script.log.info("Out of ${script.bar.primary}, stopping script")
+                    script.logger.info("Out of ${script.bar.primary}, stopping script")
                     ScriptManager.stop()
                 } else if (primCount > split.first) {
                     Bank.deposit(script.bar.primary.id, Bank.Amount.ALL)
@@ -61,7 +61,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
             }
             if (hasSecondary && !Inventory.isFull()) {
                 if (!Inventory.isFull() && !Bank.containsOneOf(script.bar.secondary.id)) {
-                    script.log.info("Out of ${script.bar.secondary}, stopping script")
+                    script.logger.info("Out of ${script.bar.secondary}, stopping script")
                     ScriptManager.stop()
                 } else if (primCount > split.second) {
                     Bank.deposit(script.bar.secondary.id, Bank.Amount.ALL)
@@ -73,7 +73,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
     }
 
     val ringOfForging =
-            org.powbot.krulvis.api.extensions.items.Equipment(emptyList(), Equipment.Slot.RING, RING_OF_FORGING)
+            org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.RING, RING_OF_FORGING)
 
     fun getRequirements(): IntArray {
         val requirements = mutableListOf(script.bar.primary.id)

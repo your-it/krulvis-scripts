@@ -14,7 +14,7 @@ class CheckTask(script: Fighter) : Leaf<Fighter>(script, "Checking task") {
         val gem = Inventory.stream().id(ENCHANTED_GEM).firstOrNull()
         if (gem == null) {
             Notifications.showNotification("There's an active task but no gem to check which one")
-            script.log.info("No gem in inventory even though there's an active task")
+            script.logger.info("No gem in inventory even though there's an active task")
             ScriptManager.stop()
             return
         }

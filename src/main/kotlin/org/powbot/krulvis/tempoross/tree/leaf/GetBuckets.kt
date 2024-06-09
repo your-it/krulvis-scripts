@@ -10,7 +10,7 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting Buckets")
         var bucketCount = script.getTotalBuckets()
         val bucketCrate = script.getBucketCrate()
         val timer = Timer(5000)
-        script.log.info("Getting ${script.buckets} buckets, currently have: $bucketCount")
+        script.logger.info("Getting ${script.buckets} buckets, currently have: $bucketCount")
         while (!timer.isFinished() && bucketCount < script.buckets) {
             if (script.interactWhileDousing(
                     bucketCrate,

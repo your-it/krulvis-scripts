@@ -25,13 +25,13 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
         val allTop = script.rockLocations.all { script.inTopFloorAreas(it) }
         script.mineDelay.forceFinish()
         if (locs.isEmpty()) {
-            script.log.info("Script requires at least 1 rock location set in the Configuration")
+            script.logger.info("Script requires at least 1 rock location set in the Configuration")
             ScriptManager.stop()
         } else if (allTop
                 && !script.inTopFloorAreas()
                 && LocalPathFinder.findPath(Players.local().tile(), script.northOfLadder, true).isEmpty()
         ) {
-            script.log.info("Climbing ladder manually")
+            script.logger.info("Climbing ladder manually")
             val ladderGoingUp = Objects.stream().at(Tile(3755, 5673, 0)).name("Ladder").action("Climb").firstOrNull()
             ladderGoingUp?.bounds(-36, 22, -264, 0, 58, 62)
             if (ladderGoingUp != null && walkAndInteract(ladderGoingUp, "Climb")) {
@@ -47,7 +47,7 @@ class WalkToSpot(script: Miner) : Leaf<Miner>(script, "Walking to spot") {
             } else if (script.inCamTorum()) {
                 walkToCamTorumMine()
             } else {
-                script.log.info("WebWalking.moveTo loc=$loc, neighbor=$neighbor")
+                script.logger.info("WebWalking.moveTo loc=$loc, neighbor=$neighbor")
                 Movement.walkTo(loc)
             }
         }

@@ -37,25 +37,21 @@ class LoopScript : AbstractScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
-        log.info("$e")
+        logger.info("$e")
     }
 
     @com.google.common.eventbus.Subscribe
     fun onMsg(e: MessageEvent) {
-        log.info("MSG: \n Type=${e.type}, msg=${e.message}")
-    }
-
-    @com.google.common.eventbus.Subscribe
-    fun onInventoryChange(evt: InventoryChangeEvent) {
+        logger.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
     override fun poll() {
-        log.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
+        logger.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
         var obj: GameObject? = null
         val timeToFindObj = measureTimeMillis {
             obj = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Portal").first()
         }
-        log.info("Found portal in $timeToFindObj ms")
+        logger.info("Found portal in $timeToFindObj ms")
         lastLoop = System.currentTimeMillis()
     }
 

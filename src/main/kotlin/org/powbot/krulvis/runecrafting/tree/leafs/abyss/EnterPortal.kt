@@ -14,7 +14,7 @@ class EnterPortal(script: Runecrafter) : Leaf<Runecrafter>(script, "Entering Por
                 waitForDistance(portal) { script.altar.getAltar() != null }
             }
         } else {
-            script.log.info("Cannot find abyss portal")
+            script.logger.info("Cannot find abyss portal")
         }
     }
 

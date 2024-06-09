@@ -50,7 +50,7 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
 
     fun paintColors() {
         val myTile = Players.local().tile()
-        script.log.info("My tile=${myTile}")
+        script.logger.info("My tile=${myTile}")
         val tiles = listOf(
                 Tile(myTile.x - 1, myTile.y, myTile.floor),
                 Tile(myTile.x - 1, myTile.y + 1, myTile.floor),
@@ -63,7 +63,7 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
         )
         tiles.forEach { tile ->
             val gos = Objects.stream().at(tile).filtered { it.name.isNotEmpty() }
-            gos.forEach { script.log.info("GO AT TILE=${tile}: ${it.name}, has ores=${it.hasOre()}, ") }
+            gos.forEach { script.logger.info("GO AT TILE=${tile}: ${it.name}, has ores=${it.hasOre()}, ") }
             val colors = gos.firstOrNull { it.modifiedColors().isNotEmpty() }?.modifiedColors()
             if (colors != null) {
                 tile.drawOnScreen(colors.joinToString("\n"))
@@ -73,7 +73,7 @@ class Painter(script: ColorFinder) : ATPaint<ColorFinder>(script) {
 
     fun paintCalcifiedRocks() {
         Objects.stream().name("Calcified rocks").forEach {
-            script.log.info("Calcified rock at=${it.tile} ")
+            script.logger.info("Calcified rock at=${it.tile} ")
 //            it.tile.drawOnScreen("DynamicMainId=${it.dynamicMainId()}, mainId=${it.mainId()}")
             it.tile.drawOnScreen("Objects At Tile = ${Objects.stream().at(it.tile).count()}")
         }

@@ -16,15 +16,15 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
     override fun execute() {
         if (script.lastRound) {
             Notifications.showNotification("Stopped because it was last round")
-            script.log.info("Stopped because it was last round")
+            script.logger.info("Stopped because it was last round")
             ScriptManager.stop()
             return
         }
         if (!script.hasSeeds()) {
-            script.log.info("Getting seeds")
+            script.logger.info("Getting seeds")
             if (!Chat.chatting()) {
                 val table = Objects.stream(25).name("Seed table").findFirst()
-                script.log.info("Interacting with seed table=${table.isPresent}")
+                script.logger.info("Interacting with seed table=${table.isPresent}")
                 table.ifPresent {
                     if (walkAndInteract(it, "Search", useMenu = false)) {
                         Condition.wait({ Chat.chatting() }, 250, 10)
@@ -32,12 +32,12 @@ class Start(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Starting") {
                 }
             }
             val seed = getSeedInput()
-            script.log.info("Selecting seed: $seed")
+            script.logger.info("Selecting seed: $seed")
             if (Chat.chatting() && Chat.continueChat(seed)) {
                 Condition.wait({ script.hasSeeds() }, 100, 20)
             }
         } else {
-            script.log.info("Interacting with door")
+            script.logger.info("Interacting with door")
             Objects.stream(25).name("Farm door").findFirst().ifPresent {
                 if (walkAndInteract(it, "Open", useMenu = false)) {
                     Condition.wait({ script.getPoints() >= 0 }, 250, 40)

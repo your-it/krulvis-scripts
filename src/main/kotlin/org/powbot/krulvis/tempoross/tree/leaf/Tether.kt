@@ -17,9 +17,9 @@ import org.powbot.krulvis.tempoross.Tempoross
 class Tether(script: Tempoross) : Leaf<Tempoross>(script, "Tethering") {
     override fun execute() {
         if (script.isTethering()) {
-            script.log.info("Waiting for wave to pass..")
+            script.logger.info("Waiting for wave to pass..")
             if (waitForWave()) {
-                script.log.info("Done tethering...")
+                script.logger.info("Done tethering...")
                 script.waveTimer.stop()
                 sleep(Random.nextInt(650, 750))
             }

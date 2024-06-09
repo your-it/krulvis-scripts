@@ -30,13 +30,13 @@ class TestInventoryActionEventScript : TreeScript() {
             when (event) {
                 is InventoryItemActionEvent -> {
                     val item = event.item()
-                    log.info("Event=$event, item=$item")
+                    logger.info("Event=$event, item=$item")
                     if (item != null) {
-                        log.info("Interacted successfully=${item.interact(event.interaction)}")
+                        logger.info("Interacted successfully=${item.interact(event.interaction)}")
                     }
                 }
                 else -> {
-                    log.info("Not testing this kind of event")
+                    logger.info("Not testing this kind of event")
                 }
             }
 
@@ -45,7 +45,7 @@ class TestInventoryActionEventScript : TreeScript() {
 
     @com.google.common.eventbus.Subscribe
     fun onGameActionEvent(e: GameActionEvent) {
-        log.info("$e")
+        logger.info("$e")
     }
 
 }

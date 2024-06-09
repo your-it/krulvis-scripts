@@ -22,12 +22,12 @@ class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Cr
         val crucible = Objects.stream(30).type(GameObject.Type.INTERACTIVE)
                 .name("Crucible (empty)", "Crucible (partially full)").firstOrNull()
         val bar = script.getInvBar()
-        script.log.info("Going to add bar=${bar?.name()}")
+        script.logger.info("Going to add bar=${bar?.name()}")
         if (bar == null || crucible == null) return
 
         if (bar.name().contains("bar")) { // TODO There's definitely a better way to do this predicate
             if (!metalBarWidgetOpen()) {
-                script.log.info("Clicking crucible=$crucible to fill it with bars")
+                script.logger.info("Clicking crucible=$crucible to fill it with bars")
                 if (crucible.interact("Fill") == true) {
                     waitFor(2500) { metalBarWidgetOpen() }
                 }
@@ -35,7 +35,7 @@ class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Cr
 
             if (metalBarWidgetOpen()) {
                 val barButton = barButton(bar.name())
-                script.log.info("Adding bar by clicking on comp=${barButton}")
+                script.logger.info("Adding bar by clicking on comp=${barButton}")
                 if (barButton?.click() == true) {
                     waitFor(4000) { script.correctCrucibleCount(GiantsFoundryItem.forId(bar.id)!!) }
                 }
@@ -43,7 +43,7 @@ class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Cr
         } else {
             if (!metalItemWidgetOpen()) {
                 if (bar.interact("Use") && crucible.interact("Use")) {
-                    script.log.info("Clicking crucible=$crucible to fill it with items")
+                    script.logger.info("Clicking crucible=$crucible to fill it with items")
                     waitFor { metalItemWidgetOpen() }
                 }
             }

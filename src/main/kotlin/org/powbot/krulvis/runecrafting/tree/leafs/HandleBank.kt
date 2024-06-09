@@ -19,7 +19,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         val invPouches = EssencePouch.inInventory()
         if (script.altar == RuneAltar.ZMI) Bank.depositAllExcept(*keep)//Immediately deposit runes
         if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
-            script.log.info("Closing bank...")
+            script.logger.info("Closing bank...")
             Bank.close()
         } else if (Bank.stream().name(script.essence).count() <= 0) {
             Notifications.showNotification("Out of essence, stopping script")
@@ -53,7 +53,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         val staffPowers = Staff.equippedPowers()
         val pouchPowers = RunePouch.runes().flatMap { it.first.runePowers.toList() }
         list.addAll(runes.filterNot { it in staffPowers || it in pouchPowers }.map { "${Rune.getForPower(it)} rune" })
-        script.log.info("KEEP=${list.distinct().joinToString()}")
+        script.logger.info("KEEP=${list.distinct().joinToString()}")
         list.distinct().toTypedArray()
     }
 

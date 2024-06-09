@@ -39,7 +39,7 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
                     }
                 }
             if (outOfItem != null) {
-                script.log.info("Out of: ${outOfItem.key}, stopping script")
+                script.logger.info("Out of: ${outOfItem.key}, stopping script")
                 ScriptManager.stop()
             }
         }

@@ -11,14 +11,14 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
         val hasSeeds = script.hasSeeds()
         val patch = script.patches.firstOrNull { it.isEmpty() }
         if (!hasSeeds || patch == null) {
-            script.log.info("Stopped planting: hasSeeds=$hasSeeds, patch=$patch")
+            script.logger.info("Stopped planting: hasSeeds=$hasSeeds, patch=$patch")
             script.planting = false
         } else {
             script.planting = true
             val seed = script.getSeed()
             if (patch.walkBetween(script.patches) && patch.plant(seed)) {
                 val doneDidIt = Condition.wait({ !patch.isEmpty(true) }, 250, 20)
-                script.log.info("Planted on $patch: $doneDidIt")
+                script.logger.info("Planted on $patch: $doneDidIt")
                 if (doneDidIt) {
                     if (patch.water()) {
                         val tick = script.currentTick
@@ -26,7 +26,7 @@ class Plant(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Planting") {
                             Inventory.stream().id(seed).findFirst().ifPresent { it.interact("Use", false) }
                         }
                         Condition.wait({ script.currentTick > tick + 1 }, 200, 7)
-                        script.log.info("Watered as well.. $patch")
+                        script.logger.info("Watered as well.. $patch")
                     }
                 }
             }

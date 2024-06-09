@@ -8,7 +8,7 @@ import org.powbot.krulvis.tempoross.Tempoross
 class Untether(script: Tempoross) : Leaf<Tempoross>(script, "Untethering") {
     override fun execute() {
         val closest = listOf(script.side.totemLocation, script.side.mastLocation).minByOrNull { it.distance() }!!
-        script.log.info("Untethering at ${closest.distance()}")
+        script.logger.info("Untethering at ${closest.distance()}")
         if (closest.matrix().interact("Untether")) {
             waitFor { !script.isTethering() }
         }

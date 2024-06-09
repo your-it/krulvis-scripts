@@ -22,7 +22,7 @@ class CoolDispenser(script: BlastFurnace) : Leaf<BlastFurnace>(script, "Cool dis
             ) {
                 waitFor(long()) { script.cooledDispenser() }
             } else {
-                script.log.info("Failed to use bucket on dispenser")
+                script.logger.info("Failed to use bucket on dispenser")
             }
         } else if (Inventory.containsOneOf(EMPTY_BUCKET)) {
             val sink = Objects.stream().name("Sink").action("Fill-bucket").firstOrNull() ?: return

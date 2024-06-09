@@ -41,7 +41,7 @@ class Mine(script: Miner) : Leaf<Miner>(script, "Mining") {
                 7 -> 360
                 else -> Camera.yaw()
             }
-            script.log.info("Setting yaw=${Camera.yaw()} to=${yaw}")
+            script.logger.info("Setting yaw=${Camera.yaw()} to=${yaw}")
             Camera.angle(yaw, 2)
         }
 

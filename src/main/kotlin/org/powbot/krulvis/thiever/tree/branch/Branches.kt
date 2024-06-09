@@ -85,7 +85,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
     override val failedComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Walking") {
         Bank.close()
         if (Players.local().tile().floor > 0 && script.centerTile.floor == 0) {
-            script.log.info("Climbing down first...")
+            script.logger.info("Climbing down first...")
             if (walkAndInteract(Objects.stream().action("Climb-down").nearest().firstOrNull(), "Climb-down")) {
                 waitFor(long()) { validate() }
             }
@@ -103,7 +103,7 @@ class AtSpot(script: Thiever) : Branch<Thiever>(script, "AtSpot?") {
 class ShouldStop(script: Thiever) : Branch<Thiever>(script, "Should stop?") {
     override val successComponent: TreeComponent<Thiever> = SimpleLeaf(script, "Stop because npc wandered") {
         Notifications.showNotification("Stopping script because NPC wandered too far away")
-        script.log.info("Stopping script because NPC wandered too far away \n NPC: $target, tile=${target?.tile()}, centerTile=${script.centerTile}, distance=${target?.distanceTo(script.centerTile)}")
+        script.logger.info("Stopping script because NPC wandered too far away \n NPC: $target, tile=${target?.tile()}, centerTile=${script.centerTile}, distance=${target?.distanceTo(script.centerTile)}")
         ScriptManager.stop()
     }
     override val failedComponent: TreeComponent<Thiever> = Pickpocket(script)

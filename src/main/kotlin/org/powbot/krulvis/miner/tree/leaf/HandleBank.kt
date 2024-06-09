@@ -32,7 +32,7 @@ class HandleBank(script: Miner) : Leaf<Miner>(script, "Handle Bank") {
             if (Bank.containsOneOf(*WATERSKINS))
                 Bank.withdraw(WATERSKINS[0], Bank.Amount.FIVE)
             else {
-                script.log.info("Out of waterskins, stopping script")
+                script.logger.info("Out of waterskins, stopping script")
                 ScriptManager.stop()
             }
         } else {

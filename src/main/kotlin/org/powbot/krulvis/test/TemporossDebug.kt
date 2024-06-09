@@ -47,12 +47,12 @@ class TemporossDebug : ATScript() {
 
     fun debugComp(c: Component?) {
         if (c == null) {
-            log.info("Comp == null")
+            logger.info("Comp == null")
             return
         }
         val parent = c.parent()
-        log.info("Widget=[${c.widgetId()}], Parent=[${parent} id=${c.parentId()}], $c, Hidden=${c.hidden()}, Valid=${c.valid()}, Text=${c.text()}, Boundsindex=${c.boundsIndex()}")
-        if (parent != null) debugComp(parent)
+        logger.info("Widget=[${c.widgetId()}], Parent=[${parent} id=${c.parentId()}], $c, Hidden=${c.hidden()}, Valid=${c.valid()}, Text=${c.text()}, Boundsindex=${c.boundsIndex()}")
+        debugComp(parent)
     }
 
     override val rootComponent: TreeComponent<*> = object : Leaf<TemporossDebug>(this, "TestLeaf") {
@@ -61,15 +61,15 @@ class TemporossDebug : ATScript() {
 //                Components.stream(Data.PARENT_WIDGET).filtered { it.text().contains("Energy") }.firstOrNull()
 //            debugComp(c)
             if (tempoross.side == Side.UNKNOWN) {
-                log.info("Figuring out side...")
+                logger.info("Figuring out side...")
                 if (Npcs.stream().name("Ammunition crate").findFirst().isPresent) {
                     val mast = Objects.stream().name("Mast").nearest().first()
-                    log.info("Mast found: $mast, orientation: ${mast.orientation()}")
+                    logger.info("Mast found: $mast, orientation: ${mast.orientation()}")
                     tempoross.side = if (mast.orientation() == 4) Side.SOUTH else Side.NORTH
                     tempoross.side.mastLocation = mast.tile()
                 }
             } else if (tempoross.energy == -1) {
-                log.info("Not in game...")
+                logger.info("Not in game...")
                 tempoross.side = Side.UNKNOWN
             } else {
 
