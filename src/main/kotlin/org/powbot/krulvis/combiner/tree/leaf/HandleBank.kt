@@ -2,12 +2,15 @@ package org.powbot.krulvis.combiner.tree.leaf
 
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Poh
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
+import org.powbot.krulvis.api.teleports.poh.openable.MountedGloryTeleport
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
@@ -16,7 +19,14 @@ class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
     override fun execute() {
         val keepItems = script.items.map { it.key }.toIntArray()
         if (!Bank.opened()) {
-            Bank.openNearest()
+            val mountedGlory = MountedGloryTeleport.Edgeville.getObject()
+            if (Poh.inside() && mountedGlory != null) {
+                if (MountedGloryTeleport.Edgeville.execute()) {
+                    waitFor { Bank.getBank().valid() }
+                }
+            } else {
+                Bank.openNearest()
+            }
         } else if (!Inventory.emptyExcept(*keepItems)) {
 //            if (Inventory.stream().filtered { it.id !in keepItems }.list().map { it.id }.toSet().size > 1){
 //                Bank.depositAll()
