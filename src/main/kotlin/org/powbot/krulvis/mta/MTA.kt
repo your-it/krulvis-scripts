@@ -1,8 +1,6 @@
 package org.powbot.krulvis.mta
 
-import com.google.common.eventbus.Subscribe
 import org.powbot.api.Notifications
-import org.powbot.api.event.InventoryChangeEvent
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.SimpleBranch
 import org.powbot.api.script.tree.TreeComponent
@@ -14,8 +12,9 @@ import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest(
     name = "krul MagicTrainingArena",
-    description = "Does MTA for points",
-    version = "1.0.0",
+    description = "Does MTA for points, make sure to have required runes + staff equipped.",
+    scriptId = "3cc11fa3-daac-4ca9-b740-04d380056fd1",
+    version = "1.0.1",
     category = ScriptCategory.Magic
 )
 @ScriptConfiguration.List(
