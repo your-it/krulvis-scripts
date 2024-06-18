@@ -15,11 +15,12 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
+import kotlin.math.min
 
 @ScriptManifest(
 	name = "krul Combiner",
 	author = "Krulvis",
-	version = "1.1.4",
+	version = "1.1.5",
 	markdownFileName = "Combiner.md",
 	scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
 	description = "Can do any 'interact & wait' Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -55,6 +56,9 @@ class Combiner : ATScript() {
 		getOption<Map<Int, Int>>("Inventory items")
 	}
 
+	var minAmount = 0
+	var itemToCheck = -1
+
 	val id by lazy {
 		if (items.isEmpty()) {
 			Notifications.showNotification("Inventory in GUI cannot be empty!")
@@ -68,16 +72,23 @@ class Combiner : ATScript() {
 
 	fun stoppedUsing() = Production.stoppedUsing(id)
 
-	fun shouldBank() = items.any { !Inventory.containsOneOf(it.key) }
+	fun shouldBank() = items.any { !Inventory.containsOneOf(it.key) || Inventory.stream().id(itemToCheck).count(true) < minAmount }
 
 	private fun getTrackedPaintItems(): List<InventoryItemPaintItem> = painter.paintBuilder.items.flatten().filterIsInstance<InventoryItemPaintItem>()
 
 	@com.google.common.eventbus.Subscribe
 	fun onInventoryItem(e: InventoryChangeEvent) {
-		if (ScriptManager.state() == ScriptState.Running && items.none { it.key == e.itemId }
+		if (ScriptManager.state() != ScriptState.Running) {
+			return
+		}
+		if (items.none { it.key == e.itemId }
 			&& getTrackedPaintItems().none { it.itemId == e.itemId }
 			&& !Bank.opened()) {
 			painter.paintBuilder.trackInventoryItems(e.itemId)
+		} else if (e.quantityChange < 0 && itemToCheck == -1) {
+			itemToCheck = e.itemId
+			minAmount = -e.quantityChange
+			logger.info("Found item to check: id=$itemToCheck, amount=${minAmount}")
 		}
 	}
 }

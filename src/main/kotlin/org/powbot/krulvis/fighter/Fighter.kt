@@ -98,7 +98,7 @@ import kotlin.math.round
 			"Always loot",
 			"Separate items with \",\" Start with \"!\" to never loot",
 			optionType = OptionType.STRING,
-			defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale"
+			defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale, Scaly blue dragonhide, toadflax, irit, avantoe, kwuarm, snapdragon, cadantine, lantadyme, dwarf weed, torstol"
 		),
 		ScriptConfiguration(
 			"Bury bones", "Bury, Scatter or Offer bones.",
@@ -366,9 +366,14 @@ class Fighter : ATScript() {
 		if (msg.message.contains("so you can't take ")) {
 			lootList.clear()
 		}
+		if (msg.message.contains("A superior foe has appeared")) {
+			logger.info("Superior appeared message received: type=${msg.messageType}")
+			superiorAppeared = true
+		}
 	}
 
 	var lastTask = false
+	var superiorAppeared = false
 
 }
 
