@@ -139,6 +139,8 @@ class Thiever : ATScript() {
 
 	fun stunned() = !stunTimer.isFinished()
 
+	fun isDroppable(name: String) = droppableNames.any { name.contains(it, true) }
+
 	@Subscribe
 	fun onGameActionEvent(evt: GameActionEvent) {
 		if (evt.rawOpcode == 11 || evt.opcode() == GameActionOpcode.InteractNpc) {
@@ -164,20 +166,24 @@ class Thiever : ATScript() {
 		updateVisibility("Prepare menu", !leftClick)
 	}
 
+	private fun getTrackedPaintItem(id: Int): InventoryItemPaintItem? {
+		return painter.paintBuilder.items.flatten().filterIsInstance<InventoryItemPaintItem>().firstOrNull { it.itemId == id }
+	}
+
 	@Subscribe
 	fun onInventoryChange(evt: InventoryChangeEvent) {
 		val id = evt.itemId
-		if (evt.quantityChange > 0 && painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
+		val name = evt.itemName ?: return
+		if (evt.quantityChange > 0 && getTrackedPaintItem(id) == null && !isDroppable(name)) {
 			painter.paintBuilder.trackInventoryItems(id)
-			logger.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding ${evt.quantityChange} as start")
-			painter.paintBuilder.items.forEach { row ->
-				val item = row.firstOrNull { it is InventoryItemPaintItem && it.itemId == id }
-				if (item != null) (item as InventoryItemPaintItem).diff += evt.quantityChange
-			}
+			painter.paintBuilder.items
+			val tracked = getTrackedPaintItem(id)
+			logger.info("Now tracking: ${ItemLoader.lookup(id)?.name()}, tracked=${tracked}, adding ${evt.quantityChange} as start")
+			if (tracked != null) tracked.diff += evt.quantityChange
 		}
 	}
 
-	fun coinPouch(): org.powbot.api.rt4.Item? = Inventory.stream().name("Coin pouch").firstOrNull()
+	fun coinPouch(): Item? = Inventory.stream().name("Coin pouch").firstOrNull()
 
 	fun coinPouchCount() = coinPouch()?.stack ?: 0
 }
