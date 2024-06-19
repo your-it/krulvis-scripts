@@ -8,30 +8,31 @@ import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.thiever.Thiever
 import java.lang.Integer.min
-import kotlin.math.ceil
 
 class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
-    override fun execute() {
-        if (script.coinPouch() != null) {
-            Bank.close()
-            return
-        }
-        val extra = ceil(missingHP() / script.food.healing.toDouble()).toInt()
-        val toTake = min(28, script.foodAmount + extra)
-        if (!Inventory.emptyExcept(*script.food.ids)) {
-            Bank.depositInventory()
-            waitFor { !Inventory.isFull() }
-        } else if (script.food.getInventoryCount() < toTake) {
-            script.logger.info("Taking out: $toTake, extra=$extra")
-            if (Bank.withdraw(script.food.getBankId(), toTake)) {
-                waitFor { script.food.inInventory() }
-            }
-        } else if (script.dodgyNeck && !script.dodgy.hasWith()) {
-            if (!script.dodgy.withdrawAndEquip(false)) {
-                if (!script.dodgy.inInventory() && !script.dodgy.inBank()) {
-                    script.dodgyNeck = false
-                }
-            }
-        }
-    }
+	override fun execute() {
+		if (script.coinPouch() != null) {
+			Bank.close()
+			return
+		}
+		val toHeal = missingHP() / script.food.healing
+		val toTakeTotal = min(28, script.foodAmount + toHeal)
+		if (!Inventory.emptyExcept(*script.food.ids)) {
+			Bank.depositInventory()
+			waitFor { !Inventory.isFull() }
+		}
+
+		if (script.food.getInventoryCount() < toTakeTotal) {
+			script.logger.info("Taking out: $toTakeTotal, extra=$toHeal")
+			if (Bank.withdraw(script.food.getBankId(), toTakeTotal)) {
+				waitFor { script.food.inInventory() }
+			}
+		} else if (script.dodgyNeck && !script.dodgy.hasWith()) {
+			if (!script.dodgy.withdrawAndEquip(false)) {
+				if (!script.dodgy.inInventory() && !script.dodgy.inBank()) {
+					script.dodgyNeck = false
+				}
+			}
+		}
+	}
 }
