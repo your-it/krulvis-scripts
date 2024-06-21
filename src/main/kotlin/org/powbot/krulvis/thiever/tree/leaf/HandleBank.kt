@@ -15,6 +15,14 @@ class HandleBank(script: Thiever) : Leaf<Thiever>(script, "Handle Bank") {
 			Bank.close()
 			return
 		}
+
+		val missingPieces = script.getMissingRoguesPieces()
+		if (missingPieces.isNotEmpty()) {
+			missingPieces.forEach { Bank.withdraw(it, 1) }
+			missingPieces.forEach { Inventory.stream().name(it).first().interact("Wear") }
+			waitFor(1000) { script.getMissingRoguesPieces().isEmpty() }
+		}
+
 		val toHeal = missingHP() / script.food.healing
 		val toTakeTotal = min(28, script.foodAmount + toHeal)
 		if (!Inventory.emptyExcept(*script.food.ids)) {

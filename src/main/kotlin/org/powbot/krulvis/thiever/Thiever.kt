@@ -9,7 +9,6 @@ import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -23,7 +22,7 @@ import org.powbot.mobile.service.ScriptUploader
 	name = "krul Thiever",
 	description = "Pickpockets any NPC",
 	author = "Krulvis",
-	version = "1.1.5",
+	version = "1.1.6",
 	markdownFileName = "Thiever.md",
 	scriptId = "e6043ead-e607-4385-b67a-a86dcf699204",
 	category = ScriptCategory.Thieving
@@ -96,6 +95,12 @@ import org.powbot.mobile.service.ScriptUploader
 			defaultValue = "false",
 			optionType = OptionType.BOOLEAN
 		),
+		ScriptConfiguration(
+			name = "Rogues Outfit",
+			description = "Make sure Rogue's outfit is equipped",
+			defaultValue = "true",
+			optionType = OptionType.BOOLEAN
+		),
 
 	]
 )
@@ -118,6 +123,7 @@ class Thiever : ATScript() {
 	val stopOnWander by lazy { getOption<Boolean>("Stop on wandering") }
 	val maxDistance by lazy { getOption<Int>("MaxDistance") }
 	val target by lazy { getOption<List<NpcActionEvent>>("Targets") }
+	val roguesOutfit by lazy { getOption<Boolean>("Rogues Outfit") }
 	val foodAmount by lazy { (getOption<Int>("Food amount")) }
 	val prepare by lazy { (getOption<Boolean>("Prepare menu")) }
 	val useMenu by lazy { !getOption<Boolean>("Left-click") }
@@ -126,8 +132,7 @@ class Thiever : ATScript() {
 	//Allow setting dodgyNeck to false after we're out of necklaces
 	var dodgyNeck = false
 
-
-	val dodgy = Equipment(org.powbot.api.rt4.Equipment.Slot.NECK, 21143)
+	val dodgy = org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.NECK, 21143)
 	var nextPouchOpening = Random.nextInt(1, 28)
 	var droppables: List<Item> = emptyList()
 	val stunTimer = Timer(3000)
@@ -135,6 +140,12 @@ class Thiever : ATScript() {
 	fun getTarget(): Npc? {
 		return Npcs.stream().within(centerTile, maxDistance).name(*target.map { it.name }.toTypedArray())
 			.nearest(centerTile).firstOrNull()
+	}
+
+	val ROGUE_GEAR = listOf("Rogue mask", "Rogue top", "Rogue trousers", "Rogue gloves", "Rogue boots")
+	fun getMissingRoguesPieces(): List<String> {
+		val equipment = Equipment.get()
+		return ROGUE_GEAR.filter { r -> equipment.none { e -> e.name() == r } }
 	}
 
 	fun stunned() = !stunTimer.isFinished()

@@ -39,7 +39,7 @@ class CanDrop(script: Thiever) : Branch<Thiever>(script, "Can drop") {
 			sleep(Random.nextInt(150, 250))
 		}
 	}
-	override val failedComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script, ShouldBank(script), 1)
+	override val failedComponent: TreeComponent<Thiever> = ShouldBank(script)
 
 
 	override fun validate(): Boolean {
@@ -50,11 +50,12 @@ class CanDrop(script: Thiever) : Branch<Thiever>(script, "Can drop") {
 }
 
 class ShouldBank(script: Thiever) : Branch<Thiever>(script, "Should Bank") {
-	override val successComponent: TreeComponent<Thiever> = IsBankOpen(script)
+	override val successComponent: TreeComponent<Thiever> = ShouldOpenCoinPouch(script, IsBankOpen(script), 1)
 	override val failedComponent: TreeComponent<Thiever> = AtSpot(script)
 
 	override fun validate(): Boolean {
 		return Inventory.isFull()
+			|| (script.roguesOutfit && script.getMissingRoguesPieces().isNotEmpty())
 			|| (currentHP() < 8 && !script.food.inInventory())
 			|| (script.dodgyNeck && !script.dodgy.inEquipment())
 			|| Inventory.emptySlotCount() < script.freeSlots && script.droppables.isEmpty()
