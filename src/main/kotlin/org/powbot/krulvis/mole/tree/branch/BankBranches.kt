@@ -1,0 +1,49 @@
+package org.powbot.krulvis.mole.tree.branch
+
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Movement
+import org.powbot.api.rt4.Objects
+import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
+import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.mole.GiantMole
+import org.powbot.krulvis.mole.tree.leaf.HandleBank
+import kotlin.random.Random
+
+class ShouldBank(script: GiantMole) : Branch<GiantMole>(script, "Should Bank?") {
+	override val failedComponent: TreeComponent<GiantMole> = AtMole(script)
+	override val successComponent: TreeComponent<GiantMole> = IsBankOpen(script)
+
+	override fun validate(): Boolean {
+		return false
+	}
+}
+
+class IsBankOpen(script: GiantMole) : Branch<GiantMole>(script, "IsBankOpen?") {
+	private val ropeTile = Tile(1752, 5136, 0)
+	override val failedComponent: TreeComponent<GiantMole> = SimpleLeaf(script, "Opening Bank") {
+		if (moleArea.contains(me)) {
+			if (ropeTile.distance() > 10) {
+				Movement.step(ropeTile)
+				sleep(Random.nextInt(600, 100))
+			} else {
+				val rope = Objects.stream().at(ropeTile).name("Rope").action("Climb").first()
+				if (walkAndInteract(rope, "Climb")) {
+					waitForDistance(rope) { moleArea.contains(me) }
+				}
+			}
+		} else {
+			Bank.open()
+		}
+	}
+	override val successComponent: TreeComponent<GiantMole> = HandleBank(script)
+
+	override fun validate(): Boolean {
+		return Bank.opened()
+	}
+}
