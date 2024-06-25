@@ -20,7 +20,7 @@ import kotlin.math.min
 @ScriptManifest(
 	name = "krul Combiner",
 	author = "Krulvis",
-	version = "1.1.5",
+	version = "1.1.6",
 	markdownFileName = "Combiner.md",
 	scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
 	description = "Can do any 'interact & wait' Cooking, Crafting, Fletching, Smithing, Smelting"
@@ -85,7 +85,7 @@ class Combiner : ATScript() {
 			&& getTrackedPaintItems().none { it.itemId == e.itemId }
 			&& !Bank.opened()) {
 			painter.paintBuilder.trackInventoryItems(e.itemId)
-		} else if (e.quantityChange < 0 && itemToCheck == -1) {
+		} else if (e.quantityChange < 0 && itemToCheck == -1 && !Bank.opened()) {
 			itemToCheck = e.itemId
 			minAmount = -e.quantityChange
 			logger.info("Found item to check: id=$itemToCheck, amount=${minAmount}")
