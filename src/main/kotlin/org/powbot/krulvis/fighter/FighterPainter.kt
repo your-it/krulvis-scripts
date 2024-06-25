@@ -18,8 +18,8 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 		paintBuilder.addString("Target") {
 			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}"
 		}
-			.add(slayerTracker)
-			.addCheckbox("Stop after Slay task", "stopAfterTask", true)
+//			.add(slayerTracker)
+			.addCheckbox("Stop after Slay task", "stopAfterTask", false)
 			.withTotalLoot(true)
 			.addString("Npc Death Watchers") {
 				script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
