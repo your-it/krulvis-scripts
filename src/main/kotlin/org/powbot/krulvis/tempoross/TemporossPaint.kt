@@ -2,6 +2,7 @@ package org.powbot.krulvis.tempoross
 
 import org.powbot.api.Color
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.rt4.Varpbits
 import org.powbot.api.rt4.walking.model.Skill
@@ -45,6 +46,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
             lc?.tile()?.drawOnScreen(lc.orientation().toString())
             g.drawString("Tethered=${script.isTethering()}, varp=${Varpbits.varpbit(2933)}", 50, 250)
             g.drawString("Blocked Tiles = ${blockedTiles.size}", 50, 260)
+            g.drawString("TickSinceWave = ${script.gameTick - script.waveTick}", 50, 270)
             if (blockedTiles.isNotEmpty() && paths.isNotEmpty()) {
                 paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
                     val dangerous = tiles.any { script.burningTiles.contains(it) }

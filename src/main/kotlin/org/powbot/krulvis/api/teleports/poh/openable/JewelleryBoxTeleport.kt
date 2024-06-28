@@ -13,34 +13,36 @@ private const val FANCY_JEWELLERY_BOX = "Fancy jewellery box"
 private const val ORNATE_JEWELLERY_BOX = "Ornate jewellery box"
 
 const val PVP_ARENA_JEWELLERY_BOX = "PvP arena jewelry box (POH)"
+const val CASTLE_WARS_JEWELLERY_BOX = "Castle wars jewelry box (POH)"
+const val FEROX_ENCLAVE_JEWELLERY_BOX = "Ferox enclave jewelry box (POH)"
 
 enum class JewelleryBoxTeleport(override val action: String, override val COMP_ID: Int) : OpenableHouseTeleport {
-	PvPArena("PvP Arena", 2),
-	CastleWars("Castle Wars", 2),
-	FeroxEnclave("Ferox Enclave", 2),
-	Burthorpe("Burthorpe", 3),
-	BarbarianOutpost("Barbarian Outpost", 3),
-	CorporealBeast("Corporeal Beast", 3),
-	TearsOfGuthix("Tears of Guthix", 3),
-	Wintertodt("Wintertodt Camp", 3),
-	WarriorsGuild("Warriors' Guild", 4),
-	ChampionsGuild("Champions' Guild", 4),
-	Monastery("Monastery", 3),
-	RangingGuild("Ranging Guild", 4),
-	FishingGuild("Fishing Guild", 5),
-	MiningGuild("Mining Guild", 5),
-	CraftingGuild("Crafting Guild", 5),
-	CooksGuild("Cooking Guild", 5),
-	WoodcuttingGuild("Woodcutting Guild", 5),
-	FarmingGuild("Farming Guild", 5),
-	Miscellania("Miscellania", 6),
-	GrandExchange("Grand Exchange", 6),
-	FaladorPark("Falador Park", 6),
-	Dondakan("Dondakans' Rock", 6),
-	Edgeville("Edgeville", 7),
-	Karamja("Karamja", 7),
-	DraynorVillage("Draynor Village", 7),
-	AlKharid("Al Kharid", 7);
+	PVP_ARENA("PvP Arena", 2),
+	CASTLE_WARS("Castle Wars", 2),
+	FEROX_ENCLAVE("Ferox Enclave", 2),
+	BURTHORPE("Burthorpe", 3),
+	BARBARIAN_OUTPOST("Barbarian Outpost", 3),
+	CORPORAL_BEAST("Corporeal Beast", 3),
+	TEARS_OF_GUTHIX("Tears of Guthix", 3),
+	WINTERTODT("Wintertodt Camp", 3),
+	WARRIORS_GUILD("Warriors' Guild", 4),
+	CHAMPIONS_GUILD("Champions' Guild", 4),
+	MONASTERY("Monastery", 3),
+	RANGING_GUILD("Ranging Guild", 4),
+	FISHING_GUILD("Fishing Guild", 5),
+	MINING_GUILD("Mining Guild", 5),
+	CRAFTING_GUILD("Crafting Guild", 5),
+	COOKING_GUILD("Cooking Guild", 5),
+	WOODCUTTING_GUILD("Woodcutting Guild", 5),
+	FARMING_GUILD("Farming Guild", 5),
+	MISCELLANIA("Miscellania", 6),
+	GRAND_EXCHANGE("Grand Exchange", 6),
+	FALADOR_PARK("Falador Park", 6),
+	DONDAKANS_ROCK("Dondakans' Rock", 6),
+	EDGEVILLE("Edgeville", 7),
+	KARAMJA("Karamja", 7),
+	DRAYNOR_VILLAGE("Draynor Village", 7),
+	AL_KHARID("Al Kharid", 7);
 
 	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)
 	override val requirements: List<Requirement> = emptyList()
@@ -51,7 +53,7 @@ enum class JewelleryBoxTeleport(override val action: String, override val COMP_I
 	}
 
 	companion object {
-		fun forName(name: String) = values().firstOrNull { name.replace(" ", "").contains(it.name, true) }
+		fun forName(name: String) = values().firstOrNull { name.contains(it.name.replace("_", " "), true) }
 	}
 
 }

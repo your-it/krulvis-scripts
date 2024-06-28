@@ -26,6 +26,12 @@ import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.api.teleports.CASTLE_WARS_ROD
+import org.powbot.krulvis.api.teleports.EDGEVILLE_GLORY
+import org.powbot.krulvis.api.teleports.FEROX_ENCLAVE_ROD
+import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
+import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
+import org.powbot.krulvis.api.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.slayer.Master
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -98,14 +104,22 @@ import kotlin.math.round
 			"Always loot",
 			"Separate items with \",\" Start with \"!\" to never loot",
 			optionType = OptionType.STRING,
-			defaultValue = "Long bone, curved bone, ensouled, rune, clue, totem, grimy, !blue dragon scale, Scaly blue dragonhide, toadflax, irit, avantoe, kwuarm, snapdragon, cadantine, lantadyme, dwarf weed, torstol"
+			defaultValue = "Long bone, curved bone, clue, totem, !blue dragon scale, Scaly blue dragonhide, toadflax, irit, avantoe, kwuarm, snapdragon, cadantine, lantadyme, dwarf weed, torstol"
 		),
 		ScriptConfiguration(
 			"Bury bones", "Bury, Scatter or Offer bones.",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
-			"Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "FEROX_ENCLAVE",
+			"BankTeleport", "Teleport to bank", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
+			allowedValues = [EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
+		),
+		ScriptConfiguration(
+			"NpcTeleport", "Teleport to NPCs", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
+			allowedValues = [EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
+		),
+		ScriptConfiguration(
+			"Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "NEAREST",
 			allowedValues = ["NEAREST", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "AL_KHARID_BANK", "BURTHORPE_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "CASTLE_WARS_BANK", "DRAYNOR_BANK", "EDGEVILLE_BANK",
 				"FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "FARMING_GUILD_85", "FARMING_GUILD_65", "FEROX_ENCLAVE", "GRAND_EXCHANGE", "HOSIDIUS_BEST_BANK_SPOT", "MISCELLANIA_BANK", "KOUREND_TOP_BUILDING", "LUMBRIDGE_TOP", "LUMBRIDGE_CASTLE_BANK",
 				"VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "GNOME_STRONGHOLD_BANK", "FISHING_GUILD_BANK", "MINING_GUILD", "MOTHERLOAD_MINE", "MOTHERLOAD_MINE_DEPOSIT", "PRIFIDDINAS", "PORT_SARIM_DB", "SEERS_BANK",

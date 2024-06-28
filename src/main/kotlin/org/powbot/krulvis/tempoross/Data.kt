@@ -119,8 +119,8 @@ enum class Side {
                     Tile(x + 4, y + 5),
                     Tile(x - 3, y + 5),
                     Tile(x - 10, y - 5),
-                    Tile(x - 20, y - 10),
-                    Tile(x - 20, y - 20),
+                    Tile(x - 25, y - 10),
+                    Tile(x - 25, y - 20),
                     Tile(x + 2, y - 20),
                     Tile(x + 4, y - 5)
                 )

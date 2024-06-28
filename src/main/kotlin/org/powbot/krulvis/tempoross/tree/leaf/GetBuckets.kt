@@ -3,6 +3,7 @@ package org.powbot.krulvis.tempoross.tree.leaf
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.tempoross.Tempoross
 
 class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting Buckets") {
@@ -19,7 +20,7 @@ class GetBuckets(script: Tempoross) : Leaf<Tempoross>(script, "Getting Buckets")
                     true
                 )
             ) {
-                waitFor(3000 + (500 * (bucketCrate?.distance() ?: 10).toInt())) {
+                waitForDistance(bucketCrate) {
                     bucketCount != script.getTotalBuckets().also { bucketCount = it }
                 }
             }

@@ -147,18 +147,16 @@ object ATContext {
 			val distanceToTarget = pos.distanceTo(me)
 			if (distanceToTarget > triggerDistance || !t.inViewport(true)) {
 				debug(
-					"Walking before interacting distance to big=${distanceToTarget > triggerDistance}, notinviewport=${
-						!t.inViewport(
-							true
-						)
+					"Walking before interacting distance too big=${distanceToTarget > triggerDistance}, InViewport=${
+						t.inViewport(true)
 					}"
 				)
 				debug("destination=${destination}, targetTile=${targetTile}, pos=${pos}, distanceToTarget=${distanceToTarget}")
 				Movement.step(pos)
-				if (!waitForWhile(1000, { Movement.destination().distanceTo(pos) <= 2 })) {
+				if (!waitForWhile(1000, { Movement.destination().distanceTo(pos) <= 5 })) {
 					return false
 				}
-				waitForWhile(mid(), { t.inViewport(true) }, whileWaiting)
+				waitForWhile(mid(), { !t.valid() || t.inViewport(true) }, whileWaiting)
 			}
 		}
 
