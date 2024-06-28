@@ -74,8 +74,8 @@ class TemporossDebug : ATScript() {
             } else {
 
                 tempoross.burningTiles.clear()
-                tempoross.triedPaths.clear()
                 tempoross.detectDangerousTiles()
+                tempoross.triedPaths.clear()
 
 
                 val dest = Movement.destination()

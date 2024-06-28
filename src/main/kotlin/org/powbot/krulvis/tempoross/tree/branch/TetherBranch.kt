@@ -9,12 +9,15 @@ import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Tether
 
 class ShouldTether(script: Tempoross) : Branch<Tempoross>(script, "Should Tether") {
-    override fun validate(): Boolean {
-        return !script.waveTimer.isFinished()
-                && (script.hasSpiritOutfit || Inventory.containsOneOf(ROPE))
+	override fun validate(): Boolean {
+		if (!script.isWaveActive()) {
+			return false
+		}
+		return script.hasSpiritOutfit || Inventory.containsOneOf(ROPE)
 
-    }
+	}
 
-    override val successComponent: TreeComponent<Tempoross> = Tether(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldSpec(script)
+
+	override val successComponent: TreeComponent<Tempoross> = Tether(script)
+	override val failedComponent: TreeComponent<Tempoross> = ShouldSpec(script)
 }

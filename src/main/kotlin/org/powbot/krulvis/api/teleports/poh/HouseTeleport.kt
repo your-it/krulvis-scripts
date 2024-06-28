@@ -22,7 +22,7 @@ interface HouseTeleport : Teleport {
 	}
 
 	fun shouldRestorePool(): Boolean {
-		return Movement.energyLevel() < 95
+		return Movement.energyLevel() <= 90
 	}
 
 	fun useRestorePool(): Boolean {

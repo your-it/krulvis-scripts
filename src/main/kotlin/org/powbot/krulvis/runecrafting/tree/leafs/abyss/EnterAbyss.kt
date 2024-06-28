@@ -20,7 +20,7 @@ class EnterAbyss(script: Runecrafter) : Leaf<Runecrafter>(script, "Entering Abys
         val mage = Npcs.stream().name("Mage of Zamorak").first()
         if (mage.distance() <= distanceToMage) {
             if (walkAndInteractWhile(mage, "Teleport") { escapePlayers() }) {
-                waitForDistanceWhile(mage, { Abyss.inOuterCircle() }, { escapePlayers() })
+                waitForDistanceWhile(mage, 20000, { Abyss.inOuterCircle() }, { escapePlayers() })
             }
         } else {
             walkToMage()

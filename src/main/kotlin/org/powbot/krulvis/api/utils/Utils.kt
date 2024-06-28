@@ -3,6 +3,7 @@ package org.powbot.krulvis.api.utils
 import org.powbot.api.Locatable
 import org.powbot.api.Random
 import org.powbot.krulvis.api.ATContext.distance
+import kotlin.math.max
 import kotlin.math.min
 
 
@@ -52,33 +53,10 @@ object Utils {
 
 	fun waitFor(timeOut: Int = mid(), condition: () -> Boolean): Boolean = waitForWhile(timeOut, condition)
 
-	fun waitForDistanceWhile(locatable: Locatable, condition: () -> Boolean, whileWaiting: () -> Any = {}) =
-		waitForWhile(min(locatable.distance().toInt() * 1000, 20000), condition, whileWaiting)
+	fun waitForDistanceWhile(locatable: Locatable, maxWait: Int = 20000, condition: () -> Boolean, whileWaiting: () -> Any = {}) =
+		waitForWhile(min(locatable.distance().toInt() * 1000, maxWait), condition, whileWaiting)
 
-	fun waitForDistance(locatable: Locatable, condition: () -> Boolean) =
-		waitForDistanceWhile(locatable, condition)
+	fun waitForDistance(locatable: Locatable, maxWait: Int = 20000, condition: () -> Boolean) =
+		waitForDistanceWhile(locatable, maxWait, condition)
 
-
-//    fun getItemImage(id: Int): BufferedImage? {
-//        try {
-//            val conn = URL(OSRS_BOX_URL + id).openConnection()
-//            val parser = JsonParser()
-//            val ipr = InputStreamReader(conn.getInputStream())
-//            val icon = parser.parse(ipr)?.asJsonObject?.get("icon")?.asString ?: return null
-//            return ImageIO.read(ByteArrayInputStream(Base64.getDecoder().decode(icon)))
-//        } catch (fnfe: FileNotFoundException) {
-//            fnfe.printStackTrace()
-//        }
-//        return null
-//    }
-//
-//    fun getWebImage(url: String): BufferedImage? {
-//        try {
-//            val conn = URL(url).openConnection()
-//            return ImageIO.read(conn.getInputStream())
-//        } catch (fnfe: FileNotFoundException) {
-//            fnfe.printStackTrace()
-//        }
-//        return null
-//    }
 }

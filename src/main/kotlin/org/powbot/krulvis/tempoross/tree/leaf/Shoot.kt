@@ -14,31 +14,31 @@ import org.powbot.krulvis.tempoross.Tempoross
 
 
 class Shoot(script: Tempoross) : Leaf<Tempoross>(script, "Shooting") {
-    override fun execute() {
-        val ammo = script.getAmmoCrate()
-        val dest = Movement.destination()
-        val nearAmmoBox = ammo != null && (ammo.distance() <= 2 || ammo.tile().distanceTo(dest) <= 2)
-        val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
-        val offensiveLCTile = Npcs.stream().name("Lightning Cloud").nearest().first().tile().derive(0, -1)
-        val myTile = me.tile()
-        val safeTile = getSafeTile()
-        if (shooting && offensiveLCTile == myTile && myTile != safeTile) {
-            if (Movement.step(safeTile)) {
-                waitFor { me.tile() == safeTile }
-            }
-        }
-        if (!shooting && script.interactWhileDousing(ammo, "Fill", script.side.mastLocation, false)) {
-            waitFor(long()) { me.animation() == FILLING_ANIM }
-        }
-    }
+	override fun execute() {
+		val ammo = script.getAmmoCrate()
+		val dest = Movement.destination()
+		val nearAmmoBox = ammo.distance() <= 2 || ammo.tile().distanceTo(dest) <= 2
+		val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
+		val offensiveLCTile = Npcs.stream().name("Lightning Cloud").nearest().first().tile().derive(0, -1)
+		val myTile = me.tile()
+		val safeTile = getSafeTile()
+		if (shooting && offensiveLCTile == myTile && myTile != safeTile) {
+			if (Movement.step(safeTile)) {
+				waitFor { me.tile() == safeTile }
+			}
+		} else if (!ammo.valid()) {
+			script.walkWhileDousing(script.side.anchorLocation, false)
+		} else if (!shooting && script.interactWhileDousing(ammo, "Fill", script.side.mastLocation, false)) {
+			waitFor(long()) { me.animation() == FILLING_ANIM }
+		}
+	}
 
-    fun getSafeTile(): Tile {
-        return if (script.side == Side.NORTH) {
-            script.side.mastLocation.derive(2, 0)
-        } else {
-
-            script.side.mastLocation.derive(-2, 0)
-        }
-    }
+	private fun getSafeTile(): Tile {
+		return if (script.side == Side.NORTH) {
+			script.side.mastLocation.derive(2, 0)
+		} else {
+			script.side.mastLocation.derive(-2, 0)
+		}
+	}
 
 }

@@ -32,7 +32,7 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
         //If we are close to the ammo-box and have some fish, shoot em
         if (fish > 0) {
             val ammoCrate = script.getAmmoCrate()
-            if ((ammoCrate?.distance()?.roundToInt() ?: 8) < 7) {
+            if (ammoCrate.distance().roundToInt() < 7) {
                 script.logger.info("Shooting because close and hasShootableFish")
                 return true
             } else if (script.solo) {
@@ -55,7 +55,7 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
             }
         }
 
-        if (raw > 0 && script.isLowHP() && script.isVulnerable() && script.atAmmoCrate()) {
+        if (raw > 0 && script.isLowHP() && script.isVulnerable() && script.nearAmmoCrate()) {
             script.logger.info("Shooting last fish at tempoross cuz low hp")
             return true
         }
@@ -69,8 +69,7 @@ class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot")
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
     override fun validate(): Boolean {
-        script.collectFishSpots()
-        script.bestFishSpot = script.getClosestFishSpot(script.fishSpots)
+
         val raw = Inventory.getCount(RAW)
         if (!script.cookFish || raw == 0) return false
 
@@ -82,10 +81,10 @@ class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
         val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
         val cookLocation = script.side.cookLocation
         if (script.solo) {
-            if (cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
+            if (script.energyGoingDownTimer.isFinished() && cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
                 debug("Cooking because need to bring to 10% energy")
                 return true
-            } else if (cooked < 19 && script.intensity >= 85 - (19 - cooked)) {
+            } else if (cooked < 19 && script.intensity >= 89 - raw) {
                 debug("Cooking because we need to reach 19 fish")
                 return true
             }
