@@ -150,7 +150,7 @@ class Tempoross : ATScript() {
 	var health = -1
 		private set
 
-	val energyGoingDownTimer = Timer(1000)
+	val energyGoingDownTimer = Timer(2000)
 
 	@Subscribe
 	fun onGameTick(_e: TickEvent) {

@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Item.Companion.BUCKET_OF_WATER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.ROPE
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.tempoross.Data.COOKED
 import org.powbot.krulvis.tempoross.Data.CRYSTAL
 import org.powbot.krulvis.tempoross.Data.HARPOON
@@ -47,12 +48,13 @@ class ShouldDouse(script: Tempoross) :
 	}
 
 
-	var fire: Npc? = null
+	private var fire: Npc? = null
 
 	override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Douse") {
+		val fire = fire
 		if (fire!!.interact("Douse")) {
 			waitFor(600) { me.interacting() == fire }
-			waitFor(5000) { script.getNearestFire() != fire || me.interacting() != fire }
+			waitForDistance(fire) { Npcs.stream().at(fire).name("Fire").isEmpty() }
 		}
 	}
 	override val failedComponent: TreeComponent<Tempoross> = ShouldKill(script)
