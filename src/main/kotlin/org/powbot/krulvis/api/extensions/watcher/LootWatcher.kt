@@ -29,6 +29,8 @@ class LootWatcher(val tile: Tile, private val ammo: Int, private val radius: Int
 			lootList.addAll(waitForLoot())
 			val lootNames = loot.joinToString { it.name() }
 			logger.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds, found loot=[${lootNames}]")
+			latch.countDown()
+			unregister()
 		}
 	}
 
