@@ -186,6 +186,10 @@ class Fighter : ATScript() {
 		}
 	}
 
+	//Banking option
+	var forcedBanking = false
+	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }
+
 	//Killing spot
 	val monsters by lazy {
 		getOption<List<NpcActionEvent>>("Monsters").map { it.name }
@@ -202,7 +206,7 @@ class Fighter : ATScript() {
 	var waitForLootJob: Job? = null
 	val lootList = mutableListOf<GroundItem>()
 	val ironman by lazy { getOption<Boolean>("Ironman") }
-	val minLoot by lazy { getOption<Int>("Loot price") }
+	val minLootPrice by lazy { getOption<Int>("Loot price") }
 	val lootNameOptions by lazy {
 		val names = getOption<String>("Always loot").split(",")
 		val trimmed = mutableListOf<String>()
@@ -231,9 +235,6 @@ class Fighter : ATScript() {
 		trimmed
 	}
 
-	//Banking option
-	var forcedBanking = false
-	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }
 
 	fun centerTile() = safespot
 
@@ -277,7 +278,7 @@ class Fighter : ATScript() {
 		if (warriorGuild && id() in Defender.defenders) return true
 		val name = name().lowercase()
 		return !neverLoot.contains(name) &&
-			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLoot)
+			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLootPrice)
 	}
 
 
