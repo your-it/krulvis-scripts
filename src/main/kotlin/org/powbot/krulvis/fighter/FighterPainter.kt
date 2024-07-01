@@ -16,9 +16,8 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 	val slayerTracker = listOf(TextPaintItem { "Monsters left:" }, TextPaintItem { Slayer.taskRemainder().toString() })
 	override fun buildPaint(paintBuilder: PaintBuilder): Paint {
 		paintBuilder.addString("Target") {
-			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}"
+			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}, ${script.currentTarget?.healthPercent()}%"
 		}
-//			.add(slayerTracker)
 			.addCheckbox("Stop after Slay task", "stopAfterTask", false)
 			.withTotalLoot(true)
 			.addString("Npc Death Watchers") {
@@ -38,19 +37,19 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 
 	override fun paintCustom(g: Rendering) {
 		val target = script.currentTarget
-		target?.draw()
 		if (target != null) {
 			g.drawString("Vis  : ${target.healthBarVisible()}", 500, 200)
 			g.drawString("HP   : ${target.healthPercent()}", 500, 220)
 			g.drawString("Anim : ${target.animation()}", 500, 240)
 			g.drawString("Valid: ${target.valid()}", 500, 260)
-			g.drawString("Interacting is me=${target.interacting() == me}", 500, 280)
 			g.drawString(
 				"Watcher count total=${script.npcDeathWatchers.size}, target=${script.npcDeathWatchers.count { it.npc == target }}",
 				500,
 				300
 			)
 		}
-		script.lootWachter?.tile?.drawOnScreen(outlineColor = Color.CYAN)
+		val lootWatcher = script.lootWachter ?: return
+		if (lootWatcher.active)
+			lootWatcher.tile.drawOnScreen(outlineColor = Color.CYAN)
 	}
 }
