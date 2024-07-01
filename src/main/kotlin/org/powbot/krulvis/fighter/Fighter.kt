@@ -28,6 +28,7 @@ import org.powbot.krulvis.api.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
@@ -198,6 +199,7 @@ class Fighter : ATScript() {
 	val waitForLootAfterKill by lazy { getOption<Boolean>("WaitForLoot") }
 	val npcTeleport by lazy { TeleportMethod(Teleport.forName(getOption("NpcTeleport"))) }
 	var currentTarget: Npc? = null
+	val aggressionTimer = Timer(10 * 60 * 1000)
 
 
 	//Loot

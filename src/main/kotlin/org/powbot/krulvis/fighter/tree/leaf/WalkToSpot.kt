@@ -18,6 +18,7 @@ class WalkToSpot(script: Fighter) : Leaf<Fighter>(script, "Walking to spot") {
 				script.npcTeleport.executed = false
 				path.traverseUntilReached(0.0)
 			} else if (npcTeleport.execute()) {
+				script.aggressionTimer.reset()
 				Movement.walkTo(spot)
 			}
 		}

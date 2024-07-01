@@ -80,16 +80,17 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
 
 class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 	override val successComponent: TreeComponent<Fighter> = Loot(script)
-	override val failedComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
+	override val failedComponent: TreeComponent<Fighter> = GettingDefenders(script)
 
 	private fun makeSpace(worth: Int): Boolean {
-		if (worth > 5000) {
+		val edibleFood = Food.getFirstFood()
+		if (edibleFood != null) {
+			return edibleFood.eat()
+		} else if (worth > 5000) {
 			val pot = Inventory.stream().name("(1)").action("Drink").first()
 			return pot.interact("Drink")
-		} else {
-			val edibleFood = Food.getFirstFood()
-			return edibleFood?.eat() == true
 		}
+		return false
 	}
 
 	override fun validate(): Boolean {
