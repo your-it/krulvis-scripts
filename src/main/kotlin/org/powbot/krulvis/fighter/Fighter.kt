@@ -61,6 +61,10 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 			optionType = OptionType.NPC_ACTIONS
 		),
 		ScriptConfiguration(
+			MONSTER_AUTO_DESTROY_OPTION, "Select if monster is finished off (Gargoyles)",
+			OptionType.BOOLEAN
+		),
+		ScriptConfiguration(
 			RADIUS_OPTION, "Kill radius", optionType = OptionType.INTEGER, defaultValue = "10"
 		),
 		ScriptConfiguration(
@@ -250,11 +254,11 @@ class Fighter : ATScript() {
 	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
 
 
-	//Killing spot
+	//monsters Killing spot
 	val monsters by lazy {
 		getOption<List<NpcActionEvent>>(MONSTERS_OPTION).map { it.name }
 	}
-	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
+	val monsterDestroyed by lazy { getOption<Boolean>(MONSTER_AUTO_DESTROY_OPTION) }
 	val monsterTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }
 	var currentTarget: Npc? = null
 	val aggressionTimer = Timer(10 * 60 * 1000)
@@ -272,6 +276,7 @@ class Fighter : ATScript() {
 	}
 
 	//Safespot options
+	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
 	val useSafespot by lazy { getOption<Boolean>(USE_SAFESPOT_OPTION) }
 	val walkBack by lazy { getOption<Boolean>(WALK_BACK_TO_SAFESPOT_OPTION) }
 	private val centerTile by lazy { getOption<Tile>(CENTER_TILE_OPTION) }
@@ -300,7 +305,7 @@ class Fighter : ATScript() {
 			currentTarget = interacting
 			val deathWatcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
 			if (deathWatcher == null || !deathWatcher.active) {
-				npcDeathWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
+				npcDeathWatchers.add(NpcDeathWatcher(interacting, monsterDestroyed) { watchLootDrop(interacting.tile()) })
 			}
 		}
 		npcDeathWatchers.removeAll { !it.active }
