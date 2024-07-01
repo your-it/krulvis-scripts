@@ -4,6 +4,7 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -16,11 +17,12 @@ import org.powbot.krulvis.mole.tree.leaf.HandleBank
 import kotlin.random.Random
 
 class ShouldBank(script: GiantMole) : Branch<GiantMole>(script, "Should Bank?") {
-	override val failedComponent: TreeComponent<GiantMole> = AtMole(script)
+	override val failedComponent: TreeComponent<GiantMole> = CanLoot(script)
 	override val successComponent: TreeComponent<GiantMole> = IsBankOpen(script)
 
 	override fun validate(): Boolean {
-		return false
+		val prayerPot = script.prayerPotion
+		return Prayer.prayerPoints() < 10 && (prayerPot == null || !prayerPot.hasWith())
 	}
 }
 

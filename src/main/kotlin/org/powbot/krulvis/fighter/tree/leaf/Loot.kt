@@ -35,9 +35,4 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 		}
 		script.logger.info("Remaining loot=[${script.lootList.joinToString()}]")
 	}
-
-	fun isTargetDying(): Boolean {
-		val monster = script.nearbyMonsters().firstOrNull()
-		return monster != null && monster.healthBarVisible() && monster.healthPercent() == 0
-	}
 }

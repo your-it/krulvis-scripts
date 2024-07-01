@@ -11,7 +11,7 @@ import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.branch.moleArea
 
 class GoToMole(script: GiantMole) : Leaf<GiantMole>(script, "Going to mole") {
-	private val parkTile = Tile(3001, 3778, 0)
+	private val parkTile = Tile(3001, 3376, 0)
 	override fun execute() {
 		if (parkTile.distance() > 15) {
 			Movement.walkTo(parkTile)
