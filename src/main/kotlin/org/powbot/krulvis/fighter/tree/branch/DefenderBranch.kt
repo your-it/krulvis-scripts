@@ -12,6 +12,7 @@ import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
+import org.powbot.krulvis.fighter.tree.leaf.WalkToSpot
 import org.powbot.mobile.script.ScriptManager
 
 class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Room?") {
@@ -66,7 +67,7 @@ class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should 
         }
     }
 
-    override val failedComponent: TreeComponent<Fighter> = ShouldUseItem(script)
+    override val failedComponent: TreeComponent<Fighter> = Killing(script)
 
     override fun validate(): Boolean {
         return script.warriorGuild && Defender.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096

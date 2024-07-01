@@ -1,11 +1,8 @@
 package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
 
 object House {
 	//
@@ -53,14 +50,20 @@ object House {
 	fun inBuildingMode(): Boolean = Varpbits.varpbit(780) == 1
 
 
-	fun getPool(): GameObject = Objects.stream().name(*allPools).first()
+	fun getPool(): GameObject = Objects.stream().name(*Pool.allPools).first()
 
-	private const val ornatePool = "Ornate pool of Rejuvenation"
-	private const val restorationPool = "Pool of Restoration"
-	private const val revitalisationPool = "Pool of Revitalisation"
-	private const val rejuvenationPool = "Pool of Rejuvenation"
-	private const val fancyPool = "Fancy pool of Rejuvenation"
+	enum class Pool(val poolName: String) {
+		RESTORATION("Pool of Restoration"),
+		REVITALISATION("Pool of Revitalisation"),
+		REJUVENATION("Pool of Rejuvenation"),
+		FANCY_REJUVENATION("Fancy pool of Rejuvenation"),
+		ORNATE("Ornate pool of Rejuvenation"),
+		;
 
-	private val allPools =
-		arrayOf(ornatePool, restorationPool, restorationPool, revitalisationPool, rejuvenationPool, fancyPool)
+		companion object {
+			val allPools = values().map { it.poolName }.toTypedArray()
+
+			fun GameObject.pool() = values().firstOrNull { it.poolName == name }
+		}
+	}
 }

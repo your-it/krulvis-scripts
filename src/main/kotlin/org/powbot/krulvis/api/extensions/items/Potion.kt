@@ -10,7 +10,6 @@ enum class Potion(
 	val skill: Int, private val restore: Int,
 	override vararg val ids: Int
 ) : Item {
-
 	ENERGY(Constants.SKILLS_AGILITY, 10, 3008, 3010, 3012, 3014),
 	SUPER_ENERGY(Constants.SKILLS_AGILITY, 20, 3016, 3018, 3020, 3022),
 	STAMINA(Constants.SKILLS_AGILITY, 20, 12625, 12627, 12629, 12631),

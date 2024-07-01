@@ -18,9 +18,9 @@ import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
     override fun execute() {
-        val ids = script.inventory.map { it.key }.toIntArray()
+        val ids = script.requiredInventory.map { it.key }.toIntArray()
         val edibleFood = foodToEat()
-        val potIds = script.potions.flatMap { it.first.ids.toList() }.toIntArray()
+        val potIds = script.requiredPotions.flatMap { it.first.ids.toList() }.toIntArray()
         val defender = Defender.defender()
         if (!Inventory.emptyExcept(Defender.defenderId(), *ids, *potIds, script.warriorTokens)) {
             Bank.depositInventory()
@@ -35,13 +35,13 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
                 ScriptManager.stop()
             }
         } else {
-            script.inventory.forEach { (id, amount) ->
+            script.requiredInventory.forEach { (id, amount) ->
                 if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
                     script.logger.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
                     ScriptManager.stop()
                 }
             }
-            script.potions.forEach { (potion, amount) ->
+            script.requiredPotions.forEach { (potion, amount) ->
                 if (!potion.withdrawExact(amount) && !potion.inBank()) {
                     script.logger.info("Stopped because no $potion in bank")
                     ScriptManager.stop()
@@ -50,8 +50,8 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 
             if (handleEquipment()
                 && foodToEat() == null
-                && waitFor { script.inventory.all { Inventory.getCount(it.key) == it.value } }
-                && waitFor { script.potions.all { it.first.getInventoryCount() == it.second } }
+                && waitFor { script.requiredInventory.all { Inventory.getCount(it.key) == it.value } }
+                && waitFor { script.requiredPotions.all { it.first.getInventoryCount() == it.second } }
             ) {
                 script.forcedBanking = false
                 Bank.close()

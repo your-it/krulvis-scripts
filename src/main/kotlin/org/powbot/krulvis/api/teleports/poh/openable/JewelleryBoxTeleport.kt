@@ -53,7 +53,10 @@ enum class JewelleryBoxTeleport(override val action: String, override val COMP_I
 	}
 
 	companion object {
-		fun forName(name: String) = values().firstOrNull { name.contains(it.name.replace("_", " "), true) }
+		fun forName(name: String): JewelleryBoxTeleport? {
+			return if (!name.contains("jewelry box")) null
+			else values().firstOrNull { name.contains(it.name.replace("_", " "), true) }
+		}
 	}
 
 }

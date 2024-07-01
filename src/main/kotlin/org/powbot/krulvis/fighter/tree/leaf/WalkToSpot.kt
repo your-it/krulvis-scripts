@@ -9,13 +9,14 @@ import org.powbot.krulvis.fighter.Fighter
 class WalkToSpot(script:Fighter): Leaf<Fighter>(script, "Walking to spot") {
     override fun execute() {
         Chat.clickContinue()
+        val npcTeleport = script.npcTeleport
         val spot = script.centerTile()
         val nearby = script.nearbyMonsters()
         if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius)) {
             val path = LocalPathFinder.findPath(spot)
             if (path.isNotEmpty()) {
                 path.traverseUntilReached(0.0)
-            } else {
+            } else if(npcTeleport.execute()){
                 Movement.walkTo(spot)
             }
         }
