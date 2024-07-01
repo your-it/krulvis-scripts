@@ -1,9 +1,6 @@
 package org.powbot.krulvis.fighter
 
 import com.google.common.eventbus.Subscribe
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -32,7 +29,6 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
-import kotlin.math.round
 
 
 //<editor-fold desc="ScriptManifest">
@@ -40,7 +36,7 @@ import kotlin.math.round
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.4.6",
+	version = "1.4.7",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -52,63 +48,71 @@ import kotlin.math.round
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
-			"Inventory", "What should your inventory look like?",
+			INVENTORY_OPTION, "What should your inventory look like?",
 			optionType = OptionType.INVENTORY
 		),
 		ScriptConfiguration(
-			"Equipment", "What do you want to wear?",
+			EQUIPMENT_OPTION, "What do you want to wear?",
 			optionType = OptionType.EQUIPMENT
 		),
 		ScriptConfiguration(
-			"Monsters",
+			MONSTERS_OPTION,
 			"Click the NPC's you want to kill",
 			optionType = OptionType.NPC_ACTIONS
 		),
 		ScriptConfiguration(
-			"Radius", "Kill radius", optionType = OptionType.INTEGER, defaultValue = "10"
+			RADIUS_OPTION, "Kill radius", optionType = OptionType.INTEGER, defaultValue = "10"
 		),
 		ScriptConfiguration(
-			"Use safespot", "Do you want to force a safespot?",
+			HOP_FROM_PLAYERS_OPTION, "Do you want to hop from players?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
-			"Walk back",
+			PLAYER_HOP_COUNT_OPTION, "At how many players in radius do you want to hop?",
+			optionType = OptionType.INTEGER, defaultValue = "1", visible = false
+		),
+		ScriptConfiguration(
+			USE_SAFESPOT_OPTION, "Do you want to force a safespot?",
+			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
+			WALK_BACK_TO_SAFESPOT_OPTION,
 			"Walk to safespot after attacking?",
 			optionType = OptionType.BOOLEAN,
 			defaultValue = "false",
 			visible = false
 		),
 		ScriptConfiguration(
-			"Safespot", "Get safespot / centertile",
+			CENTER_TILE_OPTION, "Get safespot/center tile",
 			optionType = OptionType.TILE
 		),
 		ScriptConfiguration(
-			"WaitForLoot", "Wait for loot after kill?",
+			WAIT_FOR_LOOT_OPTION, "Wait for loot after kill?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
-			"Ironman", description = "Only pick up your own drops.",
+			IRONMAN_DROPS_OPTION, description = "Only pick up your own drops.",
 			optionType = OptionType.BOOLEAN, defaultValue = "true"
 		),
 		ScriptConfiguration(
-			"Loot price", "Min loot price?", optionType = OptionType.INTEGER, defaultValue = "1000"
+			LOOT_PRICE_OPTION, "Min loot price?", optionType = OptionType.INTEGER, defaultValue = "1000"
 		),
 		ScriptConfiguration(
-			"Always loot",
+			LOOT_OVERRIDES_OPTION,
 			"Separate items with \",\" Start with \"!\" to never loot",
 			optionType = OptionType.STRING,
 			defaultValue = "Long bone, curved bone, clue, totem, !blue dragon scale, Scaly blue dragonhide, toadflax, irit, avantoe, kwuarm, snapdragon, cadantine, lantadyme, dwarf weed, torstol"
 		),
 		ScriptConfiguration(
-			"Bury bones", "Bury, Scatter or Offer bones.",
+			BURY_BONES_OPTION, "Bury, Scatter or Offer bones&ashes.",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
-			"BankTeleport", "Teleport to bank", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
+			BANK_TELEPORT_OPTION, "Teleport to bank", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
 			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
 		),
 		ScriptConfiguration(
-			"NpcTeleport", "Teleport to NPCs", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
+			MONSTER_TELEPORT_OPTION, "Teleport to Monsters", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
 			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL]
 		)
 	]
@@ -128,21 +132,25 @@ class Fighter : ATScript() {
 	@ValueChanged(WARRIOR_GUILD_OPTION)
 	fun onWGChange(inWG: Boolean) {
 		if (inWG) {
-			updateOption("Safespot", Defender.killSpot(), OptionType.TILE)
+			updateOption(USE_SAFESPOT_OPTION, Defender.killSpot(), OptionType.TILE)
 			val npcAction = NpcActionEvent(
 				0, 0, 10, 13729, 0,
 				"Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
 				447, 447, -1
 			)
-			updateOption("Monsters", listOf(npcAction), OptionType.NPC_ACTIONS)
-			updateOption("Radius", 25, OptionType.INTEGER)
-			updateOption("Bank", "WARRIORS_GUILD", OptionType.STRING)
+			updateOption(MONSTERS_OPTION, listOf(npcAction), OptionType.NPC_ACTIONS)
+			updateOption(RADIUS_OPTION, 25, OptionType.INTEGER)
 		}
 	}
 
-	@ValueChanged("Use safespot")
+	@ValueChanged(USE_SAFESPOT_OPTION)
 	fun onSafeSpotChange(useSafespot: Boolean) {
-		updateVisibility("Walk back", useSafespot)
+		updateVisibility(WALK_BACK_TO_SAFESPOT_OPTION, useSafespot)
+	}
+
+	@ValueChanged(HOP_FROM_PLAYERS_OPTION)
+	fun onHopFromPlayersChange(hopFromPlayers: Boolean) {
+		updateVisibility(PLAYER_HOP_COUNT_OPTION, hopFromPlayers)
 	}
 
 
@@ -153,14 +161,8 @@ class Fighter : ATScript() {
 	val warriorTokens = 8851
 	val warriorGuild by lazy { getOption<Boolean>(WARRIOR_GUILD_OPTION) }
 
-	//Safespot options
-	val useSafespot by lazy { getOption<Boolean>("Use safespot") }
-	val walkBack by lazy { getOption<Boolean>("Walk back") }
-	private val safespot by lazy { getOption<Tile>("Safespot") }
-	val buryBones by lazy { getOption<Boolean>("Bury bones") }
-
 	//Inventory
-	private val inventoryOptions by lazy { getOption<Map<Int, Int>>("Inventory") }
+	private val inventoryOptions by lazy { getOption<Map<Int, Int>>(INVENTORY_OPTION) }
 	val requiredInventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
 	val requiredPotions by lazy {
 		inventoryOptions.filter { Potion.isPotion(it.key) }
@@ -172,7 +174,7 @@ class Fighter : ATScript() {
 	val hasPrayPots by lazy { requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
 
 	//Equipment
-	private val equipmentOptions by lazy { getOption<Map<Int, Int>>("Equipment") }
+	private val equipmentOptions by lazy { getOption<Map<Int, Int>>(EQUIPMENT_OPTION) }
 	val equipment by lazy {
 		equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
 			Equipment(
@@ -187,30 +189,15 @@ class Fighter : ATScript() {
 		}
 	}
 
-	//Banking option
-	var forcedBanking = false
-	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }
-
-	//Killing spot
-	val monsters by lazy {
-		getOption<List<NpcActionEvent>>("Monsters").map { it.name }
-	}
-	val radius by lazy { getOption<Int>("Radius") }
-	val waitForLootAfterKill by lazy { getOption<Boolean>("WaitForLoot") }
-	val npcTeleport by lazy { TeleportMethod(Teleport.forName(getOption("NpcTeleport"))) }
-	var currentTarget: Npc? = null
-	val aggressionTimer = Timer(10 * 60 * 1000)
-
-
 	//Loot
-	var waitingForLootTile: Tile? = null
-	fun isWaitingForLoot() = waitForLootJob?.isActive == true
-	var waitForLootJob: Job? = null
+	fun isLootWatcherActive() = lootWachter?.active == true
+	var lootWachter: LootWatcher? = null
 	val lootList = mutableListOf<GroundItem>()
-	val ironman by lazy { getOption<Boolean>("Ironman") }
-	val minLootPrice by lazy { getOption<Int>("Loot price") }
+	val ironman by lazy { getOption<Boolean>(IRONMAN_DROPS_OPTION) }
+	val waitForLootAfterKill by lazy { getOption<Boolean>(WAIT_FOR_LOOT_OPTION) }
+	val minLootPrice by lazy { getOption<Int>(LOOT_PRICE_OPTION) }
 	val lootNameOptions by lazy {
-		val names = getOption<String>("Always loot").split(",")
+		val names = getOption<String>(LOOT_OVERRIDES_OPTION).split(",")
 		val trimmed = mutableListOf<String>()
 		names.forEach { trimmed.add(it.trim().lowercase()) }
 		trimmed
@@ -237,40 +224,10 @@ class Fighter : ATScript() {
 		trimmed
 	}
 
-
-	fun centerTile() = safespot
-
-	fun shouldReturnToSafespot() =
-		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
-
-	fun nearbyMonsters(): List<Npc> =
-		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
-
-
-	fun target(): Npc? {
-		val local = Players.local()
-		val nearbyMonsters =
-			nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
-		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
-		return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
-	}
-
-	fun taskRemainder() = Varpbits.varpbit(394)
-
-
 	fun watchLootDrop(tile: Tile) {
-		if (waitForLootJob?.isActive != true) {
+		if (!isLootWatcherActive()) {
 			logger.info("Waiting for loot at $tile")
-			val startMilis = System.currentTimeMillis()
-			waitingForLootTile = tile
-			waitForLootJob = GlobalScope.launch {
-				val watcher = LootWatcher(tile, ammoId, isLoot = { it.isLoot() })
-				val loot = watcher.waitForLoot()
-				logger.info("Waiting for loot took: ${round((System.currentTimeMillis() - startMilis) / 100.0) / 10.0} seconds")
-				lootList.addAll(loot)
-				watcher.unregister()
-				waitingForLootTile = null
-			}
+			lootWachter = LootWatcher(tile, ammoId, lootList = lootList, isLoot = { it.isLoot() })
 		} else {
 			logger.info("Already watching loot at tile: $tile for loot")
 		}
@@ -283,19 +240,66 @@ class Fighter : ATScript() {
 			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLootPrice)
 	}
 
-
 	fun loot(): List<GroundItem> =
 		if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
 
 	var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
+
+	//Banking option
+	var forcedBanking = false
+	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
+
+
+	//Killing spot
+	val monsters by lazy {
+		getOption<List<NpcActionEvent>>(MONSTERS_OPTION).map { it.name }
+	}
+	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
+	val monsterTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }
+	var currentTarget: Npc? = null
+	val aggressionTimer = Timer(10 * 60 * 1000)
+	fun centerTile() = centerTile
+
+	fun nearbyMonsters(): List<Npc> =
+		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
+
+	fun target(): Npc? {
+		val local = Players.local()
+		val nearbyMonsters =
+			nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
+		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
+		return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() }
+	}
+
+	//Safespot options
+	val useSafespot by lazy { getOption<Boolean>(USE_SAFESPOT_OPTION) }
+	val walkBack by lazy { getOption<Boolean>(WALK_BACK_TO_SAFESPOT_OPTION) }
+	private val centerTile by lazy { getOption<Tile>(CENTER_TILE_OPTION) }
+	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
+	fun shouldReturnToSafespot() =
+		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
+
+	//Hop from players options
+	val hopFromPlayers by lazy { getOption<Boolean>(HOP_FROM_PLAYERS_OPTION) }
+	val playerHopAmount by lazy { getOption<Int>(PLAYER_HOP_COUNT_OPTION) }
+
+	//Prayer options
+	fun canActivatePrayer() = hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
+	fun canDeactivatePrayer() = Prayer.quickPrayer() && (!Players.local().healthBarVisible() || aggressionTimer.isFinished())
+
+
+	//Custom slayer options
+	var lastTask = false
+	var superiorAppeared = false
+	fun taskRemainder() = Varpbits.varpbit(394)
 
 	@Subscribe
 	fun onTickEvent(_e: TickEvent) {
 		val interacting = me.interacting()
 		if (interacting is Npc && interacting != Npc.Nil) {
 			currentTarget = interacting
-			val watcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
-			if (watcher == null || !watcher.active) {
+			val deathWatcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
+			if (deathWatcher == null || !deathWatcher.active) {
 				npcDeathWatchers.add(NpcDeathWatcher(interacting) { watchLootDrop(interacting.tile()) })
 			}
 		}
@@ -334,11 +338,6 @@ class Fighter : ATScript() {
 			superiorAppeared = true
 		}
 	}
-
-
-	//Custom slayer options
-	var lastTask = false
-	var superiorAppeared = false
 
 	@Subscribe
 	fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {

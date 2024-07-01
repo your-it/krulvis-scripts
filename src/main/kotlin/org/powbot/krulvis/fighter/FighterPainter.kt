@@ -51,9 +51,6 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 				300
 			)
 		}
-		if (script.isWaitingForLoot()) {
-			val lootTile = script.waitingForLootTile
-			lootTile?.drawOnScreen(outlineColor = Color.CYAN)
-		}
+		script.lootWachter?.tile?.drawOnScreen(outlineColor = Color.CYAN)
 	}
 }

@@ -14,7 +14,6 @@ class NpcDeathWatcher(val npc: Npc, private val onDeath: () -> Unit) : Watcher()
     val active get() = latch.count > 0
 
     init {
-//        debug("Starting NpcDeathWatcher for npc=$npc")
         GlobalScope.launch {
             awaitDeath()
             latch.countDown()

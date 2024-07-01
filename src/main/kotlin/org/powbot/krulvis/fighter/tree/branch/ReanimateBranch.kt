@@ -21,7 +21,7 @@ enum class ReanimateHead(val spell: Magic.MagicSpell, vararg val names: String) 
 }
 
 class ShouldReanimate(script: Fighter) : Branch<Fighter>(script, "Should Reanimate?") {
-    override val failedComponent: TreeComponent<Fighter> = CanKill(script)
+    override val failedComponent: TreeComponent<Fighter> = IsWaitingForLoot(script)
     override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Reanimating") {
         if (!spellHead!!.first.casting()) {
             if (!spellHead!!.first.cast()) {
