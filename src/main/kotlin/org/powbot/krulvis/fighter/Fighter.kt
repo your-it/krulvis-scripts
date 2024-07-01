@@ -40,7 +40,7 @@ import kotlin.math.round
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.4.5",
+	version = "1.4.6",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
