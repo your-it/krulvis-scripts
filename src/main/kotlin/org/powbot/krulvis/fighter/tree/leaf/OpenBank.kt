@@ -1,8 +1,10 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
-import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Constants
+import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.fighter.Fighter
 
 class OpenBank(script: Fighter) : Leaf<Fighter>(script, "Opening bank") {

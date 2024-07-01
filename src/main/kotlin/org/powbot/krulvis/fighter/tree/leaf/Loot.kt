@@ -2,7 +2,6 @@ package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.walkAndInteract
@@ -12,7 +11,7 @@ import org.powbot.krulvis.fighter.Fighter
 
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 	override fun execute() {
-		if (Prayer.quickPrayer() && (!Players.local().healthBarVisible() || script.aggressionTimer.isFinished())) {
+		if (script.canDeactivatePrayer()) {
 			Prayer.quickPrayer(false)
 		}
 
