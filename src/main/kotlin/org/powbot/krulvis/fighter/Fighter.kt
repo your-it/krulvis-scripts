@@ -1,9 +1,9 @@
 package org.powbot.krulvis.fighter
 
+import com.google.common.eventbus.Subscribe
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.powbot.api.Events
 import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -11,12 +11,9 @@ import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.paint.InventoryItemPaintItem
-import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.BankLocation
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.getNearestBank
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
@@ -26,24 +23,24 @@ import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
-import org.powbot.krulvis.api.teleports.CASTLE_WARS_ROD
-import org.powbot.krulvis.api.teleports.EDGEVILLE_GLORY
-import org.powbot.krulvis.api.teleports.FEROX_ENCLAVE_ROD
+import org.powbot.krulvis.api.teleports.*
+import org.powbot.krulvis.api.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
-import org.powbot.krulvis.fighter.slayer.Master
-import org.powbot.krulvis.fighter.slayer.Slayer
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
 import kotlin.math.round
 
+
+//<editor-fold desc="ScriptManifest">
 @ScriptManifest(
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.4.5",
+	version = "1.4.6",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -51,19 +48,8 @@ import kotlin.math.round
 @ScriptConfiguration.List(
 	[
 		ScriptConfiguration(
-			"Warrior guild", "Collect defenders in the warrior guild",
+			WARRIOR_GUILD_OPTION, "Collect defenders in the warrior guild",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
-		),
-		ScriptConfiguration(
-			"Slayer", "Do slayer tasks?", optionType = OptionType.BOOLEAN, defaultValue = "false", visible = false
-		),
-		ScriptConfiguration(
-			name = "Slayer Master",
-			//Fuck "KRYSTILIA" for now
-			allowedValues = ["TURAEL", "SPRIA", "MAZCHNA", "VANNAKA", "CHAELDAR", "KONAR", "NIEVE", "STEVE", "DURADEL"],
-			description = "What slayer master do you want to use?",
-			defaultValue = "KONAR",
-			visible = false
 		),
 		ScriptConfiguration(
 			"Inventory", "What should your inventory look like?",
@@ -84,6 +70,13 @@ import kotlin.math.round
 		ScriptConfiguration(
 			"Use safespot", "Do you want to force a safespot?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
+			"Walk back",
+			"Walk to safespot after attacking?",
+			optionType = OptionType.BOOLEAN,
+			defaultValue = "false",
+			visible = false
 		),
 		ScriptConfiguration(
 			"Safespot", "Get safespot / centertile",
@@ -112,29 +105,27 @@ import kotlin.math.round
 		),
 		ScriptConfiguration(
 			"BankTeleport", "Teleport to bank", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
-			allowedValues = [EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
+			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
 		),
 		ScriptConfiguration(
 			"NpcTeleport", "Teleport to NPCs", optionType = OptionType.STRING, defaultValue = EDGEVILLE_MOUNTED_GLORY,
-			allowedValues = [EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
-		),
-		ScriptConfiguration(
-			"Bank", "Choose bank", optionType = OptionType.STRING, defaultValue = "NEAREST",
-			allowedValues = ["NEAREST", "ARDOUGNE_NORTH_BANK", "ARDOUGNE_SOUTH_BANK", "AL_KHARID_BANK", "BURTHORPE_BANK", "CANIFIS_BANK", "CATHERBY_BANK", "CASTLE_WARS_BANK", "DRAYNOR_BANK", "EDGEVILLE_BANK",
-				"FALADOR_WEST_BANK", "FALADOR_EAST_BANK", "FARMING_GUILD_85", "FARMING_GUILD_65", "FEROX_ENCLAVE", "GRAND_EXCHANGE", "HOSIDIUS_BEST_BANK_SPOT", "MISCELLANIA_BANK", "KOUREND_TOP_BUILDING", "LUMBRIDGE_TOP", "LUMBRIDGE_CASTLE_BANK",
-				"VARROCK_WEST_BANK", "VARROCK_EAST_BANK", "GNOME_STRONGHOLD_BANK", "FISHING_GUILD_BANK", "MINING_GUILD", "MOTHERLOAD_MINE", "MOTHERLOAD_MINE_DEPOSIT", "PRIFIDDINAS", "PORT_SARIM_DB", "SEERS_BANK",
-				"SHAYZIEN_NORTH_CHEST", "SHAYZIEN_SOUTH_BOOTH", "SHANTAY_PASS_BANK", "SHILO_GEM_MINE", "TZHAAR_BANK", "WOODCUTTING_GUILD", "WARRIORS_GUILD", "WINTERTODT", "YANILLE_BANK", "FOSSIL_ISLAND_CAMP"]
-		),
+			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL]
+		)
 	]
 )
+//</editor-fold>
 class Fighter : ATScript() {
 
 	override fun createPainter(): ATPaint<*> = FighterPainter(this)
 
 	override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
+	override fun onStart() {
+		super.onStart()
+		Defender.lastDefenderIndex = currentDefenderIndex()
+	}
 
-
-	@ValueChanged("Warrior guild")
+	//<editor-fold desc="UISubscribers">
+	@ValueChanged(WARRIOR_GUILD_OPTION)
 	fun onWGChange(inWG: Boolean) {
 		if (inWG) {
 			updateOption("Safespot", Defender.killSpot(), OptionType.TILE)
@@ -149,74 +140,36 @@ class Fighter : ATScript() {
 		}
 	}
 
-	@ValueChanged("Slayer")
-	fun onSlayerChange(slayer: Boolean) {
-		updateVisibility("Slayer Master", slayer)
-		updateVisibility("Monsters", !slayer)
-		updateVisibility("Safespot", !slayer)
-		updateVisibility("Use safespot", !slayer)
-		updateVisibility("Radius", !slayer)
-	}
-
-	@com.google.common.eventbus.Subscribe
-	fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {
-		if (pcce.checkboxId == "stopAfterTask") {
-			lastTask = pcce.checked
-			val painter = painter as FighterPainter
-			if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
-				val index =
-					painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
-				painter.paintBuilder.items.add(index, painter.slayerTracker)
-			} else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
-				painter.paintBuilder.items.remove(painter.slayerTracker)
-			}
-
-		}
+	@ValueChanged("Use safespot")
+	fun onSafeSpotChange(useSafespot: Boolean) {
+		updateVisibility("Walk back", useSafespot)
 	}
 
 
-	override fun onStart() {
-		super.onStart()
-		Defender.lastDefenderIndex = currentDefenderIndex()
-		if (doSlayer) {
-			slayer = Slayer(Master.valueOf(getOption("Slayer Master")), logger)
-			Events.register(slayer)
-			val taskCheckBoxIndex =
-				painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem } }
-			painter.paintBuilder.add(
-				listOf(
-					TextPaintItem { "Task remainder:" },
-					TextPaintItem { Slayer.taskRemainder().toString() }),
-				taskCheckBoxIndex
-			)
-			painter.paintBuilder.addString("Current Task") { slayer.currentTask?.target?.name?.lowercase() }
-		}
-	}
+	//</editor-fold desc="Configuration">
 
-	//Slayer
-	val doSlayer by lazy { getOption<Boolean>("Slayer") }
-	lateinit var slayer: Slayer
-	fun killItem() = if (doSlayer) slayer.killItem() else null
 
 	//Warrior guild
 	val warriorTokens = 8851
-	val warriorGuild by lazy { getOption<Boolean>("Warrior guild") }
+	val warriorGuild by lazy { getOption<Boolean>(WARRIOR_GUILD_OPTION) }
 
+	//Safespot options
 	val useSafespot by lazy { getOption<Boolean>("Use safespot") }
+	val walkBack by lazy { getOption<Boolean>("Walk back") }
 	private val safespot by lazy { getOption<Tile>("Safespot") }
 	val buryBones by lazy { getOption<Boolean>("Bury bones") }
 
 	//Inventory
 	private val inventoryOptions by lazy { getOption<Map<Int, Int>>("Inventory") }
-	val inventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
-	val potions by lazy {
+	val requiredInventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
+	val requiredPotions by lazy {
 		inventoryOptions.filter { Potion.isPotion(it.key) }
 			.mapNotNull { Pair(Potion.forId(it.key), it.value) }
 			.groupBy {
 				it.first
 			}.map { it.key!! to it.value.sumOf { pair -> pair.second } }
 	}
-	val hasPrayPots by lazy { potions.any { it.first == Potion.PRAYER } }
+	val hasPrayPots by lazy { requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
 
 	//Equipment
 	private val equipmentOptions by lazy { getOption<Map<Int, Int>>("Equipment") }
@@ -234,23 +187,28 @@ class Fighter : ATScript() {
 		}
 	}
 
+	//Banking option
+	var forcedBanking = false
+	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }
+
 	//Killing spot
 	val monsters by lazy {
 		getOption<List<NpcActionEvent>>("Monsters").map { it.name }
 	}
 	val radius by lazy { getOption<Int>("Radius") }
 	val waitForLootAfterKill by lazy { getOption<Boolean>("WaitForLoot") }
+	val npcTeleport by lazy { TeleportMethod(Teleport.forName(getOption("NpcTeleport"))) }
 	var currentTarget: Npc? = null
+	val aggressionTimer = Timer(10 * 60 * 1000)
 
 
 	//Loot
 	var waitingForLootTile: Tile? = null
-
 	fun isWaitingForLoot() = waitForLootJob?.isActive == true
 	var waitForLootJob: Job? = null
 	val lootList = mutableListOf<GroundItem>()
 	val ironman by lazy { getOption<Boolean>("Ironman") }
-	val minLoot by lazy { getOption<Int>("Loot price") }
+	val minLootPrice by lazy { getOption<Int>("Loot price") }
 	val lootNameOptions by lazy {
 		val names = getOption<String>("Always loot").split(",")
 		val trimmed = mutableListOf<String>()
@@ -279,24 +237,14 @@ class Fighter : ATScript() {
 		trimmed
 	}
 
-	val bank by lazy {
-		val b = getOption<String>("Bank")
-		if (b == "NEAREST") {
-			Bank.getNearestBank()
-		} else {
-			BankLocation.valueOf(b)
-		}
-	}
-	var forcedBanking = false
 
+	fun centerTile() = safespot
 
-	fun centerTile() = if (doSlayer) slayer.currentTask!!.location.centerTile else safespot
+	fun shouldReturnToSafespot() =
+		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
 
-	fun nearbyMonsters(): List<Npc> {
-		return if (doSlayer) {
-			slayer.currentTask!!.nearbyMonsters()
-		} else Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
-	}
+	fun nearbyMonsters(): List<Npc> =
+		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsters.toTypedArray()).nearest().list()
 
 
 	fun target(): Npc? {
@@ -332,7 +280,7 @@ class Fighter : ATScript() {
 		if (warriorGuild && id() in Defender.defenders) return true
 		val name = name().lowercase()
 		return !neverLoot.contains(name) &&
-			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLoot)
+			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLootPrice)
 	}
 
 
@@ -341,7 +289,7 @@ class Fighter : ATScript() {
 
 	var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
 
-	@com.google.common.eventbus.Subscribe
+	@Subscribe
 	fun onTickEvent(_e: TickEvent) {
 		val interacting = me.interacting()
 		if (interacting is Npc && interacting != Npc.Nil) {
@@ -354,15 +302,15 @@ class Fighter : ATScript() {
 		npcDeathWatchers.removeAll { !it.active }
 	}
 
-	@com.google.common.eventbus.Subscribe
+	@Subscribe
 	fun onInventoryChange(evt: InventoryChangeEvent) {
 		val id = evt.itemId
 		val pot = Potion.forId(evt.itemId)
 		val isTeleport = TeleportItem.isTeleportItem(id)
 		if (evt.quantityChange > 0 && id != VIAL
 			&& id !in Defender.defenders
-			&& !inventory.containsKey(id) && !equipmentOptions.containsKey(id)
-			&& !isTeleport && potions.none { it.first == pot }
+			&& !requiredInventory.containsKey(id) && !equipmentOptions.containsKey(id)
+			&& !isTeleport && requiredPotions.none { it.first == pot }
 		) {
 			if (painter.paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
 				painter.paintBuilder.trackInventoryItems(id)
@@ -375,9 +323,10 @@ class Fighter : ATScript() {
 		}
 	}
 
-	@com.google.common.eventbus.Subscribe
+	@Subscribe
 	fun messageReceived(msg: MessageEvent) {
 		if (msg.message.contains("so you can't take ")) {
+			logger.info("Ironman message CANT TAKE type=${msg.messageType}")
 			lootList.clear()
 		}
 		if (msg.message.contains("A superior foe has appeared")) {
@@ -386,9 +335,25 @@ class Fighter : ATScript() {
 		}
 	}
 
+
+	//Custom slayer options
 	var lastTask = false
 	var superiorAppeared = false
 
+	@Subscribe
+	fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {
+		if (pcce.checkboxId == "stopAfterTask") {
+			lastTask = pcce.checked
+			val painter = painter as FighterPainter
+			if (pcce.checked && !painter.paintBuilder.items.contains(painter.slayerTracker)) {
+				val index =
+					painter.paintBuilder.items.indexOfFirst { row -> row.any { it is CheckboxPaintItem && it.id == "stopAfterTask" } }
+				painter.paintBuilder.items.add(index, painter.slayerTracker)
+			} else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
+				painter.paintBuilder.items.remove(painter.slayerTracker)
+			}
+		}
+	}
 }
 
 

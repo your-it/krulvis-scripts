@@ -20,7 +20,11 @@ enum class MountedGloryTeleport(override val action: String) : OpenableHouseTele
 	override fun toString(): String {
 		return "MountedGloryTeleport($name)"
 	}
+
 	companion object {
-		fun forName(name: String) = values().firstOrNull { name.replace(" ", "").contains(it.name, true) }
+		fun forName(name: String): MountedGloryTeleport? {
+			return if (!name.contains("mounted glory")) null
+			else values().firstOrNull { name.replace(" ", "").contains(it.name, true) }
+		}
 	}
 }

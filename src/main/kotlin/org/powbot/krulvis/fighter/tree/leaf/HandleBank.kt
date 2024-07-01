@@ -17,61 +17,62 @@ import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
-    override fun execute() {
-        val ids = script.inventory.map { it.key }.toIntArray()
-        val edibleFood = foodToEat()
-        val potIds = script.potions.flatMap { it.first.ids.toList() }.toIntArray()
-        val defender = Defender.defender()
-        if (!Inventory.emptyExcept(Defender.defenderId(), *ids, *potIds, script.warriorTokens)) {
-            Bank.depositInventory()
-        } else if (edibleFood != null) {
-            edibleFood.eat()
-            waitFor { foodToEat() == null }
-        } else if (Defender.defenderId() > 0 && !defender.hasWith()) {
-            defender.withdrawExact(1)
-        } else if (script.warriorGuild && !Inventory.containsOneOf(script.warriorTokens)) {
-            if (!Bank.withdraw(script.warriorTokens, Bank.Amount.ALL) && !Bank.containsOneOf(script.warriorTokens)) {
-                script.logger.info("Out of warrior tokens, stopping script")
-                ScriptManager.stop()
-            }
-        } else {
-            script.inventory.forEach { (id, amount) ->
-                if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
-                    script.logger.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
-                    ScriptManager.stop()
-                }
-            }
-            script.potions.forEach { (potion, amount) ->
-                if (!potion.withdrawExact(amount) && !potion.inBank()) {
-                    script.logger.info("Stopped because no $potion in bank")
-                    ScriptManager.stop()
-                }
-            }
+	override fun execute() {
+		script.bankTeleport.executed = false
+		val ids = script.requiredInventory.map { it.key }.toIntArray()
+		val edibleFood = foodToEat()
+		val potIds = script.requiredPotions.flatMap { it.first.ids.toList() }.toIntArray()
+		val defender = Defender.defender()
+		if (!Inventory.emptyExcept(Defender.defenderId(), *ids, *potIds, script.warriorTokens)) {
+			Bank.depositInventory()
+		} else if (edibleFood != null) {
+			edibleFood.eat()
+			waitFor { foodToEat() == null }
+		} else if (Defender.defenderId() > 0 && !defender.hasWith()) {
+			defender.withdrawExact(1)
+		} else if (script.warriorGuild && !Inventory.containsOneOf(script.warriorTokens)) {
+			if (!Bank.withdraw(script.warriorTokens, Bank.Amount.ALL) && !Bank.containsOneOf(script.warriorTokens)) {
+				script.logger.info("Out of warrior tokens, stopping script")
+				ScriptManager.stop()
+			}
+		} else {
+			script.requiredInventory.forEach { (id, amount) ->
+				if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
+					script.logger.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
+					ScriptManager.stop()
+				}
+			}
+			script.requiredPotions.forEach { (potion, amount) ->
+				if (!potion.withdrawExact(amount) && !potion.inBank()) {
+					script.logger.info("Stopped because no $potion in bank")
+					ScriptManager.stop()
+				}
+			}
 
-            if (handleEquipment()
-                && foodToEat() == null
-                && waitFor { script.inventory.all { Inventory.getCount(it.key) == it.value } }
-                && waitFor { script.potions.all { it.first.getInventoryCount() == it.second } }
-            ) {
-                script.forcedBanking = false
-                Bank.close()
-            }
-        }
-    }
+			if (handleEquipment()
+				&& foodToEat() == null
+				&& waitFor { script.requiredInventory.all { Inventory.getCount(it.key) == it.value } }
+				&& waitFor { script.requiredPotions.all { it.first.getInventoryCount() == it.second } }
+			) {
+				script.forcedBanking = false
+				Bank.close()
+			}
+		}
+	}
 
-    fun foodToEat() = Food.values().firstOrNull { it.inInventory() && it.healing <= missingHP() }
+	fun foodToEat() = Food.values().firstOrNull { it.inInventory() && it.healing <= missingHP() }
 
-    fun handleEquipment(): Boolean {
-        script.equipment.filterNot { it.slot == Equipment.Slot.QUIVER }.forEach {
-            if (!it.inEquipment()) {
-                it.withdrawAndEquip(true)
-            }
-        }
-        script.teleportItems.forEach {
-            if (!it.inEquipment()) {
-                it.withdrawAndEquip(true)
-            }
-        }
-        return script.equipment.all { it.inEquipment() } && script.teleportItems.all { it.inEquipment() }
-    }
+	fun handleEquipment(): Boolean {
+		script.equipment.filterNot { it.slot == Equipment.Slot.QUIVER }.forEach {
+			if (!it.inEquipment()) {
+				it.withdrawAndEquip(true)
+			}
+		}
+		script.teleportItems.forEach {
+			if (!it.inEquipment()) {
+				it.withdrawAndEquip(true)
+			}
+		}
+		return script.equipment.all { it.inEquipment() } && script.teleportItems.all { it.inEquipment() }
+	}
 }

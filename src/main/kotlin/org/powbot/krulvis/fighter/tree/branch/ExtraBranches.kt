@@ -1,9 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.GrandExchange
-import org.powbot.api.rt4.Inventory
-import org.powbot.api.rt4.Item
+import org.powbot.api.rt4.*
 import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -83,30 +80,39 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
 
 class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 	override val successComponent: TreeComponent<Fighter> = Loot(script)
-	override val failedComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
+	override val failedComponent: TreeComponent<Fighter> = GettingDefenders(script)
 
 	private fun makeSpace(worth: Int): Boolean {
-		if (worth > 5000) {
+		val edibleFood = Food.getFirstFood()
+		if (edibleFood != null) {
+			return edibleFood.eat()
+		} else if (worth > 5000) {
 			val pot = Inventory.stream().name("(1)").action("Drink").first()
 			return pot.interact("Drink")
-		} else {
-			val edibleFood = Food.getFirstFood()
-			return edibleFood?.eat() == true
 		}
+		return false
 	}
 
 	override fun validate(): Boolean {
-		val loot = script.loot()
-		if (loot.isEmpty() || !loot.first().reachable()) {
+		val loot = script.loot().map { it to it.stackSize() * max(GrandExchange.getItemPrice(it.id()), it.price()) }
+		if (loot.isEmpty() || !loot.first().first.reachable()) {
 			return false
 		}
-		if (Inventory.isFull()) {
-			val worth = loot.sumOf { max(GrandExchange.getItemPrice(it.id()), it.price()) }
-			return makeSpace(worth)
-		} else
-			return Food.hasFood() || loot.any { it.stackable() && Inventory.containsOneOf(it.id()) }
-				|| (Inventory.containsOneOf(HERB_SACK_OPEN) && loot.any { it.name().contains("grimy", true) })
-				|| (Inventory.containsOneOf(SEED_BOX_OPEN) && loot.any { it.name().contains("seed", true) })
-//                || (Potion.PRAYER.inInventory() && loot.any { GrandExchange.getItemPrice(it.id()) * it.stackSize() >= 10000 })
+		val lootString = loot.joinToString { it.first.name() + ": " + it.second }
+		script.logger.info("Loot found: [${lootString}]")
+		val worth = loot.sumOf { it.second }
+		val hasHerbSack = Inventory.containsOneOf(HERB_SACK_OPEN)
+		val hasSeedBox = Inventory.containsOneOf(SEED_BOX_OPEN)
+		return if (Inventory.isFull()) {
+			loot.any { it.first.stacks(hasHerbSack, hasSeedBox) } || makeSpace(worth)
+		} else {
+			worth >= script.minLootPrice
+		}
+	}
+
+	private fun GroundItem.stacks(herbSack: Boolean, seedBox: Boolean): Boolean {
+		return stackable() && Inventory.containsOneOf(id())
+			|| (herbSack && name.contains("grimy", true))
+			|| (seedBox && name.contains("seed", true))
 	}
 }

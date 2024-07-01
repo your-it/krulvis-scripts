@@ -5,15 +5,14 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 	override fun execute() {
-		if (script.hasPrayPots && script.useSafespot && Prayer.quickPrayer() && !Players.local().healthBarVisible()) {
+		if (Prayer.quickPrayer() && (!Players.local().healthBarVisible() || script.aggressionTimer.isFinished())) {
 			Prayer.quickPrayer(false)
 		}
 
@@ -21,22 +20,13 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 			.thenByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() })
 		script.logger.info("Looting=[${loots.joinToString()}]")
 
-		val edibleFood = Food.getFirstFood()
-		val prayPot = Potion.PRAYER.getInvItem(true)
 		loots.forEachIndexed { i, gi ->
 			val id = gi.id()
-			//Make space
-			if ((!gi.stackable() || !Inventory.containsOneOf(id)) && Inventory.isFull()) {
-				if (edibleFood != null) {
-					edibleFood.eat()
-				}
-				waitFor { !Inventory.isFull() }
-			}
 			val currentCount = Inventory.getCount(id)
 			if ((!Inventory.isFull()
 					|| gi.stackable()
 					|| (Inventory.containsOneOf(Item.HERB_SACK_OPEN) && gi.name().contains("grimy", true)))
-				&& ATContext.walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)
+				&& walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)
 			) {
 				waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || Players.local().tile() == gi.tile }
 			}

@@ -395,7 +395,7 @@ class Tempoross : ATScript() {
 	fun getBossPool() =
 		Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").first()
 
-	private val stunnedAnimation = Int.MAX_VALUE
+	private val stunnedAnimation = 832
 	fun getAmmoCrate(): Npc {
 		val npcs = Npcs.stream().within(side.area).toList()
 		val crates = npcs.filter { it.name.contains("Ammunition crate", true) }

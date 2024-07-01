@@ -7,6 +7,8 @@ import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+const val LUNAR_ISLE_HOUSE_PORTAL = "Lunar isle portal POH"
+
 enum class HousePortal : HouseTeleport {
 	ARCEUUS_LIBRARY,
 	DRAYNOR_MANOR,
@@ -45,11 +47,25 @@ enum class HousePortal : HouseTeleport {
 	override val action: String = "Enter"
 	override val requirements: List<Requirement> = emptyList()
 
-	private val portal: GameObject get() = Objects.stream().type(GameObject.Type.INTERACTIVE).nameContains(name).nameContains("portal").action("Enter").first()
+	private val portal: GameObject
+		get() = Objects.stream().type(GameObject.Type.INTERACTIVE)
+			.nameContains(name.replace("_", " "))
+			.nameContains("portal")
+			.action("Enter").first()
+
 	override fun insideHouseTeleport(): Boolean {
 		return walkAndInteract(portal, "Enter")
 	}
 
+	companion object {
+		fun forName(portalName: String): HousePortal? {
+			return if (!portalName.contains("portal POH")) null
+			else values().firstOrNull { portalName.contains(it.name.replace("_", " "), true) }
+		}
+	}
 
 }
 
+fun main() {
+	println(HousePortal.forName(LUNAR_ISLE_HOUSE_PORTAL))
+}

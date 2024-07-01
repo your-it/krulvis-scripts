@@ -77,7 +77,6 @@ class OrbCrafter : ATScript() {
 
 	override fun onStart() {
 		super.onStart()
-		HouseTeleport.toHouseTeleport = SpellTeleport.HOUSE_TELEPORT
 		logger.info("BankTeleport = $bankTeleport")
 	}
 

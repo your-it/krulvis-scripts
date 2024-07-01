@@ -14,5 +14,4 @@ class CanLoot(script: WGTokens) : Branch<WGTokens>(script, "ShouldLoot?") {
         return script.loot().isNotEmpty()
     }
 
-
 }
