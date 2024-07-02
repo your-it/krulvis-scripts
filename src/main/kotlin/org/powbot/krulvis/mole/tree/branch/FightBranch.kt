@@ -19,6 +19,7 @@ import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.leaf.FlickOffensive
 import org.powbot.krulvis.mole.tree.leaf.GoToMole
 import org.powbot.krulvis.mole.tree.leaf.LookForMole
+import org.powbot.krulvis.mole.tree.leaf.WaitForLoot
 
 val moleArea = Area(Tile(1700, 5130, 0), Tile(1800, 5250, 0))
 
@@ -34,11 +35,7 @@ class AtMole(script: GiantMole) : Branch<GiantMole>(script, "Should Sip Potion?"
 
 class WaitingForLoot(script: GiantMole) : Branch<GiantMole>(script, "Waiting for loot?") {
 	override val failedComponent: TreeComponent<GiantMole> = NearMole(script)
-	override val successComponent: TreeComponent<GiantMole> = SimpleLeaf(script, "Wait...") {
-		val activePrayers = Prayer.activePrayers()
-		activePrayers.forEach { Prayer.prayer(it, false) }
-		sleep(600)
-	}
+	override val successComponent: TreeComponent<GiantMole> = WaitForLoot(script)
 
 	override fun validate(): Boolean {
 		if (currentHP() > 1) {
@@ -72,7 +69,7 @@ class IsFighting(script: GiantMole) : Branch<GiantMole>(script, "Is Fighting?") 
 
 	override val failedComponent: TreeComponent<GiantMole> = SimpleLeaf(script, "Attack Mole") {
 		val mole = script.findMole()
-		if (walkAndInteract(mole, "Attack")) {
+		if (script.burrowTimer.isFinished() && walkAndInteract(mole, "Attack")) {
 			Prayer.prayer(Prayer.Effect.PROTECT_FROM_MELEE, true)
 			waitForDistance(mole) { me.interacting() == mole }
 		}

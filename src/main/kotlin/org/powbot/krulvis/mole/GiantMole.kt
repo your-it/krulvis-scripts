@@ -2,10 +2,7 @@ package org.powbot.krulvis.mole
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.event.*
-import org.powbot.api.rt4.Constants
-import org.powbot.api.rt4.GrandExchange
-import org.powbot.api.rt4.GroundItem
-import org.powbot.api.rt4.Npcs
+import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -21,10 +18,12 @@ import org.powbot.krulvis.api.teleports.TeleportMethod
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
 import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.mole.tree.branch.ShouldBank
 import kotlin.math.max
 
-@ScriptManifest(name = "krul GiantMole", description = "Dharok that mole back in the ground", version = "1.0.1", category = ScriptCategory.Combat, priv = true, scriptId = "8552ff64-5ae0-4be9-b94b-b580540d8a26")
+@ScriptManifest(name = "krul GiantMole", description = "Dharok that mole back in the ground", version = "1.0.2", category = ScriptCategory.Combat, priv = true, scriptId = "8552ff64-5ae0-4be9-b94b-b580540d8a26")
 @ScriptConfiguration.List([
 	ScriptConfiguration("Inventory", "What to bring in inventory?", OptionType.INVENTORY),
 	ScriptConfiguration("Equipment", "What to bring in equipment?", OptionType.EQUIPMENT),
@@ -49,6 +48,7 @@ class GiantMole : ATScript() {
 	val moleBurrowAnimations = intArrayOf(3314, 3315)
 	var moleSplatCycles: IntArray = intArrayOf()
 	val respawnTimer = Timer(11000)
+	val burrowTimer = Timer(5000)
 
 	fun findMole() = Npcs.stream().name("Giant Mole").notAnimation(*moleBurrowAnimations).first()
 
@@ -59,11 +59,22 @@ class GiantMole : ATScript() {
 		return (max(price(), GrandExchange.getItemPrice(id())) * stackSize()) > 1000
 	}
 
+	fun disablePrayers() {
+		val activePrayers = Prayer.activePrayers()
+		activePrayers.forEach { Prayer.prayer(it, false) }
+		if (activePrayers.isNotEmpty())
+			sleep(600)
+	}
+
 	@Subscribe
 	fun onNpcAnimation(npcAnim: NpcAnimationChangedEvent) {
 		val npc = npcAnim.npc
 		if (npc.name() == "Giant Mole") {
-			logger.info("Mole animation=${npcAnim.animation}")
+			val anim = npcAnim.animation
+			logger.info("Mole animation=${anim}")
+			if (anim in moleBurrowAnimations) {
+				burrowTimer.reset()
+			}
 			if (npc.healthPercent() == 0 && lootWatcher?.active != true) {
 				lootWatcher = LootWatcher(npc.tile(), -1, 5, lootList, isLoot = { it.isLoot() })
 				respawnTimer.reset()
