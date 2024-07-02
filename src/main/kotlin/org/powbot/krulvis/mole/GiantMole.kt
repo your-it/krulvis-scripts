@@ -18,7 +18,6 @@ import org.powbot.krulvis.api.teleports.TeleportMethod
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.mole.tree.branch.ShouldBank
 import kotlin.math.max
@@ -48,9 +47,9 @@ class GiantMole : ATScript() {
 	val moleBurrowAnimations = intArrayOf(3314, 3315)
 	var moleSplatCycles: IntArray = intArrayOf()
 	val respawnTimer = Timer(11000)
-	val burrowTimer = Timer(5000)
+	val burrowTimer = Timer(2000)
 
-	fun findMole() = Npcs.stream().name("Giant Mole").notAnimation(*moleBurrowAnimations).first()
+	fun findMole() = Npcs.stream().name("Giant Mole").filtered { it.animation() !in moleBurrowAnimations }.first()
 
 	private fun GroundItem.isLoot(): Boolean {
 		if (name() in moleItems) {
@@ -107,7 +106,6 @@ class GiantMole : ATScript() {
 	fun onGameTick(tick: TickEvent) {
 		val mole = Npcs.stream().name("Giant Mole").first()
 		moleSplatCycles = mole.hitsplatCycles()
-
 	}
 }
 
