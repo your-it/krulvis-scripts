@@ -12,8 +12,9 @@ class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: Tre
     Branch<S>(script, "Should sip potion?") {
 
     override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Sipping") {
-        if (potion!!.drink()) {
-            Condition.wait({ potion() == null }, 250, 15)
+        val pot = potion!!
+        if (pot.drink()) {
+            Condition.wait({ !pot.needsRestore(pot.restore()) }, 250, 15)
             nextRestore = Random.nextInt(45, 60)
         }
     }
@@ -21,10 +22,10 @@ class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: Tre
     var potion: Potion? = null
     var nextRestore = Random.nextInt(45, 60)
 
+    private fun Potion.restore() = if (this == Potion.PRAYER) 100 + nextRestore else nextRestore
     fun potion(): Potion? = Potion.values().filter { it.hasWith() }
         .firstOrNull {
-            val restore = if (it == Potion.PRAYER) 100 + nextRestore else nextRestore
-            it.needsRestore(restore)
+            it.needsRestore(it.restore())
         }
 
     override fun validate(): Boolean {

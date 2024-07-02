@@ -11,7 +11,7 @@ class Loot(script: GiantMole) : Leaf<GiantMole>(script, "Looting") {
         for (gi in script.lootList) {
             if (!gi.valid()) {
                 script.lootList.remove(gi)
-                continue
+                return
             }
 
             if (walkAndInteract(gi, "Take")) {

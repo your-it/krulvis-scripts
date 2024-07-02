@@ -10,6 +10,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
@@ -29,7 +30,7 @@ class ShouldBank(script: GiantMole) : Branch<GiantMole>(script, "Should Bank?") 
 class IsBankOpen(script: GiantMole) : Branch<GiantMole>(script, "IsBankOpen?") {
 	private val ropeTile = Tile(1752, 5136, 0)
 	override val failedComponent: TreeComponent<GiantMole> = SimpleLeaf(script, "Opening Bank") {
-		if (moleArea.contains(me)) {
+		if (moleArea.contains(me) && script.teleportToBank.teleport == null) {
 			if (ropeTile.distance() > 10) {
 				Movement.step(ropeTile)
 				sleep(Random.nextInt(600, 100))
@@ -39,8 +40,8 @@ class IsBankOpen(script: GiantMole) : Branch<GiantMole>(script, "IsBankOpen?") {
 					waitForDistance(rope) { moleArea.contains(me) }
 				}
 			}
-		} else {
-			Bank.open()
+		} else if (script.teleportToBank.execute()) {
+			Bank.openNearest()
 		}
 	}
 	override val successComponent: TreeComponent<GiantMole> = HandleBank(script)
