@@ -11,11 +11,13 @@ import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.branch.moleArea
 
 class GoToMole(script: GiantMole) : Leaf<GiantMole>(script, "Going to mole") {
-	private val parkTile = Tile(3001, 3778, 0)
+	private val parkTile = Tile(3001, 3376, 0)
 	override fun execute() {
 		if (parkTile.distance() > 15) {
-			Movement.walkTo(parkTile)
+			if (script.teleportToMole.execute())
+				Movement.walkTo(parkTile)
 		} else {
+			script.teleportToMole.executed = false
 			val hill = Objects.stream().name("Mole hill").action("Look-inside").nearest().first()
 			if (hill.tile != me.tile()) {
 				Movement.step(hill.tile, 0)
