@@ -84,7 +84,8 @@ object ATContext {
 			return true
 		}
 		val flags = Movement.collisionMap(position.floor()).flags()
-		val position = if (!position.blocked(flags)) position else position.getWalkableNeighbor() ?: return false
+		val position = if (!position.loaded() || !position.blocked(flags)) position else position.getWalkableNeighbor()
+			?: return false
 		if (Players.local().tile() == position) {
 			debug("Already on tile: $position")
 			return true
@@ -263,9 +264,9 @@ object ATContext {
 		if (currentAmount < amount) {
 			val withdrawCount = amount - currentAmount
 			if (!containsOneOf(id)) {
-//                debug("No: ${CacheItemConfig.load(id).name} with id=$id in bank")
+				debug("No: ${ItemLoader.lookup(id)?.name()} with id=$id in bank")
 				return false
-			} else if (withdrawCount >= stream().id(id).count(true)) {
+			} else if (withdrawCount > 1 && withdrawCount >= stream().id(id).count(true)) {
 				debug("Withdrawing all: $id, since bank contains too few")
 				withdraw(id, Bank.Amount.ALL)
 			} else if (withdrawCount >= Inventory.emptySlots() && ItemLoader.lookup(id)
@@ -285,7 +286,10 @@ object ATContext {
 			if (wait) waitFor { !Inventory.containsOneOf(id) }
 			return false
 		}
-		return if (wait) waitFor(5000) { Inventory.getCount(true, id) == amount } else true
+
+		val success = if (wait) waitFor(5000) { Inventory.getCount(true, id) == amount } else true
+		debug("Withdrawing was a success=$success, inventoryCount=${Inventory.getCount(true, id)}, amount=$amount")
+		return success
 	}
 
 	/**
