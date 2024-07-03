@@ -15,6 +15,7 @@ class GMPainter(script: GiantMole) : ATPaint<GiantMole>(script) {
 				if (splats.isEmpty()) ""
 				else (Game.cycle() - splats[0]).toString()
 			}
+			.addString("Kills") { "${script.kills}, ${script.timer.getPerHour(script.kills)}/hr" }
 			.trackSkill(Skill.Attack)
 			.trackSkill(Skill.Strength)
 			.trackSkill(Skill.Defence)
