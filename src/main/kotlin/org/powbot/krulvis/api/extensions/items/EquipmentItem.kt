@@ -27,7 +27,7 @@ interface EquipmentItem : Item {
 			) {
 				waitFor(5000) { inInventory() }
 			} else if (!inBank() && stopIfOut) {
-				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: ${id}")
+				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: $id")
 				ScriptManager.stop()
 			}
 		}

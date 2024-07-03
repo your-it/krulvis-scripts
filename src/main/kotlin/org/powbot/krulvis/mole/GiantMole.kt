@@ -20,16 +20,17 @@ import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.mole.tree.branch.ShouldBank
+import org.powbot.mobile.rscache.loader.ItemLoader
 import kotlin.math.max
 
-@ScriptManifest(name = "krul GiantMole", description = "Dharok that mole back in the ground", version = "1.0.2", category = ScriptCategory.Combat, priv = true, scriptId = "8552ff64-5ae0-4be9-b94b-b580540d8a26")
+@ScriptManifest(name = "krul GiantMole", description = "Dharok that mole back in the ground", version = "1.0.3", category = ScriptCategory.Combat, priv = true, scriptId = "8552ff64-5ae0-4be9-b94b-b580540d8a26")
 @ScriptConfiguration.List([
-	ScriptConfiguration("Inventory", "What to bring in inventory?", OptionType.INVENTORY),
-	ScriptConfiguration("Equipment", "What to bring in equipment?", OptionType.EQUIPMENT),
+	ScriptConfiguration("Inventory", "What to bring in inventory?", OptionType.INVENTORY, defaultValue = "{\"2436\":2,\"2440\":2,\"12625\":4,\"2434\":8,\"7510\":1,\"13120\":1,\"12791\":1,\"8013\":10,\"952\":1}"),
+	ScriptConfiguration("Equipment", "What to bring in equipment?", OptionType.EQUIPMENT, defaultValue = "{\"4881\":0,\"6570\":1,\"6585\":2,\"4887\":3,\"4893\":4,\"4899\":7,\"7462\":9,\"11840\":10,\"6735\":12,\"22945\":13}"),
 	ScriptConfiguration("TeleportToBank", "What teleport to use to bank?", OptionType.STRING,
-		allowedValues = ["NONE", EDGEVILLE_MOUNTED_GLORY]),
+		allowedValues = ["NONE", EDGEVILLE_MOUNTED_GLORY], defaultValue = EDGEVILLE_MOUNTED_GLORY),
 	ScriptConfiguration("TeleportToMole", "What teleport to use to Falador?", OptionType.STRING,
-		allowedValues = ["NONE", FALADOR_TELEPORT_NEXUS]),
+		allowedValues = ["NONE", FALADOR_TELEPORT_NEXUS], defaultValue = FALADOR_TELEPORT_NEXUS),
 ])
 class GiantMole : ATScript() {
 	override fun createPainter(): ATPaint<*> = GMPainter(this)
@@ -38,6 +39,7 @@ class GiantMole : ATScript() {
 	val inventory by lazy { getOption<Map<Int, Int>>("Inventory") }
 	val prayerPotion by lazy { inventory.keys.mapNotNull { Potion.forId(it) }.firstOrNull { it.skill == Constants.SKILLS_PRAYER } }
 	val equipment by lazy { getOption<Map<Int, Int>>("Equipment") }
+	val equipmentNames by lazy { equipment.map { ItemLoader.lookup(it.key)!!.name() } }
 	val teleportToMole by lazy { TeleportMethod(Teleport.forName(getOption("TeleportToMole"))) }
 	val teleportToBank by lazy { TeleportMethod(Teleport.forName(getOption("TeleportToBank"))) }
 	override val rootComponent: TreeComponent<*> = ShouldBank(this)
@@ -47,9 +49,17 @@ class GiantMole : ATScript() {
 	val moleBurrowAnimations = intArrayOf(3314, 3315)
 	var moleSplatCycles: IntArray = intArrayOf()
 	val respawnTimer = Timer(11000)
-	val burrowTimer = Timer(2000)
+	var kills = 0
 
-	fun findMole() = Npcs.stream().name("Giant Mole").filtered { it.animation() !in moleBurrowAnimations }.first()
+	/**
+	 * Stop respawn and burrow timer when script starts, so we don't get clunky behaviour when the script is started in the cave
+	 */
+	override fun onStart() {
+		super.onStart()
+		respawnTimer.stop()
+	}
+
+	fun findMole() = Npcs.stream().name("Giant Mole").first()
 
 	private fun GroundItem.isLoot(): Boolean {
 		if (name() in moleItems) {
@@ -71,12 +81,10 @@ class GiantMole : ATScript() {
 		if (npc.name() == "Giant Mole") {
 			val anim = npcAnim.animation
 			logger.info("Mole animation=${anim}")
-			if (anim in moleBurrowAnimations) {
-				burrowTimer.reset()
-			}
 			if (npc.healthPercent() == 0 && lootWatcher?.active != true) {
 				lootWatcher = LootWatcher(npc.tile(), -1, 5, lootList, isLoot = { it.isLoot() })
 				respawnTimer.reset()
+				kills++
 			}
 		}
 	}
@@ -110,5 +118,5 @@ class GiantMole : ATScript() {
 }
 
 fun main() {
-	GiantMole().startScript("127.0.0.1", "GIM", false)
+	GiantMole().startScript("127.0.0.1", "GIM", true)
 }

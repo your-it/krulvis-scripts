@@ -6,6 +6,7 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
 
 class LookForMole(script: GiantMole) : Leaf<GiantMole>(script, "Looking for mole") {
@@ -18,14 +19,20 @@ class LookForMole(script: GiantMole) : Leaf<GiantMole>(script, "Looking for mole
 		val mole = script.findMole()
 		val hintTile = HintArrow.tile()
 		if (mole.valid()) {
-			Movement.step(hintTile)
+			script.logger.info("Mole is valid, walking to moleTile=${mole.tile()}")
+			Movement.step(mole.tile())
 			waitFor { mole.distance() <= 20 }
-		} else if (script.respawnTimer.isFinished()) {
+		} else if (hintTile.valid() && hintTile.distance() > 5 && script.respawnTimer.isFinished()) {
+			script.logger.info("HintTile is valid, walking to hintTile=${hintTile}")
 			Movement.step(hintTile)
-			waitFor { mole.distance() <= 20 }
+			waitForDistance(hintTile, 10000) { script.findMole().distance() <= 20 || Movement.destination().distance() <= 5 }
 		} else if (centerTile.distance() > 10) {
+			script.logger.info("Walking to centerTile=${centerTile}")
 			Movement.step(centerTile)
 			waitFor { centerTile.distance() < 10 }
+		} else {
+			script.logger.info("Waiting for mole to spawn...")
+			waitFor { script.findMole().valid() }
 		}
 	}
 }
