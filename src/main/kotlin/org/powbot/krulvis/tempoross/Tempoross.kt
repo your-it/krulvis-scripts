@@ -34,7 +34,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
 	name = "krul Tempoross",
 	description = "Does tempoross minigame",
-	version = "1.3.5",
+	version = "1.3.6",
 	author = "Krulvis",
 	scriptId = "54b4c295-8cb8-4c22-9799-49b7344708e7",
 	markdownFileName = "Tempoross.md",
@@ -171,7 +171,7 @@ class Tempoross : ATScript() {
 
 	fun getNearestFire() = Npcs.stream().within(12).within(side.area).name("Fire").nearest().firstOrNull()
 	fun getRelevantInventoryItems(): Map<Int, Int> =
-		Inventory.stream().filtered { it.id in inventory.keys }
+		Inventory.get { it.id in inventory.keys }
 			.groupBy { it.id }
 			.mapValues { it.value.sumOf { i -> i.stack } }
 

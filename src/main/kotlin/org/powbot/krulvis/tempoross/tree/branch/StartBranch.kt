@@ -23,11 +23,22 @@ class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should ent
 			&& Npcs.stream().noneMatch { it.actions().contains("Leave") }
 	}
 
-	override val successComponent: TreeComponent<Tempoross> = HasAllItemsFromBank(script)
+	override val successComponent: TreeComponent<Tempoross> = HasAllEquipment(script)
 	override val failedComponent: TreeComponent<Tempoross> = WaitingForStart(script)
 }
 
-class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items From Bank") {
+class HasAllEquipment(script: Tempoross) : Branch<Tempoross>(script, "Has All Equipment") {
+	override val failedComponent: TreeComponent<Tempoross> = GetEquipmentFromBank(script)
+	override val successComponent: TreeComponent<Tempoross> = HasAllItemsFromBank(script)
+
+	override fun validate(): Boolean {
+		return Equipment.get { it.id in script.equipment.keys }.size == script.equipment.keys.size
+	}
+
+
+}
+
+class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items") {
 	override val failedComponent: TreeComponent<Tempoross> = GetItemsFromBank(script)
 	override val successComponent: TreeComponent<Tempoross> = EnterBoat(script)
 
@@ -35,7 +46,7 @@ class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has Al
 		val equipment = Equipment.stream().toList().map { it.id }
 		val inventory = script.getRelevantInventoryItems()
 		return script.equipment.all { equipment.contains(it.key) } && script.inventoryBankItems.all {
-			it.value <= inventory.getOrDefault(it.key, 0)
+			inventory.getOrDefault(it.key, 0) >= it.value
 		}
 	}
 
