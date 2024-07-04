@@ -46,7 +46,7 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
 	override fun validate(): Boolean {
 		val target = script.target()
 		val currDefenderIndex = Defender.currentDefenderIndex()
-		if (target == null || !target.reachable()) {
+		if (!target.valid() || !target.reachable()) {
 			Defender.lastDefenderIndex = currDefenderIndex
 		}
 		return (Defender.lastDefenderIndex < currDefenderIndex && currDefenderIndex < Defender.defenders.size - 1)

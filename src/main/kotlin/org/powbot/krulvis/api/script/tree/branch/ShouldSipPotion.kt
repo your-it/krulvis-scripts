@@ -8,19 +8,15 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.waitFor
 
 class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
 	Branch<S>(script, "Should sip potion?") {
 
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Sipping") {
 		val pot = potion!!
-		val invPot = pot.getInvItem()
 		if (pot.drink()) {
-			if (waitFor(1000) { pot.getInvItem() != invPot }) {
-				sipTimer.reset()
-			}
 			if (Condition.wait({ !pot.needsRestore(pot.restore()) }, 250, 15)) {
+				sipTimer.reset()
 				nextRestore = Random.nextInt(45, 60)
 			}
 		}

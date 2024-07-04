@@ -18,7 +18,7 @@ class Attack(script: Fighter) : Leaf<Fighter>(script, "Attacking") {
 		if (attack(target)) {
 			script.currentTarget = target
 			Condition.wait({
-				IsKilling.killing() || script.shouldReturnToSafespot()
+				IsKilling.killing(script.superiorAppeared) || script.shouldReturnToSafespot()
 			}, 250, 10)
 			if (script.shouldReturnToSafespot()) {
 				Movement.step(script.centerTile(), 0)

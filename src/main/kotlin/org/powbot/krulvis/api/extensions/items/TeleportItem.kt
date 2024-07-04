@@ -22,6 +22,7 @@ enum class TeleportItem(
 	WARRIORS("Warriors Bracelet", 11972, 11974, 11118, 11120, 11122, 11124),
 	BURNING("Burning Amulet", 21166, 21169, 21171, 21173, 21175),
 	COMBAT("Combat Bracelet", 11972, 11974, 11118, 11120, 11122, 11124),
+	SLAYER("Slayer ring", 21268, 11866, 11867, 11868, 11869, 11870, 11871, 11872, 11873),
 	ARD_CLOAK("Ardougne Cloak", 13121);
 
 	val bestId: Int = ids[0]
@@ -60,14 +61,15 @@ enum class TeleportItem(
 	fun teleport(place: String): Boolean {
 		println("$name Teleport to: $place")
 		Bank.close()
-//        continueLevelUp()
-//        ge.close()
 		val w = if (Widgets.widget(300).componentCount() >= 91) Widgets.widget(300).component(91) else null
 		if (w != null && w.interact("Close")) {
 			sleep(Random.nextInt(200, 500))
 		}
 
 		if (equip()) {
+			if (this == SLAYER) {
+				return teleportSlayerRing(place)
+			}
 			var teleport = place
 			when (place.lowercase()) {
 				"ferox", "enclave" -> teleport = "Ferox Enclave"
@@ -89,6 +91,20 @@ enum class TeleportItem(
 				"cooking" -> teleport = "Cooking Guild"
 			}
 			return Equipment.stream().id(*ids).firstOrNull()?.interact(teleport) == true
+		}
+		return false
+	}
+
+
+	private fun teleportSlayerRing(location: String): Boolean {
+		val teleportWidget = Components.stream(219, 1).textContains(location).first()
+		if (!teleportWidget.visible()) {
+			if (Equipment.stream().id(*ids).first().interact("Teleport")) {
+				waitFor { teleportWidget.refresh().visible() }
+			}
+		}
+		if (teleportWidget.valid() && teleportWidget.visible()) {
+			return teleportWidget.click()
 		}
 		return false
 	}
