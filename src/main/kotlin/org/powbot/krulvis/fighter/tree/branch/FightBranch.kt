@@ -55,7 +55,10 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
 	override val failedComponent: TreeComponent<Fighter> = WalkToSpot(script)
 
 	override fun validate(): Boolean {
-		return !script.useSafespot || script.centerTile() == Players.local().tile()
+		if (script.useSafespot) {
+			return script.centerTile() == Players.local().tile()
+		}
+		return script.centerTile().distance() <= script.radius
 	}
 }
 
