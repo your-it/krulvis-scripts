@@ -1,5 +1,7 @@
 package org.powbot.krulvis.fighter
 
+import org.powbot.api.rt4.Prayer
+
 const val WARRIOR_GUILD_OPTION = "Warrior Guild"
 const val RADIUS_OPTION = "Kill Radius"
 const val INVENTORY_OPTION = "Inventory"
@@ -19,36 +21,78 @@ const val BANK_TELEPORT_OPTION = "Bank Teleport"
 const val MONSTER_TELEPORT_OPTION = "Monster Teleport"
 const val MONSTER_AUTO_DESTROY_OPTION = "Auto Kill"
 
+enum class Superior(val protectPrayer: Prayer.Effect = Prayer.Effect.PROTECT_FROM_MELEE) {
+	CRUSHING_HAND,
+	CHASM_CRAWLER,
+	SCREAMING_BANSHEE,
+	SCREAMING_TWISTED_BANSHEE,
+	GIANT_ROCKSLUG,
+	COCKATHRICE,
+	FLAMING_PYRELORD,
+	INFERNAL_PYRELORD,
+	MONSTROUS_BASILISK,
+	MALEVOLENT_MAGE,
+	INSATIABLE_BLOODVELD,
+	INSATIABLE_MUTATED_BLOODVELD,
+	VITREOUS_JELLY,
+	VITREOUS_WARPED_JELLY,
+	SPIKED_TUROTH,
+	MUTATED_TERRORBIRD,
+	MUTATED_TORTOISE,
+	CAVE_ABOMINATION,
+	ABHORRENT_SPECTRE,
+	REPUGNANT_SPECTRE,
+	BASILISK_SENTINEL,
+	SHADOW_WYRM,
+	CHOKE_DEVIL,
+	KING_KURASK,
+	MARBLE_GARGOYLE,
+	NECHRYARCH,
+	GUARDIAN_DRAKE,
+	GREATER_ABYSSAL_DEMON,
+	NIGHT_BEAST,
+	NUCLEAR_SMOKE_DEVIL,
+	COLOSSAL_HYDRA,
+	;
+
+	companion object {
+		fun forName(monster: String): Superior? {
+			val monsterName = monster.replace(" ", "_").uppercase()
+			return values().firstOrNull { it.name == monsterName }
+		}
+	}
+}
+
 val SUPERIORS = listOf(
-    "Crushing hand",
-    "Chasm Crawler",
-    "Screaming banshee",
-    "Screamin twisted banshee",
-    "Giant rockslug",
-    "Cockathrice",
-"Flaming pyrelord",
-    "Infernal pyrelord",
-    "Monstrous basilisk",
-    "Malevolent mage",
-    "Insatiable bloodveld",
-    "Insatiable mutated bloodveld",
-    "Vitreous Jelly",
-    "Vitreous warped Jelly",
-    "Spiked Turoth",
-    "Mutated Terrorbird",
-    "Mutated Tortoise",
-    "Cave abomination",
-    "Abhorrent spectre",
-    "Repugnant spectre",
-    "Basilisk Sentinel",
-    "Shadow Wyrm",
-    "Choke devil",
-    "King kurask",
-    "Marble gargoyle",
-    "Nechryarch",
-    "Guardian Drake",
-    "Greater abyssal demon",
-    "Night beast",
-    "Nuclear smoke devil",
-    "Colossal Hydra",
+	"crushing hand",
+	"chasm crawler",
+	"screaming banshee",
+	"screaming twisted banshee",
+	"giant rockslug",
+	"cockathrice",
+	"flaming pyrelord",
+	"infernal pyrelord",
+	"monstrous basilisk",
+	"malevolent mage",
+	"insatiable bloodveld",
+	"insatiable mutated bloodveld",
+	"vitreous jelly",
+	"vitreous warped jelly",
+	"spiked turoth",
+	"mutated terrorbird",
+	"mutated tortoise",
+	"cave abomination",
+	"abhorrent spectre",
+	"repugnant spectre",
+	"basilisk sentinel",
+	"shadow wyrm",
+	"choke devil",
+	"king kurask",
+	"marble gargoyle",
+	"nechryarch",
+	"guardian drake",
+	"greater abyssal demon",
+	"night beast",
+	"nuclear smoke devil",
+	"colossal hydra",
 )

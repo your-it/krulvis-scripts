@@ -37,7 +37,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 
 	override fun paintCustom(g: Rendering) {
 		val target = script.currentTarget
-		if (target != null) {
+		if (target.valid()) {
 			g.drawString("Vis  : ${target.healthBarVisible()}", 500, 200)
 			g.drawString("HP   : ${target.healthPercent()}", 500, 220)
 			g.drawString("Anim : ${target.animation()}", 500, 240)

@@ -9,11 +9,15 @@ import org.slf4j.LoggerFactory
 const val EDGEVILLE_GLORY = "Edgeville glory"
 const val FEROX_ENCLAVE_ROD = "Ferox Enclave ROD"
 const val CASTLE_WARS_ROD = "Castle Wars ROD"
+const val FREMENNIK_SLAYER = "Fremennik Slayer Ring"
+const val STRONGHOLD_SLAYER = "Stronghold Slayer Ring"
 
 enum class ItemTeleport(val teleportItem: TeleportItem, override val action: String) : Teleport {
 	EDGEVILLE_GLORY(TeleportItem.GLORY, "Edgeville"),
 	FEROX_ENCLAVE_ROD(TeleportItem.ROD, "Ferox Enclave"),
 	CASTLE_WARS_ROD(TeleportItem.ROD, "Castle Wars"),
+	FREMENNIK_SLAYER(TeleportItem.SLAYER, "Fremennik"),
+	STRONGHOLD_SLAYER(TeleportItem.SLAYER, "Stronghold"),
 	;
 
 	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)

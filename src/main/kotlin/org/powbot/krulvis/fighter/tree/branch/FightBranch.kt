@@ -7,23 +7,35 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.fighter.Fighter
+import org.powbot.krulvis.fighter.SUPERIORS
 import org.powbot.krulvis.fighter.tree.leaf.*
 
 class IsKilling(script: Fighter) : Branch<Fighter>(script, "Killing?") {
 	override val failedComponent: TreeComponent<Fighter> = ShouldReanimate(script)
-	override val successComponent: TreeComponent<Fighter> = ShouldSipPotion(script, WaitWhileKilling(script))
+	override val successComponent: TreeComponent<Fighter> = ShouldSipPotion(script, FightingSuperior(script))
 
 	override fun validate(): Boolean {
-		return killing()
+		return killing(script.superiorAppeared)
 	}
 
 	companion object {
-		fun killing(): Boolean {
+		fun killing(superiorActive: Boolean): Boolean {
 			val interacting = Players.local().interacting()
 			if (interacting == Actor.Nil) return false
+			if (superiorActive && interacting.name.lowercase() !in SUPERIORS) return false
 			return interacting.healthBarVisible() && TargetWidget.health() > 0
 		}
 	}
+}
+
+class FightingSuperior(script: Fighter) : Branch<Fighter>(script, "Fighting Superior?") {
+	override val failedComponent: TreeComponent<Fighter> = WaitWhileKilling(script)
+	override val successComponent: TreeComponent<Fighter> = FightSuperior(script)
+
+	override fun validate(): Boolean {
+		return TargetWidget.name().lowercase() in SUPERIORS
+	}
+
 }
 
 class IsWaitingForLoot(script: Fighter) : Branch<Fighter>(script, "Waiting for loot?") {
@@ -32,7 +44,8 @@ class IsWaitingForLoot(script: Fighter) : Branch<Fighter>(script, "Waiting for l
 	override val failedComponent: TreeComponent<Fighter> = CanKill(script)
 
 	override fun validate(): Boolean {
-		return script.waitForLootAfterKill && script.isLootWatcherActive()
+		val targetDied = script.currentTarget.valid() && script.currentTarget.healthBarVisible() && script.currentTarget.healthPercent() == 0
+		return script.waitForLootAfterKill && (targetDied || script.isLootWatcherActive())
 	}
 }
 
