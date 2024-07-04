@@ -297,7 +297,7 @@ class Fighter : ATScript() {
 	//Prayer options
 	fun canActivatePrayer() = hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivatePrayer() =
-		Prayer.quickPrayer() && (!Players.local().healthBarVisible() || aggressionTimer.isFinished())
+		Prayer.quickPrayer() && aggressionTimer.isFinished()
 
 
 	//Custom slayer options
