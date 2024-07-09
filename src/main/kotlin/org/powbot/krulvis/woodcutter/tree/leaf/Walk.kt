@@ -5,6 +5,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.DepositBox
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.walking.FailureReason
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
@@ -26,9 +27,18 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
 			script.logger.info("Script requires at least 1 Tree GameObject set in the Configuration")
 			ScriptManager.stop()
 		} else {
-			val tile = locs.minByOrNull { it.distance() }?.getWalkableNeighbor(diagonalTiles = true, checkForWalls = false) ?: return
+			val nearestTile = locs.minByOrNull { it.distance() } ?: return
+			val tile = nearestTile.getWalkableNeighbor(diagonalTiles = true, checkForWalls = false) ?: nearestTile
 			if (script.forceWeb) {
-				Movement.builder(tile).setForceWeb(true).move()
+				val webWalking = walkWebTo(tile)
+				if(!webWalking.success){
+					script.logger.info("Walking to tile=$tile failed with reason=${webWalking.failureReason}")
+					if(webWalking.failureReason == null || webWalking.failureReason == FailureReason.NoPath){
+						val centerPoint = Tile(locs.sumOf { it.x } / locs.size, locs.sumOf { it.y } / locs.size, locs.first().floor)
+						script.logger.info("Walking to centerpoint=$centerPoint")
+						walkWebTo(centerPoint)
+					}
+				}
 				return
 			}
 			if (tile.distance() < 15) {
@@ -40,34 +50,12 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
 					waitForDistance(ladder) { me.floor() == 1 }
 				}
 			} else {
-				Movement.walkTo(tile.getStraightNeighor())
+				Movement.walkTo(tile.getWalkableNeighbor(allowSelf = false, diagonalTiles = false, checkForWalls = false))
 			}
 		}
 	}
 
-	/**
-	 * Returns: [Tile] nearest neighbor or self as which is walkable
-	 */
-	fun Tile.getStraightNeighor(
-	): Tile? {
-		return getStraightNeighors().minByOrNull { it.distance() }
-	}
 
-	fun Tile.getStraightNeighors(
-	): List<Tile> {
+	private fun walkWebTo(tile:Tile) = Movement.builder(tile).setForceWeb(true).move()
 
-		val t = tile()
-		val x = t.x()
-		val y = t.y()
-		val f = t.floor()
-		val cm = Movement.collisionMap(f).flags()
-
-		val neighbors = mutableListOf<Tile>()
-		for (yy in 1..2) neighbors.add(Tile(x, y + yy, f))
-		for (yy in 1..2) neighbors.add(Tile(x, y - yy, f))
-		for (xx in 1..2) neighbors.add(Tile(x + xx, y, f))
-		for (xx in 1..2) neighbors.add(Tile(x - xx, y, f))
-
-		return neighbors.filter { !it.blocked(cm) }
-	}
 }
