@@ -5,13 +5,14 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.mobile.rscache.loader.ItemLoader
 
 interface Item {
 
 	val ids: IntArray
 	val id: Int
 		get() = ids[0]
+
+	val name: String
 
 	fun getNotedIds(): IntArray = ids.map { it + 1 }.toIntArray()
 

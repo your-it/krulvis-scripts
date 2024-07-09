@@ -33,7 +33,7 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
 			if (tile.distance() < 15) {
 				Movement.step(tile)
 				waitFor(long()) { tile.distance() < 5 }
-			} else if (tile.floor == 1 && tile.distanceM(me) <= 20 && me.floor() == 0) {
+			} else if (tile.floor == 1 && tile.distanceM(me) <= 20 && me.floor() == 0) { //Climb ladder to access Redwood trees
 				val ladder = Objects.stream().name("Rope ladder").action("Climb-up").nearest().first()
 				if (walkAndInteract(ladder, "Climb-up")) {
 					waitForDistance(ladder) { me.floor() == 1 }

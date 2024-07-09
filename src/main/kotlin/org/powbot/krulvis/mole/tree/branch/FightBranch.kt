@@ -10,11 +10,9 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.leaf.*
 
@@ -42,9 +40,11 @@ class WaitingForLoot(script: GiantMole) : Branch<GiantMole>(script, "Waiting for
 			}
 		} else if (script.rapidHealTimer.isFinished()) {
 			Prayer.prayer(Prayer.Effect.RAPID_HEAL, true)
+			sleep(200, 300)
 			script.rapidHealTimer.reset(Random.nextInt(10000, 45000))
-		} else {
+		} else if (Prayer.prayerActive(Prayer.Effect.RAPID_HEAL)) {
 			Prayer.prayer(Prayer.Effect.RAPID_HEAL, false)
+			waitFor(600) { !Prayer.prayerActive(Prayer.Effect.RAPID_HEAL) }
 		}
 
 		return script.lootWatcher?.active == true

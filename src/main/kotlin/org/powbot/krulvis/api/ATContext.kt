@@ -374,4 +374,7 @@ object ATContext {
 	fun RunePouch.count(rune: Rune) = runes().firstOrNull { it.first == rune }?.second ?: 0
 
 
+	val BARROWS_REGEX = Regex("""\b\d+""")
+
+	fun String.stripBarrowsCharge() = replace(BARROWS_REGEX, "").trimEnd()
 }

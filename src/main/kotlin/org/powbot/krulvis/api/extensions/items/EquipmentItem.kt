@@ -3,7 +3,9 @@ package org.powbot.krulvis.api.extensions.items
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
+import org.powbot.krulvis.api.ATContext.stripBarrowsCharge
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 import java.io.Serializable
 
@@ -65,4 +67,6 @@ interface EquipmentItem : Item {
 class Equipment(
 	override val slot: Equipment.Slot? = null,
 	override vararg val ids: Int
-) : EquipmentItem, Serializable
+) : EquipmentItem, Serializable {
+	override val name: String by lazy { ItemLoader.lookup(id)?.name()?.stripBarrowsCharge() ?: "None" }
+}
