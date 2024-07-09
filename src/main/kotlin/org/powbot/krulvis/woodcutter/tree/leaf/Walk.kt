@@ -7,6 +7,7 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.distanceM
+import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.long
@@ -25,7 +26,7 @@ class Walk(script: Woodcutter) : Leaf<Woodcutter>(script, "Walk to Trees") {
 			script.logger.info("Script requires at least 1 Tree GameObject set in the Configuration")
 			ScriptManager.stop()
 		} else {
-			val tile = locs.minByOrNull { it.distance() } ?: return
+			val tile = locs.minByOrNull { it.distance() }?.getWalkableNeighbor(diagonalTiles = true, checkForWalls = false) ?: return
 			if (script.forceWeb) {
 				Movement.builder(tile).setForceWeb(true).move()
 				return
