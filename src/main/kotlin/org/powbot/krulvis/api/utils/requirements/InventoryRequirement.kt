@@ -5,6 +5,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.rscache.loader.ItemLoader
 
 
 class InventoryRequirement(
@@ -18,6 +19,7 @@ class InventoryRequirement(
     constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = true) : this(object : Item {
         override val ids: IntArray
             get() = intArrayOf(id)
+        override val name: String by lazy { ItemLoader.lookup(id)?.name() ?: "none" }
 
         override fun hasWith(): Boolean {
             return inInventory()

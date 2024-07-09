@@ -3,14 +3,12 @@ package org.powbot.krulvis.api.teleports.poh
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.model.Skill
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.api.extensions.House.Pool.Companion.pool
 import org.powbot.krulvis.api.teleports.Teleport
-import org.powbot.krulvis.api.utils.Utils
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.Utils.waitForDistance
@@ -42,7 +40,7 @@ interface HouseTeleport : Teleport {
 				Notifications.showNotification("Can't find method to get to POH")
 				sleep(600)
 			}
-		} else if (useRestorePool()) {
+		} else if (disablePrayers() && useRestorePool()) {
 			return insideHouseTeleport()
 		}
 		return false
@@ -56,6 +54,16 @@ interface HouseTeleport : Teleport {
 		if (pool.ordinal >= 4 && currentHP() < maxHP()) return true
 
 		return Combat.specialPercentage() < 100
+	}
+
+	fun disablePrayers(): Boolean {
+		val activePrayers = Prayer.activePrayers()
+		if (activePrayers.isNotEmpty()) {
+			Prayer.quickPrayer()
+			sleep(100, 150)
+			Prayer.quickPrayer()
+		}
+		return waitFor(600) { Prayer.activePrayers().isEmpty() }
 	}
 
 	fun useRestorePool(): Boolean {

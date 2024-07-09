@@ -12,47 +12,46 @@ import org.powbot.krulvis.fighter.Fighter
 
 class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {
 
-    var bones = emptyList<Item>()
-    var ashes = emptyList<Item>()
-    val actions = mapOf("bones" to "bury", "ashes" to "scatter")
+	var remains = emptyList<Item>()
+	var ashes = emptyList<Item>()
 
-    val offeringSpell = Magic.ArceuusSpell.DEMONIC_OFFERING
+	val demonicSacrifice = Magic.ArceuusSpell.DEMONIC_OFFERING
 
-    override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
-        if (offeringSpell.canCast()) {
-            if (ashes.size >= 3 && offeringSpell.cast()) {
-                Utils.waitFor { filterBones().size < bones.size }
-            }
-        } else {
-            bones.forEachIndexed { i, bone ->
-                val count = Inventory.getCount(bone.id)
-                val action = bone.buryAction()
-                script.logger.info("$action on ${bone.name()}")
-                if (bone.interact(action)) {
-                    Utils.waitFor { count > Inventory.getCount(bone.id) }
-                    if (i < this.bones.size - 1)
-                        Utils.sleep(1500)
-                }
-            }
-        }
-    }
-    override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
+	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Bury bones") {
+		if (demonicSacrifice.canCast()) {
+			if (ashes.size >= 3 && demonicSacrifice.cast()) {
+				Utils.waitFor { filterRemains().size < remains.size }
+			}
+		} else {
+			remains.forEachIndexed { i, bone ->
+				val count = Inventory.getCount(bone.id)
+				val action = bone.buryAction()
+				script.logger.info("$action on ${bone.name()}")
+				if (bone.interact(action)) {
+					Utils.waitFor { count > Inventory.getCount(bone.id) }
+					if (i < this.remains.size - 1)
+						Utils.sleep(1500)
+				}
+			}
+		}
+	}
+	override val failedComponent: TreeComponent<Fighter> = ShouldBank(script)
 
 
-    private fun Item.buryAction(): String = actions[actions.keys.first { name().contains(it, true) }] ?: "Bury"
-    private fun filterBones() = Inventory.stream().filter { item ->
-        val name = item.name().lowercase()
-        actions.keys.any { name.contains(it, true) }
-    }
+	private val possibleBuryActions = listOf("Bury", "Scatter")
+	private fun Item.buryAction(): String? = actions().firstOrNull { it in possibleBuryActions }
+	private fun filterRemains() = Inventory.stream().filtered { item ->
+		item.buryAction() != null
+	}.toList()
 
-    override fun validate(): Boolean {
-        if (!script.buryBones) return false
-        bones = filterBones()
-        ashes = bones.filter { it.name().lowercase().contains("ashes") }
-        return if (offeringSpell.canCast()) {
-            ashes.size >= 3 || bones.any { it.name().lowercase().contains("bones") }
-        } else {
-            bones.isNotEmpty()
-        }
-    }
+	override fun validate(): Boolean {
+		if (!script.buryBones) return false
+		remains = filterRemains()
+		ashes = remains.filter { it.name().lowercase().contains("ashes") }
+		return if (demonicSacrifice.canCast()) {
+			ashes.size >= 3
+		} else {
+			remains.isNotEmpty()
+		}
+	}
 }

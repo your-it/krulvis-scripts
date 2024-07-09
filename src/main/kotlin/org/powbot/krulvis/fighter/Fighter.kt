@@ -180,7 +180,6 @@ class Fighter : ATScript() {
 				it.first
 			}.map { it.key!! to it.value.sumOf { pair -> pair.second } }
 	}
-	val hasPrayPots by lazy { requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
 
 	//Equipment
 	private val equipmentOptions by lazy { getOption<Map<Int, Int>>(EQUIPMENT_OPTION) }
@@ -295,9 +294,10 @@ class Fighter : ATScript() {
 	val playerHopAmount by lazy { getOption<Int>(PLAYER_HOP_COUNT_OPTION) }
 
 	//Prayer options
+	private val hasPrayPots by lazy { requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
 	fun canActivatePrayer() = hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivatePrayer() =
-		Prayer.quickPrayer() && aggressionTimer.isFinished()
+		Prayer.quickPrayer() && aggressionTimer.isFinished() && (useSafespot || !me.healthBarVisible())
 
 
 	//Custom slayer options

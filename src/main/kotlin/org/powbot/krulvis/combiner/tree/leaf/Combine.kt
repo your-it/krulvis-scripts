@@ -1,17 +1,10 @@
 package org.powbot.krulvis.combiner.tree.leaf
 
-import org.powbot.api.InteractableEntity
-import org.powbot.api.Locatable
-import org.powbot.api.Nameable
-import org.powbot.api.Tile
 import org.powbot.api.event.GameObjectActionEvent
 import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.event.NpcActionEvent
 import org.powbot.api.event.WidgetActionEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.LocalPathFinder
-import org.powbot.api.rt4.walking.local.Utils
-import org.powbot.api.rt4.walking.local.Utils.turnRunOn
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.walkAndInteract
@@ -31,12 +24,11 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
 		Bank.close()
 		for (i in 0 until script.combineActions.size) {
 			val event = script.combineActions[i]
-
 			val useMenu = !event.rawEntityName.contains("->")
 			val prev = if (i > 0) script.combineActions[i - 1] else null
 			val next = if (script.combineActions.size > i + 1) script.combineActions[i + 1] else null
-			if (next is WidgetActionEvent && next.widget().visible() && next.widget().actions()
-					.contains(next.interaction)
+			if (next is WidgetActionEvent
+				&& next.widget().visible() && next.widget().actions().contains(next.interaction)
 			) {
 				script.logger.info("Next widget=$next is already visible")
 				continue
@@ -46,7 +38,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
 					val item = event.getItem()
 					debug("Event item=${item}")
 					Inventory.open() && item
-						?.interact(event.interaction, useMenu)
+						?.interact(event.interaction, useMenu && item.actions().indexOf("Use") != 0)
 						?: false
 				}
 
@@ -113,7 +105,7 @@ class Combine(script: Combiner) : Leaf<Combiner>(script, "Start combining") {
 								}
 
 								else -> {
-									sleep(600)
+									sleep(if (script.spamClick) Random.nextInt(50, 150) else 600)
 									true
 								}
 							}
