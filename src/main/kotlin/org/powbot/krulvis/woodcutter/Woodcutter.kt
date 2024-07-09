@@ -17,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.1.1",
+    version = "1.1.2",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )
@@ -41,10 +41,10 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
             defaultValue = "false"
         ),
         ScriptConfiguration(
-                name = "ForceWeb",
-                optionType = OptionType.BOOLEAN,
-                description = "Force Web Walking?",
-                defaultValue = "false"
+            name = "ForceWeb",
+            optionType = OptionType.BOOLEAN,
+            description = "Force Web Walking?",
+            defaultValue = "false"
         ),
         ScriptConfiguration(
             name = "BoundaryID",
@@ -57,6 +57,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
 )
 class Woodcutter : ATScript() {
 
+    val redwoods by lazy { getOption<List<GameObjectActionEvent>>("Trees").any { it.name.contains("Redwood") } }
     val trees by lazy {
         getOption<List<GameObjectActionEvent>>("Trees").map {
             when (it.name) {
@@ -65,6 +66,7 @@ class Woodcutter : ATScript() {
                         it.tile.derive(0, 1)
                     else it.tile.derive(1, 0)
                 }
+
                 "Blisterwood Tree" -> it.tile.derive(2, 3)
                 "Teak" -> it.tile
                 else -> it.tile.derive(1, 1)
