@@ -37,8 +37,12 @@ class ChompyBird : ATScript() {
 	}
 }
 
+
+val eatingText = listOf("Sqwark!", "Gobble!")
+fun Npc.isBirdEating() = overheadMessage() in eatingText
+
 fun Npc.isBirdValid(): Boolean {
-	return valid() && (!healthBarVisible() || healthPercent() > 0) && actions.contains("Attack")
+	return valid() && (!healthBarVisible() || healthPercent() > 0) && actions.contains("Attack") && !isBirdEating()
 }
 
 fun main() {

@@ -20,14 +20,3 @@ class BirdSpawned(script: ChompyBird) : Branch<ChompyBird>(script, "BirdSpawned?
 
 
 }
-
-//class IsKilling(script:ChompyBird) :Branch<ChompyBird>(script, "Should kill"){
-//    override val failedComponent: TreeComponent<ChompyBird>
-//        get() = TODO("Not yet implemented")
-//    override val successComponent: TreeComponent<ChompyBird> = KillBird(script)
-//
-//    override fun validate(): Boolean {
-//        return script.currentTarget.healthBarVisible() || me.interacting() == script.currentTarget
-//    }
-//}
-

@@ -16,7 +16,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 	val slayerTracker = listOf(TextPaintItem { "Monsters left:" }, TextPaintItem { Slayer.taskRemainder().toString() })
 	override fun buildPaint(paintBuilder: PaintBuilder): Paint {
 		paintBuilder.addString("Target") {
-			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}, ${script.currentTarget?.healthPercent()}%"
+			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}, ${script.currentTarget.healthPercent()}%"
 		}
 			.addCheckbox("Stop after Slay task", "stopAfterTask", false)
 			.withTotalLoot(true)
