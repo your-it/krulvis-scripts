@@ -12,7 +12,7 @@ import org.powbot.krulvis.chompy.ChompyBird
 
 class InflateToad(script: ChompyBird) : Leaf<ChompyBird>(script, "InflateToads") {
 	override fun execute() {
-		val toad = Npcs.stream().name("Swamp toad").action("Inflate").nearest().first()
+		val toad = Npcs.stream().name("Swamp toad").nearest().first()
 		val invToads = getToadCount()
 		if (walkAndInteract(toad, "Inflate")) {
 			if (waitForDistance(toad) { me.animation() != -1 }) {

@@ -13,9 +13,10 @@ class HasToad(script: ChompyBird) : Branch<ChompyBird>(script, "CanSetupToad") {
 	override val successComponent: TreeComponent<ChompyBird> = DropToad(script)
 
 	override fun validate(): Boolean {
-		if (Inventory.stream().name("Bloated toad").isEmpty()) {
+		val bloated = Inventory.stream().name("Bloated toad").count().toInt()
+		if (bloated == 0) {
 			script.placingToads = false
-		} else if (Inventory.isFull()) {
+		} else if (Inventory.isFull() || bloated >= 3) {
 			script.placingToads = true
 		}
 		return script.placingToads

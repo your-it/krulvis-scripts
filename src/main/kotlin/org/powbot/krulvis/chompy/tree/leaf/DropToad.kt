@@ -33,7 +33,6 @@ class DropToad(script: ChompyBird) : Leaf<ChompyBird>(script, "DropToad") {
 		script.logger.info("Found toad = ${toad.valid()}")
 		while (!placementTimer.isFinished() && toad.valid()) {
 			val tile = me.tile()
-			script.logger.info("Dropping toad = ${toad}")
 			if (tile.canPlace(getGroundBloated(), flags) && toad.interact("Drop")) {
 				waitFor(1200) { me.tile() != tile && !Inventory.itemAt(toad.inventoryIndex).valid() }
 				sleep(250)
