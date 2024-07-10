@@ -28,6 +28,7 @@ import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
+import org.powbot.mobile.script.ScriptManager
 
 
 //<editor-fold desc="ScriptManifest">
@@ -329,6 +330,7 @@ class Fighter : ATScript() {
 
 	@Subscribe
 	fun onInventoryChange(evt: InventoryChangeEvent) {
+		if (ScriptManager.state() != ScriptState.Running) return
 		val id = evt.itemId
 		val pot = Potion.forId(evt.itemId)
 		val isTeleport = TeleportItem.isTeleportItem(id)
