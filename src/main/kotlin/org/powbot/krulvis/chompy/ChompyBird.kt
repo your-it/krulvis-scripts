@@ -10,6 +10,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.chompy.tree.branch.BirdSpawned
+import org.powbot.krulvis.chompy.tree.branch.HasEquipment
 
 @ScriptManifest(name = "krul ChompyBird", description = "Kills chompy birds, doesn't Pluck", version = "1.0.0")
 class ChompyBird : ATScript() {
@@ -20,7 +21,7 @@ class ChompyBird : ATScript() {
 	var currentTarget: Npc = Npc.Nil
 	var kills = 0
 
-	override val rootComponent: TreeComponent<*> = BirdSpawned(this)
+	override val rootComponent: TreeComponent<*> = HasEquipment(this)
 
 	fun getAttackableBird() = Npcs.stream().name("Chompy bird").filtered { it.isBirdValid() }.nearest().first()
 
