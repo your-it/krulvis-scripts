@@ -19,7 +19,7 @@ class DropToad(script: ChompyBird) : Leaf<ChompyBird>(script, "DropToad") {
 		val flags = Movement.collisionMap(me.floor()).flags()
 		script.placementTile = me.tile()
 		if (Npcs.stream().name("Bloated toad").at(script.placementTile).isNotEmpty()) {
-			script.logger.info("Can't place on current tile, walking away")
+			script.logger.info("Can't place on current tile, finding more optimal tile")
 			val layingToads = getGroundBloated()
 			script.placementTile = findStartingPointWithEmptySlots(layingToads, flags, invToads)
 		}
