@@ -7,9 +7,9 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.chompy.ChompyBird
 
 class KillBird(script: ChompyBird) : Leaf<ChompyBird>(script, "Kill Bird") {
-    override fun execute() {
-        if (walkAndInteract(script.currentTarget, "Attack")) {
-            waitFor(600) { me.interacting() == script.currentTarget }
-        }
-    }
+	override fun execute() {
+		if (me.interacting() != script.currentTarget && walkAndInteract(script.currentTarget, "Attack")) {
+			waitFor(600) { me.interacting() == script.currentTarget }
+		}
+	}
 }
