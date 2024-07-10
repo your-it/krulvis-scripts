@@ -24,7 +24,9 @@ class ChompyBird : ATScript() {
 	@Subscribe
 	fun onNpcAnimation(nae: NpcAnimationChangedEvent) {
 		val npc = nae.npc
-		if (npc.name == "Chompy bird" && npc.healthBarVisible() && npc.healthPercent() == 0) {
+		if (npc.name == "Chompy bird" && nae.animation == 6762
+			&& npc.healthBarVisible() && npc.healthPercent() == 0) {
+			logger.info("Death animation = ${nae.animation}")
 			kills++
 		}
 	}

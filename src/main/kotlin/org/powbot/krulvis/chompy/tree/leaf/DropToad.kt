@@ -16,11 +16,11 @@ import org.powbot.util.TransientGetter2D
 class DropToad(script: ChompyBird) : Leaf<ChompyBird>(script, "DropToad") {
 	override fun execute() {
 		val invToads = Inventory.stream().name("Bloated toad").count().toInt()
+		val flags = Movement.collisionMap(me.floor()).flags()
 		script.placementTile = me.tile()
 		if (Npcs.stream().name("Bloated toad").at(script.placementTile).isNotEmpty()) {
 			script.logger.info("Can't place on current tile, walking away")
-			val layingToads = Npcs.get({ it.name == "Bloated toad" }).map { it.tile() }
-			val flags = Movement.collisionMap(me.floor()).flags()
+			val layingToads = getGroundBloated()
 			script.placementTile = findStartingPointWithEmptySlots(layingToads, flags, invToads)
 		}
 
@@ -28,22 +28,23 @@ class DropToad(script: ChompyBird) : Leaf<ChompyBird>(script, "DropToad") {
 			waitForDistance(script.placementTile) { me.tile() == script.placementTile }
 		}
 
-		val placementTimer = Timer(2000 * invToads)
-		var toad = getToad()
+		val placementTimer = Timer(1500 * invToads)
+		var toad = getInvToad()
 		script.logger.info("Found toad = ${toad.valid()}")
 		while (!placementTimer.isFinished() && toad.valid()) {
 			val tile = me.tile()
 			script.logger.info("Dropping toad = ${toad}")
-			if (toad.interact("Drop")) {
+			if (tile.canPlace(getGroundBloated(), flags) && toad.interact("Drop")) {
 				waitFor(1200) { me.tile() != tile && !Inventory.itemAt(toad.inventoryIndex).valid() }
 				sleep(250)
 			}
-			toad = getToad()
+			toad = getInvToad()
 		}
 
 	}
 
-	private fun getToad() = Inventory.stream().name("Bloated toad").first()
+	private fun getGroundBloated() = Npcs.get({ it.name == "Bloated Toad" }).map { it.tile() }
+	private fun getInvToad() = Inventory.stream().name("Bloated toad").first()
 
 	private fun Tile.canPlace(toads: List<Tile>, flags: TransientGetter2D<Int>): Boolean {
 		return toads.none { it == this } && !blocked(flags)

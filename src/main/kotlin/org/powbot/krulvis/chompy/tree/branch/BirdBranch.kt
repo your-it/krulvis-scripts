@@ -1,5 +1,6 @@
 package org.powbot.krulvis.chompy.tree.branch
 
+import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
@@ -12,9 +13,14 @@ class BirdSpawned(script: ChompyBird) : Branch<ChompyBird>(script, "BirdSpawned?
 	override val successComponent: TreeComponent<ChompyBird> = KillBird(script)
 
 	override fun validate(): Boolean {
-		script.currentTarget = Npcs.stream().name("Chompy bird").action("Attack")
-			.filtered { !it.healthBarVisible() || it.healthPercent() != 0 }.nearest().first()
+		if (script.currentTarget.isBirdValid())
+			return true
+		script.currentTarget = Npcs.stream().name("Chompy bird").filtered { it.isBirdValid() }.nearest().first()
 		return script.currentTarget.valid()
+	}
+
+	private fun Npc.isBirdValid(): Boolean {
+		return (!healthBarVisible() || healthPercent() > 0) && actions.contains("Attack")
 	}
 }
 
