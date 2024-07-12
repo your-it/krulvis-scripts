@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import com.google.common.eventbus.Subscribe
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -11,6 +12,7 @@ import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
@@ -30,6 +32,7 @@ import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
+import kotlin.math.floor
 
 
 //<editor-fold desc="ScriptManifest">
@@ -37,7 +40,7 @@ import org.powbot.mobile.script.ScriptManager
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.4.9",
+	version = "1.5.0",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -276,11 +279,18 @@ class Fighter : ATScript() {
 	fun nearbyMonsters(): List<Npc> =
 		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsterNames.toTypedArray()).nearest().list()
 
+	private fun Npc.attackingOtherPlayer(): Boolean {
+		val interacting = interacting()
+		return interacting is Player && interacting != Players.local()
+	}
+
+//	private val GWD_AREA = Area(Tile(2816, 5120), Tile(3008, 5376))
+
 	fun target(): Npc {
 		val local = Players.local()
 		val nearbyMonsters =
-			nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
-		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
+			nearbyMonsters().filterNot { it.healthBarVisible() && (it.attackingOtherPlayer() || it.healthPercent() == 0) }.sortedBy { it.distance() }
+		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() is Npc || it.interacting() == local && it.reachable() }
 		return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() } ?: Npc.Nil
 	}
 
@@ -288,7 +298,14 @@ class Fighter : ATScript() {
 	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
 	val useSafespot by lazy { getOption<Boolean>(USE_SAFESPOT_OPTION) }
 	val walkBack by lazy { getOption<Boolean>(WALK_BACK_TO_SAFESPOT_OPTION) }
-	private val centerTile by lazy { getOption<Tile>(CENTER_TILE_OPTION) }
+	private val centerTile by lazy {
+		val tile = getOption<Tile>(CENTER_TILE_OPTION)
+		if (tile == Tile.Nil) {
+			Notifications.showNotification("Using current tile as you forgot to set a tile")
+			return@lazy Players.local().tile()
+		}
+		return@lazy tile
+	}
 	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
 	fun shouldReturnToSafespot() =
 		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
@@ -326,8 +343,11 @@ class Fighter : ATScript() {
 				) {
 					kills++
 					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
-						getSlayerBracelet().fclick()
-						logger.info("Wearing bracelet at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+						val slayBracelet = getSlayerBracelet()
+						if (slayBracelet.valid()) {
+							getSlayerBracelet().fclick()
+							logger.info("Wearing bracelet on death at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+						}
 					}
 					watchLootDrop(interacting.tile())
 					if (interacting.name.lowercase() in SUPERIORS) {
@@ -356,14 +376,22 @@ class Fighter : ATScript() {
 		}
 	}
 
-//	private val offensiveSkills =
 
-//	@Subscribe
-//	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
-//		if (xpEvent.skill == Skill.Slayer) {
-//			logger.info("Slayer xp at: ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
-//		}else if(xpEvent.skill in )
-//	}
+	@Subscribe
+	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
+		if (xpEvent.skill == Skill.Slayer) {
+			logger.info("Slayer xp at: ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+		} else if (xpEvent.skill == Skill.Hitpoints) {
+			val dmg = floor(xpEvent.expGained / 1.33).toInt()
+			if (TargetWidget.health() - dmg <= 0 && hasSlayerBracelet && !wearingSlayerBracelet()) {
+				val slayBracelet = getSlayerBracelet()
+				if (slayBracelet.valid()) {
+					logger.info("Wearing bracelet on xp drop ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+					slayBracelet.fclick()
+				}
+			}
+		}
+	}
 
 	@Subscribe
 	fun messageReceived(msg: MessageEvent) {
