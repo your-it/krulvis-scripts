@@ -1,6 +1,7 @@
 package org.powbot.krulvis.fighter
 
 import com.google.common.eventbus.Subscribe
+import org.powbot.api.Notifications
 import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -39,7 +40,7 @@ import kotlin.math.floor
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.4.9",
+	version = "1.5.0",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -297,7 +298,14 @@ class Fighter : ATScript() {
 	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
 	val useSafespot by lazy { getOption<Boolean>(USE_SAFESPOT_OPTION) }
 	val walkBack by lazy { getOption<Boolean>(WALK_BACK_TO_SAFESPOT_OPTION) }
-	private val centerTile by lazy { getOption<Tile>(CENTER_TILE_OPTION) }
+	private val centerTile by lazy {
+		val tile = getOption<Tile>(CENTER_TILE_OPTION)
+		if (tile == Tile.Nil) {
+			Notifications.showNotification("Using current tile as you forgot to set a tile")
+			return@lazy Players.local().tile()
+		}
+		return@lazy tile
+	}
 	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
 	fun shouldReturnToSafespot() =
 		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
