@@ -27,7 +27,7 @@ class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: Tre
 	val sipTimer = Timer(1200)
 
 	private fun Potion.restore() = if (this == Potion.PRAYER) 100 + nextRestore else nextRestore
-	fun potion(): Potion? = Potion.values().filter { it.hasWith() }
+	fun potion(): Potion? = Potion.values().filter { !skippingPotions.contains(it) && it.hasWith() }
 		.firstOrNull {
 			it.needsRestore(it.restore())
 		}
@@ -36,5 +36,10 @@ class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: Tre
 		if (!sipTimer.isFinished()) return false
 		potion = potion()
 		return potion != null
+	}
+
+
+	companion object {
+		val skippingPotions = mutableListOf<Potion>()
 	}
 }
