@@ -278,11 +278,18 @@ class Fighter : ATScript() {
 	fun nearbyMonsters(): List<Npc> =
 		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsterNames.toTypedArray()).nearest().list()
 
+	private fun Npc.attackingOtherPlayer(): Boolean {
+		val interacting = interacting()
+		return interacting is Player && interacting != Players.local()
+	}
+
+//	private val GWD_AREA = Area(Tile(2816, 5120), Tile(3008, 5376))
+
 	fun target(): Npc {
 		val local = Players.local()
 		val nearbyMonsters =
-			nearbyMonsters().filterNot { it.healthBarVisible() && (it.interacting() != local || it.healthPercent() == 0) }
-		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() == local && it.reachable() }
+			nearbyMonsters().filterNot { it.healthBarVisible() && (it.attackingOtherPlayer() || it.healthPercent() == 0) }.sortedBy { it.distance() }
+		val attackingMe = nearbyMonsters.firstOrNull { it.interacting() is Npc || it.interacting() == local && it.reachable() }
 		return attackingMe ?: nearbyMonsters.firstOrNull { it.reachable() } ?: Npc.Nil
 	}
 
