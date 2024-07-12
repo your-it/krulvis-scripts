@@ -201,6 +201,7 @@ class Fighter : ATScript() {
 	//Loot
 	fun isLootWatcherActive() = lootWachter?.active == true
 	var lootWachter: LootWatcher? = null
+	var kills = 0
 	val lootList = mutableListOf<GroundItem>()
 	val ironman by lazy { getOption<Boolean>(IRONMAN_DROPS_OPTION) }
 	val waitForLootAfterKill by lazy { getOption<Boolean>(WAIT_FOR_LOOT_OPTION) }
@@ -256,6 +257,7 @@ class Fighter : ATScript() {
 
 	//Banking option
 	var forcedBanking = false
+	var lastTrip = false
 	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
 
 
@@ -317,6 +319,7 @@ class Fighter : ATScript() {
 					interacting,
 					monsterDestroyed
 				) {
+					kills++
 					watchLootDrop(interacting.tile())
 					if (interacting.name.lowercase() in SUPERIORS) {
 						superiorAppeared = false
@@ -369,6 +372,8 @@ class Fighter : ATScript() {
 			} else if (!pcce.checked && painter.paintBuilder.items.contains(painter.slayerTracker)) {
 				painter.paintBuilder.items.remove(painter.slayerTracker)
 			}
+		} else if (pcce.checkboxId == "stopAtBank") {
+			lastTrip = pcce.checked
 		}
 	}
 }

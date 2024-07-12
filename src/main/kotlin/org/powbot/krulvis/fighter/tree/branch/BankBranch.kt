@@ -1,7 +1,8 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.model.Skill
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food

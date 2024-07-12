@@ -113,6 +113,8 @@ object ATContext {
 		return GrandExchange.getItemPrice(if (noted()) id - 1 else id)
 	}
 
+	fun GenericItem.getHighAlchValue() = (value() * .6).toInt()
+
 	/**
 	 * Custom interaction function
 	 */

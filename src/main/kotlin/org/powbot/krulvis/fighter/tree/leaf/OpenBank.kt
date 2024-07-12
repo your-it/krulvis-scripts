@@ -11,17 +11,16 @@ class OpenBank(script: Fighter) : Leaf<Fighter>(script, "Opening bank") {
 	override fun execute() {
 		val bankTeleport = script.bankTeleport
 		if (Game.clientState() == Constants.GAME_LOGGED) {
+			val bank = Bank.getBank()
 			script.forcedBanking = true
 			if (Prayer.quickPrayer()) {
 				Prayer.quickPrayer(false)
+			} else if (bank.valid()) {
+				if (walkAndInteract(bank, bank.bankAction())) {
+					waitForDistance(bank) { Bank.opened() }
+				}
 			} else if (bankTeleport.execute()) {
-				val bank = Bank.getBank()
-				if (bank.valid()) {
-					if (walkAndInteract(bank, bank.bankAction())) {
-						waitForDistance(bank) { Bank.opened() }
-					}
-				} else
-					Movement.moveToBank()
+				Movement.moveToBank()
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
+import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
@@ -18,6 +19,11 @@ import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 	override fun execute() {
+		if (script.lastTrip) {
+			Notifications.showNotification("Stopping because this was the last trip")
+			ScriptManager.stop()
+			return
+		}
 		script.bankTeleport.executed = false
 		val ids = script.requiredInventory.map { it.key }.toIntArray()
 		val edibleFood = foodToEat()
