@@ -11,6 +11,7 @@ import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
@@ -30,6 +31,7 @@ import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
+import kotlin.math.floor
 
 
 //<editor-fold desc="ScriptManifest">
@@ -326,8 +328,11 @@ class Fighter : ATScript() {
 				) {
 					kills++
 					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
-						getSlayerBracelet().fclick()
-						logger.info("Wearing bracelet at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+						val slayBracelet = getSlayerBracelet()
+						if (slayBracelet.valid()) {
+							getSlayerBracelet().fclick()
+							logger.info("Wearing bracelet on death at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+						}
 					}
 					watchLootDrop(interacting.tile())
 					if (interacting.name.lowercase() in SUPERIORS) {
@@ -356,14 +361,22 @@ class Fighter : ATScript() {
 		}
 	}
 
-//	private val offensiveSkills =
 
-//	@Subscribe
-//	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
-//		if (xpEvent.skill == Skill.Slayer) {
-//			logger.info("Slayer xp at: ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
-//		}else if(xpEvent.skill in )
-//	}
+	@Subscribe
+	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
+		if (xpEvent.skill == Skill.Slayer) {
+			logger.info("Slayer xp at: ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+		} else if (xpEvent.skill == Skill.Hitpoints) {
+			val dmg = floor(xpEvent.expGained / 1.33).toInt()
+			if (TargetWidget.health() - dmg <= 0 && hasSlayerBracelet && !wearingSlayerBracelet()) {
+				val slayBracelet = getSlayerBracelet()
+				if (slayBracelet.valid()) {
+					logger.info("Wearing bracelet on xp drop ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+					slayBracelet.fclick()
+				}
+			}
+		}
+	}
 
 	@Subscribe
 	fun messageReceived(msg: MessageEvent) {
