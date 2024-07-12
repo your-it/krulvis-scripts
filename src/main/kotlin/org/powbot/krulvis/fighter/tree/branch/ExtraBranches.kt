@@ -24,7 +24,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
 		script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
 		waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
 	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldDropTrash(script))
+	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGloves(script))
 
 	override fun validate(): Boolean {
 		val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
@@ -35,6 +35,23 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
 			)
 	}
 }
+
+class ShouldEquipGloves(script: Fighter) : Branch<Fighter>(script, "Should equip gloves?") {
+	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip gloves") {
+		val gloves = script.equipment.first { it.slot == Equipment.Slot.HANDS }
+		if (gloves.equip()) {
+			waitFor { gloves.inEquipment() }
+		}
+	}
+	override val failedComponent: TreeComponent<Fighter> = ShouldDropTrash(script)
+
+	override fun validate(): Boolean {
+		val gloves = script.equipment.firstOrNull { it.slot == Equipment.Slot.HANDS } ?: return false
+		if (gloves.inEquipment() || !gloves.inInventory()) return false
+		return !script.currentTarget.valid() || (script.currentTarget.healthBarVisible() && script.currentTarget.healthPercent() > 10)
+	}
+}
+
 
 class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Trash?") {
 

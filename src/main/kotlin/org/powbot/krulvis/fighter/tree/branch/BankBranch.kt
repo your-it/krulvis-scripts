@@ -25,7 +25,6 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
 			Food.needsFood() || Bank.opened() || (Inventory.isFull() && !Potion.PRAYER.hasWith())
 			)
 	}
-
 }
 
 class IsBankOpen(script: Fighter) : Branch<Fighter>(script, "Is Bank Open") {

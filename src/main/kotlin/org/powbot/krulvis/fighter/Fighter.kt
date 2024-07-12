@@ -5,6 +5,7 @@ import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
+import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.tree.TreeComponent
@@ -306,6 +307,10 @@ class Fighter : ATScript() {
 	//Custom slayer options
 	var lastTask = false
 	var superiorAppeared = false
+	private val slayerBraceletNames = arrayOf("Bracelet of slaughter", "Expeditious bracelet")
+	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
+	fun wearingSlayerBracelet() = org.powbot.api.rt4.Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
+	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
 	fun taskRemainder() = Varpbits.varpbit(394)
 
 	@Subscribe
@@ -320,6 +325,10 @@ class Fighter : ATScript() {
 					monsterDestroyed
 				) {
 					kills++
+					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
+						getSlayerBracelet().fclick()
+						logger.info("Wearing bracelet at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+					}
 					watchLootDrop(interacting.tile())
 					if (interacting.name.lowercase() in SUPERIORS) {
 						superiorAppeared = false
@@ -346,6 +355,15 @@ class Fighter : ATScript() {
 			painter.trackItem(id, evt.quantityChange)
 		}
 	}
+
+//	private val offensiveSkills =
+
+//	@Subscribe
+//	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
+//		if (xpEvent.skill == Skill.Slayer) {
+//			logger.info("Slayer xp at: ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
+//		}else if(xpEvent.skill in )
+//	}
 
 	@Subscribe
 	fun messageReceived(msg: MessageEvent) {
