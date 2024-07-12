@@ -19,10 +19,12 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 			"Name=${TargetWidget.name()}, HP=${TargetWidget.health()}, ${script.currentTarget.healthPercent()}%"
 		}
 			.addCheckbox("Stop after Slay task", "stopAfterTask", false)
+			.addCheckbox("Stop at bank", "stopAtBank", false)
 			.withTotalLoot(true)
 			.addString("Npc Death Watchers") {
 				script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
 			}
+			.addString("Kills") {"${script.kills}, ${script.timer.getPerHour(script.kills)}/hr"}
 			.trackSkill(Skill.Attack)
 			.trackSkill(Skill.Strength)
 			.trackSkill(Skill.Defence)

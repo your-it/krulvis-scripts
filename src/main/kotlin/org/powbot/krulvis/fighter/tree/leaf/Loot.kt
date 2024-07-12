@@ -4,6 +4,7 @@ import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -12,6 +13,7 @@ import org.powbot.krulvis.fighter.Fighter
 class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 	override fun execute() {
 		if (script.canDeactivatePrayer()) {
+			script.logger.info("Deactivating prayer, using safespot=${script.useSafespot}, healthBarVisible=${me.healthBarVisible()}")
 			Prayer.quickPrayer(false)
 		}
 
