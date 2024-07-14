@@ -42,7 +42,7 @@ import kotlin.random.Random
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.5.0",
+	version = "1.5.1",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -256,12 +256,15 @@ class Fighter : ATScript() {
 		}
 	}
 
-	fun GroundItem.isLoot(): Boolean {
+	fun GroundItem.isLoot() = isLoot(stackSize())
+
+	private fun GenericItem.isLoot(amount: Int): Boolean {
 		if (warriorGuild && id() in Defender.defenders) return true
 		val name = name().lowercase()
 		return !neverLoot.contains(name) &&
-			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLootPrice)
+			(lootNames.any { ln -> name.contains(ln) } || getPrice() * amount >= minLootPrice)
 	}
+
 
 	fun loot(): List<GroundItem> =
 		if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }

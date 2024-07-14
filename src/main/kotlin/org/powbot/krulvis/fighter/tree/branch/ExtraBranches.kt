@@ -119,14 +119,12 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 		}
 		val lootString = loot.joinToString { it.first.name() + ": " + it.second }
 		script.logger.info("Loot found: [${lootString}]")
+		if (!Inventory.isFull()) return true
+
 		val worth = loot.sumOf { it.second }
 		val hasHerbSack = Inventory.containsOneOf(HERB_SACK_OPEN)
 		val hasSeedBox = Inventory.containsOneOf(SEED_BOX_OPEN)
-		return if (Inventory.isFull()) {
-			loot.any { it.first.stacks(hasHerbSack, hasSeedBox) } || makeSpace(worth)
-		} else {
-			worth >= script.minLootPrice
-		}
+		return loot.any { it.first.stacks(hasHerbSack, hasSeedBox) } || makeSpace(worth)
 	}
 
 	private fun GroundItem.stacks(herbSack: Boolean, seedBox: Boolean): Boolean {

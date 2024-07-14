@@ -122,6 +122,7 @@ class Timer(var time: Number) {
 		return ceil(gained * 3600000.0 / (System.currentTimeMillis() - start)).toInt()
 	}
 
+
 	/**
 	 * Displays remaining time if timer is not infinite, otherwise displaying the elapsed time
 	 */
