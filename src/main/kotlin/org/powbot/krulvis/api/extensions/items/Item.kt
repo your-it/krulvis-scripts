@@ -155,6 +155,7 @@ interface Item {
 		const val SHIELD_LEFT_HALF = 2366
 		const val DRAGON_MED_HELM = 1149
 		const val DRAGON_SPEAR = 1249
+		const val DRAGON_WARHAMMER = 13576
 		const val HERB_SACK_OPEN = 24478
 		const val RUNE_POUCH = 12791
 		const val SEED_BOX_OPEN = 24482

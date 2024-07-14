@@ -26,8 +26,12 @@ abstract class ATPaint<S : ATScript>(val script: S, val x: Int = 110, val y: Int
 
 	fun perHourText(amount: Int) = "$amount, ${script.timer.getPerHour(amount)}/hr"
 
+	fun isTrackingItem(id: Int): Boolean {
+		return paintBuilder.items.any { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }
+	}
+
 	fun trackItem(id: Int, amount: Int) {
-		if (paintBuilder.items.none { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }) {
+		if (!isTrackingItem(id)) {
 			paintBuilder.trackInventoryItems(id)
 			script.logger.info("Now tracking: ${ItemLoader.lookup(id)?.name()} adding $amount as start")
 			paintBuilder.items.forEach { row ->

@@ -22,14 +22,18 @@ class Timer(var time: Number) {
 				t.append(day)
 				t.append(":")
 			}
-			if (hour < 10)
-				t.append("0")
-			t.append(hour)
-			t.append(":")
-			if (minute < 10)
-				t.append("0")
-			t.append(minute)
-			t.append(":")
+			if (hour > 0) {
+				if (hour < 10)
+					t.append("0")
+				t.append(hour)
+				t.append(":")
+			}
+			if (minute > 0) {
+				if (minute < 10)
+					t.append("0")
+				t.append(minute)
+				t.append(":")
+			}
 			if (second < 10)
 				t.append("0")
 			t.append(second)
