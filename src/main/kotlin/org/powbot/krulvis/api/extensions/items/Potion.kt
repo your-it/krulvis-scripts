@@ -143,6 +143,8 @@ enum class Potion(
 		fun getAntipotBank(): Potion? = getAntipots().firstOrNull { it.inBank() }
 		fun hasAntipot(): Boolean = getAntipot() != null
 		fun hasAntipotBank(): Boolean = getAntipotBank() != null
+
+		fun getPrayerPotion(): Potion? = listOf(PRAYER, SUPER_RESTORE).firstOrNull { it.hasWith() }
 	}
 
 

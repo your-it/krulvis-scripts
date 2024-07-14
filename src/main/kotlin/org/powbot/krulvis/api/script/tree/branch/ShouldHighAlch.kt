@@ -12,6 +12,7 @@ import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DARK_KEY
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_MED_HELM
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_SPEAR
+import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_WARHAMMER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SHIELD_LEFT_HALF
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Utils
@@ -49,7 +50,7 @@ class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: Tree
 		}
 	}
 
-	val skip = intArrayOf(DARK_KEY, SHIELD_LEFT_HALF, DRAGON_MED_HELM, DRAGON_SPEAR)
+	val skip = intArrayOf(DARK_KEY, SHIELD_LEFT_HALF, DRAGON_MED_HELM, DRAGON_SPEAR, DRAGON_WARHAMMER)
 
 	override fun validate(): Boolean {
 		alchable = alchable()
