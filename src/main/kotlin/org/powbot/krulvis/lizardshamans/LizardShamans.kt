@@ -7,6 +7,8 @@ import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.NpcAnimationChangedEvent
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.*
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
@@ -18,6 +20,11 @@ import org.powbot.krulvis.lizardshamans.event.JumpEvent
 import org.powbot.krulvis.lizardshamans.tree.branch.ShouldBank
 
 @ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer", version = "1.0.0", priv = true)
+@ScriptConfiguration.List([
+	ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),
+	ScriptConfiguration("Inventory", "What to take with?", optionType = OptionType.INVENTORY),
+	ScriptConfiguration("Slayer", "Kill on task?", optionType = OptionType.BOOLEAN)
+])
 class LizardShamans : ATScript() {
 	override fun createPainter(): ATPaint<*> = LizardShamanPainter(this)
 
@@ -33,16 +40,17 @@ class LizardShamans : ATScript() {
 
 	@Subscribe
 	fun onTick(tickEvent: TickEvent) {
-		watchForLoot()
-		findSpawns()
 		val interacting = me.interacting()
 		if (interacting.valid() && interacting is Npc) {
 			target = interacting
 		}
+
+		watchForLoot()
+		findSpawns()
 		escapeTiles.clear()
 		if (!target.valid() && spawns.isEmpty()) return
 
-
+		findEscapeTile()
 	}
 
 	private fun findSpawns() {
@@ -62,12 +70,12 @@ class LizardShamans : ATScript() {
 		val myTile = me.tile()
 		val collisionMap = Movement.collisionMap(myTile.floor).flags()
 		val tiles = Data.furthestReachableTiles(myTile, collisionMap)
-		val nearest = tiles.minBy { it.distance() }
+		val nearest = tiles.minByOrNull { it.distance() }
 		escapeTiles.addAll(tiles.filterNot { it == nearest }.map {
 			val (a, b, c) = Data.lineEquation(myTile, it)
 			it to Data.averagePerpendicularDistance(spawns + target, a, b, c)
 		})
-		escapeTile = escapeTiles.maxBy { it.second }.first
+		escapeTile = escapeTiles.maxByOrNull { it.second }?.first ?: Tile.Nil
 	}
 
 	@Subscribe
@@ -110,7 +118,12 @@ class LizardShamans : ATScript() {
 	}
 
 
-	fun GroundItem.isLoot() = name() in LOOT || (name() == "Coins" && stackSize() > 1000)
+	fun GroundItem.isLoot(): Boolean {
+		val name = name()
+		return name in LOOT
+			|| (name == "Coins" && stackSize() > 1000)
+			|| (Inventory.emptySlotCount() > 2 && name == "Chilli potato")
+	}
 
 	override val rootComponent: TreeComponent<*> = ShouldBank(this)
 }

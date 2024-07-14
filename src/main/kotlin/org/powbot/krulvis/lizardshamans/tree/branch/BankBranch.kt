@@ -1,8 +1,12 @@
 package org.powbot.krulvis.lizardshamans.tree.branch
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.currentHP
+import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.lizardshamans.LizardShamans
 import org.powbot.krulvis.lizardshamans.tree.leaf.HandleBank
 import org.powbot.krulvis.lizardshamans.tree.leaf.OpenBank
@@ -12,7 +16,8 @@ class ShouldBank(script: LizardShamans) : Branch<LizardShamans>(script, "ShouldB
 	override val successComponent: TreeComponent<LizardShamans> = IsBankOpen(script)
 
 	override fun validate(): Boolean {
-		return false
+		return (currentHP() <= 30 && !Food.hasFood()) ||
+			(Prayer.prayerPoints() < 10 && Potion.getPrayerPotion() == null)
 	}
 }
 
