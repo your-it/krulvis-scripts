@@ -17,7 +17,9 @@ import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Loot
+import org.powbot.krulvis.fighter.tree.leaf.PrayAtAltar
 import kotlin.math.max
+import kotlin.random.Random
 
 class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo?") {
 	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip ammo") {
@@ -97,7 +99,7 @@ class ShouldInsertRunes(script: Fighter) : Branch<Fighter>(script, "Should Inser
 
 class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 	override val successComponent: TreeComponent<Fighter> = Loot(script)
-	override val failedComponent: TreeComponent<Fighter> = GettingDefenders(script)
+	override val failedComponent: TreeComponent<Fighter> = ShouldPrayAtAltar(script)
 
 	private fun makeSpace(worth: Int): Boolean {
 		val edibleFood = Food.getFirstFood()
@@ -117,14 +119,12 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 		}
 		val lootString = loot.joinToString { it.first.name() + ": " + it.second }
 		script.logger.info("Loot found: [${lootString}]")
+		if (!Inventory.isFull()) return true
+
 		val worth = loot.sumOf { it.second }
 		val hasHerbSack = Inventory.containsOneOf(HERB_SACK_OPEN)
 		val hasSeedBox = Inventory.containsOneOf(SEED_BOX_OPEN)
-		return if (Inventory.isFull()) {
-			loot.any { it.first.stacks(hasHerbSack, hasSeedBox) } || makeSpace(worth)
-		} else {
-			worth >= script.minLootPrice
-		}
+		return loot.any { it.first.stacks(hasHerbSack, hasSeedBox) } || makeSpace(worth)
 	}
 
 	private fun GroundItem.stacks(herbSack: Boolean, seedBox: Boolean): Boolean {
@@ -132,4 +132,17 @@ class CanLoot(script: Fighter) : Branch<Fighter>(script, "Can loot?") {
 			|| (herbSack && name.contains("grimy", true))
 			|| (seedBox && name.contains("seed", true))
 	}
+}
+
+
+class ShouldPrayAtAltar(script: Fighter) : Branch<Fighter>(script, "ShouldPrayAtAltar?") {
+	override val successComponent: TreeComponent<Fighter> = PrayAtAltar(script)
+	override val failedComponent: TreeComponent<Fighter> = GettingDefenders(script)
+
+
+	override fun validate(): Boolean {
+		if (!script.prayAtNearbyAltar || Prayer.prayerPoints() >= script.nextPrayRestore) return false
+		return Objects.stream().type(GameObject.Type.INTERACTIVE).action("Pray-at").nearest().first().valid()
+	}
+
 }

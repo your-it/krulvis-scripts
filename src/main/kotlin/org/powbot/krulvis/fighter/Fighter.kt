@@ -22,6 +22,7 @@ import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.teleports.*
 import org.powbot.krulvis.api.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
@@ -33,6 +34,7 @@ import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.floor
+import kotlin.random.Random
 
 
 //<editor-fold desc="ScriptManifest">
@@ -40,7 +42,7 @@ import kotlin.math.floor
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.5.0",
+	version = "1.5.1",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -116,6 +118,10 @@ import kotlin.math.floor
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
 		ScriptConfiguration(
+			PRAY_AT_ALTAR_OPTION, "Pray at nearby altar.",
+			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
 			BANK_TELEPORT_OPTION,
 			"Teleport to bank",
 			optionType = OptionType.STRING,
@@ -140,6 +146,9 @@ class Fighter : ATScript() {
 	override fun onStart() {
 		super.onStart()
 		Defender.lastDefenderIndex = currentDefenderIndex()
+		if (prayAtNearbyAltar) {
+			ShouldSipPotion.skippingPotions.addAll(listOf(Potion.PRAYER, Potion.SUPER_RESTORE))
+		}
 	}
 
 	//<editor-fold desc="UISubscribers">
@@ -247,12 +256,15 @@ class Fighter : ATScript() {
 		}
 	}
 
-	fun GroundItem.isLoot(): Boolean {
+	fun GroundItem.isLoot() = isLoot(stackSize())
+
+	private fun GenericItem.isLoot(amount: Int): Boolean {
 		if (warriorGuild && id() in Defender.defenders) return true
 		val name = name().lowercase()
 		return !neverLoot.contains(name) &&
-			(lootNames.any { ln -> name.contains(ln) } || getPrice() * stackSize() >= minLootPrice)
+			(lootNames.any { ln -> name.contains(ln) } || getPrice() * amount >= minLootPrice)
 	}
+
 
 	fun loot(): List<GroundItem> =
 		if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
@@ -272,7 +284,7 @@ class Fighter : ATScript() {
 	val monsterDestroyed by lazy { getOption<Boolean>(MONSTER_AUTO_DESTROY_OPTION) }
 	val monsterTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }
 	var currentTarget: Npc = Npc.Nil
-	val aggressionTimer = Timer(10 * 60 * 1000)
+	val aggressionTimer = Timer(15 * 60 * 1000)
 	fun centerTile() = centerTile
 
 	private val monsterNames: List<String> get() = if (superiorAppeared) SUPERIORS else monsters
@@ -315,10 +327,12 @@ class Fighter : ATScript() {
 	val playerHopAmount by lazy { getOption<Int>(PLAYER_HOP_COUNT_OPTION) }
 
 	//Prayer options
-	private val hasPrayPots by lazy { requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
-	fun canActivatePrayer() = hasPrayPots && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
+	val prayAtNearbyAltar by lazy { getOption<Boolean>(PRAY_AT_ALTAR_OPTION) }
+	var nextPrayRestore = Random.nextInt(5, 15)
+	private val usingPrayer by lazy { prayAtNearbyAltar || requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
+	fun canActivatePrayer() = usingPrayer && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivatePrayer() =
-		Prayer.quickPrayer() && aggressionTimer.isFinished() && (useSafespot || !me.healthBarVisible())
+		Prayer.quickPrayer() && aggressionTimer.isFinished() && useSafespot
 
 
 	//Custom slayer options

@@ -76,17 +76,25 @@ class WaitingForStart(script: Tempoross) : Branch<Tempoross>(script, "Waiting Fo
 	override val failedComponent: TreeComponent<Tempoross> = ShouldLeave(script)
 }
 
-class ShouldHopFromOtherPlayers(script: Tempoross) : Branch<Tempoross>(script, "Should hop from players") {
+class ShouldHopFromOtherPlayers(script: Tempoross) : Branch<Tempoross>(script, "Should hop?") {
 	override val failedComponent: TreeComponent<Tempoross> = ShouldFillBuckets(script)
 	override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Hopping") {
-		val random = Worlds.stream().filtered { it.type() == World.Type.MEMBERS && it.population >= 15 && it != Worlds.current() }.toList().random()
+		val random = Worlds.stream().filtered { it.type() == World.Type.MEMBERS && it.population >= 15 && it.usable(script.solo) }
+			.toList().random()
 		random.hop()
 	}
 
+	private fun World.usable(solo: Boolean) = if (solo) specialty != World.Specialty.TEMPOROSS else specialty == World.Specialty.TEMPOROSS
 	override fun validate(): Boolean {
-		return script.solo && script.playersReady() > 1
+		return if (script.solo) {
+			script.playersReady() > 1
+		} else {
+			Worlds.current().specialty == World.Specialty.TEMPOROSS
+		}
+
 	}
 }
+
 
 class ShouldFillBuckets(script: Tempoross) : Branch<Tempoross>(script, "Should Fill Buckets") {
 	override fun validate(): Boolean {
