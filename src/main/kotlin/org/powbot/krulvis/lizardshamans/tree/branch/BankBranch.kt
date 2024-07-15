@@ -12,11 +12,12 @@ import org.powbot.krulvis.lizardshamans.tree.leaf.HandleBank
 import org.powbot.krulvis.lizardshamans.tree.leaf.OpenBank
 
 class ShouldBank(script: LizardShamans) : Branch<LizardShamans>(script, "ShouldBank?") {
-	override val failedComponent: TreeComponent<LizardShamans> = AtShamans(script)
+	override val failedComponent: TreeComponent<LizardShamans> = DoneWithTask(script)
 	override val successComponent: TreeComponent<LizardShamans> = IsBankOpen(script)
 
 	override fun validate(): Boolean {
-		return (currentHP() <= 30 && !Food.hasFood()) ||
+		if (script.lootList.isNotEmpty()) return false
+		return script.banking || (currentHP() <= 30 && !Food.hasFood()) ||
 			(Prayer.prayerPoints() < 10 && Potion.getPrayerPotion() == null)
 	}
 }

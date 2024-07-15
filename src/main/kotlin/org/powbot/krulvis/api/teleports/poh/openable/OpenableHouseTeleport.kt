@@ -51,7 +51,7 @@ interface OpenableHouseTeleport : HouseTeleport {
 	companion object {
 
 		fun find(name: String): OpenableHouseTeleport? {
-			return JewelleryBoxTeleport.forName(name) ?: MountedGloryTeleport.forName(name)
+			return SpiritTreeTeleport.forName(name) ?: JewelleryBoxTeleport.forName(name) ?: MountedGloryTeleport.forName(name)
 			?: NexusPortalTeleport.forName(name) ?: MountedDigsiteTeleport.forName(name)
 			?: MountedXericsTeleport.forName(name)
 		}

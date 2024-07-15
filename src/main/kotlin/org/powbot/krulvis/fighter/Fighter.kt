@@ -342,7 +342,7 @@ class Fighter : ATScript() {
 	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
 	fun wearingSlayerBracelet() = org.powbot.api.rt4.Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
 	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
-	fun taskRemainder() = Varpbits.varpbit(394)
+
 
 	@Subscribe
 	fun onTickEvent(_e: TickEvent) {

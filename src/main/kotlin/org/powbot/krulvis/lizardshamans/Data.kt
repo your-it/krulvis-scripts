@@ -1,5 +1,6 @@
 package org.powbot.krulvis.lizardshamans
 
+import org.powbot.api.Area
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Npc
 import org.powbot.util.TransientGetter2D
@@ -103,6 +104,10 @@ object Data {
 							// Update the furthest tile for the current direction
 							if (newDistance > furthestTiles[i].second) {
 								furthestTiles[i] = Pair(nextTile, newDistance)
+								if (newDistance > 15) {
+									//Stop searching for this queue
+									queues[i].clear()
+								}
 							}
 						}
 					}
@@ -144,4 +149,13 @@ object Data {
 			fun forAnimation(animation: Int) = values().firstOrNull { it.animation == animation }
 		}
 	}
+
+	val SHAMAN_AREAS = listOf(
+		Area(Tile(1283, 9963), Tile(1297, 9949)),
+		Area(Tile(1298, 9955), Tile(1313, 9942)),
+		Area(Tile(1315, 9958), Tile(1329, 9944)),
+		Area(Tile(1321, 9974), Tile(1335, 9960))
+	)
+	val SLAYER_CAVE = Tile(1308, 9963, 0)
+	val SLAYER_CAVE_ENTRANCE = Tile(1309, 3574, 0)
 }
