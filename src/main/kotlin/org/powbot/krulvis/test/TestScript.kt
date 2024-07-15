@@ -70,8 +70,8 @@ class TestScript : ATScript() {
 	var guardian: Npc = Npc.Nil
 
 	override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-		Movement.walkTo(Tile(3137, 2841, 0))
-//        logger.info("Frem hard diary value=${Varpbits.value(4494)}, varpbit=${Varpbits.varpbit(4494)}")
+		val entrance = Objects.stream().name("Lizardman lair").nearest().first()
+		logger.info("Entrace tile=${entrance.tile}, type=${entrance.type}")
 	}
 
 	//Tile(x=3635, y=3362, floor=0)

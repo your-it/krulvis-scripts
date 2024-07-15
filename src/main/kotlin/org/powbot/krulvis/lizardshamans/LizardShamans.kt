@@ -10,24 +10,36 @@ import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.ScriptState
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.watcher.LootWatcher
+import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.teleports.Teleport
+import org.powbot.krulvis.api.teleports.TeleportMethod
+import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
+import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
+import org.powbot.krulvis.api.teleports.poh.openable.FAIRY_RING_DJR
 import org.powbot.krulvis.lizardshamans.Data.LOOT
 import org.powbot.krulvis.lizardshamans.event.JumpEvent
 import org.powbot.krulvis.lizardshamans.tree.branch.ShouldBank
+import org.powbot.mobile.script.ScriptManager
 
-@ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer", version = "1.0.0", priv = true)
+@ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer", version = "1.0.0", priv = true, scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19")
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),
 	ScriptConfiguration("Inventory", "What to take with?", optionType = OptionType.INVENTORY),
-	ScriptConfiguration("Slayer", "Kill on task?", optionType = OptionType.BOOLEAN)
+	ScriptConfiguration("Slayer", "Kill for slayer task?", optionType = OptionType.BOOLEAN),
+	ScriptConfiguration("BankTeleport", "How to get to bank?", optionType = OptionType.STRING,
+		allowedValues = [CASTLE_WARS_JEWELLERY_BOX, EDGEVILLE_MOUNTED_GLORY], defaultValue = CASTLE_WARS_JEWELLERY_BOX),
+	ScriptConfiguration("ShamanTeleport", "How to get to Shamans?", OptionType.STRING,
+		allowedValues = [FAIRY_RING_DJR], defaultValue = FAIRY_RING_DJR),
 ])
 class LizardShamans : ATScript() {
 	override fun createPainter(): ATPaint<*> = LizardShamanPainter(this)
 
+	var banking = false
 	var kills = 0
 	val lootList = mutableListOf<GroundItem>()
 	var target: Npc = Npc.Nil
@@ -70,8 +82,7 @@ class LizardShamans : ATScript() {
 		val myTile = me.tile()
 		val collisionMap = Movement.collisionMap(myTile.floor).flags()
 		val tiles = Data.furthestReachableTiles(myTile, collisionMap)
-		val nearest = tiles.minByOrNull { it.distance() }
-		escapeTiles.addAll(tiles.filterNot { it == nearest }.map {
+		escapeTiles.addAll(tiles.filterNot { it.distance() < 3 }.map {
 			val (a, b, c) = Data.lineEquation(myTile, it)
 			it to Data.averagePerpendicularDistance(spawns + target, a, b, c)
 		})
@@ -102,8 +113,9 @@ class LizardShamans : ATScript() {
 
 	@Subscribe
 	fun onInventoryChange(i: InventoryChangeEvent) {
+		if (ScriptManager.state() != ScriptState.Running) return
 		val name = i.itemName
-		if (name in LOOT) {
+		if (name in LOOT || name == "Coins") {
 			painter.trackItem(i.itemId, i.quantityChange)
 		}
 	}
@@ -123,6 +135,17 @@ class LizardShamans : ATScript() {
 		return name in LOOT
 			|| (name == "Coins" && stackSize() > 1000)
 			|| (Inventory.emptySlotCount() > 2 && name == "Chilli potato")
+	}
+
+
+	val equipment by lazy { getOption<Map<Int, Int>>("Equipment") }
+	val inventory by lazy { getOption<Map<Int, Int>>("Inventory") }
+	val slayerTask by lazy { getOption<Boolean>("Slayer") }
+	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }
+	val shamanTeleport by lazy { TeleportMethod(Teleport.forName(getOption("ShamanTeleport"))) }
+
+	val requiredPotions by lazy {
+		inventory.map { Potion.forId(it.key) }.filterNotNull()
 	}
 
 	override val rootComponent: TreeComponent<*> = ShouldBank(this)

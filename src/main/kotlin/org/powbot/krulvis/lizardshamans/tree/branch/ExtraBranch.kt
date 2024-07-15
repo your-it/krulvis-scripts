@@ -4,9 +4,9 @@ import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.tree.branch.ShouldEat
-import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.lizardshamans.Data.SHAMAN_AREAS
 import org.powbot.krulvis.lizardshamans.LizardShamans
 import org.powbot.krulvis.lizardshamans.tree.leaf.GoToShamans
 import org.powbot.krulvis.lizardshamans.tree.leaf.Loot
@@ -16,7 +16,7 @@ class AtShamans(script: LizardShamans) : Branch<LizardShamans>(script, "AtShaman
 	override val successComponent: TreeComponent<LizardShamans> = IsPrayOn(script)
 
 	override fun validate(): Boolean {
-		return true
+		return SHAMAN_AREAS.any { it.contains(me) }
 	}
 }
 
