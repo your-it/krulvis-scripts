@@ -79,9 +79,10 @@ class WaitingForStart(script: Tempoross) : Branch<Tempoross>(script, "Waiting Fo
 class ShouldHopFromOtherPlayers(script: Tempoross) : Branch<Tempoross>(script, "Should hop?") {
 	override val failedComponent: TreeComponent<Tempoross> = ShouldFillBuckets(script)
 	override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Hopping") {
-		val random = Worlds.stream().filtered { it.type() == World.Type.MEMBERS && it.population >= 15 && it.usable(script.solo) }
-			.toList().random()
-		random.hop()
+		val worlds = Worlds.stream().filtered { it.type() == World.Type.MEMBERS && it.population >= 15 && it.usable(script.solo) }
+			.toList()
+		val world = if (script.solo) worlds.random() else worlds.maxByOrNull { it.population } ?: return@SimpleLeaf
+		world.hop()
 	}
 
 	private fun World.usable(solo: Boolean) = if (solo) specialty != World.Specialty.TEMPOROSS else specialty == World.Specialty.TEMPOROSS
@@ -89,7 +90,7 @@ class ShouldHopFromOtherPlayers(script: Tempoross) : Branch<Tempoross>(script, "
 		return if (script.solo) {
 			script.playersReady() > 1
 		} else {
-			Worlds.current().specialty == World.Specialty.TEMPOROSS
+			Worlds.current().specialty != World.Specialty.TEMPOROSS
 		}
 
 	}

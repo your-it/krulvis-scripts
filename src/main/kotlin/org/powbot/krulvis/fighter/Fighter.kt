@@ -132,7 +132,7 @@ import kotlin.random.Random
 			MONSTER_TELEPORT_OPTION,
 			"Teleport to Monsters",
 			optionType = OptionType.STRING,
-			defaultValue = EDGEVILLE_MOUNTED_GLORY,
+			defaultValue = "NONE",
 			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL]
 		)
 	]
