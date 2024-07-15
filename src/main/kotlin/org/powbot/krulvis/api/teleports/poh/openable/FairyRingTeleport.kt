@@ -44,7 +44,7 @@ class FairyRingTeleport(val combination: String) : HouseTeleport {
 	override val requirements: List<Requirement> = emptyList()
 
 	override fun toString(): String {
-		return "SpiritTreeTeleport($combination)"
+		return "FairyRingTeleport($combination)"
 	}
 
 	companion object {
