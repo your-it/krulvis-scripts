@@ -75,7 +75,6 @@ class TemporossDebug : ATScript() {
 
                 tempoross.burningTiles.clear()
                 tempoross.detectDangerousTiles()
-                tempoross.triedPaths.clear()
 
 
                 val dest = Movement.destination()
@@ -131,25 +130,11 @@ class TemporossDebugPainter(script: TemporossDebug) : ATPaint<TemporossDebug>(sc
         script.tempoross.side.mastLocation.drawOnScreen(null, CYAN)
 
         val blockedTiles = script.tempoross.burningTiles.toList()
-        val paths = script.tempoross.triedPaths.toList()
 
         blockedTiles.forEach {
             val t = it
             if (t != Tile.Nil) {
                 it.drawOnScreen(null, RED)
-            }
-        }
-        if (paths.isNotEmpty()) {
-            paths.map { it.actions.map { a -> a.destination } }.forEach { tiles ->
-                val containsBadTile = tiles.any { blockedTiles.contains(it) }
-                val color = if (containsBadTile) ORANGE else GREEN
-                tiles.forEach { tile ->
-                    tile.drawOnScreen(
-
-                        null,
-                        if (blockedTiles.contains(tile)) BLACK else color
-                    )
-                }
             }
         }
     }

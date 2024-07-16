@@ -13,101 +13,113 @@ import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Data.RAW
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.krulvis.tempoross.tree.leaf.Cook
+import org.powbot.krulvis.tempoross.tree.leaf.FindSpot
 import org.powbot.krulvis.tempoross.tree.leaf.Fish
 import org.powbot.krulvis.tempoross.tree.leaf.Shoot
 import kotlin.math.roundToInt
 
 class ShouldShoot(script: Tempoross) : Branch<Tempoross>(script, "Should Shoot") {
-    override fun validate(): Boolean {
+	override fun validate(): Boolean {
 
-        val cooked = Inventory.getCount(COOKED)
-        val raw = Inventory.getCount(RAW, CRYSTAL)
+		val cooked = Inventory.getCount(COOKED)
+		val raw = Inventory.getCount(RAW, CRYSTAL)
 
-        val fish = if (script.solo) cooked else cooked + raw
-        //Forced shooting happens after a tether attempt
+		val fish = if (script.solo) cooked else cooked + raw
+		//Forced shooting happens after a tether attempt
 
 
-        val lowEnoughEnergy = script.energy / 2.5 < fish
+		val lowEnoughEnergy = script.energy / 2.5 < fish
 
-        //If we are close to the ammo-box and have some fish, shoot em
-        if (fish > 0) {
-            val ammoCrate = script.getAmmoCrate()
-            if (ammoCrate.distance().roundToInt() < 7) {
-                script.logger.info("Shooting because close and hasShootableFish")
-                return true
-            } else if (script.solo) {
-                val requiredToSubdue = script.cookedToSubdue()
-                //If its near failure, just make sure we get the energy to 0
-                if (script.intensity >= 90) {
-                    return cooked >= requiredToSubdue
-                }
-                val requiredFish = if (script.energy <= 10) 19 else requiredToSubdue - 2
-                script.logger.info("Shooting fish energy=${script.energy}, requiredFish=$requiredFish cooked in inventory")
-                if (cooked >= requiredFish) {
-                    return true
-                }
-            } else if (script.health <= 75 && lowEnoughEnergy && script.energy > 13) {
-                script.logger.info("Shooting to empty inventory before last group harpoon")
-                return true
-            } else if (Inventory.isFull() && (!script.cookFish || raw <= 0)) {
-                script.logger.info("Shooting fish because inventory is full")
-                return true
-            }
-        }
+		//If we are close to the ammo-box and have some fish, shoot em
+		if (fish > 0) {
+			val ammoCrate = script.getAmmoCrate()
+			if (ammoCrate.distance().roundToInt() < 7) {
+				script.logger.info("Shooting because close and hasShootableFish")
+				return true
+			} else if (script.solo) {
+				val requiredToSubdue = script.cookedToSubdue()
+				//If its near failure, just make sure we get the energy to 0
+				if (script.intensity >= 90) {
+					return cooked >= requiredToSubdue
+				}
+				val requiredFish = if (script.energy <= 10) 19 else requiredToSubdue - 2
+				script.logger.info("Shooting fish energy=${script.energy}, requiredFish=$requiredFish cooked in inventory")
+				if (cooked >= requiredFish) {
+					return true
+				}
+			} else if (script.health <= 75 && lowEnoughEnergy && script.energy > 13) {
+				script.logger.info("Shooting to empty inventory before last group harpoon")
+				return true
+			} else if (Inventory.isFull() && (!script.cookFish || raw <= 0)) {
+				script.logger.info("Shooting fish because inventory is full")
+				return true
+			}
+		}
 
-        if (raw > 0 && script.isLowHP() && script.isVulnerable() && script.nearAmmoCrate()) {
-            script.logger.info("Shooting last fish at tempoross cuz low hp")
-            return true
-        }
-        return false
-    }
+		if (raw > 0 && script.isLowHP() && script.isVulnerable() && script.nearAmmoCrate()) {
+			script.logger.info("Shooting last fish at tempoross cuz low hp")
+			return true
+		}
+		return false
+	}
 
-    override val successComponent: TreeComponent<Tempoross> = Shoot(script)
-    override val failedComponent: TreeComponent<Tempoross> = ShouldCook(script)
+	override val successComponent: TreeComponent<Tempoross> = Shoot(script)
+	override val failedComponent: TreeComponent<Tempoross> = ShouldCook(script)
 }
 
 
 class ShouldCook(script: Tempoross) : Branch<Tempoross>(script, "Should Cook") {
-    override fun validate(): Boolean {
+	override fun validate(): Boolean {
 
-        val raw = Inventory.getCount(RAW)
-        if (!script.cookFish || raw == 0) return false
+		val raw = Inventory.getCount(RAW)
+		if (!script.cookFish || raw == 0) return false
 
-        val cooked = Inventory.getCount(COOKED)
-        val cookedTo10 = script.cookedToSubdue() - 2
+		val cooked = Inventory.getCount(COOKED)
+		val cookedTo10 = script.cookedToSubdue() - 2
 
-        val cooking = me.animation() == FILLING_ANIM
+		val cooking = me.animation() == FILLING_ANIM
 
-        val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
-        val cookLocation = script.side.cookLocation
-        if (script.solo) {
-            if (script.energyGoingDownTimer.isFinished() && cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
-                debug("Cooking because need to bring to 10% energy")
-                return true
-            } else if (cooked < 19 && script.intensity >= 89 - raw) {
-                debug("Cooking because we need to reach 19 fish")
-                return true
-            }
-        }
-        if (doubleSpot && Inventory.emptySlotCount() > if (cooking) 1 else 0) {
-            //If we are prioritizing fishing at double spot over cooking, we need to have at least 2 spaces
-            debug("Fishing because double spot available")
-            return false
-        } else if (raw > 0 && cookLocation.distance() <= 2) {
-            debug("Cooking because already there are no good fishing spots available...")
-            return true
-        } else if (raw >= 8 && !script.hasDangerousPath(cookLocation)) {
-            debug("Start early cooking since there is no double spot!")
-            return true
-        }
+		val doubleSpot = script.bestFishSpot?.id() == DOUBLE_FISH_ID
+		val cookLocation = script.side.cookLocation
+		if (script.solo) {
+			if (script.energyGoingDownTimer.isFinished() && cookedTo10 > cooked && (cooked + raw) >= cookedTo10) {
+				debug("Cooking because need to bring to 10% energy")
+				return true
+			} else if (cooked < 19 && script.intensity >= 89 - raw) {
+				debug("Cooking because we need to reach 19 fish")
+				return true
+			}
+		}
+		if (doubleSpot && Inventory.emptySlotCount() > if (cooking) 1 else 0) {
+			//If we are prioritizing fishing at double spot over cooking, we need to have at least 2 spaces
+			debug("Fishing because double spot available")
+			return false
+		} else if (raw > 0 && cookLocation.distance() <= 2) {
+			debug("Cooking because already there are no good fishing spots available...")
+			return true
+		} else if (raw >= 8 && !script.hasDangerousPath(cookLocation)) {
+			debug("Start early cooking since there is no double spot!")
+			return true
+		}
 
-        val energy = script.energy
-        val lowEnergy = if (script.solo) false else energy / 4 < Inventory.getCount(true, RAW, COOKED)
-        val fullHealth = script.health == 100
-        script.logger.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$raw")
-        return Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null
-    }
+		val energy = script.energy
+		val lowEnergy = if (script.solo) false else energy / 4 < Inventory.getCount(true, RAW, COOKED)
+		val fullHealth = script.health == 100
+		script.logger.info("fullHealth=$fullHealth, energy=$energy, lowEnergy=$lowEnergy, rawCount=$raw")
+		return Inventory.isFull() || (lowEnergy && !fullHealth) || script.bestFishSpot == null
+	}
 
-    override val successComponent: TreeComponent<Tempoross> = Cook(script)
-    override val failedComponent: TreeComponent<Tempoross> = Fish(script)
+	override val successComponent: TreeComponent<Tempoross> = Cook(script)
+	override val failedComponent: TreeComponent<Tempoross> = HasBestSpot(script)
+}
+
+
+class HasBestSpot(script: Tempoross) : Branch<Tempoross>(script, "HasBestSpot?") {
+	override val failedComponent: TreeComponent<Tempoross> = FindSpot(script)
+	override val successComponent: TreeComponent<Tempoross> = Fish(script)
+
+	override fun validate(): Boolean {
+		return script.bestFishSpot != null
+	}
+
 }

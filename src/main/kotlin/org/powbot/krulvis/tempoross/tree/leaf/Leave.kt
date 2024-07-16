@@ -13,7 +13,6 @@ import org.powbot.krulvis.tempoross.Tempoross
 class Leave(script: Tempoross) : Leaf<Tempoross>(script, "Leaving") {
     override fun execute() {
         script.burningTiles.clear()
-        script.triedPaths.clear()
         script.vulnerableStartHP = 100
         val leaveNpc = getLeaveNpc()
         if (leaveNpc != null && walkAndInteract(leaveNpc, "Leave")) {

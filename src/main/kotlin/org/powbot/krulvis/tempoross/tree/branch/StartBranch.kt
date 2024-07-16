@@ -15,12 +15,12 @@ import org.powbot.krulvis.tempoross.tree.leaf.*
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
 	override fun validate(): Boolean {
-		if (Game.clientState() != 30) {
-			return !waitFor(10000) { script.energy > -1 }
+		if (script.energy > -1 || BOAT_AREA.contains(me.tile())) return false
+		return if (Game.clientState() != 30) {
+			!waitFor(10000) { script.energy > -1 }
+		} else {
+			!waitFor(610) { script.energy > -1 }
 		}
-		return script.energy == -1 && !BOAT_AREA.contains(me.tile())
-			&& Npcs.stream().name("Ammunition crate").firstOrNull() == null
-			&& Npcs.stream().noneMatch { it.actions().contains("Leave") }
 	}
 
 	override val successComponent: TreeComponent<Tempoross> = HasAllEquipment(script)

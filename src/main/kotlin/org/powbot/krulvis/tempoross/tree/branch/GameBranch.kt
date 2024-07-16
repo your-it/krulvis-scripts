@@ -134,9 +134,6 @@ class ShouldGetRope(script: Tempoross) : Branch<Tempoross>(script, "Should get r
 	override val successComponent: TreeComponent<Tempoross> = GetRope(script)
 
 	override fun validate(): Boolean {
-
-		script.triedPaths.clear()
-
 		return !script.hasSpiritOutfit && script.intensity < 90 && !Inventory.containsOneOf(ROPE)
 	}
 }
