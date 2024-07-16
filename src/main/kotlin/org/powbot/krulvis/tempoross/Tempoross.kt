@@ -34,7 +34,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
 	name = "krul Tempoross",
 	description = "Does tempoross minigame",
-	version = "1.3.7",
+	version = "1.3.8",
 	author = "Krulvis",
 	scriptId = "54b4c295-8cb8-4c22-9799-49b7344708e7",
 	markdownFileName = "Tempoross.md",
@@ -104,10 +104,9 @@ class Tempoross : ATScript() {
 	}
 
 	var gameTick = -1
-	var waveTick = -1
+	var waveTick = Int.MIN_VALUE
 	var side = Side.UNKNOWN
 	val burningTiles = mutableListOf<Tile>()
-	val triedPaths = mutableListOf<LocalPath>()
 	var rewardGained = 0
 	var pointsObtained = 0
 	var rounds = 0
@@ -181,7 +180,6 @@ class Tempoross : ATScript() {
 	}
 
 	private fun containsDangerousTile(path: LocalPath): Boolean {
-		triedPaths.add(path)
 		return path.actions.any { burningTiles.contains(it.destination) }
 	}
 
@@ -192,7 +190,7 @@ class Tempoross : ATScript() {
 		allowCrossing: Boolean
 	): Boolean {
 		if (e == null) {
-			logger.info("Can't find: $action")
+			logger.info("Can't find: $action, entity=null")
 			if (destinationWhenNil != Tile.Nil) {
 				val path = LocalPathFinder.findPath(destinationWhenNil)
 				if (path.isNotEmpty() && douseIfNecessary(path, allowCrossing)) {
@@ -291,7 +289,6 @@ class Tempoross : ATScript() {
 	override fun canBreak(): Boolean {
 		val canBreak = lastLeaf is EnterBoat || lastLeaf is Leave
 		logger.info("canBreak() lastLeaf=${lastLeaf.name} canBreak=${canBreak}")
-
 		return canBreak
 	}
 
@@ -363,6 +360,8 @@ class Tempoross : ATScript() {
 	fun detectDangerousTiles() {
 		burningTiles.clear()
 		Npcs.stream().name("Lightning cloud", "Fire").within(side.area).forEach {
+			//A lightning cloud is only dangerous when it is animating (it will soon spew lightning)
+			//A fire is always dangerous
 			if (it.name != "Lightning cloud" || it.animation() > -1) {
 				logger.info("Found Lightning/Fire cloud at ${it.tile()}, animation=${it.animation()}")
 				addTile(it.tile())
@@ -384,18 +383,26 @@ class Tempoross : ATScript() {
 	}
 
 	fun getClosestFishSpot(spots: List<Pair<Npc, LocalPath>>): Npc? {
-		val doublePath = spots.firstOrNull { it.first.id() == DOUBLE_FISH_ID }
+		val safeSpots = spots.filter { !containsDangerousTile(it.second) }
+		val doublePath = safeSpots.firstOrNull { it.first.id() == DOUBLE_FISH_ID }
 		if (doublePath != null) {
 			return doublePath.first
 		}
 
-		return spots.filter { !containsDangerousTile(it.second) }.minByOrNull { it.second.actions.size }?.first
+		return safeSpots.minByOrNull { it.second.actions.size }?.first
 	}
 
 	fun getBossPool() =
 		Npcs.stream().at(side.bossPoolLocation).action("Harpoon").name("Spirit pool").first()
 
 	private val stunnedAnimation = 832
+
+	fun getCookingSpot(): GameObject {
+		return Objects.stream(50)
+			.type(GameObject.Type.INTERACTIVE)
+			.within(side.cookLocation, 5.0).name("Shrine").first()
+	}
+
 	fun getAmmoCrate(): Npc {
 		val npcs = Npcs.stream().within(side.area).toList()
 		val crates = npcs.filter { it.name.contains("Ammunition crate", true) }
