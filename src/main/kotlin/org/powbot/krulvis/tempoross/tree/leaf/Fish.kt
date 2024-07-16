@@ -12,6 +12,7 @@ import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
+import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Tempoross
 
 class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
@@ -46,6 +47,10 @@ class Fish(script: Tempoross) : Leaf<Tempoross>(script, "Fishing") {
 	}
 
 	private fun fishAtSpot(spot: Npc) {
+		if (me.animation() == FILLING_ANIM) {
+			script.logger.info("Currently in filling animation, walking first to cancel action")
+			Movement.step(spot)
+		}
 		if (walkAndInteract(spot, "Harpoon")) {
 			waitFor(Random.nextInt(1000, 5000)) {
 				me.interacting().name() == "Fishing spot" || script.isWaveActive() || spot.hasLeftUs()

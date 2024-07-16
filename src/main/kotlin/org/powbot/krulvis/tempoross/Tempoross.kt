@@ -104,7 +104,7 @@ class Tempoross : ATScript() {
 	}
 
 	var gameTick = -1
-	var waveTick = -1
+	var waveTick = Int.MIN_VALUE
 	var side = Side.UNKNOWN
 	val burningTiles = mutableListOf<Tile>()
 	var rewardGained = 0
@@ -289,7 +289,6 @@ class Tempoross : ATScript() {
 	override fun canBreak(): Boolean {
 		val canBreak = lastLeaf is EnterBoat || lastLeaf is Leave
 		logger.info("canBreak() lastLeaf=${lastLeaf.name} canBreak=${canBreak}")
-
 		return canBreak
 	}
 
