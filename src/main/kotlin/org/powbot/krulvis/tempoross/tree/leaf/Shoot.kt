@@ -15,53 +15,47 @@ import org.powbot.krulvis.tempoross.Tempoross
 
 
 class Shoot(script: Tempoross) : Leaf<Tempoross>(script, "Shooting") {
-	override fun execute() {
-		val ammo = script.getAmmoCrate()
-		val dest = Movement.destination()
-		val nearAmmoBox = ammo.distance() <= 3 || ammo.tile().distanceTo(dest) <= 3
-		val shootingTile = getShootingTile(ammo.tile())
-		val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
-		val myTile = me.tile()
-		if (nearAmmoBox && script.burningTiles.contains(shootingTile)) {
-			script.logger.info("Near ammo box, shooting but standing in burning tile")
-			val safeTile = shootingTile.getWalkableNeighbor(false, checkForWalls = false, diagonalTiles = true) { !script.burningTiles.contains(it) }
-			if (safeTile == null) {
-				script.logger.info("Can't find walkable safeTile :(")
-				return
-			}
-			if (Movement.step(safeTile)) {
-				if (!waitFor { Movement.destination() == safeTile }) {
-					return
-				}
-				waitForDistance(safeTile) { me.tile() == safeTile }
-			}
-		}
-		val offensiveLCTile = Npcs.stream().name("Lightning Cloud").nearest().first().tile().derive(0, -1)
-		if (shooting && offensiveLCTile == myTile && myTile != safeTile) {
-			if (Movement.step(safeTile)) {
-				waitFor { me.tile() == safeTile }
-			}
-		} else if (!ammo.valid()) {
-			script.walkWhileDousing(script.side.anchorLocation, false)
-		} else if (!shooting && script.interactWhileDousing(ammo, "Fill", script.side.mastLocation, false)) {
-			waitFor(long()) { me.animation() == FILLING_ANIM }
-		}
-	}
+    override fun execute() {
+        val ammo = script.getAmmoCrate()
+        val dest = Movement.destination()
+        val nearAmmoBox = ammo.distance() <= 3 || ammo.tile().distanceTo(dest) <= 3
+        val shootingTile = getShootingTile(ammo.tile())
+        val shooting = me.animation() == FILLING_ANIM && nearAmmoBox
+        if (nearAmmoBox && script.burningTiles.contains(shootingTile)) {
+            script.logger.info("Near ammo box, shooting but standing in burning tile")
+            val safeTile = shootingTile.getWalkableNeighbor(
+                false,
+                checkForWalls = false,
+                diagonalTiles = true
+            ) { !script.burningTiles.contains(it) }
+            if (safeTile == null) {
+                script.logger.info("Can't find walkable safeTile :(")
+            } else if (Movement.step(safeTile)) {
+                waitForDistance(safeTile) { me.tile() == safeTile }
+            }
+            return
+        }
+        if (!ammo.valid()) {
+            script.walkWhileDousing(script.side.anchorLocation, false)
+        } else if (!shooting && script.interactWhileDousing(ammo, "Fill", script.side.mastLocation, false)) {
+            waitFor(long()) { me.animation() == FILLING_ANIM }
+        }
+    }
 
-	private fun getShootingTile(ammoCrate: Tile): Tile {
-		return if (script.side == Side.NORTH) {
-			ammoCrate.derive(-1, 0)
-		} else {
-			ammoCrate.derive(1, 0)
-		}
-	}
+    private fun getShootingTile(ammoCrate: Tile): Tile {
+        return if (script.side == Side.NORTH) {
+            ammoCrate.derive(-1, 0)
+        } else {
+            ammoCrate.derive(1, 0)
+        }
+    }
 
-	private fun getSafeTile(): Tile {
-		return if (script.side == Side.NORTH) {
-			script.side.mastLocation.derive(2, 0)
-		} else {
-			script.side.mastLocation.derive(-2, 0)
-		}
-	}
+    private fun getSafeTile(): Tile {
+        return if (script.side == Side.NORTH) {
+            script.side.mastLocation.derive(2, 0)
+        } else {
+            script.side.mastLocation.derive(-2, 0)
+        }
+    }
 
 }
