@@ -42,7 +42,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
 			lc?.tile()?.drawOnScreen(lc.orientation().toString())
 			g.drawString("Tethered=${script.isTethering()}, varp=${Varpbits.varpbit(2933)}", 50, 250)
 			g.drawString("Blocked Tiles = ${blockedTiles.size}", 50, 260)
-			g.drawString("TickSinceWave = ${script.gameTick - script.waveTick}", 50, 270)
+			g.drawString("TickSinceWave = ${script.gameTick - script.waveTick}, isWaveActive=${script.isWaveActive()}", 50, 270)
 			g.drawString("Animation = ${me.animation()}", 50, 280)
 		}
 	}

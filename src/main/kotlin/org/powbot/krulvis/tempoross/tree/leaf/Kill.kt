@@ -19,7 +19,7 @@ class Kill(script: Tempoross) : Leaf<Tempoross>(script, "Killing") {
 			script.logger.info("Killing but bosspool is not valid...")
 			if (script.side.bossWalkLocation.distance() > 2) {
 				script.logger.info("Walking to bosspool...")
-				Movement.step(script.side.bossWalkLocation)
+				script.walkWhileDousing(script.side.bossWalkLocation, false)
 			}
 			return
 		}

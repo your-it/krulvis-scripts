@@ -34,7 +34,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 @ScriptManifest(
 	name = "krul Tempoross",
 	description = "Does tempoross minigame",
-	version = "1.3.8",
+	version = "1.3.9",
 	author = "Krulvis",
 	scriptId = "54b4c295-8cb8-4c22-9799-49b7344708e7",
 	markdownFileName = "Tempoross.md",
@@ -104,7 +104,7 @@ class Tempoross : ATScript() {
 	}
 
 	var gameTick = -1
-	var waveTick = Int.MIN_VALUE
+	var waveTick = -99
 	var side = Side.UNKNOWN
 	val burningTiles = mutableListOf<Tile>()
 	var rewardGained = 0
