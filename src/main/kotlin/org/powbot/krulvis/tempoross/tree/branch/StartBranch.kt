@@ -40,7 +40,7 @@ class HasAllEquipment(script: Tempoross) : Branch<Tempoross>(script, "Has All Eq
 
 class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items") {
 	override val failedComponent: TreeComponent<Tempoross> = GetItemsFromBank(script)
-	override val successComponent: TreeComponent<Tempoross> = EnterBoat(script)
+	override val successComponent: TreeComponent<Tempoross> = NearBoat(script)
 
 	override fun validate(): Boolean {
 		val equipment = Equipment.stream().toList().map { it.id }
@@ -49,8 +49,15 @@ class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has Al
 			inventory.getOrDefault(it.key, 0) >= it.value
 		}
 	}
+}
 
+class NearBoat(script: Tempoross) : Branch<Tempoross>(script, "NearBoat?") {
+	override val failedComponent: TreeComponent<Tempoross> = WalkToBoat(script)
+	override val successComponent: TreeComponent<Tempoross> = ShouldHopFromOtherPlayers(script, EnterBoat(script))
 
+	override fun validate(): Boolean {
+		return script.getLadder().valid() && script.playersReady() > -1
+	}
 }
 
 class WaitingForStart(script: Tempoross) : Branch<Tempoross>(script, "Waiting For Game Start") {
@@ -71,13 +78,12 @@ class WaitingForStart(script: Tempoross) : Branch<Tempoross>(script, "Waiting Fo
 	}
 
 
-	override val successComponent: TreeComponent<Tempoross> = ShouldHopFromOtherPlayers(script)
+	override val successComponent: TreeComponent<Tempoross> = ShouldHopFromOtherPlayers(script, ShouldFillBuckets(script))
 
 	override val failedComponent: TreeComponent<Tempoross> = ShouldLeave(script)
 }
 
-class ShouldHopFromOtherPlayers(script: Tempoross) : Branch<Tempoross>(script, "Should hop?") {
-	override val failedComponent: TreeComponent<Tempoross> = ShouldFillBuckets(script)
+class ShouldHopFromOtherPlayers(script: Tempoross, override val failedComponent: TreeComponent<Tempoross>) : Branch<Tempoross>(script, "Should hop?") {
 	override val successComponent: TreeComponent<Tempoross> = SimpleLeaf(script, "Hopping") {
 		val worlds = Worlds.stream().filtered { it.type() == World.Type.MEMBERS && it.population >= 15 && it.usable(script.solo) }
 			.toList()
