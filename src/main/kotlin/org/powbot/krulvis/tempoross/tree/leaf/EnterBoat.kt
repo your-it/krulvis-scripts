@@ -32,7 +32,7 @@ class EnterBoat(script: Tempoross) : Leaf<Tempoross>(script, "Entering boat") {
 		}
 		if (!ropeLadder.valid()) {
 			debug("Can't find rope ladder... waiting to see if we're in game")
-			if (!waitFor(6000) { script.energy > -1 }) {
+			if (!waitFor(6000) { script.energy > -1 || ropeLadder.refresh().valid() }) {
 				debug("Walking with web first")
 				Movement.walkTo(Tile(3137, 2841, 0))
 			}
