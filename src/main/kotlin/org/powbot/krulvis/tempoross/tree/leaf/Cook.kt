@@ -15,6 +15,7 @@ class Cook(script: Tempoross) : Leaf<Tempoross>(script, "Cooking") {
 	override fun execute() {
 		val walkSpot = script.side.cookLocation
 		val cookShrine = script.getCookingSpot()
+		cookShrine.bounds(-42, 52, -174, -20, -62, 32)
 		if (!cookShrine.valid()) {
 			script.logger.info("Walking to totem because cooking spot too far..")
 			script.walkWhileDousing(script.side.totemLocation, false)

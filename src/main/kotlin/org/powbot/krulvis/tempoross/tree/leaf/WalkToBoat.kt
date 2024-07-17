@@ -24,11 +24,12 @@ class WalkToBoat(script: Tempoross) : Leaf<Tempoross>(script, "Walk to boat") {
 			ScriptManager.stop()
 			return
 		}
-		val ropeLadder = script.getLadder()
 
-		if (!waitFor(6000) { script.energy > -1 || ropeLadder.refresh().valid() }) {
+		if (!waitFor(6000) { script.energy > -1 || script.getLadder().valid() }) {
 			debug("Walking with web first")
 			Movement.walkTo(Tile(3137, 2841, 0))
+		} else {
+			debug("We don't actually have to walk...")
 		}
 
 	}
