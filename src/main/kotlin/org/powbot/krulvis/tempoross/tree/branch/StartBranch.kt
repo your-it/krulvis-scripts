@@ -17,6 +17,7 @@ import org.powbot.krulvis.tempoross.tree.leaf.*
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
 	override fun validate(): Boolean {
 		if (script.energy > -1 || BOAT_AREA.contains(me.tile())) return false
+		if (Game.clientState() != Constants.GAME_LOGGED) return !waitFor(10000) { BOAT_AREA.contains(me.tile()) || Npcs.stream().name("Ammunition crate").findFirst().isPresent }
 		if (script.gameTick < 0) {
 			//Script hasn't had it's first gameTick yet, energy hasn't been initialized yet...
 			return !waitFor { script.gameTick > 0 && script.energy > -1 }
