@@ -40,6 +40,7 @@ class TemporossPaint(script: Tempoross) : ATPaint<Tempoross>(script, 110, 210) {
 			bestSpot?.tile()?.drawOnScreen("bestSpot", outlineColor = CYAN)
 			val lc = Npcs.stream().name("Lightning Cloud").nearest().firstOrNull()
 			lc?.tile()?.drawOnScreen(lc.orientation().toString())
+			g.drawString("ClientState=${Game.clientState()}", 50, 240)
 			g.drawString("Tethered=${script.isTethering()}, varp=${Varpbits.varpbit(2933)}", 50, 250)
 			g.drawString("Blocked Tiles = ${blockedTiles.size}", 50, 260)
 			g.drawString("TickSinceWave = ${script.gameTick - script.waveTick}, isWaveActive=${script.isWaveActive()}", 50, 270)

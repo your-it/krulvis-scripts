@@ -153,17 +153,17 @@ class Tempoross : ATScript() {
 
 	@Subscribe
 	fun onGameTick(_e: TickEvent) {
-		gameTick++
 		intensity = Data.getIntensity()
 		val newEnergy = Data.getEnergy()
 		if (newEnergy < energy) {
 			energyGoingDownTimer.reset()
 		}
-		energy = Data.getEnergy()
+		energy = newEnergy
 		health = Data.getHealth()
 		detectDangerousTiles()
 		collectFishSpots()
 		bestFishSpot = getClosestFishSpot(fishSpots)
+		gameTick++
 	}
 
 	fun cookedToSubdue() = Math.round(energy / 5.625)
