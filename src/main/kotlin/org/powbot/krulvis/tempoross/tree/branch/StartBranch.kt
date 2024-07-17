@@ -1,6 +1,7 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Constants.GAME_LOADED
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -16,12 +17,12 @@ import org.powbot.krulvis.tempoross.tree.leaf.*
 
 class ShouldEnterBoat(script: Tempoross) : Branch<Tempoross>(script, "Should enter boat") {
 	override fun validate(): Boolean {
-		if (script.energy > -1 || BOAT_AREA.contains(me.tile())) return false
-		if (script.gameTick < 0) {
-			//Script hasn't had it's first gameTick yet, energy hasn't been initialized yet...
-			return !waitFor { script.gameTick > 0 && script.energy > -1 }
+		if (script.energy > -1 || BOAT_AREA.contains(me.tile()) || Npcs.stream().name("Ammunition crate").findFirst().isPresent) return false
+		if (script.gameTick < 0 || Game.clientState() != GAME_LOADED) {
+			script.logger.info("Script hasn't had it's first gameTick yet, energy hasn't been initialized yet...")
+			return !waitFor(25000) { script.gameTick > 0 && script.energy > -1 }
 		}
-		return Game.clientState() == 30 || !waitFor(10000) { script.energy > -1 }
+		return true
 	}
 
 	override val successComponent: TreeComponent<Tempoross> = HasAllEquipment(script)
@@ -35,8 +36,6 @@ class HasAllEquipment(script: Tempoross) : Branch<Tempoross>(script, "Has All Eq
 	override fun validate(): Boolean {
 		return Equipment.get { it.id in script.equipment.keys }.size == script.equipment.keys.size
 	}
-
-
 }
 
 class HasAllItemsFromBank(script: Tempoross) : Branch<Tempoross>(script, "Has All Items") {
