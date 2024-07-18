@@ -29,7 +29,14 @@ fun main() {
     DagannothKings().startScript(useDefaultConfigs = true)
 }
 
-@ScriptManifest("krul DagannothKings", "Kills Dagannoth Kings", version = "1.0.0", priv = true)
+@ScriptManifest(
+    "krul DagannothKings",
+    "Kills Dagannoth Kings",
+    version = "1.0.0",
+    scriptId = "f6ac533c-0aee-4992-aea7-10460ed56c8c",
+    category = ScriptCategory.Combat,
+    priv = true
+)
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(KILL_PREFIX_OPTION + "Rex", "Kill Rex", OptionType.BOOLEAN, defaultValue = "true"),
@@ -148,7 +155,7 @@ class DagannothKings : ATScript() {
                 .filtered { it.king()?.kill == true }.toList()
                 .sortedBy { it.king()!!.ordinal }
             val attackingMe = aliveKings.filter { it.interacting() == me }
-            if (attackingMe.any { it.king() != Data.King.Rex || !safeSpotRex }){
+            if (attackingMe.any { it.king() != Data.King.Rex || !safeSpotRex }) {
 
             }
         }
