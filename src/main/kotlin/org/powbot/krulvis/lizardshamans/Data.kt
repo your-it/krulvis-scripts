@@ -10,7 +10,6 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-fun Npc.dead() = healthBarVisible() && healthPercent() == 0
 
 object Data {
 

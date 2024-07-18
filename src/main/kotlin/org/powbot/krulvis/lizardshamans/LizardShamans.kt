@@ -12,6 +12,7 @@ import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.ScriptState
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript

@@ -17,7 +17,7 @@ interface EquipmentItem : Item {
 	override fun hasWith(): Boolean = inInventory() || inEquipment()
 
 	override fun getCount(countNoted: Boolean): Int {
-		return getInventoryCount(countNoted) + Equipment.stream().id(*ids).count(true).toInt()
+		return getInventoryCount(countNoted) + Equipment.stream().nameContains(name).count(true).toInt()
 	}
 
 	fun withdrawAndEquip(stopIfOut: Boolean = false): Boolean {
@@ -29,7 +29,7 @@ interface EquipmentItem : Item {
 			) {
 				waitFor(5000) { inInventory() }
 			} else if (!inBank() && stopIfOut) {
-				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: $id")
+				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: $name")
 				ScriptManager.stop()
 			}
 		}
@@ -40,14 +40,14 @@ interface EquipmentItem : Item {
 	}
 
 	fun inEquipment(): Boolean {
-		return Equipment.get().any { it.id() in ids }
+		return Equipment.get().any { it.id() in ids || it.name().stripBarrowsCharge() == name }
 	}
 
 	fun equip(wait: Boolean = true): Boolean {
 		if (inInventory()) {
-			val item = Inventory.stream().id(*ids).first()
+			val item = Inventory.stream().nameContains(name).first()
 			val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-			ScriptManager.script()!!.logger.info("Equipping ${id} action=$action")
+			ScriptManager.script()!!.logger.info("Equipping $name action=$action")
 			if (item.interact(action)) {
 				if (wait) waitFor(2000) { inEquipment() } else return true
 			}
@@ -59,7 +59,7 @@ interface EquipmentItem : Item {
 		if (!inEquipment()) {
 			return true
 		}
-		val equipped = Equipment.stream().id(*ids).first()
+		val equipped = Equipment.stream().nameContains(name).first()
 		return equipped.click()
 	}
 }
@@ -69,4 +69,6 @@ class Equipment(
 	override vararg val ids: Int
 ) : EquipmentItem, Serializable {
 	override val name: String by lazy { ItemLoader.lookup(id)?.name()?.stripBarrowsCharge() ?: "None" }
+
+	constructor(slot: Int, id: Int) : this(Equipment.Slot.forIndex(slot), id)
 }

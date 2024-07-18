@@ -1,15 +1,13 @@
 package org.powbot.krulvis.lizardshamans.tree.leaf
 
-import org.powbot.api.BoundingModel
-import org.powbot.api.Input
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.lizardshamans.Data
 import org.powbot.krulvis.lizardshamans.LizardShamans
-import org.powbot.krulvis.lizardshamans.dead
 
 class AttackShaman(script: LizardShamans) : Leaf<LizardShamans>(script, "AttackShaman") {
 	override fun execute() {

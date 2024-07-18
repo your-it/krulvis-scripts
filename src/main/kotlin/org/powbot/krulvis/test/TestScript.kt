@@ -13,6 +13,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.mta.rooms.TelekineticRoom
@@ -70,8 +71,11 @@ class TestScript : ATScript() {
 	var guardian: Npc = Npc.Nil
 
 	override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "TestLeaf") {
-		val entrance = Objects.stream().name("Lizardman lair").nearest().first()
-		logger.info("Entrace tile=${entrance.tile}, type=${entrance.type}")
+		val entrance = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Kings' ladder").action("Climb-up").first().tile()
+		val rex = Npcs.stream().name("Dagannoth Rex").first().tile()
+		val me = me.tile()
+		logger.info("Rex tile=${rex}, deltaX=${rex.x - entrance.x}, deltaY=${rex.y - entrance.y}")
+		logger.info("Me tile=${me}, deltaX=${me.x - entrance.x}, deltaY=${me.y - entrance.y}")
 	}
 
 	//Tile(x=3635, y=3362, floor=0)
