@@ -3,7 +3,7 @@ package org.powbot.krulvis.api.extensions.items
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
-import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.stripBarrowsCharge
 import org.powbot.krulvis.api.utils.Utils.waitFor
 
 interface Item {
@@ -18,53 +18,54 @@ interface Item {
 
 	fun notedInBank(): Boolean = Bank.stream().id(*getNotedIds()).isNotEmpty()
 
-	fun inInventory(): Boolean = Inventory.stream().id(*ids).isNotEmpty()
+	fun inInventory(): Boolean = Inventory.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.isNotEmpty()
 
 	fun hasWith(): Boolean
 
-	fun inBank(): Boolean = Bank.stream().id(*ids).first().stack > 0
+	fun inBank(): Boolean = Bank.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.sumOf { it.stack } > 0
 
 	fun getBankId(worse: Boolean = false): Int {
 		val ids = if (worse) ids.reversed().toIntArray() else ids
 		val bankIds = Bank.stream().filtered { it.id() in ids }.map { it.id }
 		val bankItem = ids.firstOrNull { it in bankIds }
-		return bankItem ?: -1
+		return bankItem ?: Bank.stream().filtered { it.name().stripBarrowsCharge() == name }.first().id()
 	}
 
 	fun getInvItem(worse: Boolean = true): Item? {
-		return if (worse) {
-			val items = Inventory.stream().list()
+		val items = Inventory.get()
+		if (worse) {
 			ids.reversed().forEach { id ->
 				if (items.any { it.id == id }) {
 					return items.firstOrNull { it.id == id }
 				}
 			}
-			return null
-		} else
-			Inventory.stream().id(*ids).firstOrNull()
+		}
+		return items.firstOrNull { it.name().stripBarrowsCharge() == name }
 	}
 
 	fun getInventoryCount(countNoted: Boolean = true): Int {
 		return if (countNoted) Inventory.stream()
-			.filtered { ids.contains(it.id()) || getNotedIds().contains(it.id()) }
+			.filtered { ids.contains(it.id()) || getNotedIds().contains(it.id()) || it.name().stripBarrowsCharge() == name }
 			.sumOf { if (it.stack <= 0) 1 else it.stack }
-		else Inventory.stream().id(*ids).count().toInt()
+		else Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.count(true).toInt()
 	}
+
+	fun getInventoryId() = Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.first().id
 
 	fun getCount(countNoted: Boolean = true): Int
 
 	fun withdrawExact(amount: Int, worse: Boolean = false, wait: Boolean = true): Boolean {
-		val currentAmount = Inventory.getCount(*ids)
+		val currentAmount = getInventoryCount(false)
 		if (currentAmount == amount) {
 			return true
 		} else if (currentAmount > amount) {
-			if (Bank.deposit(Inventory.stream().id(*ids).first().id, currentAmount - amount)) {
-				return !wait || waitFor { Inventory.getCount(*ids) == amount }
+			if (Bank.deposit(getInventoryId(), currentAmount - amount)) {
+				return !wait || waitFor { getInventoryCount(false) == amount }
 			}
 		} else {
 			val id = getBankId(worse)
 			if (Bank.withdraw(id, amount - currentAmount)) {
-				return !wait || waitFor { Inventory.getCount(*ids) == amount }
+				return !wait || waitFor { getInventoryCount(false) == amount }
 			}
 		}
 		return false
@@ -161,6 +162,22 @@ interface Item {
 		const val SEED_BOX_OPEN = 24482
 		const val IMCANDO_HAMMER = 25644
 		const val BLESSED_BONE_SHARD = 29381
+
+		val RARE_DROP_TABLE = arrayOf(
+			"Dragon spear",
+			"Rune kiteshield",
+			"Dragon med helm",
+			"Shield left half",
+			"Dragonstone",
+			"Rune sq shield",
+			"Law rune",
+			"Rune battleaxe",
+			"Rune 2h sword",
+			"Nature rune",
+			"Runite bar",
+			"Loop half of key",
+			"Tooth half of key"
+		)
 	}
 
 }

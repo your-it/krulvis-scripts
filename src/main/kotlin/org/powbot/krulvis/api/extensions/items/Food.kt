@@ -34,11 +34,12 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	LOBSTER(12, 379),
 	BASS(13, 365),
 	SWORDFISH(14, 373),
+	CHILI_POTATO(14, 7054),
 	POTATO_CHEESE(16, 6705),
 	MONKFISH(16, 7946),
 	SHARK(20, 385),
 	KARAMBWAN(16, 3144),
-	CHILI_POTATO(14, 7054);
+	;
 
 	override fun toString(): String {
 		return name
@@ -91,6 +92,8 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 		}
 
 		fun forId(id: Int): Food? = values().firstOrNull { id in it.ids }
+
+		fun forName(name: String): Food? = values().firstOrNull { it.name.equals(name, true) }
 	}
 
 }

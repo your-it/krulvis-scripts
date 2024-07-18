@@ -7,7 +7,7 @@ import org.powbot.krulvis.dagannothkings.DagannothKings
 
 class AtKings(script: DagannothKings) : Branch<DagannothKings>(script, "AtKings?") {
 	override val failedComponent: TreeComponent<DagannothKings> = AtKingsLadder(script)
-	override val successComponent: TreeComponent<DagannothKings> = IsBankOpen(script)
+	override val successComponent: TreeComponent<DagannothKings> = FightingKing(script)
 
 	override fun validate(): Boolean {
 		return true

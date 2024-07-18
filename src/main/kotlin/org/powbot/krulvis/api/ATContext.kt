@@ -37,6 +37,10 @@ object ATContext {
 
 	fun fullPrayer() = Skills.realLevel(Skill.Prayer) == Skills.level(Skill.Prayer)
 
+
+	fun Actor<*>.dead() = healthBarVisible() && healthPercent() == 0
+
+	
 	fun turnRunOn(): Boolean {
 		if (Movement.running()) {
 			return true
