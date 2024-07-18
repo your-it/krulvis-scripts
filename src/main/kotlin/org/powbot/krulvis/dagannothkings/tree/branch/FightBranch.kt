@@ -26,7 +26,7 @@ class FightingKing(script: DagannothKings) : Branch<DagannothKings>(script, "Fig
 }
 
 class ShouldLure(script: DagannothKings) : Branch<DagannothKings>(script, "LureRex?") {
-	override val failedComponent: TreeComponent<DagannothKings> = Fight(script)
+	override val failedComponent: TreeComponent<DagannothKings> = ShouldEat(script, ShouldSipPotion(script, Fight(script)))
 	override val successComponent: TreeComponent<DagannothKings> = Lure(script)
 
 	override fun validate(): Boolean {

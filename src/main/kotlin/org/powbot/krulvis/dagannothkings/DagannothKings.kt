@@ -15,12 +15,13 @@ import org.powbot.krulvis.api.extensions.items.Equipment
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.dagannothkings.Data.EQUIPMENT_PREFIX_OPTION
 import org.powbot.krulvis.dagannothkings.Data.KILL_PREFIX_OPTION
+import org.powbot.krulvis.dagannothkings.Data.KING_DEATH_ANIM
 import org.powbot.krulvis.dagannothkings.Data.King.Companion.king
 import org.powbot.krulvis.dagannothkings.Data.OFFENSIVE_PRAY_PREFIX_OPTION
+import org.powbot.krulvis.dagannothkings.Data.SAFESPOT_REX
 import org.powbot.krulvis.dagannothkings.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
 
@@ -32,6 +33,7 @@ fun main() {
 @ScriptConfiguration.List(
     [
         ScriptConfiguration(KILL_PREFIX_OPTION + "Rex", "Kill Rex", OptionType.BOOLEAN, defaultValue = "true"),
+        ScriptConfiguration(SAFESPOT_REX, "Lure rex to safespot", OptionType.BOOLEAN, defaultValue = "true"),
         ScriptConfiguration(EQUIPMENT_PREFIX_OPTION + "Rex", "Equipment for Rex", OptionType.EQUIPMENT),
         ScriptConfiguration(
             OFFENSIVE_PRAY_PREFIX_OPTION + "Rex", "Offensive Rex Prayer", OptionType.STRING,
@@ -81,6 +83,7 @@ class DagannothKings : ATScript() {
 
     @ValueChanged(KILL_PREFIX_OPTION + "Rex")
     fun onRex(rex: Boolean) {
+        updateVisibility(SAFESPOT_REX, rex)
         updateVisibility(OFFENSIVE_PRAY_PREFIX_OPTION + "Rex", rex)
         updateVisibility(EQUIPMENT_PREFIX_OPTION + "Rex", rex)
     }
@@ -116,15 +119,18 @@ class DagannothKings : ATScript() {
 
     var kills = 0
     var target = Npc.Nil
-    val animMap: MutableMap<Int, Int> = mutableMapOf()
+    val animMap: MutableMap<Data.King, Int> = mutableMapOf()
 
     //Rex settings
     var lureTile: Tile = Tile.Nil
     var safeTile: Tile = Tile.Nil
     var rexTile: Tile = Tile.Nil
+    val safeSpotRex: Boolean by lazy { getOption(SAFESPOT_REX) }
 
     @Subscribe
     fun onGameTick(e: TickEvent) {
+        if (ScriptManager.state() != ScriptState.Running) return
+        val me = me
         val targ = me.interacting()
         if (targ is Npc && targ.valid()) {
             target = targ
@@ -136,6 +142,15 @@ class DagannothKings : ATScript() {
             lureTile = ladder.tile.derive(29, 1)
             safeTile = ladder.tile.derive(28, -8)
             rexTile = ladder.tile.derive(28, -4)
+        } else if (lureTile.distance() < 50) {
+            //Inside Kings lair
+            val aliveKings = Npcs.stream().nameContains("Dagannoth")
+                .filtered { it.king()?.kill == true }.toList()
+                .sortedBy { it.king()!!.ordinal }
+            val attackingMe = aliveKings.filter { it.interacting() == me }
+            if (attackingMe.any { it.king() != Data.King.Rex || !safeSpotRex }){
+
+            }
         }
 
         watchForLoot()
@@ -156,18 +171,20 @@ class DagannothKings : ATScript() {
                 || (Food.forName(name) != null)
     }
 
-    val deathTimer = Timer(3000)
+
     @Subscribe
     fun onNpcAnimation(e: NpcAnimationChangedEvent) {
         val npc = e.npc
-        if (npc.name == "Spinolyp") return
+        val king = npc.king() ?: return
         val anim = e.animation
-        val lastCycle = animMap.getOrDefault(anim, Game.cycle())
+        val lastCycle = animMap.getOrDefault(king, Game.cycle())
         logger.info("NpcAnimationEvent(npc=${npc.name}, animation=${anim}, cycles=${Game.cycle() - lastCycle})")
-        animMap[anim] = Game.cycle()
-        if (deathTimer.isFinished() && npc.king() != null && npc == target && npc.dead()) {
+        if (anim == king.offensiveAnim) {
+            animMap[king] = Game.cycle()
+            logger.info("Attack from king=$king")
+        }
+        if (anim == KING_DEATH_ANIM && npc == target && npc.dead()) {
             kills++
-            deathTimer.reset()
         }
     }
 
