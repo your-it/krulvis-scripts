@@ -14,9 +14,11 @@ import org.powbot.krulvis.dagannothkings.Data.King.Companion.king
 
 class Attack(script: DagannothKings) : Leaf<DagannothKings>(script, "Attack") {
 
-    val attackTimer = Timer(2400)
+    private val attackTimer = Timer(2400)
+
     override fun execute() {
         val target = script.getNewTarget()
+        val interactTile = me.tile()
         target.bounds(-32, 32, -222, -30, -32, 32)
         if (!target.valid() || !attackTimer.isFinished() || target.distance() > 14 || Movement.moving()) return
 
@@ -25,11 +27,13 @@ class Attack(script: DagannothKings) : Leaf<DagannothKings>(script, "Attack") {
             .any { it.distance() < target.distance() || it.distanceTo(target) <= 4 }
         if (otherCloser) {
             script.logger.info("Not attacking because there's another closer")
-        } else if (target.interact("Attack", useMenu = true)) {
+        } else if (target.interact("Attack", target.name(), useMenu = true)) {
             attackTimer.reset()
             if (waitFor { me.interacting() == target } && target.king() == Data.King.Rex && target.tile().x < script.rexTile.x && script.lureTile.distance() > 0) {
                 Movement.step(script.lureTile, 0)
             }
+        } else if (waitFor { Movement.moving() }) {
+            Movement.step(interactTile)
         }
     }
 }
