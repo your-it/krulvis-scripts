@@ -34,6 +34,7 @@ fun main() {
     "Kills Dagannoth Kings",
     version = "1.0.0",
     scriptId = "f6ac533c-0aee-4992-aea7-10460ed56c8c",
+    category = ScriptCategory.Combat,
     priv = true
 )
 @ScriptConfiguration.List(
