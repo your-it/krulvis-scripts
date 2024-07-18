@@ -44,7 +44,7 @@ class ShouldSpec(script: Woodcutter) : Branch<Woodcutter>(script, "Should Spec?"
     }
 
     val SPECIAL_ATTACK_AXES = intArrayOf(
-        6739, 25378, 13241, 13242, 25066, 25371, 23673, 23675
+        6739, 25378, 13241, 13242, 25066, 28217, 28220, 25371, 23673, 23675
     )
 
     val delay = DelayHandler(5000, 35000)

@@ -127,6 +127,7 @@ class DagannothKings : ATScript() {
     var kills = 0
     var target = Npc.Nil
     val animMap: MutableMap<Data.King, Int> = mutableMapOf()
+    var forcedProtectionPrayer: Prayer.Effect? = null
 
     //Rex settings
     var lureTile: Tile = Tile.Nil
@@ -151,16 +152,27 @@ class DagannothKings : ATScript() {
             rexTile = ladder.tile.derive(28, -4)
         } else if (lureTile.distance() < 50) {
             //Inside Kings lair
-            val aliveKings = Npcs.stream().nameContains("Dagannoth")
-                .filtered { it.king()?.kill == true }.toList()
-                .sortedBy { it.king()!!.ordinal }
-            val attackingMe = aliveKings.filter { it.interacting() == me }
-            if (attackingMe.any { it.king() != Data.King.Rex || !safeSpotRex }) {
-
-            }
+            setForcedProtection()
         }
 
         watchForLoot()
+    }
+
+    private fun setForcedProtection() {
+        val offensiveKings = Npcs.stream().nameContains("Dagannoth")
+            .filtered { it.king()?.kill == true && it.interacting() == me }
+            .mapNotNull { it.king() }.sortedBy { it.ordinal }
+            .filter { it != Data.King.Rex || !safeSpotRex }
+        if (offensiveKings.isNotEmpty()) {
+            val cycle = Game.cycle()
+            forcedProtectionPrayer =
+                offensiveKings.maxByOrNull { cycle - animMap.getOrDefault(it, -1) }?.protectionPrayer ?: return
+            if (!Prayer.prayerActive(forcedProtectionPrayer!!)) {
+                Prayer.prayer(forcedProtectionPrayer!!, true)
+            }
+        } else {
+            forcedProtectionPrayer = null
+        }
     }
 
     private fun watchForLoot() {

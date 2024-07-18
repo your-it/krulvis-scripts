@@ -17,7 +17,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
     description = "Chops any tree, anywhere",
     author = "Krulvis",
     markdownFileName = "Woodcutter.md",
-    version = "1.1.4",
+    version = "1.1.5",
     scriptId = "2834ffcc-a81d-4c08-b163-84cc9c8ef130",
     category = ScriptCategory.Woodcutting
 )

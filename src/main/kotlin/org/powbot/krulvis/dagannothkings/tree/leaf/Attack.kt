@@ -28,10 +28,10 @@ class Attack(script: DagannothKings) : Leaf<DagannothKings>(script, "Attack") {
         if (otherCloser) {
             script.logger.info("Not attacking because there's another closer")
         } else if (target.interact("Attack", target.name(), useMenu = true)) {
-            attackTimer.reset()
             if (waitFor { me.interacting() == target } && target.king() == Data.King.Rex && target.tile().x < script.rexTile.x && script.lureTile.distance() > 0) {
                 Movement.step(script.lureTile, 0)
             }
+            attackTimer.reset()
         } else if (waitFor { Movement.moving() }) {
             Movement.step(interactTile)
         }
