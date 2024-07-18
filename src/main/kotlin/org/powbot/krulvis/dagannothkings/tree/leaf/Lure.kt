@@ -12,7 +12,7 @@ class Lure(script: DagannothKings) : Leaf<DagannothKings>(script, "Fighting") {
 		val ladderTile = Data.getKingsLadderDown().tile
 		val deltaY = rex.y - ladderTile.y
 		script.logger.info("Distance to rex=${rex.distance()}, deltaY=${deltaY}")
-		if (deltaY < -4 || rex.distance() > 6) {
+		if (deltaY < -4 || rex.distance() > 8) {
 			//Have to stand on lureTile
 			if (script.lureTile.distance() > 0) {
 				Movement.step(script.lureTile, 0)

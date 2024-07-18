@@ -162,6 +162,22 @@ interface Item {
 		const val SEED_BOX_OPEN = 24482
 		const val IMCANDO_HAMMER = 25644
 		const val BLESSED_BONE_SHARD = 29381
+
+		val RARE_DROP_TABLE = arrayOf(
+			"Dragon spear",
+			"Rune kiteshield",
+			"Dragon med helm",
+			"Shield left half",
+			"Dragonstone",
+			"Rune sq shield",
+			"Law rune",
+			"Rune battleaxe",
+			"Rune 2h sword",
+			"Nature rune",
+			"Runite bar",
+			"Loop half of key",
+			"Tooth half of key"
+		)
 	}
 
 }

@@ -5,6 +5,7 @@ import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Prayer
+import org.powbot.krulvis.api.extensions.items.Item.Companion.RARE_DROP_TABLE
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 
 object Data {
@@ -12,13 +13,6 @@ object Data {
 	const val KILL_PREFIX_OPTION = "Kill"
 	const val EQUIPMENT_PREFIX_OPTION = "Equipment"
 	const val OFFENSIVE_PRAY_PREFIX_OPTION = "OffensivePrayer"
-
-	val REX_LURE_Y = 100
-
-	// Lure tile = deltaX=29, deltaY=1
-	// Safespot = deltaX=28, deltaY=-8
-	// Rex spot = deltaX=
-
 
 	val PEEK_TILE = Tile(1917, 4363, 0)
 	val ROOT_TILE = Tile(1918, 4366, 0)
@@ -29,8 +23,8 @@ object Data {
 	fun getKingsLadderDown() = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Kings' ladder").action("Climb-up").first()
 
 	enum class King(val protectionPrayer: Prayer.Effect, var offensivePrayer: Prayer.Effect?, var equipment: List<EquipmentRequirement>, var kill: Boolean) {
-		Supreme(Prayer.Effect.PROTECT_FROM_MISSILES, Prayer.Effect.PIETY, emptyList(), true),
-		Rex(Prayer.Effect.PROTECT_FROM_MELEE, Prayer.Effect.MYSTIC_MIGHT, emptyList(), false),
+		Supreme(Prayer.Effect.PROTECT_FROM_MISSILES, Prayer.Effect.PIETY, emptyList(), false),
+		Rex(Prayer.Effect.PROTECT_FROM_MELEE, Prayer.Effect.MYSTIC_MIGHT, emptyList(), true),
 		Prime(Prayer.Effect.PROTECT_FROM_MAGIC, Prayer.Effect.EAGLE_EYE, emptyList(), false),
 		;
 
@@ -49,6 +43,7 @@ object Data {
 		"Iron ore",
 		"Coal",
 		"Mithril ore",
-		"Steel bar"
+		"Steel bar",
+		*RARE_DROP_TABLE
 	)
 }

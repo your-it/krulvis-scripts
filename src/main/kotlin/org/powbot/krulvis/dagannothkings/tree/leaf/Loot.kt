@@ -3,6 +3,7 @@ package org.powbot.krulvis.dagannothkings.tree.leaf
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getCount
+import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -11,12 +12,12 @@ import org.powbot.krulvis.dagannothkings.DagannothKings
 class Loot(script: DagannothKings) : Leaf<DagannothKings>(script, "Looting") {
 	override fun execute() {
 		val loots = script.lootList.sortedWith(compareBy<GroundItem> { it.distance() }
-			.thenByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() })
+			.thenByDescending { it.getPrice() * it.stackSize() })
 		script.logger.info("Looting=[${loots.joinToString()}]")
-
+val worseFood = Food.getFirstFood()
 		loots.forEachIndexed { i, gi ->
 			if (Inventory.isFull() && !gi.canFit()) {
-				Food.getFirstFood()?.eat()
+				worseFood?.eat()
 			}
 			val id = gi.id()
 			val currentCount = Inventory.getCount(id)
@@ -26,6 +27,7 @@ class Loot(script: DagannothKings) : Leaf<DagannothKings>(script, "Looting") {
 		}
 		script.lootList.removeAll { loot ->
 			GroundItems.stream().at(loot.tile).name(loot.name()).none { gi -> gi.stackSize() == loot.stackSize() }
+					|| (Food.forName(loot.name())?.ordinal ?: 99) <= (worseFood?.ordinal ?: -1)
 		}
 		script.logger.info("Remaining loot=[${script.lootList.joinToString()}]")
 	}

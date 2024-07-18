@@ -3,6 +3,7 @@ package org.powbot.krulvis.lizardshamans
 import org.powbot.api.Area
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Npc
+import org.powbot.krulvis.api.extensions.items.Item.Companion.RARE_DROP_TABLE
 import org.powbot.util.TransientGetter2D
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -49,19 +50,7 @@ object Data {
 		"Brimstone key",
 		"Long bone",
 		"Curved bone",
-		"Dragon spear",
-		"Rune kiteshield",
-		"Dragon med helm",
-		"Shield left half",
-		"Dragonstone",
-		"Rune sq shield",
-		"Law rune",
-		"Rune battleaxe",
-		"Rune 2h sword",
-		"Nature rune",
-		"Runite bar",
-		"Loof half of key",
-		"Tooth half of key"
+		*RARE_DROP_TABLE
 	)
 
 	enum class Direction(val x: Int, val y: Int) {

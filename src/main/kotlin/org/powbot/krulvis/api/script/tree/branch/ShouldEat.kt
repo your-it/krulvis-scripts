@@ -23,6 +23,7 @@ class ShouldEat<S : ATScript>(
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Eating") {
 		val count = food!!.getInventoryCount()
 		if (food!!.eat()) {
+			eatTimer.reset()
 			nextEatExtra = Random.nextInt(1, 8)
 			Condition.wait({ food!!.getInventoryCount() < count }, 250, 15)
 		}
