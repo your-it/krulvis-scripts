@@ -12,6 +12,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Equipment
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
@@ -117,7 +118,7 @@ class DagannothKings : ATScript() {
 		val name = name()
 		return name in Data.LOOT
 			|| (name == "Coins" && stackSize() > 1000)
-			|| (Inventory.emptySlotCount() > 5 && name == "Bass")
+			|| (Inventory.emptySlotCount() > 5 && Food.forName(name) != null)
 	}
 
 	@Subscribe
