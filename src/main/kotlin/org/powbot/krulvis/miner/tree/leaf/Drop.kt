@@ -9,22 +9,23 @@ import org.powbot.krulvis.miner.Miner
 
 class Drop(script: Miner) : Leaf<Miner>(script, "Drop") {
 
-    override fun execute() {
-        Inventory.dropExcept(*Data.TOOLS)
-    }
+	val UNIDENTIFIED_MINERALS = 21341
+	override fun execute() {
+		Inventory.dropExcept(*Data.TOOLS, UNIDENTIFIED_MINERALS)
+	}
 
-    fun Inventory.dropExcept(vararg ids: Int): Boolean {
-        if (!Game.tab(Game.Tab.INVENTORY)) {
-            return false
-        }
-        if (stream().filtered { it.id() !in ids }.isEmpty()) {
-            return true
-        }
-        items().forEach {
-            if (it.id() !in ids) {
-                it.click("Drop")
-            }
-        }
-        return waitFor { stream().filter { it.id() !in ids }.isEmpty() }
-    }
+	fun Inventory.dropExcept(vararg ids: Int): Boolean {
+		if (!Game.tab(Game.Tab.INVENTORY)) {
+			return false
+		}
+		if (stream().filtered { it.id() !in ids }.isEmpty()) {
+			return true
+		}
+		items().forEach {
+			if (it.id() !in ids) {
+				it.click("Drop")
+			}
+		}
+		return waitFor { stream().none { it.id() !in ids } }
+	}
 }
