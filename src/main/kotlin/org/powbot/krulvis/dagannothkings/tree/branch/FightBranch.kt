@@ -1,11 +1,13 @@
 package org.powbot.krulvis.dagannothkings.tree.branch
 
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.tree.branch.ShouldEat
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Timer
@@ -24,7 +26,7 @@ class FightingKing(script: DagannothKings) : Branch<DagannothKings>(script, "Fig
 }
 
 class ShouldLure(script: DagannothKings) : Branch<DagannothKings>(script, "LureRex?") {
-	override val failedComponent: TreeComponent<DagannothKings> = Fight(script)
+	override val failedComponent: TreeComponent<DagannothKings> = ShouldEat(script, ShouldSipPotion(script, Fight(script)))
 	override val successComponent: TreeComponent<DagannothKings> = Lure(script)
 
 	override fun validate(): Boolean {
@@ -77,6 +79,6 @@ class ShouldLoot(script: DagannothKings) : Branch<DagannothKings>(script, "Shoul
 	override val successComponent: TreeComponent<DagannothKings> = Loot(script)
 
 	override fun validate(): Boolean {
-		return script.lootList.isNotEmpty()
+		return script.lootList.isNotEmpty() && script.lootList.any { Food.forName(it.name()) == null || Inventory.emptySlotCount() > 0}
 	}
 }
