@@ -15,6 +15,7 @@
 - **Magic & Ranged**
 - **Warrior guild re-entering for defender**
 - **Stop after finishing slayer task**
+- **Kills superiors** (does not avoid projectiles)
 
 ## Options
 
@@ -55,7 +56,7 @@
 - Energy
 - Super energy
 - Stamina
-- Ranged, Bastion, Divine Bastion
+- (divine) Ranged, (divine) Bastion
 - Combat, Attack, Strength, Defence (+super variants) (+divine variants)
 - Prayer (QuickPray is turned on during combat if these are taken)
 - Antipoison, Super antipoison
