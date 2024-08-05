@@ -347,6 +347,7 @@ class Fighter : ATScript() {
 
     @Subscribe
     fun onTickEvent(_e: TickEvent) {
+        projectiles.removeAll { !it.valid() }
         val interacting = me.interacting()
         if (interacting is Npc && interacting != Npc.Nil) {
             currentTarget = interacting
@@ -407,6 +408,17 @@ class Fighter : ATScript() {
                     slayBracelet.fclick()
                 }
             }
+        }
+    }
+
+    val projectiles = mutableListOf<Projectile>()
+    var projectileSafespot = Tile.Nil
+
+    @Subscribe
+    fun onProjectile(e: ProjectileDestinationChangedEvent) {
+        if (e.target() == Actor.Nil && e.destination().distance() < 2) {
+            logger.info("Dangerous projectile spawned! tile=${e.destination()}")
+            projectiles.add(e.projectile)
         }
     }
 
