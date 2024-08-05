@@ -13,47 +13,51 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.DARK_KEY
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_MED_HELM
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_SPEAR
 import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_WARHAMMER
+import org.powbot.krulvis.api.extensions.items.Item.Companion.LEAF_BLADED_BATTLEAXE
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SHIELD_LEFT_HALF
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.utils.Utils.sleep
 
 class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
-	Branch<S>(script, "Should high alch?") {
-	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "High alching") {
-		val alchable = alchable ?: return@SimpleLeaf
-		if (!spell.casting()) {
-			if (spell.cast()) {
-				Utils.waitFor { spell.casting() }
-			}
-		}
-		val price = alchable.getPrice().toDouble()
-		script.logger.info("Alching alchable=${alchable.name()}, with id=${alchable.id}, HA=${alchable.getHighAlchValue()}, GE=${price}, ${alchable.getHighAlchValue() / price * 100}%")
-		if (spell.casting()) {
-			val count = Inventory.stream().id(alchable.id).count()
-			if (alchable.interact("Cast")) {
-				Utils.waitFor { Inventory.stream().id(alchable.id).count() != count }
-			}
-		}
-	}
+    Branch<S>(script, "Should high alch?") {
+    override val successComponent: TreeComponent<S> = SimpleLeaf(script, "High alching") {
+        val alchable = alchable ?: return@SimpleLeaf
+        if (!spell.casting()) {
+            if (spell.cast()) {
+                Utils.waitFor { spell.casting() }
+                sleep(150)
+            }
+        }
+        val price = alchable.getPrice().toDouble()
+        script.logger.info("Alching alchable=${alchable.name()}, with id=${alchable.id}, HA=${alchable.getHighAlchValue()}, GE=${price}, ${alchable.getHighAlchValue() / price * 100}%")
+        if (spell.casting()) {
+            val count = Inventory.stream().id(alchable.id).count()
+            if (alchable.interact("Cast")) {
+                Utils.waitFor { Inventory.stream().id(alchable.id).count() != count }
+            }
+        }
+    }
 
 
-	val spell get() = Magic.Spell.HIGH_ALCHEMY
-	var alchable: Item? = null
-	fun alchable(): Item? {
-		val lootIds = script.painter.paintBuilder.items
-			.filter { row -> row.any { it is InventoryItemPaintItem } }
-			.map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
-			.toIntArray()
-		return Inventory.stream().id(*lootIds).firstOrNull {
-			val value = it.getHighAlchValue()
-			it.id !in skip && value > 250 && !it.stackable() && value / it.getPrice().toDouble() > .9
-		}
-	}
+    val spell get() = Magic.Spell.HIGH_ALCHEMY
+    var alchable: Item? = null
+    fun alchable(): Item? {
+        val lootIds = script.painter.paintBuilder.items
+            .filter { row -> row.any { it is InventoryItemPaintItem } }
+            .map { row -> (row.first { it is InventoryItemPaintItem } as InventoryItemPaintItem).itemId }
+            .toIntArray()
+        return Inventory.stream().id(*lootIds).firstOrNull {
+            val value = it.getHighAlchValue()
+            it.id !in skip && value > 250 && !it.stackable() && value / it.getPrice().toDouble() > .9
+        }
+    }
 
-	val skip = intArrayOf(DARK_KEY, SHIELD_LEFT_HALF, DRAGON_MED_HELM, DRAGON_SPEAR, DRAGON_WARHAMMER)
+    val skip =
+        intArrayOf(DARK_KEY, LEAF_BLADED_BATTLEAXE, SHIELD_LEFT_HALF, DRAGON_MED_HELM, DRAGON_SPEAR, DRAGON_WARHAMMER)
 
-	override fun validate(): Boolean {
-		alchable = alchable()
-		return alchable != null && spell.canCast()
-	}
+    override fun validate(): Boolean {
+        alchable = alchable()
+        return alchable != null && spell.canCast()
+    }
 }
