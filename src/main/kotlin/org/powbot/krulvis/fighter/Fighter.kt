@@ -286,7 +286,7 @@ class Fighter : ATScript() {
 	private val monsters by lazy {
 		getOption<List<NpcActionEvent>>(MONSTERS_OPTION).map { it.name }
 	}
-	val monsterDestroyed by lazy { getOption<Boolean>(MONSTER_AUTO_DESTROY_OPTION) }
+	val autoDestroyMonster by lazy { getOption<Boolean>(MONSTER_AUTO_DESTROY_OPTION) }
 	val monsterTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }
 	var currentTarget: Npc = Npc.Nil
 	val aggressionTimer = Timer(15 * 60 * 1000)
@@ -353,6 +353,7 @@ class Fighter : ATScript() {
 
 	@Subscribe
 	fun onTickEvent(_e: TickEvent) {
+		if (ScriptManager.state() != ScriptState.Running) return
 		val time = System.currentTimeMillis()
 		projectiles.forEach {
 			if (time - it.second > projectileDuration) {
@@ -368,7 +369,7 @@ class Fighter : ATScript() {
 			if (deathWatcher == null || !deathWatcher.active) {
 				val newDW = NpcDeathWatcher(
 					interacting,
-					monsterDestroyed
+					autoDestroyMonster
 				) {
 					kills++
 					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
