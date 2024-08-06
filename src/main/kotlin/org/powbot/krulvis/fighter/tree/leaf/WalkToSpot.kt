@@ -12,7 +12,7 @@ class WalkToSpot(script: Fighter) : Leaf<Fighter>(script, "Walking to spot") {
 		val npcTeleport = script.monsterTeleport
 		val spot = script.centerTile()
 		val nearby = script.nearbyMonsters()
-		if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) 0 else script.radius)) {
+		if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) script.safespotRadius else script.killRadius)) {
 			if (spot.distance() <= 10 && spot.reachable()) {
 				Movement.step(spot, 0)
 				return

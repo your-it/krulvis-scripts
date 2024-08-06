@@ -67,7 +67,7 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
 		if (script.useSafespot) {
 			return script.centerTile() == Players.local().tile()
 		}
-		return script.centerTile().distance() <= script.radius
+		return script.centerTile().distance() <= script.killRadius
 	}
 }
 
@@ -77,6 +77,6 @@ class ShouldHop(script: Fighter) : Branch<Fighter>(script, "Should hop?") {
 	override val failedComponent: TreeComponent<Fighter> = ShouldSipPotion(script, Attack(script))
 
 	override fun validate(): Boolean {
-		return script.hopFromPlayers && Players.stream().within(script.centerTile(), script.radius).notLocalPlayer().count() >= script.playerHopAmount
+		return script.hopFromPlayers && Players.stream().within(script.centerTile(), script.killRadius).notLocalPlayer().count() >= script.playerHopAmount
 	}
 }
