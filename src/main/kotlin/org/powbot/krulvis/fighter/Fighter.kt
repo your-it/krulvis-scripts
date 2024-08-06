@@ -328,7 +328,7 @@ class Fighter : ATScript() {
 	}
 	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
 	fun shouldReturnToSafespot() =
-		useSafespot && centerTile() != Players.local().tile() && (walkBack || Players.local().healthBarVisible())
+		useSafespot && centerTile().distance() > safespotRadius && (walkBack || Players.local().healthBarVisible())
 
 	//Hop from players options
 	val hopFromPlayers by lazy { getOption<Boolean>(HOP_FROM_PLAYERS_OPTION) }
