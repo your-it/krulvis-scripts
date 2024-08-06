@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 
 const val IDENTIFYER = "fairy ring"
 const val FAIRY_RING_DJR = "DJR $IDENTIFYER (POH)"
+const val FAIRY_RING_BLS = "BLS $IDENTIFYER (POH)"
 
 class FairyRingTeleport(val combination: String) : HouseTeleport {
 

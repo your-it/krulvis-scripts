@@ -7,10 +7,7 @@ import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.NpcAnimationChangedEvent
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.script.OptionType
-import org.powbot.api.script.ScriptConfiguration
-import org.powbot.api.script.ScriptManifest
-import org.powbot.api.script.ScriptState
+import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
@@ -21,13 +18,16 @@ import org.powbot.krulvis.api.teleports.Teleport
 import org.powbot.krulvis.api.teleports.TeleportMethod
 import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
+import org.powbot.krulvis.api.teleports.poh.openable.FAIRY_RING_BLS
 import org.powbot.krulvis.api.teleports.poh.openable.FAIRY_RING_DJR
 import org.powbot.krulvis.lizardshamans.Data.LOOT
 import org.powbot.krulvis.lizardshamans.event.JumpEvent
 import org.powbot.krulvis.lizardshamans.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
 
-@ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer", version = "1.0.0", priv = true, scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19")
+@ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer",
+	category = ScriptCategory.Combat, version = "1.0.0", priv = true,
+	scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19")
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),
 	ScriptConfiguration("Inventory", "What to take with?", optionType = OptionType.INVENTORY),
@@ -35,7 +35,7 @@ import org.powbot.mobile.script.ScriptManager
 	ScriptConfiguration("BankTeleport", "How to get to bank?", optionType = OptionType.STRING,
 		allowedValues = [CASTLE_WARS_JEWELLERY_BOX, EDGEVILLE_MOUNTED_GLORY], defaultValue = CASTLE_WARS_JEWELLERY_BOX),
 	ScriptConfiguration("ShamanTeleport", "How to get to Shamans?", OptionType.STRING,
-		allowedValues = [FAIRY_RING_DJR], defaultValue = FAIRY_RING_DJR),
+		allowedValues = [FAIRY_RING_BLS, FAIRY_RING_DJR], defaultValue = FAIRY_RING_DJR),
 ])
 class LizardShamans : ATScript() {
 	override fun createPainter(): ATPaint<*> = LizardShamanPainter(this)
