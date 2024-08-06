@@ -4,6 +4,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.Npc
+import org.powbot.krulvis.api.ATContext.debug
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -32,7 +33,7 @@ class NpcDeathWatcher(val npc: Npc, private val autoDestroyed: Boolean, private 
 			onDeath()
 			latch.countDown()
 		} else if (!npc.valid()) {
-//            debug("NpcWatcher stopped=$npc")
+//			debug("NpcWatcher npc not valid anymore=$npc, animation=${npc.animation()}, health=${npc.healthPercent()}")
 			latch.countDown()
 		} else {
 //            debug("Watching NPC=${npc.name}, HP Visible=${npc.healthBarVisible()}, Percent=${npc.healthPercent()}")
