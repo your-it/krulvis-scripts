@@ -1,11 +1,11 @@
 package org.powbot.krulvis.fighter
 
 import org.powbot.api.Color
+import org.powbot.api.Tile
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.paint.TextPaintItem
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.fighter.slayer.Slayer
@@ -24,7 +24,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 			.addString("Npc Death Watchers") {
 				script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
 			}
-			.addString("Kills") {"${script.kills}, ${script.timer.getPerHour(script.kills)}/hr"}
+			.addString("Kills") { "${script.kills}, ${script.timer.getPerHour(script.kills)}/hr" }
 			.trackSkill(Skill.Attack)
 			.trackSkill(Skill.Strength)
 			.trackSkill(Skill.Defence)
@@ -53,5 +53,12 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 		val lootWatcher = script.lootWachter ?: return
 		if (lootWatcher.active)
 			lootWatcher.tile.drawOnScreen(outlineColor = Color.CYAN)
+		val projectiles = script.projectiles
+		if (projectiles.isNotEmpty()) {
+			projectiles.forEach { (projectile, time) -> projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}") }
+			if (script.projectileSafespot != Tile.Nil) {
+				script.projectileSafespot.drawOnScreen(outlineColor = Color.GREEN)
+			}
+		}
 	}
 }

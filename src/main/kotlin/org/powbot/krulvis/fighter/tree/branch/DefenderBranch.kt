@@ -15,7 +15,7 @@ import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.script.ScriptManager
 
 class GettingDefenders(script: Fighter) : Branch<Fighter>(script, "Getting defenders") {
-	override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
+	override val failedComponent: TreeComponent<Fighter> = ShouldDodgeProjectile(script)
 	override val successComponent: TreeComponent<Fighter> = ShouldExitRoom(script)
 
 	override fun validate(): Boolean {
@@ -75,7 +75,7 @@ class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should 
 		}
 	}
 
-	override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
+	override val failedComponent: TreeComponent<Fighter> = ShouldDodgeProjectile(script)
 
 	override fun validate(): Boolean {
 		return Defender.lastDefenderIndex == 6 && Varpbits.varpbit(788) and 4096 != 4096

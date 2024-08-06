@@ -1,18 +1,14 @@
 package org.powbot.krulvis.test
 
+import com.google.common.eventbus.Subscribe
 import org.powbot.api.Tile
-import org.powbot.api.event.GameActionEvent
-import org.powbot.api.event.GameObjectActionEvent
-import org.powbot.api.event.InventoryChangeEvent
-import org.powbot.api.event.MessageEvent
-import org.powbot.api.rt4.Component
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Npc
-import org.powbot.api.rt4.Objects
+import org.powbot.api.event.*
+import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPath
 import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.AbstractScript
 import org.powbot.api.script.ScriptManifest
+import org.powbot.krulvis.api.ATContext.me
 import kotlin.system.measureTimeMillis
 
 @ScriptManifest(name = "Krul Test Loop", version = "1.0.1", description = "", priv = true)
@@ -45,13 +41,28 @@ class LoopScript : AbstractScript() {
         logger.info("MSG: \n Type=${e.type}, msg=${e.message}")
     }
 
+    @Subscribe
+    fun onProject(e: ProjectileDestinationChangedEvent){
+        logger.info("ProjectileEvent id=${e.id}, tile=${e.target()}, destination=${e.destination()}")
+    }
+
+    @Subscribe
+    fun onTick(e: TickEvent) {
+        val tile = me.tile()
+        val projectile = Projectiles.stream().filtered { it.tile() == tile }.first()
+        if(projectile.valid()){
+            logger.info("Found projectile going towards me")
+            logger.info("Projectile: id=${projectile.id}")
+        }
+    }
+
     override fun poll() {
-        logger.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
+//        logger.info("Last loop at: $lastLoop was ${System.currentTimeMillis() - lastLoop}ms ago")
         var obj: GameObject? = null
         val timeToFindObj = measureTimeMillis {
             obj = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Portal").first()
         }
-        logger.info("Found portal in $timeToFindObj ms")
+//        logger.info("Found portal in $timeToFindObj ms")
         lastLoop = System.currentTimeMillis()
     }
 

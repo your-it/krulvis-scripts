@@ -10,6 +10,15 @@ import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.SUPERIORS
 import org.powbot.krulvis.fighter.tree.leaf.*
 
+class ShouldDodgeProjectile(script: Fighter) : Branch<Fighter>(script, "ShouldDodgeProjectile?") {
+	override val failedComponent: TreeComponent<Fighter> = IsKilling(script)
+	override val successComponent: TreeComponent<Fighter> = DodgeProjectile(script)
+
+	override fun validate(): Boolean {
+		return script.projectiles.any { it.first.destination().distance() <= 2 }
+	}
+}
+
 class IsKilling(script: Fighter) : Branch<Fighter>(script, "Killing?") {
 	override val failedComponent: TreeComponent<Fighter> = ShouldReanimate(script)
 	override val successComponent: TreeComponent<Fighter> = ShouldSipPotion(script, FightingSuperior(script))
