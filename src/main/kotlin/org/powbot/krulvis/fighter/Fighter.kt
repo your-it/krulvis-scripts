@@ -42,7 +42,7 @@ import kotlin.random.Random
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.5.3",
+	version = "1.5.4",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -84,6 +84,10 @@ import kotlin.random.Random
 		ScriptConfiguration(
 			USE_SAFESPOT_OPTION, "Do you want to force a safespot?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
+			SAFESPOT_RADIUS, "Safespot allowed radius",
+			optionType = OptionType.INTEGER, defaultValue = "0", visible = false
 		),
 		ScriptConfiguration(
 			WALK_BACK_TO_SAFESPOT_OPTION,
@@ -169,6 +173,7 @@ class Fighter : ATScript() {
 	@ValueChanged(USE_SAFESPOT_OPTION)
 	fun onSafeSpotChange(useSafespot: Boolean) {
 		updateVisibility(WALK_BACK_TO_SAFESPOT_OPTION, useSafespot)
+		updateVisibility(SAFESPOT_RADIUS, useSafespot)
 	}
 
 	@ValueChanged(HOP_FROM_PLAYERS_OPTION)
@@ -267,7 +272,7 @@ class Fighter : ATScript() {
 
 
 	fun loot(): List<GroundItem> =
-		if (ironman) lootList else GroundItems.stream().within(centerTile(), radius).filter { it.isLoot() }
+		if (ironman) lootList else GroundItems.stream().within(centerTile(), killRadius).filter { it.isLoot() }
 
 	var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
 
@@ -289,7 +294,7 @@ class Fighter : ATScript() {
 
 	private val monsterNames: List<String> get() = if (superiorAppeared) SUPERIORS else monsters
 	fun nearbyMonsters(): List<Npc> =
-		Npcs.stream().within(centerTile(), radius.toDouble()).name(*monsterNames.toTypedArray()).nearest().list()
+		Npcs.stream().within(centerTile(), killRadius.toDouble()).name(*monsterNames.toTypedArray()).nearest().list()
 
 	private fun Npc.attackingOtherPlayer(): Boolean {
 		val interacting = interacting()
@@ -309,7 +314,8 @@ class Fighter : ATScript() {
 	}
 
 	//Safespot options
-	val radius by lazy { getOption<Int>(RADIUS_OPTION) }
+	val killRadius by lazy { getOption<Int>(RADIUS_OPTION) }
+	val safespotRadius by lazy { getOption<Int>(SAFESPOT_RADIUS) }
 	val useSafespot by lazy { getOption<Boolean>(USE_SAFESPOT_OPTION) }
 	val walkBack by lazy { getOption<Boolean>(WALK_BACK_TO_SAFESPOT_OPTION) }
 	private val centerTile by lazy {
