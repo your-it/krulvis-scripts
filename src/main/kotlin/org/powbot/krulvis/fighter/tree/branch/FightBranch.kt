@@ -65,7 +65,7 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
 
 	override fun validate(): Boolean {
 		if (script.useSafespot) {
-			return script.centerTile() == Players.local().tile()
+			return script.centerTile().distance() <= script.safespotRadius
 		}
 		return script.centerTile().distance() <= script.killRadius
 	}
