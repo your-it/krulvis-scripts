@@ -340,7 +340,7 @@ class Fighter : ATScript() {
 	private val usingPrayer by lazy { prayAtNearbyAltar || requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
 	fun canActivatePrayer() = usingPrayer && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivatePrayer() =
-		Prayer.quickPrayer() && aggressionTimer.isFinished() && useSafespot
+		Prayer.quickPrayer() && aggressionTimer.isFinished() && useSafespot && !me.healthBarVisible()
 
 
 	//Custom slayer options
