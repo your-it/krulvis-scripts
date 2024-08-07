@@ -13,6 +13,8 @@ enum class GiantsFoundryItem(override val ids: IntArray) : Item {
     RUNITE(intArrayOf(Bar.RUNITE.id,)
     );
 
+    override val stackable: Boolean = false
+
     val giantsFoundryCount: Int
         get() = Varpbits.varpbit(GIANTS_FOUNDRY_VARP, 5 * METAL_ITEMS.indexOf(this), 31)
 

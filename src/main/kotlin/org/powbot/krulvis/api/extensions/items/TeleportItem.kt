@@ -1,10 +1,7 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.Random
-import org.powbot.api.requirement.ItemRequirement
-import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Equipment
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -12,23 +9,25 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 
 enum class TeleportItem(
 	val itemName: String,
+	override val slot: Equipment.Slot,
 	override vararg val ids: Int,
-) : EquipmentItem {
-	GLORY("Glory", 11978, 11976, 1712, 1710, 1708, 1706),
-	GAMES("Games", 3853, 3855, 3857, 3859, 3861, 3863, 3865, 3867),
-	ROD("Duel Ring", 2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566),
-	ROW("Wealth Ring", 11980, 11982, 11984, 11986, 11988),
-	SKILLS("Skills Necklace", 11968, 11970, 11105, 11107, 11109, 11111),
-	WARRIORS("Warriors Bracelet", 11972, 11974, 11118, 11120, 11122, 11124),
-	BURNING("Burning Amulet", 21166, 21169, 21171, 21173, 21175),
-	COMBAT("Combat Bracelet", 11972, 11974, 11118, 11120, 11122, 11124),
-	SLAYER("Slayer ring", 21268, 11866, 11867, 11868, 11869, 11870, 11871, 11872, 11873),
-	ARD_CLOAK("Ardougne Cloak", 13121);
+) : IEquipmentItem {
+	GLORY("Glory", Equipment.Slot.NECK, 11978, 11976, 1712, 1710, 1708, 1706),
+	GAMES("Games", Equipment.Slot.NECK, 3853, 3855, 3857, 3859, 3861, 3863, 3865, 3867),
+	ROD("Duel Ring", Equipment.Slot.RING, 2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566),
+	ROW("Wealth Ring", Equipment.Slot.RING, 11980, 11982, 11984, 11986, 11988),
+	SKILLS("Skills Necklace", Equipment.Slot.NECK, 11968, 11970, 11105, 11107, 11109, 11111),
+	WARRIORS("Warriors Bracelet", Equipment.Slot.HANDS, 11972, 11974, 11118, 11120, 11122, 11124),
+	BURNING("Burning Amulet", Equipment.Slot.NECK, 21166, 21169, 21171, 21173, 21175),
+	COMBAT("Combat Bracelet", Equipment.Slot.HANDS, 11972, 11974, 11118, 11120, 11122, 11124),
+	SLAYER("Slayer ring", Equipment.Slot.RING, 21268, 11866, 11867, 11868, 11869, 11870, 11871, 11872, 11873),
+	ARD_CLOAK("Ardougne Cloak", Equipment.Slot.CAPE, 13121);
 
 	val bestId: Int = ids[0]
 
 	val worseId: Int = ids[ids.size - 1]
 
+	override val stackable: Boolean = false
 	fun isPartOfSet(id: Int): Boolean {
 		return ids.contains(id)
 	}

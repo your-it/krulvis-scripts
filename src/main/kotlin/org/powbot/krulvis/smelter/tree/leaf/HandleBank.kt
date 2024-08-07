@@ -7,6 +7,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.extensions.items.Bar
+import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RING_OF_FORGING
@@ -72,8 +73,7 @@ class HandleBank(script: Smelter) : Leaf<Smelter>(script, "Handling Bank") {
         }
     }
 
-    val ringOfForging =
-            org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.RING, RING_OF_FORGING)
+    val ringOfForging = EquipmentItem(RING_OF_FORGING, Equipment.Slot.RING)
 
     fun getRequirements(): IntArray {
         val requirements = mutableListOf(script.bar.primary.id)

@@ -2,12 +2,13 @@ package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Equipment.Slot.OFF_HAND
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.extensions.items.Equipment
+import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender
@@ -57,7 +58,7 @@ class ShouldExitRoom(script: Fighter) : Branch<Fighter>(script, "Should Exit Roo
 class ShouldShowRuneDefender(script: Fighter) : Branch<Fighter>(script, "Should show rune defender?") {
 
 	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Show rune defender") {
-		val runeDefender = Equipment(org.powbot.api.rt4.Equipment.Slot.OFF_HAND, Defender.defenders[6])
+		val runeDefender = EquipmentItem(Defender.defenders[6], OFF_HAND)
 		val tile = Tile(2907, 9968, 0)
 		if (runeDefender.inEquipment()) {
 			runeDefender.dequip()

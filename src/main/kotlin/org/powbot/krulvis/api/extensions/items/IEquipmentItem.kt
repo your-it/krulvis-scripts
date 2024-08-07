@@ -7,17 +7,21 @@ import org.powbot.krulvis.api.ATContext.stripBarrowsCharge
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
-import java.io.Serializable
 
-interface EquipmentItem : Item {
+class EquipmentItem(override val id: Int, override val slot: Equipment.Slot) : IEquipmentItem {
+	override val ids: IntArray = intArrayOf(id)
+	override val name: String by lazy { ItemLoader.lookup(id)!!.name().stripBarrowsCharge() }
+	override val stackable: Boolean by lazy { ItemLoader.lookup(id)!!.stackable() }
+}
 
-	val slot: Equipment.Slot?
-		get() = null
+interface IEquipmentItem : Item {
+
+	val slot: Equipment.Slot
 
 	override fun hasWith(): Boolean = inInventory() || inEquipment()
 
 	override fun getCount(countNoted: Boolean): Int {
-		return getInventoryCount(countNoted) + Equipment.stream().nameContains(name).count(true).toInt()
+		return getInventoryCount(false) + getEquipmentCount()
 	}
 
 	fun withdrawAndEquip(stopIfOut: Boolean = false): Boolean {
@@ -39,10 +43,6 @@ interface EquipmentItem : Item {
 		return inEquipment()
 	}
 
-	fun inEquipment(): Boolean {
-		return Equipment.get().any { it.id() in ids || it.name().stripBarrowsCharge() == name }
-	}
-
 	fun equip(wait: Boolean = true): Boolean {
 		if (inInventory()) {
 			val item = Inventory.stream().nameContains(name).first()
@@ -62,13 +62,4 @@ interface EquipmentItem : Item {
 		val equipped = Equipment.stream().nameContains(name).first()
 		return equipped.click()
 	}
-}
-
-class Equipment(
-	override val slot: Equipment.Slot? = null,
-	override vararg val ids: Int
-) : EquipmentItem, Serializable {
-	override val name: String by lazy { ItemLoader.lookup(id)?.name()?.stripBarrowsCharge() ?: "None" }
-
-	constructor(slot: Int, id: Int) : this(Equipment.Slot.forIndex(slot), id)
 }

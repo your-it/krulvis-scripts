@@ -37,6 +37,7 @@ enum class Bar(
 	ADAMANTITE(intArrayOf(2361), 112, 546, 0, Ore.ADAMANTITE, Ore.COAL, 6),
 	RUNITE(intArrayOf(2363), 113, 546, 8, Ore.RUNITE, Ore.COAL, 8);
 
+	override val stackable: Boolean = false
 	val blastFurnaceCount: Int
 		get() = Varpbits.varpbit(bfSettingId) shr shiftAmount and 0x1F
 

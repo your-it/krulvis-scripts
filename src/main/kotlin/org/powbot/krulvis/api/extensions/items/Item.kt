@@ -1,10 +1,12 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.krulvis.api.ATContext.stripBarrowsCharge
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.mobile.rscache.loader.ItemLoader
 
 interface Item {
 
@@ -14,12 +16,15 @@ interface Item {
 
 	val name: String
 
+	val stackable: Boolean
+
 	fun getNotedIds(): IntArray = ids.map { it + 1 }.toIntArray()
 
 	fun notedInBank(): Boolean = Bank.stream().id(*getNotedIds()).isNotEmpty()
 
 	fun inInventory(): Boolean = Inventory.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.isNotEmpty()
 
+	fun inEquipment(): Boolean = Equipment.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.isNotEmpty()
 	fun hasWith(): Boolean
 
 	fun inBank(): Boolean = Bank.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.sumOf { it.stack } > 0
@@ -50,22 +55,27 @@ interface Item {
 		else Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.count(true).toInt()
 	}
 
+	fun getEquipmentCount(): Int {
+		return Equipment.stream()
+			.firstOrNull { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }?.stackSize() ?: 0
+	}
+
 	fun getInventoryId() = Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.first().id
 
 	fun getCount(countNoted: Boolean = true): Int
 
 	fun withdrawExact(amount: Int, worse: Boolean = false, wait: Boolean = true): Boolean {
-		val currentAmount = getInventoryCount(false)
+		val currentAmount = getCount(false)
 		if (currentAmount == amount) {
 			return true
 		} else if (currentAmount > amount) {
 			if (Bank.deposit(getInventoryId(), currentAmount - amount)) {
-				return !wait || waitFor { getInventoryCount(false) == amount }
+				return !wait || waitFor { getCount(false) == amount }
 			}
 		} else {
 			val id = getBankId(worse)
 			if (Bank.withdraw(id, amount - currentAmount)) {
-				return !wait || waitFor { getInventoryCount(false) == amount }
+				return !wait || waitFor { getCount(false) == amount }
 			}
 		}
 		return false
@@ -153,7 +163,7 @@ interface Item {
 		const val EMPTY_SEAS = 11908
 		const val KNIFE = 946
 		const val DARK_KEY = 25244
-		const val LEAF_BLADED_BATTLEAXE =20727
+		const val LEAF_BLADED_BATTLEAXE = 20727
 		const val SHIELD_LEFT_HALF = 2366
 		const val DRAGON_MED_HELM = 1149
 		const val DRAGON_SPEAR = 1249
@@ -179,6 +189,18 @@ interface Item {
 			"Loop half of key",
 			"Tooth half of key"
 		)
+
+		fun forId(id: Int): org.powbot.krulvis.api.extensions.items.Item {
+			return object : org.powbot.krulvis.api.extensions.items.Item {
+				override val ids: IntArray = intArrayOf(id)
+				override val name: String by lazy { ItemLoader.lookup(id)!!.name() }
+				override val stackable: Boolean by lazy { ItemLoader.lookup(id)!!.stackable() }
+
+				override fun hasWith(): Boolean = inInventory() || inEquipment()
+
+				override fun getCount(countNoted: Boolean): Int = getInventoryCount(true) + getEquipmentCount()
+			}
+		}
 	}
 
 }

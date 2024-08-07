@@ -46,6 +46,7 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	}
 
 	fun canEat(): Boolean = missingHP() >= healing
+	override val stackable: Boolean = false
 
 	fun eat(): Boolean {
 		nextEatPercent = Random.nextInt(25, 55)

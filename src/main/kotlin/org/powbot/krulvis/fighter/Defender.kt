@@ -3,6 +3,7 @@ package org.powbot.krulvis.fighter
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
+import org.powbot.krulvis.api.extensions.items.EquipmentItem
 
 object Defender {
 
@@ -23,6 +24,6 @@ object Defender {
 	fun defenderId() = if (lastDefenderIndex >= 0) defenders[lastDefenderIndex] else 0
 
 	fun defender() =
-		org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.OFF_HAND, defenderId())
+		EquipmentItem(defenderId(), Equipment.Slot.OFF_HAND)
 
 }
