@@ -9,6 +9,7 @@ object GemBag : Item {
 
 	override val ids: IntArray = intArrayOf(GEM_BAG_CLOSED, GEM_BAG_OPEN)
 	override val name: String = "Gem bag"
+	override val stackable: Boolean = false
 
 	var shouldEmpty = true
 

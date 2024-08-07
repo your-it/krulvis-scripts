@@ -13,15 +13,14 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.TargetWidget
-import org.powbot.krulvis.api.extensions.items.Equipment
+import org.powbot.krulvis.api.extensions.items.*
+import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.extensions.items.TeleportItem
 import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.teleports.*
 import org.powbot.krulvis.api.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
@@ -29,9 +28,11 @@ import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
 import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
+import org.powbot.krulvis.api.utils.requirements.PotionRequirement
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
-import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.floor
 import kotlin.random.Random
@@ -57,9 +58,51 @@ import kotlin.random.Random
 			INVENTORY_OPTION, "What should your inventory look like?",
 			optionType = OptionType.INVENTORY
 		),
+		ScriptConfiguration("Quick prayer", "When not using multi-style combat\n" +
+			" quick prayer will be used if pots are in inventory", optionType = OptionType.INFO),
 		ScriptConfiguration(
-			EQUIPMENT_OPTION, "What do you want to wear?",
-			optionType = OptionType.EQUIPMENT
+			MULTI_STYLE_OPTION, "Multi-style combat (tortured gorillas, tormented demons)?",
+			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
+			PRAY_AT_ALTAR_OPTION, "Pray at nearby altar.",
+			optionType = OptionType.BOOLEAN, defaultValue = "false"
+		),
+		ScriptConfiguration(
+			USE_MELEE_OPTION, "Use melee gear?",
+			optionType = OptionType.BOOLEAN, defaultValue = "true", visible = false
+		),
+		ScriptConfiguration(
+			EQUIPMENT_OPTION, "What gear do you want to use?",
+			optionType = OptionType.EQUIPMENT, visible = true
+		),
+		ScriptConfiguration(
+			MELEE_PRAYER_OPTION, "What melee offensive prayer to use?",
+			optionType = OptionType.STRING, visible = false, defaultValue = "PIETY", allowedValues = ["NONE", "CHIVALRY", "PIETY"]
+		),
+		ScriptConfiguration(
+			USE_RANGE_OPTION, "Use ranged gear?",
+			optionType = OptionType.BOOLEAN, visible = false
+		),
+		ScriptConfiguration(
+			RANGE_EQUIPMENT_OPTION, "What ranged gear do you want to use?",
+			optionType = OptionType.EQUIPMENT, visible = false
+		),
+		ScriptConfiguration(
+			RANGE_PRAYER_OPTION, "What range offensive prayer to use?",
+			optionType = OptionType.STRING, visible = false, defaultValue = "EAGLE_EYE", allowedValues = ["NONE", "SHARP_EYE", "HAWK_EYE", "EAGLE_EYE", "RIGOUR"]
+		),
+		ScriptConfiguration(
+			USE_MAGE_OPTION, "Use mage gear?",
+			optionType = OptionType.BOOLEAN, visible = false
+		),
+		ScriptConfiguration(
+			MAGE_EQUIPMENT_OPTION, "What mage gear do you want to use?",
+			optionType = OptionType.EQUIPMENT, visible = false
+		),
+		ScriptConfiguration(
+			MAGE_PRAYER_OPTION, "What mage offensive prayer to use?",
+			optionType = OptionType.STRING, visible = false, defaultValue = "MYSTIC_MIGHT", allowedValues = ["NONE", "MYSTIC_WILL", "MYSTIC_LORE", "MYSTIC_MIGHT", "AUGURY"]
 		),
 		ScriptConfiguration(
 			MONSTERS_OPTION,
@@ -121,10 +164,7 @@ import kotlin.random.Random
 			BURY_BONES_OPTION, "Bury, Scatter or Offer bones&ashes.",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
-		ScriptConfiguration(
-			PRAY_AT_ALTAR_OPTION, "Pray at nearby altar.",
-			optionType = OptionType.BOOLEAN, defaultValue = "false"
-		),
+
 		ScriptConfiguration(
 			BANK_TELEPORT_OPTION,
 			"Teleport to bank",
@@ -146,7 +186,7 @@ class Fighter : ATScript() {
 
 	override fun createPainter(): ATPaint<*> = FighterPainter(this)
 
-	override val rootComponent: TreeComponent<*> = ShouldEat(this, ShouldStop(this))
+	override val rootComponent: TreeComponent<*> = ShouldConsume(this, ShouldStop(this))
 	override fun onStart() {
 		super.onStart()
 		Defender.lastDefenderIndex = currentDefenderIndex()
@@ -170,6 +210,35 @@ class Fighter : ATScript() {
 		}
 	}
 
+	@ValueChanged(MULTI_STYLE_OPTION)
+	fun onMultiStyle(multiStyle: Boolean) {
+		updateDescription(EQUIPMENT_OPTION, if (multiStyle) "What melee gear do you want to use?" else "What gear do you want to use?")
+		updateVisibility(USE_MELEE_OPTION, multiStyle)
+		updateVisibility(USE_RANGE_OPTION, multiStyle)
+		updateVisibility(USE_MAGE_OPTION, multiStyle)
+		updateVisibility(PRAY_AT_ALTAR_OPTION, !multiStyle)
+		if (multiStyle) updateOption(PRAY_AT_ALTAR_OPTION, false, OptionType.BOOLEAN)
+	}
+
+	@ValueChanged(USE_MELEE_OPTION)
+	fun onUseMelee(useMelee: Boolean) {
+		updateVisibility(EQUIPMENT_OPTION, useMelee)
+		updateVisibility(MELEE_PRAYER_OPTION, useMelee)
+	}
+
+	@ValueChanged(USE_RANGE_OPTION)
+	fun onUseRange(useRange: Boolean) {
+		updateVisibility(RANGE_EQUIPMENT_OPTION, useRange)
+		updateVisibility(RANGE_PRAYER_OPTION, useRange)
+	}
+
+	@ValueChanged(USE_MAGE_OPTION)
+	fun onUseMage(useMage: Boolean) {
+		updateVisibility(MAGE_EQUIPMENT_OPTION, useMage)
+		updateVisibility(MAGE_PRAYER_OPTION, useMage)
+	}
+
+
 	@ValueChanged(USE_SAFESPOT_OPTION)
 	fun onSafeSpotChange(useSafespot: Boolean) {
 		updateVisibility(WALK_BACK_TO_SAFESPOT_OPTION, useSafespot)
@@ -191,29 +260,45 @@ class Fighter : ATScript() {
 
 	//Inventory
 	private val inventoryOptions by lazy { getOption<Map<Int, Int>>(INVENTORY_OPTION) }
-	val requiredInventory by lazy { inventoryOptions.filterNot { Potion.isPotion(it.key) } }
-	val requiredPotions by lazy {
-		inventoryOptions.filter { Potion.isPotion(it.key) }
-			.mapNotNull { Pair(Potion.forId(it.key), it.value) }
-			.groupBy {
-				it.first
-			}.map { it.key!! to it.value.sumOf { pair -> pair.second } }
-	}
+	val requiredInventory by lazy { inventoryOptions.map { InventoryRequirement(it.key, it.value) } }
+//	val requiredPotions by lazy {
+//		requiredInventory.filter { it.item is Potion }.map { PotionRequirement(it.item as Potion, it.amount) }
+//	}
 
 	//Equipment
-	private val equipmentOptions by lazy { getOption<Map<Int, Int>>(EQUIPMENT_OPTION) }
-	val equipment by lazy {
-		equipmentOptions.filterNot { TeleportItem.isTeleportItem(it.key) }.map {
-			Equipment(
-				Slot.forIndex(it.value),
-				it.key
+	fun getEquipment(optionKey: String): List<EquipmentRequirement> {
+		val option = getOption<Map<Int, Int>>(optionKey)
+		return option.map {
+			EquipmentRequirement(
+				it.key,
+				Slot.forIndex(it.value)!!,
 			)
 		}
 	}
+
+	val meleeEquipment by lazy { getEquipment(EQUIPMENT_OPTION) }
+	val rangeEquipment by lazy { getEquipment(RANGE_EQUIPMENT_OPTION) }
+	val mageEquipment by lazy { getEquipment(MAGE_EQUIPMENT_OPTION) }
+
+	var currentEquipment: List<EquipmentRequirement> = emptyList()
+	val allEquipmentItems by lazy { (meleeEquipment.map { it.item } + rangeEquipment.map { it.item } + mageEquipment.map { it.item }).distinct() }
+	val ammos: List<Item> by lazy {
+		val mutableAmmoList = mutableListOf<IEquipmentItem>()
+		val meleeAmmo = meleeEquipment.firstOrNull { it.slot == Slot.QUIVER }
+		val rangeAmmo = rangeEquipment.firstOrNull { it.slot == Slot.QUIVER }
+		val mageAmmo = mageEquipment.firstOrNull { it.slot == Slot.QUIVER }
+		if (meleeAmmo != null)
+			mutableAmmoList.add(meleeAmmo.item)
+		if (rangeAmmo != null)
+			mutableAmmoList.add(rangeAmmo.item)
+		if (mageAmmo != null)
+			mutableAmmoList.add(mageAmmo.item)
+		mutableAmmoList.distinct()
+	}
+	val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
+
 	val teleportItems by lazy {
-		equipmentOptions.keys.mapNotNull {
-			TeleportItem.getTeleportItem(it)
-		}
+		allEquipmentItems.mapNotNull { TeleportItem.getTeleportItem(it.id) }
 	}
 
 	//Loot
@@ -230,13 +315,10 @@ class Fighter : ATScript() {
 		names.forEach { trimmed.add(it.trim().lowercase()) }
 		trimmed
 	}
-	var ammoId: Int = -1
 	val lootNames by lazy {
 		val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
-		val ammo = equipment.firstOrNull { it.slot == Slot.QUIVER }
-		if (ammo != null) {
-			ammoId = ammo.id
-			names.add(ItemLoader.lookup(ammoId)?.name()?.lowercase() ?: "nulll")
+		if (ammos.isNotEmpty()) {
+			names.addAll(ammos.map { it.name })
 		}
 		names.add("brimstone key")
 		names.add("ancient shard")
@@ -255,7 +337,7 @@ class Fighter : ATScript() {
 	fun watchLootDrop(tile: Tile) {
 		if (!isLootWatcherActive()) {
 			logger.info("Waiting for loot at $tile")
-			lootWachter = LootWatcher(tile, ammoId, lootList = lootList, isLoot = { it.isLoot() })
+			lootWachter = LootWatcher(tile, ammoIds, lootList = lootList, isLoot = { it.isLoot() })
 		} else {
 			logger.info("Already watching loot at tile: $tile for loot")
 		}
@@ -336,8 +418,8 @@ class Fighter : ATScript() {
 
 	//Prayer options
 	val prayAtNearbyAltar by lazy { getOption<Boolean>(PRAY_AT_ALTAR_OPTION) }
-	var nextPrayRestore = Random.nextInt(5, 15)
-	private val usingPrayer by lazy { prayAtNearbyAltar || requiredPotions.any { it.first.skill == Constants.SKILLS_PRAYER } }
+	var nextAltarPrayRestore = Random.nextInt(5, 15)
+	private val usingPrayer by lazy { prayAtNearbyAltar || requiredInventory.filter { it.item is Potion }.any { (it.item as Potion).skill == Constants.SKILLS_PRAYER } }
 	fun canActivatePrayer() = usingPrayer && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivatePrayer() =
 		Prayer.quickPrayer() && aggressionTimer.isFinished() && useSafespot && !me.healthBarVisible()
@@ -348,7 +430,7 @@ class Fighter : ATScript() {
 	var superiorAppeared = false
 	private val slayerBraceletNames = arrayOf("Bracelet of slaughter", "Expeditious bracelet")
 	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
-	fun wearingSlayerBracelet() = org.powbot.api.rt4.Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
+	fun wearingSlayerBracelet() = Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
 	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
 
 	@Subscribe
@@ -394,13 +476,12 @@ class Fighter : ATScript() {
 	fun onInventoryChange(evt: InventoryChangeEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
 		val id = evt.itemId
-		val pot = Potion.forId(evt.itemId)
 		val isTeleport = TeleportItem.isTeleportItem(id)
 		if (evt.quantityChange > 0 && id != VIAL
 			&& id !in Defender.defenders
-			&& !requiredInventory.containsKey(id)
-			&& !equipmentOptions.containsKey(id)
-			&& !isTeleport && requiredPotions.none { it.first == pot }
+			&& requiredInventory.none { id in it.item.ids }
+			&& allEquipmentItems.none { it.ids.contains(id) }
+			&& !isTeleport
 		) {
 			painter.trackItem(id, evt.quantityChange)
 		}

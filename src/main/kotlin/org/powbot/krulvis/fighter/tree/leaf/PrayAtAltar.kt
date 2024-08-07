@@ -20,9 +20,9 @@ class PrayAtAltar(script: Fighter) : Leaf<Fighter>(script, "PrayAtAltar") {
 		}
 
 		if (walkableTile.reachable() && walkAndInteract(altar, "Pray-at")) {
-			if (waitForDistance(altar) { Prayer.prayerPoints() >= script.nextPrayRestore }) {
-				script.nextPrayRestore = Random.nextInt(5, 15)
-				script.logger.info("Prayed at altar setting nextPrayRestore=${script.nextPrayRestore}")
+			if (waitForDistance(altar) { Prayer.prayerPoints() >= script.nextAltarPrayRestore }) {
+				script.nextAltarPrayRestore = Random.nextInt(5, 15)
+				script.logger.info("Prayed at altar setting nextPrayRestore=${script.nextAltarPrayRestore}")
 			}
 		}
 	}

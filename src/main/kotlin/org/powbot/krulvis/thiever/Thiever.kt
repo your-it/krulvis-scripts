@@ -9,6 +9,7 @@ import org.powbot.api.script.*
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -132,7 +133,7 @@ class Thiever : ATScript() {
 	//Allow setting dodgyNeck to false after we're out of necklaces
 	var dodgyNeck = false
 
-	val dodgy = org.powbot.krulvis.api.extensions.items.Equipment(Equipment.Slot.NECK, 21143)
+	val dodgy = EquipmentItem(21143, Equipment.Slot.NECK)
 	var nextPouchOpening = Random.nextInt(1, 28)
 	var droppables: List<Item> = emptyList()
 	val stunTimer = Timer(3000)

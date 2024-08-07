@@ -6,7 +6,9 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Food
+import org.powbot.krulvis.api.extensions.items.IEquipmentItem
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
@@ -19,36 +21,37 @@ import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Loot
 import org.powbot.krulvis.fighter.tree.leaf.PrayAtAltar
 import kotlin.math.max
-import kotlin.random.Random
 
 class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo?") {
 	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip ammo") {
-		script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.equip()
-		waitFor { script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }?.inInventory() != true }
+		invAmmo.interact("Equip")
+		waitFor { !validate() }
 	}
 	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGloves(script))
 
+	var invAmmo = Item.Nil
 	override fun validate(): Boolean {
-		val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
-		return ammo != null && ammo.inInventory()
-			&& (Inventory.isFull()
-			|| (ammo.getInvItem()?.stack ?: -1) > 5
-			|| !ammo.inEquipment()
+		val ammo = script.ammos.firstOrNull { it.stackable } ?: return false
+		invAmmo = ammo.getInvItem() ?: Item.Nil
+		return invAmmo.valid() && (
+			Inventory.isFull()
+				|| invAmmo.stack > 5
+				|| !ammo.inEquipment()
 			)
 	}
 }
 
 class ShouldEquipGloves(script: Fighter) : Branch<Fighter>(script, "Should equip gloves?") {
 	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip gloves") {
-		val gloves = script.equipment.first { it.slot == Equipment.Slot.HANDS }
 		if (gloves.equip()) {
 			waitFor { gloves.inEquipment() }
 		}
 	}
 	override val failedComponent: TreeComponent<Fighter> = ShouldDropTrash(script)
 
+	var gloves: IEquipmentItem = EquipmentItem(-1, Equipment.Slot.HANDS)
 	override fun validate(): Boolean {
-		val gloves = script.equipment.firstOrNull { it.slot == Equipment.Slot.HANDS } ?: return false
+		gloves = script.currentEquipment.firstOrNull { it.slot == Equipment.Slot.HANDS }?.item ?: return false
 		if (gloves.inEquipment() || !gloves.inInventory()) return false
 		return !script.currentTarget.valid() || (script.currentTarget.healthBarVisible() && script.currentTarget.healthPercent() > 10)
 	}
@@ -141,7 +144,7 @@ class ShouldPrayAtAltar(script: Fighter) : Branch<Fighter>(script, "ShouldPrayAt
 
 
 	override fun validate(): Boolean {
-		if (!script.prayAtNearbyAltar || Prayer.prayerPoints() >= script.nextPrayRestore) return false
+		if (!script.prayAtNearbyAltar || Prayer.prayerPoints() >= script.nextAltarPrayRestore) return false
 		return Objects.stream().type(GameObject.Type.INTERACTIVE).action("Pray-at").nearest().first().valid()
 	}
 

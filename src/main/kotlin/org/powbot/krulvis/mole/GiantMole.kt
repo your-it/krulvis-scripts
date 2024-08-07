@@ -82,7 +82,7 @@ class GiantMole : ATScript() {
 			val anim = npcAnim.animation
 			logger.info("Mole animation=${anim}")
 			if (npc.healthPercent() == 0 && lootWatcher?.active != true) {
-				lootWatcher = LootWatcher(npc.tile(), -1, 5, lootList, isLoot = { it.isLoot() })
+				lootWatcher = LootWatcher(npc.tile(), intArrayOf(-1), 5, lootList, isLoot = { it.isLoot() })
 				respawnTimer.reset()
 				kills++
 			}

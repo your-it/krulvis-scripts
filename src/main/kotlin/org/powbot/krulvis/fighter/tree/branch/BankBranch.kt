@@ -18,8 +18,8 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
 	override fun validate(): Boolean {
 		if (script.forcedBanking) return true
 
-		val ammo = script.equipment.firstOrNull { it.slot == Equipment.Slot.QUIVER }
-		if (ammo != null && !ammo.inEquipment()) return true
+		val ammo = script.ammos
+		if (ammo.isNotEmpty() && ammo.none { it.inEquipment() }) return true
 
 		return !Food.hasFood() && (
 			Food.needsFood() || Bank.opened() || (Inventory.isFull() && !Potion.PRAYER.hasWith())

@@ -1,6 +1,7 @@
 package org.powbot.krulvis.orbcharger
 
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects

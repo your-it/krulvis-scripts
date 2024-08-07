@@ -5,7 +5,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.script.tree.branch.ShouldEat
+import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Utils.sleep
@@ -28,7 +28,7 @@ class ShouldRunToSafety(script: LizardShamans) : Branch<LizardShamans>(script, "
 
 class HasTarget(script: LizardShamans) : Branch<LizardShamans>(script, "HasTarget?") {
 	override val failedComponent: TreeComponent<LizardShamans> = AttackShaman(script)
-	override val successComponent: TreeComponent<LizardShamans> = ShouldEat(script, ShouldSipPotion(script, ShouldHighAlch(script, SimpleLeaf(script, "Chill") {
+	override val successComponent: TreeComponent<LizardShamans> = ShouldConsume(script, ShouldSipPotion(script, ShouldHighAlch(script, SimpleLeaf(script, "Chill") {
 		sleep(150)
 	})))
 

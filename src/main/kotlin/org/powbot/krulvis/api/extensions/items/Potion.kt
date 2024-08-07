@@ -39,6 +39,7 @@ enum class Potion(
 	SUPER_RESTORE(Constants.SKILLS_PRAYER, -1, 3024, 3026, 3028, 3030)
 	;
 
+	override val stackable: Boolean = false
 	val bestPot: Int = ids[0]
 
 	var lastSip = Timer()
@@ -85,10 +86,10 @@ enum class Potion(
 		return when (this) {
 			ANTIFIRE_EXTENDED, ANTIFIRE -> !isProtectedFromFire()
 			ANTIPOISON, SUPER_ANTIPOISON -> Combat.isPoisoned()
-			PRAYER -> {
+			PRAYER, SUPER_RESTORE -> {
 				val rl = Skills.realLevel(skill)
 				val cl = Skills.level(skill)
-				cl <= 5 || rl - cl >= getRestore() * (percentage / 100.0)
+				cl <= 5 || rl - cl >= getRestore() + (percentage / 5.0)
 			}
 
 			ABSORPTION -> getAbsorptionRemainder() < 50
@@ -112,6 +113,10 @@ enum class Potion(
 
 	override fun hasWith(): Boolean {
 		return inInventory()
+	}
+
+	override fun withdrawExact(amount: Int, worse: Boolean, wait: Boolean): Boolean {
+		return super.withdrawExact(amount, worse = false, wait = true)
 	}
 
 	companion object {

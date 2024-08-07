@@ -2,7 +2,6 @@ package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -25,11 +24,10 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 			return
 		}
 		script.bankTeleport.executed = false
-		val ids = script.requiredInventory.map { it.key }.toIntArray()
+		val ids = script.requiredInventory.flatMap { it.item.ids.toList() }.toIntArray()
 		val edibleFood = foodToEat()
-		val potIds = script.requiredPotions.flatMap { it.first.ids.toList() }.toIntArray()
 		val defender = Defender.defender()
-		if (!Inventory.emptyExcept(Defender.defenderId(), *ids, *potIds, script.warriorTokens)) {
+		if (!Inventory.emptyExcept(Defender.defenderId(), *ids, script.warriorTokens)) {
 			Bank.depositInventory()
 		} else if (edibleFood != null) {
 			edibleFood.eat()
@@ -41,44 +39,39 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 				script.logger.info("Out of warrior tokens, stopping script")
 				ScriptManager.stop()
 			}
-		} else {
-			script.requiredInventory.forEach { (id, amount) ->
-				if (!Bank.withdrawExact(id, amount) && !Bank.containsOneOf(id)) {
-					script.logger.info("Stopped because no ${ItemLoader.lookup(id)} in bank")
-					ScriptManager.stop()
-				}
-			}
-			script.requiredPotions.forEach { (potion, amount) ->
-				if (!potion.withdrawExact(amount) && !potion.inBank()) {
-					script.logger.info("Stopped because no $potion in bank")
+		} else if (handleEquipment() && foodToEat() == null) {
+
+			script.requiredInventory.forEach {
+				if (!it.withdraw(true) && !it.item.inBank()) {
+					script.logger.info("Stopped because no ${it.item.name} in bank")
 					ScriptManager.stop()
 				}
 			}
 
-			if (handleEquipment()
-				&& foodToEat() == null
-				&& waitFor { script.requiredInventory.all { Inventory.getCount(it.key) == it.value } }
-				&& waitFor { script.requiredPotions.all { it.first.getInventoryCount() == it.second } }
-			) {
-				script.forcedBanking = false
-				Bank.close()
-			}
+			script.forcedBanking = script.requiredInventory.all { it.meets() }
+			if (!script.forcedBanking) Bank.close()
 		}
+
 	}
 
 	fun foodToEat() = Food.values().firstOrNull { it.inInventory() && it.healing <= missingHP() }
 
 	fun handleEquipment(): Boolean {
-		script.equipment.filterNot { it.slot == Equipment.Slot.QUIVER }.forEach {
-			if (!it.inEquipment()) {
+		script.currentEquipment.forEach {
+			if (!it.meets()) {
 				it.withdrawAndEquip(true)
+			}
+		}
+		script.allEquipmentItems.forEach {
+			if (!it.hasWith()) {
+				it.withdrawExact(1, true, wait = true)
 			}
 		}
 		script.teleportItems.forEach {
-			if (!it.inEquipment()) {
-				it.withdrawAndEquip(true)
+			if (!it.hasWith()) {
+				it.withdrawExact(1, true, wait = true)
 			}
 		}
-		return script.equipment.all { it.inEquipment() } && script.teleportItems.all { it.inEquipment() }
+		return script.allEquipmentItems.all { it.hasWith() } && script.teleportItems.all { it.hasWith() }
 	}
 }

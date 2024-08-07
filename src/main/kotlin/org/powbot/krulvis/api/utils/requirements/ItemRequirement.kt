@@ -5,11 +5,11 @@ import org.powbot.krulvis.api.extensions.items.Item
 
 interface ItemRequirement : Requirement {
 
-    val item: Item
-    val amount: Int
+	val item: Item
+	val amount: Int
 
-    /**
-     * Handles banking
-     */
-    fun withdraw(wait: Boolean): Boolean
+	/**
+	 * Handles banking
+	 */
+	fun withdraw(wait: Boolean): Boolean
 }

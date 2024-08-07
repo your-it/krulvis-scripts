@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
-class LootWatcher(val tile: Tile, private val ammo: Int, private val radius: Int = 4, private val lootList: MutableList<GroundItem>, private val isLoot: (GroundItem) -> Boolean) :
+class LootWatcher(val tile: Tile, private val ammos: IntArray, private val radius: Int = 4, private val lootList: MutableList<GroundItem>, private val isLoot: (GroundItem) -> Boolean) :
 	Watcher() {
 
 	private val logger = LoggerFactory.getLogger(javaClass.simpleName)
@@ -40,7 +40,7 @@ class LootWatcher(val tile: Tile, private val ammo: Int, private val radius: Int
 	fun onTickEvent(_e: TickEvent) {
 		val groundItems = groundItems()
 		val newItems = groundItems.filterNot { it in startLoot }
-		if (newItems.count { it.id() != ammo } > 0) {
+		if (newItems.count { it.id() !in ammos } > 0) {
 			val newLoot = newItems.filter(isLoot)
 			debug("New groundItems found: [${newItems.joinToString { it.name() + ": " + it.getPrice() * it.stackSize() }}], loot: [${newLoot.joinToString { it.name() }}]")
 			loot.addAll(newLoot)
