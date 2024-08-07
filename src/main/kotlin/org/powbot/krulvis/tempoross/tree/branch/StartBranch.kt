@@ -93,12 +93,7 @@ class ShouldHopFromOtherPlayers(script: Tempoross, override val failedComponent:
 
 	private fun World.usable(solo: Boolean) = if (solo) specialty != World.Specialty.TEMPOROSS else specialty == World.Specialty.TEMPOROSS
 	override fun validate(): Boolean {
-		return if (script.solo) {
-			script.playersReady() > 1
-		} else {
-			Worlds.current().specialty != World.Specialty.TEMPOROSS
-		}
-
+		return !script.solo && Worlds.current().specialty != World.Specialty.TEMPOROSS
 	}
 }
 
