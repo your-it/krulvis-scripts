@@ -23,7 +23,7 @@ class Loot(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Looting") {
 					|| (Inventory.containsOneOf(Item.HERB_SACK_OPEN) && gi.name().contains("grimy", true)))
 				&& walkAndInteract(gi, "Take") && (i == loots.size - 1 || gi.distance() >= 1)
 			) {
-				waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || Players.local().tile() == gi.tile }
+				waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || (i < loots.size - 1 && Players.local().tile() == gi.tile) }
 			}
 		}
 		script.lootList.removeAll { loot ->

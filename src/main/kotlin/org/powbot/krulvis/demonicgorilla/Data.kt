@@ -6,13 +6,12 @@ const val USE_RANGE_OPTION = "Use Range"
 const val USE_MAGE_OPTION = "Use Mage"
 const val MELEE_EQUIPMENT_OPTION = "Melee Equipment"
 const val MELEE_PRAYER_OPTION = "Melee Prayer"
-const val MULTI_STYLE_OPTION = "Multi-style combat"
 const val RANGE_EQUIPMENT_OPTION = "Range Equipment"
 const val RANGE_PRAYER_OPTION = "Range Prayer"
 const val MAGE_EQUIPMENT_OPTION = "Mage Equipment"
 const val MAGE_PRAYER_OPTION = "Mage Prayer"
-
-const val DEMONIC_GORILLA = "Demonic Gorilla"
+const val SPECIAL_WEAPON_OPTION = "Special Weapon"
+const val DEMONIC_GORILLA = "Demonic gorilla"
 
 val lootNames = listOf(
 	"Zenyte shard",
@@ -57,12 +56,12 @@ object Data {
 	const val DEMONIC_GORILLA_MAGE_ANIM = 7225
 	const val DEMONIC_GORILLA_MELEE_ANIM = 7226
 	const val DEMONIC_GORILLA_RANGE_ANIM = 7227
-	const val DEMONIC_GORILLA_DEATH_ANIM = 7228
+	const val DEMONIC_GORILLA_DEATH_ANIM = 7229
 
 	enum class DemonicPrayer {
 		MELEE,
-		RANGE,
 		MAGE,
+		RANGE,
 		NONE,
 		;
 

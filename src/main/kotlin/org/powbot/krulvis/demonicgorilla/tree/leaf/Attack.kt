@@ -9,6 +9,7 @@ import org.powbot.krulvis.demonicgorilla.tree.branch.IsKilling
 class Attack(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Attacking") {
 	override fun execute() {
 		val target = script.target()
+		target.bounds(-32, 32, -192, 0, -32, 32)
 		if (walkAndInteract(target, "Attack")) {
 			script.currentTarget = target
 			Condition.wait({

@@ -3,16 +3,18 @@ package org.powbot.krulvis.demonicgorilla.tree.branch
 import org.powbot.api.rt4.Actor
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Players
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
-import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.demonicgorilla.Data
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 import org.powbot.krulvis.demonicgorilla.tree.leaf.Attack
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitWhileKilling
+import org.powbot.krulvis.demonicgorilla.tree.leaf.WalkToSpot
 
 class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldDodgeProjectile?") {
 	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
@@ -25,9 +27,11 @@ class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(scr
 	override fun validate(): Boolean {
 		val dest = Movement.destination()
 		val tile = if (dest.valid()) dest else Players.local().tile()
-		return script.projectiles.any { it.first.destination().distanceTo(tile) <= 1 }
+		return script.projectiles.any { it.first.destination() == tile }
 	}
 }
+
+
 
 class IsKilling(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Killing?") {
 	override val failedComponent: TreeComponent<DemonicGorilla> = CanKill(script)
@@ -46,13 +50,12 @@ class IsKilling(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Killin
 	}
 }
 
-
 class CanKill(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Can Kill?") {
 
 	override val successComponent: TreeComponent<DemonicGorilla> = Attack(script)
-	override val failedComponent: TreeComponent<DemonicGorilla> = org.powbot.krulvis.demonicgorilla.tree.leaf.WalkToSpot(script)
+	override val failedComponent: TreeComponent<DemonicGorilla> = WalkToSpot(script)
 
 	override fun validate(): Boolean {
-		return script.centerTile.distance() <= 15
+		return script.centerTile.distance() <= 25
 	}
 }
