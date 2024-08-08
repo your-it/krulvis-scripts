@@ -1,9 +1,8 @@
 package org.powbot.krulvis.demonicgorilla.tree.branch
 
-import org.powbot.api.rt4.Actor
-import org.powbot.api.rt4.Movement
-import org.powbot.api.rt4.Players
-import org.powbot.api.rt4.Prayer
+import org.powbot.api.Random
+import org.powbot.api.rt4.*
+import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
@@ -17,7 +16,7 @@ import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitWhileKilling
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WalkToSpot
 
 class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldDodgeProjectile?") {
-	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
+	override val failedComponent: TreeComponent<DemonicGorilla> = ShouldCastResurrect(script)
 	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "Dodge Rock") {
 		Movement.step(script.projectileSafespot, 0)
 		sleep(600)
@@ -31,6 +30,19 @@ class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(scr
 	}
 }
 
+class ShouldCastResurrect(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldResurrect?") {
+	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
+	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "Resurrecting") {
+		val spell = script.resurrectSpell!!.spell
+		if (spell.cast()) {
+			script.resurrectedTimer.reset(0.6 * Skills.level(Skill.Magic) + Random.nextInt(1000, 10000))
+		}
+	}
+
+	override fun validate(): Boolean {
+		return script.resurrectSpell != null && script.resurrectedTimer.isFinished()
+	}
+}
 
 
 class IsKilling(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Killing?") {

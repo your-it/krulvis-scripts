@@ -5,11 +5,16 @@ import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.Equipment.Slot
+import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.GREATER_GHOST
+import org.powbot.krulvis.api.extensions.GREATER_SKELETON
+import org.powbot.krulvis.api.extensions.GREATER_ZOMBIE
+import org.powbot.krulvis.api.extensions.ResurrectSpell
 import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
@@ -93,6 +98,10 @@ import org.powbot.mobile.script.ScriptManager
 			optionType = OptionType.STRING, defaultValue = ARCLIGHT, allowedValues = ["NONE", DDS, ARCLIGHT]
 		),
 		ScriptConfiguration(
+			RESURRECT_OPTION, "Resurrect spell?",
+			optionType = OptionType.STRING, defaultValue = GREATER_GHOST, allowedValues = ["NONE", GREATER_GHOST, GREATER_ZOMBIE, GREATER_SKELETON]
+		),
+		ScriptConfiguration(
 			BURY_BONES_OPTION, "Scatter ashes?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
@@ -115,6 +124,8 @@ class DemonicGorilla : ATScript() {
 		super.onStart()
 		equipment = meleeEquipment
 		if (buryBones) lootNames.add("malicious ashes")
+		resurrectedTimer.reset(0.6 * Skills.level(Skill.Magic))
+		resurrectedTimer.stop()
 	}
 
 	//<editor-fold desc="UISubscribers">
@@ -247,6 +258,9 @@ class DemonicGorilla : ATScript() {
 	val mageOffensivePrayer by lazy { Prayer.Effect.values().firstOrNull { it.name == getOption<String>(MAGE_PRAYER_OPTION) } }
 	var offensivePrayer: Prayer.Effect? = null
 
+	//Resurrection options
+	val resurrectSpell by lazy { ResurrectSpell.values().firstOrNull { it.name == getOption(RESURRECT_OPTION) } }
+	var resurrectedTimer = Timer(0.6 * 99)
 
 	//Custom slayer options
 	var lastTask = false
