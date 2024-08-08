@@ -1,7 +1,6 @@
 package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
@@ -18,8 +17,8 @@ class ShouldBank(script: Fighter) : Branch<Fighter>(script, "Should Bank") {
 	override fun validate(): Boolean {
 		if (script.forcedBanking) return true
 
-		val ammo = script.ammos
-		if (ammo.isNotEmpty() && ammo.none { it.inEquipment() }) return true
+		val ammo = script.ammo
+		if (ammo != null && !ammo.item.hasWith()) return true
 
 		return !Food.hasFood() && (
 			Food.needsFood() || Bank.opened() || (Inventory.isFull() && !Potion.PRAYER.hasWith())

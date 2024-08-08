@@ -7,6 +7,7 @@ import org.powbot.api.rt4.Item
 import org.powbot.krulvis.api.ATContext.stripBarrowsCharge
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.mobile.rscache.loader.ItemLoader
+import org.slf4j.LoggerFactory
 
 interface Item {
 

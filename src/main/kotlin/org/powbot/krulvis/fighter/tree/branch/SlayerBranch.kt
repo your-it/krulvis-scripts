@@ -4,6 +4,7 @@ import org.powbot.api.Notifications
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.demonicgorilla.tree.branch.ShouldEquipAmmo
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.slayer.Slayer
 import org.powbot.mobile.script.ScriptManager

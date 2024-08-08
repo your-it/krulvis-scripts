@@ -8,9 +8,9 @@ import org.powbot.krulvis.fighter.Fighter
 class WaitWhileKilling(script: Fighter) : Leaf<Fighter>(script, "Wait for kill confirm...") {
 	override fun execute() {
 		Chat.clickContinue()
-		if (script.canActivatePrayer()) {
+		if (script.canActivateQuickPrayer()) {
 			Prayer.quickPrayer(true)
-		}
+		} else
 
 		if (script.hasSlayerBracelet) {
 			Game.tab(Game.Tab.INVENTORY)

@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe
 import org.powbot.api.Color
 import org.powbot.api.Condition.sleep
 import org.powbot.api.Tile
+import org.powbot.api.event.NpcAnimationChangedEvent
 import org.powbot.api.event.ProjectileDestinationChangedEvent
 import org.powbot.api.event.RenderEvent
 import org.powbot.api.event.TickEvent
@@ -19,10 +20,12 @@ class ProjectileScript : AbstractScript() {
 	var projectiles = mutableListOf<Pair<Projectile, Long>>()
 	var safeTile = Tile.Nil
 	val projectileDuration = 2400
+	var prayHeadIcon = -1
+	var currentTarget = Npc.Nil
 
 	@Subscribe
 	fun onProjectile(e: ProjectileDestinationChangedEvent) {
-		logger.info("ProjectileDestinationChangedEvent(ms=${System.currentTimeMillis()}, id=${e.id}, target=${e.target()}, destination=${e.destination()}, tile=${e.projectile.tile()}, valid=${e.projectile.valid()})")
+//		logger.info("ProjectileDestinationChangedEvent(ms=${System.currentTimeMillis()}, id=${e.id}, target=${e.target()}, destination=${e.destination()}, tile=${e.projectile.tile()}, valid=${e.projectile.valid()})")
 		if (e.target() == Actor.Nil) {
 			projectiles.add(e.projectile to System.currentTimeMillis())
 		}
@@ -33,8 +36,20 @@ class ProjectileScript : AbstractScript() {
 		val projectiles = Projectiles.stream().toList()
 		val me = Players.local()
 		val myTile = me.tile()
-		logger.info("Projectiles=${projectiles.count()}, onMe=${projectiles.count { it.target() == me }}, onMyTile=${projectiles.count { it.destination() == myTile }}")
+//		logger.info("Projectiles=${projectiles.count()}, onMe=${projectiles.count { it.target() == me }}, onMyTile=${projectiles.count { it.destination() == myTile }}")
 		safeTile = findSafeTile()
+		val interacting = me.interacting()
+		if (interacting.valid() && interacting is Npc) {
+			currentTarget = interacting
+			prayHeadIcon = interacting.prayerHeadIconId()
+		}
+	}
+
+	@Subscribe
+	fun onNpcAnim(anim: NpcAnimationChangedEvent) {
+		if (currentTarget == anim.npc) {
+			logger.info("New Animation = ${anim.animation}")
+		}
 	}
 
 	override fun poll() {
@@ -54,8 +69,9 @@ class ProjectileScript : AbstractScript() {
 			p.tile().drawOnScreen(outlineColor = Color.ORANGE, text = p.valid().toString())
 			p.destination().drawOnScreen(outlineColor = Color.RED)
 			Rendering.drawString("id=${p.id}, valid=${p.valid()}", x, y)
-			y += 10
+			y += 15
 		}
+		Rendering.drawString("Prayer=${prayHeadIcon}", x, y)
 		if (safeTile.valid()) {
 			safeTile.drawOnScreen(outlineColor = Color.GREEN)
 		}

@@ -6,56 +6,18 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
-import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.extensions.items.IEquipmentItem
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.JUG
 import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SEED_BOX_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Loot
 import org.powbot.krulvis.fighter.tree.leaf.PrayAtAltar
 import kotlin.math.max
-
-class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo?") {
-	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip ammo") {
-		invAmmo.interact("Equip")
-		waitFor { !validate() }
-	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGloves(script))
-
-	var invAmmo = Item.Nil
-	override fun validate(): Boolean {
-		val ammo = script.ammos.firstOrNull { it.stackable } ?: return false
-		invAmmo = ammo.getInvItem() ?: Item.Nil
-		return invAmmo.valid() && (
-			Inventory.isFull()
-				|| invAmmo.stack > 5
-				|| !ammo.inEquipment()
-			)
-	}
-}
-
-class ShouldEquipGloves(script: Fighter) : Branch<Fighter>(script, "Should equip gloves?") {
-	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip gloves") {
-		if (gloves.equip()) {
-			waitFor { gloves.inEquipment() }
-		}
-	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldDropTrash(script)
-
-	var gloves: IEquipmentItem = EquipmentItem(-1, Equipment.Slot.HANDS)
-	override fun validate(): Boolean {
-		gloves = script.currentEquipment.firstOrNull { it.slot == Equipment.Slot.HANDS }?.item ?: return false
-		if (gloves.inEquipment() || !gloves.inInventory()) return false
-		return !script.currentTarget.valid() || (script.currentTarget.healthBarVisible() && script.currentTarget.healthPercent() > 10)
-	}
-}
 
 
 class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Trash?") {

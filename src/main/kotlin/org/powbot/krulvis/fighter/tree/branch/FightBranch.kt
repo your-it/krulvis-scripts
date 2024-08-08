@@ -1,11 +1,14 @@
 package org.powbot.krulvis.fighter.tree.branch
 
 import org.powbot.api.rt4.Actor
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.TargetWidget
+import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
+import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitForLoot
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.SUPERIORS
 import org.powbot.krulvis.fighter.tree.leaf.*
@@ -15,13 +18,15 @@ class ShouldDodgeProjectile(script: Fighter) : Branch<Fighter>(script, "ShouldDo
 	override val successComponent: TreeComponent<Fighter> = DodgeProjectile(script)
 
 	override fun validate(): Boolean {
-		return script.projectiles.any { it.first.destination().distance() <= 2 }
+		val dest = Movement.destination()
+		val tile = if (dest.valid()) dest else Players.local().tile()
+		return script.projectiles.any { it.first.destination().distanceTo(tile) <= 1 }
 	}
 }
 
 class IsKilling(script: Fighter) : Branch<Fighter>(script, "Killing?") {
 	override val failedComponent: TreeComponent<Fighter> = ShouldReanimate(script)
-	override val successComponent: TreeComponent<Fighter> = ShouldSipPotion(script, FightingSuperior(script))
+	override val successComponent: TreeComponent<Fighter> = ShouldConsume(script, FightingSuperior(script))
 
 	override fun validate(): Boolean {
 		return killing(script.superiorAppeared)

@@ -5,17 +5,7 @@ import org.powbot.api.rt4.Prayer
 const val WARRIOR_GUILD_OPTION = "Warrior Guild"
 const val RADIUS_OPTION = "Kill Radius"
 const val INVENTORY_OPTION = "Inventory"
-const val USE_MELEE_OPTION = "Use Melee"
-const val USE_RANGE_OPTION = "Use Range"
-const val USE_MAGE_OPTION = "Use Mage"
 const val EQUIPMENT_OPTION = "Equipment"
-const val MELEE_PRAYER_OPTION = "Melee Prayer"
-const val MULTI_STYLE_OPTION = "Multi-style combat"
-const val RANGE_EQUIPMENT_OPTION = "Range Equipment"
-const val RANGE_PRAYER_OPTION = "Range Prayer"
-const val MAGE_EQUIPMENT_OPTION = "Mage Equipment"
-const val MAGE_PRAYER_OPTION = "Mage Prayer"
-
 const val MONSTERS_OPTION = "Monsters"
 const val HOP_FROM_PLAYERS_OPTION = "Hop From Players"
 const val PLAYER_HOP_COUNT_OPTION = "Player Count"
@@ -32,6 +22,7 @@ const val PRAY_AT_ALTAR_OPTION = "Pray At Altar"
 const val BANK_TELEPORT_OPTION = "Bank Teleport"
 const val MONSTER_TELEPORT_OPTION = "Monster Teleport"
 const val MONSTER_AUTO_DESTROY_OPTION = "Auto Kill"
+
 
 enum class Superior(val protectPrayer: Prayer.Effect = Prayer.Effect.PROTECT_FROM_MELEE) {
 	CRUSHING_HAND,

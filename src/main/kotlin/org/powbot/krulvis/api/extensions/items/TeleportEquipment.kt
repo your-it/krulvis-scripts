@@ -5,13 +5,39 @@ import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.slf4j.LoggerFactory
 
+private val logger = LoggerFactory.getLogger("TeleportItem")
 
-enum class TeleportItem(
+interface ITeleportItem : Item {
+	fun teleport(destination: String): Boolean
+}
+
+enum class TeleportItem(val itemName: String, override val ids: IntArray) : ITeleportItem {
+	ROYAL_SEED_POD("Royal seed pod", intArrayOf(19564)),
+	;
+
+	override val stackable: Boolean = false
+
+	override fun hasWith(): Boolean = inInventory()
+
+	override fun getCount(countNoted: Boolean): Int = getInventoryCount(false)
+	override fun teleport(destination: String): Boolean {
+		logger.info("$name Teleport to: $destination")
+		Bank.close()
+		val w = if (Widgets.widget(300).componentCount() >= 91) Widgets.widget(300).component(91) else null
+		if (w != null && w.interact("Close")) {
+			sleep(Random.nextInt(200, 500))
+		}
+		return Inventory.stream().id(*ids).firstOrNull()?.interact(destination) == true
+	}
+}
+
+enum class TeleportEquipment(
 	val itemName: String,
 	override val slot: Equipment.Slot,
 	override vararg val ids: Int,
-) : IEquipmentItem {
+) : IEquipmentItem, ITeleportItem {
 	GLORY("Glory", Equipment.Slot.NECK, 11978, 11976, 1712, 1710, 1708, 1706),
 	GAMES("Games", Equipment.Slot.NECK, 3853, 3855, 3857, 3859, 3861, 3863, 3865, 3867),
 	ROD("Duel Ring", Equipment.Slot.RING, 2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566),
@@ -57,8 +83,8 @@ enum class TeleportItem(
 		}
 	}
 
-	fun teleport(place: String): Boolean {
-		println("$name Teleport to: $place")
+	override fun teleport(place: String): Boolean {
+		logger.info("$name Teleport to: $place")
 		Bank.close()
 		val w = if (Widgets.widget(300).componentCount() >= 91) Widgets.widget(300).component(91) else null
 		if (w != null && w.interact("Close")) {
@@ -137,7 +163,7 @@ enum class TeleportItem(
 			return false
 		}
 
-		fun getTeleportItem(id: Int): TeleportItem? {
+		fun getTeleportItem(id: Int): TeleportEquipment? {
 			for (ti in values()) {
 				for (i in ti.ids) {
 					if (i == id) {
