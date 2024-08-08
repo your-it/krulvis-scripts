@@ -12,6 +12,7 @@ const val MAGE_EQUIPMENT_OPTION = "Mage Equipment"
 const val MAGE_PRAYER_OPTION = "Mage Prayer"
 const val SPECIAL_WEAPON_OPTION = "Special Weapon"
 const val DEMONIC_GORILLA = "Demonic gorilla"
+const val RESURRECT_OPTION = "Resurrect Spell"
 
 val lootNames = listOf(
 	"Zenyte shard",

@@ -172,6 +172,7 @@ interface Item {
 		const val HERB_SACK_OPEN = 24478
 		const val RUNE_POUCH = 12791
 		const val SEED_BOX_OPEN = 24482
+		const val BOOK_OF_THE_DEAD = 25818
 		const val IMCANDO_HAMMER = 25644
 		const val BLESSED_BONE_SHARD = 29381
 

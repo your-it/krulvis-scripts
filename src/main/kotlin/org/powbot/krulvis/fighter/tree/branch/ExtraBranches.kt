@@ -27,10 +27,28 @@ class ShouldDropTrash(script: Fighter) : Branch<Fighter>(script, "Should Drop Tr
 		if (Inventory.stream().id(*TRASH).firstOrNull()?.interact("Drop") == true)
 			waitFor { Inventory.stream().id(*TRASH).firstOrNull() == null }
 	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldInsertRunes(script)
+	override val failedComponent: TreeComponent<Fighter> = ShouldCombineKeys(script)
 
 	override fun validate(): Boolean {
 		return Inventory.stream().id(*TRASH).firstOrNull() != null
+	}
+}
+
+class ShouldCombineKeys(script: Fighter) : Branch<Fighter>(script, "ShouldCombineKeys?") {
+
+	val TOOTH_HALF = 985
+	val LOOP_HALF = 987
+	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "CombiningKeys") {
+		val tooth = Inventory.stream().id(TOOTH_HALF).first()
+		if (tooth.useOn(Inventory.stream().id(LOOP_HALF).first())) {
+			waitFor { !validate() }
+		}
+	}
+	override val failedComponent: TreeComponent<Fighter> = ShouldInsertRunes(script)
+
+	override fun validate(): Boolean {
+		val inv = Inventory.get()
+		return inv.any { it.id == LOOP_HALF } && inv.any { it.id == TOOTH_HALF }
 	}
 }
 

@@ -80,7 +80,8 @@ class Timer(var time: Number) {
 		reset(time)
 	}
 
-	fun reset(time: Number) {
+	fun reset(newTime: Number) {
+		time = newTime
 		start = System.currentTimeMillis()
 		end = start + time.toLong()
 	}

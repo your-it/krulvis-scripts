@@ -45,5 +45,4 @@ class SpecialAttackWatcher(val npc: Npc, val onHit: (Boolean) -> Unit) :
 	fun waitForHit() {
 		latch.await(10, TimeUnit.SECONDS)
 	}
-
 }
