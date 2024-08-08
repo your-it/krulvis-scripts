@@ -25,7 +25,7 @@ class OpenBank(script: Fighter) : Leaf<Fighter>(script, "Opening bank") {
 		}
 	}
 
-	val BANK_ACTIONS = listOf("Bank", "Open")
+	val BANK_ACTIONS = listOf("Bank", "Open", "Use")
 	fun InteractableEntity.bankAction(): String {
 		val actions = actions()
 		return actions.first { it in BANK_ACTIONS }

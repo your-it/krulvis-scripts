@@ -18,7 +18,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
 		invAmmo.interact("Equip")
 		Utils.waitFor { !validate() }
 	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGloves(script))
+	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGear(script))
 
 	var invAmmo = Item.Nil
 	override fun validate(): Boolean {
@@ -32,21 +32,6 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
 	}
 }
 
-class ShouldEquipGloves(script: Fighter) : Branch<Fighter>(script, "Should equip gloves?") {
-	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip gloves") {
-		if (gloves.equip()) {
-			Utils.waitFor { gloves.inEquipment() }
-		}
-	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldEquipGear(script)
-
-	var gloves: IEquipmentItem = EquipmentItem(-1, Equipment.Slot.HANDS)
-	override fun validate(): Boolean {
-		gloves = script.equipment.firstOrNull { it.slot == Equipment.Slot.HANDS }?.item ?: return false
-		if (gloves.inEquipment() || !gloves.inInventory()) return false
-		return !script.currentTarget.valid() || (script.currentTarget.healthBarVisible() && script.currentTarget.healthPercent() > 10)
-	}
-}
 
 class ShouldEquipGear(script: Fighter) : Branch<Fighter>(script, "Should equip gear?") {
 	override val successComponent: TreeComponent<Fighter> = SimpleLeaf(script, "Equip gear") {
@@ -57,6 +42,6 @@ class ShouldEquipGear(script: Fighter) : Branch<Fighter>(script, "Should equip g
 
 	val equipTimer = Timer(600)
 	override fun validate(): Boolean {
-		return equipTimer.isFinished() && script.currentTarget.valid() && script.equipment.any { !it.meets() }
+		return equipTimer.isFinished() && script.currentTarget.healthPercent() > 50 && script.equipment.any { !it.meets() }
 	}
 }
