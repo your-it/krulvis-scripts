@@ -46,12 +46,6 @@ class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bo
 
 	override fun validate(): Boolean {
 		if (!script.buryBones) return false
-		remains = filterRemains()
-		ashes = remains.filter { it.name().lowercase().contains("ashes") }
-		return if (demonicSacrifice.canCast()) {
-			ashes.size >= 3
-		} else {
-			remains.isNotEmpty()
-		}
+		return Inventory.stream().name("Malicious ashes").isNotEmpty()
 	}
 }

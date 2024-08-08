@@ -2,7 +2,6 @@ package org.powbot.krulvis.api.teleports
 
 import org.powbot.api.requirement.Requirement
 import org.powbot.krulvis.api.teleports.poh.HousePortal
-import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FairyRingTeleport
 import org.powbot.krulvis.api.teleports.poh.openable.OpenableHouseTeleport
 import org.slf4j.Logger

@@ -12,7 +12,7 @@ import org.powbot.krulvis.fighter.tree.branch.IsKilling
 class Attack(script: Fighter) : Leaf<Fighter>(script, "Attacking") {
 	override fun execute() {
 		val target = script.target()
-		if (script.canActivatePrayer()) {
+		if (script.canActivateQuickPrayer()) {
 			Prayer.quickPrayer(true)
 		}
 		if (attack(target)) {

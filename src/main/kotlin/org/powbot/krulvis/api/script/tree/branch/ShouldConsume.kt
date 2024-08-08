@@ -19,7 +19,7 @@ import org.powbot.krulvis.api.utils.Timer
  */
 class ShouldConsume<S : ATScript>(
 	script: S,
-	override val failedComponent: Branch<S>,
+	override val failedComponent: TreeComponent<S>,
 ) : Branch<S>(script, "Should consume?") {
 
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Consuming") {
@@ -63,8 +63,7 @@ class ShouldConsume<S : ATScript>(
 		val missingHp = missingHP()
 		val needsFood = needsFood()
 		return foods.firstOrNull {
-			it.inInventory() &&
-				(needsFood || missingHp >= it.healing + nextEatExtra)
+			(needsFood || missingHp >= it.healing + nextEatExtra) && it.inInventory()
 		}
 	}
 

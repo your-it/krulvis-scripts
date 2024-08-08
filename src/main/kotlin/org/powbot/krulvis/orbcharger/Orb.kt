@@ -1,7 +1,6 @@
 package org.powbot.krulvis.orbcharger
 
 import org.powbot.api.Tile
-import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
@@ -9,7 +8,7 @@ import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
-import org.powbot.krulvis.api.extensions.items.TeleportItem
+import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
@@ -41,14 +40,14 @@ enum class Orb(
 		Tile.Nil,
 		Magic.Spell.CHARGE_EARTH_ORB,
 		BankLocation.EDGEVILLE_BANK,
-		EquipmentRequirement(TeleportItem.GLORY)
+		EquipmentRequirement(TeleportEquipment.GLORY)
 	),
 	AIR(
 		573,
 		Tile.Nil,
 		Magic.Spell.CHARGE_AIR_ORB,
 		BankLocation.EDGEVILLE_BANK,
-		EquipmentRequirement(TeleportItem.GLORY)
+		EquipmentRequirement(TeleportEquipment.GLORY)
 	);
 
 	fun castOnObelisk(): Boolean {

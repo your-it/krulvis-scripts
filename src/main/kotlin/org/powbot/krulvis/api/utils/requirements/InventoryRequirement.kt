@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.extensions.items.InventoryItem
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.extensions.items.TeleportItem
+import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 
 
 open class InventoryRequirement(
@@ -16,7 +16,7 @@ open class InventoryRequirement(
 ) : ItemRequirement {
 
 	constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = true) : this(
-		Potion.forId(id) ?: TeleportItem.getTeleportItem(id) ?: InventoryItem(id),
+		Potion.forId(id) ?: TeleportEquipment.getTeleportItem(id) ?: InventoryItem(id),
 		amount, false, allowMore, countNoted
 	)
 

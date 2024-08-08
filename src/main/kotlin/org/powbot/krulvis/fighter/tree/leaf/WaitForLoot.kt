@@ -1,7 +1,6 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.rt4.Movement
-import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.utils.Utils.waitFor
@@ -9,7 +8,7 @@ import org.powbot.krulvis.fighter.Fighter
 
 class WaitForLoot(script: Fighter) : Leaf<Fighter>(script, "Waiting for loot...") {
 	override fun execute() {
-		if (script.canDeactivatePrayer()) {
+		if (script.canDeactivateQuickPrayer()) {
 			Prayer.quickPrayer(false)
 		}
 		if (!script.aggressionTimer.isFinished() && script.shouldReturnToSafespot()) {
