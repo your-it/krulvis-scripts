@@ -2,6 +2,7 @@ package org.powbot.krulvis.api.script.tree.branch
 
 import org.powbot.api.Condition
 import org.powbot.api.Random
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -23,6 +24,7 @@ class ShouldConsume<S : ATScript>(
 ) : Branch<S>(script, "Should consume?") {
 
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Consuming") {
+		Game.tab(Game.Tab.INVENTORY)
 		val prayPot = potions.firstOrNull { it == Potion.PRAYER || it == Potion.SUPER_RESTORE }
 		val canSipPray = prayPot?.needsRestore(0) == true
 		val food = if (canSipPray) edibleFood() else food
@@ -36,6 +38,7 @@ class ShouldConsume<S : ATScript>(
 			if (!canSipPray) {
 				Condition.wait({ food.getInventoryCount() < foodCount }, 250, 15)
 			} else if (prayPot?.drink() == true) {
+				script.logger.info("Tick-sipping prayer potion")
 				sipTimer.reset()
 				if (Condition.wait({ Prayer.prayerPoints() > prayPoints }, 250, 15))
 					return@SimpleLeaf
@@ -45,10 +48,9 @@ class ShouldConsume<S : ATScript>(
 
 		if (pot != null && sipTimer.isFinished()) {
 			if (!pot.drink()) return@SimpleLeaf
-			val potCount = pot.getCount()
 			sipTimer.reset()
 			potionRestore = Random.nextInt(40, 65)
-			Condition.wait({ pot.getInventoryCount() < potCount }, 250, 15)
+			Condition.wait({ pot != potion() }, 250, 15)
 		}
 	}
 

@@ -59,9 +59,9 @@ interface HouseTeleport : Teleport {
 	fun disablePrayers(): Boolean {
 		val activePrayers = Prayer.activePrayers()
 		if (activePrayers.isNotEmpty()) {
-			Prayer.quickPrayer()
+			Prayer.quickPrayer(true)
 			sleep(100, 150)
-			Prayer.quickPrayer()
+			Prayer.quickPrayer(false)
 		}
 		return waitFor(600) { Prayer.activePrayers().isEmpty() }
 	}

@@ -1,5 +1,6 @@
 package org.powbot.krulvis.demonicgorilla.tree.leaf
 
+import org.powbot.api.Tile
 import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.walking.local.LocalPathFinder
@@ -7,6 +8,8 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 
 class WalkToSpot(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Walking to spot") {
+	private val royalSeedTeleportDestination = Tile(2465, 3495, 0)
+	private val battlements = Tile(2007, 5588, 0)
 	override fun execute() {
 		Chat.clickContinue()
 		val spot = script.centerTile
@@ -16,13 +19,16 @@ class WalkToSpot(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Walking
 				Movement.step(spot, 0)
 				return
 			}
+			if (royalSeedTeleportDestination.distance() < 50 || battlements.distance() < 50) {
+				script.seedPodTeleport.executed = true
+			}
 			val path = LocalPathFinder.findPath(spot)
 			if (path.isNotEmpty()) {
-//				script.monsterTeleport.executed = false
+				script.seedPodTeleport.executed = false
 				path.traverseUntilReached(0.0)
-			} else if (script.npcTeleport.execute()) {
+			} else if (script.seedPodTeleport.execute()) {
 				script.aggressionTimer.reset()
-				Movement.builder(spot).setWalkUntil { spot.distance() < 10 }.move()
+				Movement.builder(spot).setWalkUntil { spot.distance() < 25 }.move()
 			}
 		}
 	}

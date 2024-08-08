@@ -353,7 +353,6 @@ class Fighter : ATScript() {
 	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
 
 
-
 	@Subscribe
 	fun onTickEvent(_e: TickEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
@@ -367,7 +366,7 @@ class Fighter : ATScript() {
 		if (interacting is Npc && interacting != Npc.Nil) {
 			currentTarget = interacting
 			val activeLW = lootWachter
-			if (activeLW?.active == true && activeLW.tile == currentTarget.tile()) return
+			if (activeLW?.active == true && activeLW.tile.distanceTo(currentTarget.tile()) < 2) return
 			val deathWatcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
 			if (deathWatcher == null || !deathWatcher.active) {
 				val newDW = NpcDeathWatcher(

@@ -20,11 +20,10 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 			return
 		}
 		script.bankTeleport.executed = false
-		val ids = script.requiredInventory.flatMap { it.item.ids.toList() }.toIntArray()
+		val ids = (script.requiredInventory.flatMap { it.item.ids.toList() } + script.allEquipmentItems.flatMap { it.ids.toList() }).toIntArray()
 		val edibleFood = foodToEat()
-		val defender = Defender.defender()
-		if (!Inventory.emptyExcept(Defender.defenderId(), *ids)) {
-			Bank.depositInventory()
+		if (!Inventory.emptyExcept(*ids)) {
+			Bank.depositAllExcept(*ids)
 		} else if (edibleFood != null) {
 			edibleFood.eat()
 			waitFor { foodToEat() == null }
