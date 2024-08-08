@@ -17,7 +17,7 @@ import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitWhileKilling
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WalkToSpot
 
 class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldDodgeProjectile?") {
-	override val failedComponent: TreeComponent<DemonicGorilla> = ShouldSwitchProtPray(script)
+	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
 	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "Dodge Rock") {
 		Movement.step(script.projectileSafespot, 0)
 		sleep(600)
@@ -31,19 +31,7 @@ class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(scr
 	}
 }
 
-class ShouldSwitchProtPray(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldSwitchProtPray?") {
-	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
-	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "SwitchPray") {
-		Prayer.prayer(script.protectionPrayer, true)
-	}
 
-	override fun validate(): Boolean {
-		if (!script.currentTarget.valid()) {
-			return false
-		}
-		return script.currentTarget.valid() && !Prayer.prayerActive(script.protectionPrayer) && Prayer.prayerPoints() > 0
-	}
-}
 
 class IsKilling(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Killing?") {
 	override val failedComponent: TreeComponent<DemonicGorilla> = CanKill(script)
@@ -61,7 +49,6 @@ class IsKilling(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Killin
 		}
 	}
 }
-
 
 class CanKill(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Can Kill?") {
 

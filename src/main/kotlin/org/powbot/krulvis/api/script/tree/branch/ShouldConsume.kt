@@ -71,7 +71,7 @@ class ShouldConsume<S : ATScript>(
 
 	private fun edibleFood(): Food? {
 		val missingHp = missingHP()
-		return foods.firstOrNull { it.healing >= missingHp }
+		return foods.firstOrNull { missingHp > it.healing && it.hasWith() }
 	}
 
 	private fun potion(): Potion? = potions.filter { it.hasWith() }

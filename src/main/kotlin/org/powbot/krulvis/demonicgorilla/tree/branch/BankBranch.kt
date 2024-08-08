@@ -12,7 +12,7 @@ import org.powbot.krulvis.demonicgorilla.tree.leaf.OpenBank
 
 class ShouldBank(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Should Bank") {
 	override val successComponent: TreeComponent<DemonicGorilla> = IsBankOpen(script)
-	override val failedComponent: TreeComponent<DemonicGorilla> = CanLoot(script)
+	override val failedComponent: TreeComponent<DemonicGorilla> = ShouldSwitchProtPray(script)
 
 	override fun validate(): Boolean {
 		if (script.forcedBanking) return true
@@ -21,7 +21,7 @@ class ShouldBank(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Shoul
 		if (ammo.isNotEmpty() && ammo.none { it.inEquipment() }) return true
 
 		return !Food.hasFood() && (
-			Food.needsFood() || Bank.opened() || (Inventory.isFull() && !Potion.PRAYER.hasWith())
+			(script.currentTarget.valid() && Food.needsFood()) || Bank.opened() || (Inventory.isFull() && !Potion.PRAYER.hasWith())
 			)
 	}
 }

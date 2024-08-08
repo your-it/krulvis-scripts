@@ -42,6 +42,7 @@ class DGPainter(script: DemonicGorilla) : ATPaint<DemonicGorilla>(script) {
 		if (target.valid()) {
 			g.drawString("Overhead=${target.prayerHeadIconId()}, DemonicPrayer=${script.demonicPrayer}", 10, 100)
 			g.drawString("AttackStyle=${script.protectionPrayer}", 10, 120)
+			g.drawString("ReducedStats=${script.reducedStats}", 10, 140)
 		}
 		val projectiles = script.projectiles
 		if (projectiles.isNotEmpty()) {

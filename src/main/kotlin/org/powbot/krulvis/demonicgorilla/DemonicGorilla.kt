@@ -10,10 +10,9 @@ import org.powbot.api.script.paint.CheckboxPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.items.IEquipmentItem
+import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
@@ -90,6 +89,10 @@ import org.powbot.mobile.script.ScriptManager
 			optionType = OptionType.STRING, visible = false, defaultValue = "MYSTIC_MIGHT", allowedValues = ["NONE", "MYSTIC_WILL", "MYSTIC_LORE", "MYSTIC_MIGHT", "AUGURY"]
 		),
 		ScriptConfiguration(
+			SPECIAL_WEAPON_OPTION, "Special Attack Weapon?",
+			optionType = OptionType.STRING, defaultValue = ARCLIGHT, allowedValues = ["NONE", DDS, ARCLIGHT]
+		),
+		ScriptConfiguration(
 			BURY_BONES_OPTION, "Scatter ashes?",
 			optionType = OptionType.BOOLEAN, defaultValue = "false"
 		),
@@ -137,10 +140,10 @@ class DemonicGorilla : ATScript() {
 
 	//Inventory
 	private val inventoryOptions by lazy { getOption<Map<Int, Int>>(INVENTORY_OPTION) }
-	val requiredInventory by lazy { inventoryOptions.map { InventoryRequirement(it.key, it.value) } }
-//	val requiredPotions by lazy {
-//		requiredInventory.filter { it.item is Potion }.map { PotionRequirement(it.item as Potion, it.amount) }
-//	}
+	val requiredInventory by lazy {
+		val equipmentIds = allEquipmentItems.map { it.id }
+		inventoryOptions.map { InventoryRequirement(it.key, it.value) }.filterNot { it.item.id in equipmentIds }
+	}
 
 	//Equipment
 	fun getEquipment(optionKey: String): List<EquipmentRequirement> {
@@ -153,6 +156,8 @@ class DemonicGorilla : ATScript() {
 		}
 	}
 
+	val specialWeapon by lazy { Weapon.values().firstOrNull { it.name == getOption(SPECIAL_WEAPON_OPTION) } }
+	var reducedStats = false
 	val meleeEquipment by lazy { getEquipment(MELEE_EQUIPMENT_OPTION) }
 	val rangeEquipment by lazy { getEquipment(RANGE_EQUIPMENT_OPTION) }
 	val mageEquipment by lazy { getEquipment(MAGE_EQUIPMENT_OPTION) }
@@ -186,6 +191,7 @@ class DemonicGorilla : ATScript() {
 
 
 	fun watchLootDrop(tile: Tile) {
+		reducedStats = false
 		if (!isLootWatcherActive()) {
 			logger.info("Waiting for loot at $tile")
 			lootWachter = LootWatcher(tile, ammoIds, lootList = lootList, isLoot = { it.isLoot() })
@@ -219,8 +225,6 @@ class DemonicGorilla : ATScript() {
 		return interacting is Player && interacting != Players.local()
 	}
 
-//	private val GWD_AREA = Area(Tile(2816, 5120), Tile(3008, 5376))
-
 	fun target(): Npc {
 		val local = Players.local()
 		val nearbyMonsters =
@@ -232,7 +236,6 @@ class DemonicGorilla : ATScript() {
 	}
 
 	//Safespot options
-
 	val centerTile = Tile(2104, 5653, 0)
 	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
 
@@ -410,7 +413,9 @@ class DemonicGorilla : ATScript() {
 				logger.info("Dangerous projectile spawned! tile=${e.destination()}")
 				projectiles.add(e.projectile to System.currentTimeMillis())
 				findSafeSpotFromProjectile()
-				Movement.step(projectileSafespot, 0)
+				val targetTile = lootList.firstOrNull { it.valid() && it.tile.valid() && it.tile != dest }?.tile
+					?: projectileSafespot
+				Movement.step(targetTile, 0)
 			}
 		} else if (e.target() == currentTarget) {
 			fightingFromDistance = true
