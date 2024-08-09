@@ -14,14 +14,20 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.teleports.Teleport
+import org.powbot.krulvis.api.teleports.TeleportMethod
+import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
 import org.powbot.krulvis.dagannothkings.Data.EQUIPMENT_PREFIX_OPTION
+import org.powbot.krulvis.dagannothkings.Data.INVENTORY_OPTION
 import org.powbot.krulvis.dagannothkings.Data.KILL_PREFIX_OPTION
 import org.powbot.krulvis.dagannothkings.Data.KING_DEATH_ANIM
 import org.powbot.krulvis.dagannothkings.Data.King.Companion.king
 import org.powbot.krulvis.dagannothkings.Data.OFFENSIVE_PRAY_PREFIX_OPTION
 import org.powbot.krulvis.dagannothkings.Data.SAFESPOT_REX
 import org.powbot.krulvis.dagannothkings.tree.branch.ShouldBank
+import org.powbot.krulvis.fighter.BANK_TELEPORT_OPTION
 import org.powbot.mobile.script.ScriptManager
 
 fun main() {
@@ -39,7 +45,7 @@ fun main() {
 @ScriptConfiguration.List(
 	[
 		ScriptConfiguration(KILL_PREFIX_OPTION + "Rex", "Kill Rex", OptionType.BOOLEAN, defaultValue = "true"),
-		ScriptConfiguration(SAFESPOT_REX, "Lure rex to safespot", OptionType.BOOLEAN, defaultValue = "true"),
+		ScriptConfiguration(SAFESPOT_REX, "Lure rex to safespot?", OptionType.BOOLEAN, defaultValue = "true"),
 		ScriptConfiguration(EQUIPMENT_PREFIX_OPTION + "Rex", "Equipment for Rex", OptionType.EQUIPMENT),
 		ScriptConfiguration(
 			OFFENSIVE_PRAY_PREFIX_OPTION + "Rex", "Offensive Rex Prayer", OptionType.STRING,
@@ -79,7 +85,9 @@ fun main() {
 			allowedValues = ["NONE", "ULTIMATE_STRENGTH", "CHIVALRY", "PIETY"],
 			defaultValue = "NONE"
 		),
-		ScriptConfiguration("BankTeleport", "Which teleport to go to bank?", OptionType.STRING)
+		ScriptConfiguration(INVENTORY_OPTION, "Inventory setup", OptionType.INVENTORY),
+		ScriptConfiguration(BANK_TELEPORT_OPTION, "Which teleport to go to bank?", OptionType.STRING,
+			defaultValue = CASTLE_WARS_JEWELLERY_BOX, allowedValues = [CASTLE_WARS_JEWELLERY_BOX])
 	]
 )
 class DagannothKings : ATScript() {
@@ -111,20 +119,21 @@ class DagannothKings : ATScript() {
 		Data.King.values().forEach {
 			it.offensivePrayer = Prayer.Effect.values()
 				.firstOrNull { pray -> pray.name == getOption(OFFENSIVE_PRAY_PREFIX_OPTION + it.name) }
-			it.equipment = getOption<Map<Int, Int>>(EQUIPMENT_PREFIX_OPTION + it.name).map { eq ->
-				EquipmentRequirement(
-					eq.key,
-					Equipment.Slot.forIndex(eq.value)!!,
-				)
-			}
+			it.equipment = EquipmentRequirement.forEquipmentOption(getOption(EQUIPMENT_PREFIX_OPTION + it.name))
 			it.kill = getOption(KILL_PREFIX_OPTION + it.name)
+			it.respawnTimer.stop()
 		}
 	}
 
+	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
+	val allEquipment by lazy { Data.King.values().flatMap { it.equipment }.distinct() }
+	val allEquipmentIds by lazy { allEquipment.flatMap { e -> e.item.ids.toList() }.distinct() }
+	val inventory by lazy { InventoryRequirement.forOption(getOption(INVENTORY_OPTION)).filterNot { it.item.id in allEquipmentIds } }
 	var kills = 0
 	var target = Npc.Nil
 	val animMap: MutableMap<Data.King, Int> = mutableMapOf()
 	var forcedProtectionPrayer: Prayer.Effect? = null
+	var forcedBanking = false
 
 	//Rex settings
 	var lureTile: Tile = Tile.Nil
@@ -201,6 +210,7 @@ class DagannothKings : ATScript() {
 		}
 		if (anim == KING_DEATH_ANIM && npc == target && npc.dead()) {
 			kills++
+			king.respawnTimer.reset()
 		}
 	}
 

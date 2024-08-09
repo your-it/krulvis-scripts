@@ -9,7 +9,6 @@ import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
-import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.Data
@@ -26,11 +25,11 @@ class FightingKing(script: DagannothKings) : Branch<DagannothKings>(script, "Fig
 }
 
 class ShouldLure(script: DagannothKings) : Branch<DagannothKings>(script, "LureRex?") {
-	override val failedComponent: TreeComponent<DagannothKings> = ShouldConsume(script, ShouldSipPotion(script, Fight(script)))
-	override val successComponent: TreeComponent<DagannothKings> = Lure(script)
+	override val failedComponent: TreeComponent<DagannothKings> = ShouldConsume(script, ShouldConsume(script, Fight(script)))
+	override val successComponent: TreeComponent<DagannothKings> = LureRex(script)
 
 	override fun validate(): Boolean {
-		if (script.target.king() == Data.King.Rex) {
+		if (script.target.king() == Data.King.Rex && script.safeSpotRex) {
 			if (script.target.distanceTo(script.rexTile) > 0 || script.safeTile.distance() > 0) {
 				return true
 			}
@@ -59,7 +58,7 @@ class IsPrayerOn(script: DagannothKings) : Branch<DagannothKings>(script, "IsPra
 		}
 		prayTimer.reset()
 	}
-	override val successComponent: TreeComponent<DagannothKings> = ShouldConsume(script, ShouldSipPotion(script, ShouldLoot(script)))
+	override val successComponent: TreeComponent<DagannothKings> = ShouldConsume(script, ShouldLoot(script))
 
 	val prayTimer = Timer(600)
 	var protectionPrayer: Prayer.Effect? = Data.King.Rex.protectionPrayer
@@ -79,6 +78,6 @@ class ShouldLoot(script: DagannothKings) : Branch<DagannothKings>(script, "Shoul
 	override val successComponent: TreeComponent<DagannothKings> = Loot(script)
 
 	override fun validate(): Boolean {
-		return script.lootList.isNotEmpty() && script.lootList.any { Food.forName(it.name()) == null || Inventory.emptySlotCount() > 0}
+		return script.lootList.isNotEmpty() && script.lootList.any { Food.forName(it.name()) == null || Inventory.emptySlotCount() > 0 }
 	}
 }

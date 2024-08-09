@@ -1,24 +1,49 @@
 package org.powbot.krulvis.dagannothkings.tree.branch
 
 import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
+import org.powbot.krulvis.api.extensions.items.Food.Companion.hasFood
+import org.powbot.krulvis.api.extensions.items.Food.Companion.needsFood
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
+import org.powbot.krulvis.dagannothkings.tree.leaf.HandleBank
 
-class ShouldBank(script: DagannothKings): Branch<DagannothKings>(script, "ShouldBank?"){
+class ShouldBank(script: DagannothKings) : Branch<DagannothKings>(script, "ShouldBank?") {
 	override val failedComponent: TreeComponent<DagannothKings> = AtKings(script)
 	override val successComponent: TreeComponent<DagannothKings> = IsBankOpen(script)
 
 	override fun validate(): Boolean {
-		return false
+		if (script.forcedBanking) return true
+
+		if (needsFood() && !hasFood()) {
+			script.forcedBanking = true
+		} else if (script.allEquipment.any { !it.item.hasWith() }) {
+			script.forcedBanking = true
+		}
+
+
+		return script.forcedBanking
 	}
 }
 
-class IsBankOpen(script: DagannothKings): Branch<DagannothKings>(script, "IsBankOpen?"){
-	override val failedComponent: TreeComponent<DagannothKings>
-		get() = TODO("Not yet implemented")
-	override val successComponent: TreeComponent<DagannothKings>
-		get() = TODO("Not yet implemented")
+class IsBankOpen(script: DagannothKings) : Branch<DagannothKings>(script, "IsBankOpen?") {
+	override val failedComponent: TreeComponent<DagannothKings> = SimpleLeaf(script, "OpenBank") {
+		if (script.bankTeleport.execute()) {
+			if (Prayer.activePrayers().isNotEmpty()) {
+				Prayer.quickPrayer(true)
+				sleep(450)
+				Prayer.quickPrayer(false)
+				waitFor { Prayer.activePrayers().isEmpty() }
+			} else
+				Bank.openNearest()
+		}
+	}
+	override val successComponent: TreeComponent<DagannothKings> = HandleBank(script)
 
 	override fun validate(): Boolean {
 		return Bank.opened()

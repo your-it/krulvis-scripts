@@ -46,4 +46,9 @@ open class InventoryRequirement(
 			}
 		}
 	}
+
+
+	companion object {
+		fun forOption(option: Map<Int, Int>) = option.map { InventoryRequirement(it.key, it.value, allowMore = it.value > 28) }
+	}
 }

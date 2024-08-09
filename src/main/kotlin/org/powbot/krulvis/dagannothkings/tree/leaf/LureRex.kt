@@ -6,7 +6,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.Data
 
-class Lure(script: DagannothKings) : Leaf<DagannothKings>(script, "Fighting") {
+class LureRex(script: DagannothKings) : Leaf<DagannothKings>(script, "LuringRex") {
 	override fun execute() {
 		val rex = script.target.tile()
 		val ladderTile = Data.getKingsLadderDown().tile
