@@ -3,6 +3,7 @@ package org.powbot.krulvis.wgtokens
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
 import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
@@ -18,7 +19,9 @@ import org.powbot.mobile.script.ScriptManager
     description = "Gets tokens in Warrior's Guild",
     author = "Krulvis",
     markdownFileName = "WGTokens.md",
-    version = "1.0.0"
+    version = "1.0.0",
+    category = ScriptCategory.Minigame,
+    scriptId = "6feb1d08-db16-4a0f-ab65-78eb0e684b15"
 )
 @ScriptConfiguration.List(
     [
