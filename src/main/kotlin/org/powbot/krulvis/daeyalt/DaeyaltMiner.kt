@@ -3,6 +3,8 @@ package org.powbot.krulvis.daeyalt
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.event.TickEvent
 import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
@@ -37,6 +39,12 @@ class DaeyaltMiner : ATScript() {
 
 	var gameTick = 0
 	var startTick = 0
+
+	val herbs = arrayOf("Guam", "Irit", "Harralander", "Marrentill")
+	val tar = "Swamp tar"
+	var mine = GameObject.Nil
+
+	fun canTickManip(): Boolean = Inventory.stream().name(*herbs).isNotEmpty() && Inventory.stream().name(tar).isNotEmpty()
 
 	@Subscribe
 	fun onTick(e: TickEvent) {
