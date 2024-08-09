@@ -23,12 +23,12 @@ import kotlin.random.Random
 
 class AtMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "AtMine?") {
 	val mineCenter = Tile(3686, 9756, 2)
-	val staircaseTile = Tile(3631, 3339, 0)
+	val staircaseTile = Tile(3632, 3340, 0)
 	override val failedComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "WalkingToMine") {
 		if (Bank.opened()) {
 			Bank.close()
 		}
-		val stairCase = Objects.stream(20, GameObject.Type.INTERACTIVE).at(staircaseTile).name("Staircase").first()
+		val stairCase = Objects.stream().at(staircaseTile).name("Staircase").first()
 		if (stairCase.valid()) {
 			if (walkAndInteract(stairCase, "Climb-down")) {
 				waitForDistance(stairCase) { validate() }
