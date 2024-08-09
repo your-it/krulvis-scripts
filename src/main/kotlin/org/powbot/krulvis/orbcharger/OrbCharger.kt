@@ -25,7 +25,8 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 	author = "Krulvis",
 	version = "1.0.2",
 	markdownFileName = "Orb.md",
-	category = ScriptCategory.Magic
+	category = ScriptCategory.Magic,
+	scriptId = "5c9a5857-da96-43d6-a1fc-baf69ce035d2"
 )
 @ScriptConfiguration.List(
 	[

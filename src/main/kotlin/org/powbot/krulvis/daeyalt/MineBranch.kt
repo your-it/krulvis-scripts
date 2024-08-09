@@ -45,7 +45,7 @@ class AtMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "AtMine?") {
 			Movement.walkTo(staircaseTile)
 		}
 	}
-	override val successComponent: TreeComponent<DaeyaltMiner> = ShouldSpecial(script)
+	override val successComponent: TreeComponent<DaeyaltMiner> = ShouldMine(script)
 
 	override fun validate(): Boolean {
 		return mineCenter.distance() < 50
@@ -53,23 +53,23 @@ class AtMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "AtMine?") {
 
 }
 
-class ShouldSpecial(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "ShouldSpecial?") {
-	override val successComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "Special") {
-		if (Combat.specialAttack(true))
-			specTimer = null
-	}
-	override val failedComponent: TreeComponent<DaeyaltMiner> = ShouldMine(script)
-
-	var specTimer: Timer? = null
-	override fun validate(): Boolean {
-		if (Equipment.stream().id(*SPECIAL_ATTACK_PICKS).isEmpty()) return false
-		if (Combat.specialPercentage() == 100 && specTimer == null) {
-			specTimer = Timer(Random.nextInt(5000, 25000))
-		}
-		return specTimer != null && specTimer!!.isFinished()
-	}
-
-}
+//class ShouldSpecial(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "ShouldSpecial?") {
+//	override val successComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "Special") {
+//		if (Combat.specialAttack(true))
+//			specTimer = null
+//	}
+//	override val failedComponent: TreeComponent<DaeyaltMiner> = ShouldMine(script)
+//
+//	var specTimer: Timer? = null
+//	override fun validate(): Boolean {
+//		if (Equipment.stream().id(*SPECIAL_ATTACK_PICKS).isEmpty()) return false
+//		if (Combat.specialPercentage() == 100 && specTimer == null) {
+//			specTimer = Timer(Random.nextInt(5000, 25000))
+//		}
+//		return specTimer != null && specTimer!!.isFinished()
+//	}
+//
+//}
 
 class ShouldMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "ShouldMine?") {
 	override val successComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "Mine") {

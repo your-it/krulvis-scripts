@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions
 
+import org.powbot.api.InteractableEntity
 import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.*
@@ -8,6 +9,7 @@ import org.powbot.api.rt4.walking.local.Utils.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.slf4j.LoggerFactory
 
@@ -197,10 +199,10 @@ enum class BankLocation(
 			if (opened()) {
 				return true
 			}
-			val nearest = nearest()
+			val nearest = getBank()
 			logger.info("Nearest bank: $nearest")
 			return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
-				open()
+				walkAndInteract(nearest, nearest.bankAction())
 			} else {
 				Movement.moveToBank()
 				false
@@ -209,6 +211,12 @@ enum class BankLocation(
 	}
 
 
+}
+
+private val BANK_ACTIONS = listOf("Bank", "Open", "Use")
+private fun InteractableEntity.bankAction(): String {
+	val actions = actions()
+	return actions.first { it in BANK_ACTIONS }
 }
 
 fun main() {

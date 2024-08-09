@@ -2,6 +2,7 @@ package org.powbot.krulvis.daeyalt
 
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
@@ -16,7 +17,8 @@ import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 	description = "Mines Daeyalt essence",
 	author = "Krulvis",
 	version = "1.0.0",
-	scriptId = "404633af-46ed-4121-82da-510d8a040ff7"
+	scriptId = "404633af-46ed-4121-82da-510d8a040ff7",
+	category = ScriptCategory.Mining
 )
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", OptionType.EQUIPMENT,

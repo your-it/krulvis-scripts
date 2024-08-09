@@ -5,6 +5,7 @@ import org.powbot.api.Tile
 import org.powbot.api.event.NpcAnimationChangedEvent
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Npcs
+import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
@@ -12,7 +13,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.chompy.tree.branch.BirdSpawned
 import org.powbot.krulvis.chompy.tree.branch.HasEquipment
 
-@ScriptManifest(name = "krul ChompyBird", description = "Kills chompy birds, doesn't Pluck", version = "1.0.0")
+@ScriptManifest(name = "krul ChompyBird", description = "Kills chompy birds, doesn't Pluck", version = "1.0.0", scriptId = "b40b416a-e9b3-42b8-b724-91cdf684d2bd", category = ScriptCategory.Minigame)
 class ChompyBird : ATScript() {
 	override fun createPainter(): ATPaint<*> = ChompyBirdPainter(this)
 
