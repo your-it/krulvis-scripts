@@ -15,7 +15,8 @@ import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 	name = "krul DaeyaltMiner",
 	description = "Mines Daeyalt essence",
 	author = "Krulvis",
-	version = "1.0.0"
+	version = "1.0.0",
+	scriptId = "404633af-46ed-4121-82da-510d8a040ff7"
 )
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", OptionType.EQUIPMENT,
