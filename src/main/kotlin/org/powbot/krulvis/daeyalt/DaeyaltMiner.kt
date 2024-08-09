@@ -1,5 +1,8 @@
 package org.powbot.krulvis.daeyalt
 
+import com.google.common.eventbus.Subscribe
+import org.powbot.api.event.TickEvent
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
@@ -22,7 +25,9 @@ import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 )
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", OptionType.EQUIPMENT,
-		defaultValue = """{"22400":2,"11920":3,"24676":4,"24678":7,"24680":10}""")
+		defaultValue = """{"22400":2,"11920":3,"24676":4,"24678":7,"24680":10}"""),
+	ScriptConfiguration("Tick Manip", "Use 1.5 herb+tar tick-manipulation", OptionType.BOOLEAN, defaultValue = "false"),
+	ScriptConfiguration("Special", "Perform special attack", OptionType.BOOLEAN, defaultValue = "false"),
 ])
 class DaeyaltMiner : ATScript() {
 
@@ -30,6 +35,16 @@ class DaeyaltMiner : ATScript() {
 		return DaeyaltPainter(this)
 	}
 
+	var gameTick = 0
+	var startTick = 0
+
+	@Subscribe
+	fun onTick(e: TickEvent) {
+		gameTick++
+	}
+
+	val tickManip by lazy { getOption<Boolean>("Tick Manip") }
+	val special by lazy { getOption<Boolean>("Special") }
 	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption("Equipment")) }
 	override val rootComponent: TreeComponent<*> = WearingEquipment(this)
 
@@ -40,7 +55,7 @@ val ESSENCE = 24706
 
 class DaeyaltPainter(script: DaeyaltMiner) : ATPaint<DaeyaltMiner>(script) {
 	override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-		return paintBuilder.trackInventoryItem(ESSENCE).trackSkill(Skill.Mining).build()
+		return paintBuilder.trackInventoryItem(ESSENCE).trackSkill(Skill.Mining).addString("Cycles") { Game.cycle().toString() }.build()
 	}
 }
 

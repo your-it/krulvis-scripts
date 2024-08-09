@@ -1,6 +1,7 @@
 package org.powbot.krulvis.test
 
 import com.google.common.eventbus.Subscribe
+import org.powbot.api.Color
 import org.powbot.api.Tile
 import org.powbot.api.event.*
 import org.powbot.api.rt4.*
@@ -9,6 +10,8 @@ import org.powbot.api.rt4.walking.model.Edge
 import org.powbot.api.script.AbstractScript
 import org.powbot.api.script.ScriptManifest
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.mta.rooms.TelekineticRoom
+import org.powbot.mobile.drawing.Rendering
 
 @ScriptManifest(name = "Krul Test Loop", version = "1.0.1", description = "", priv = true)
 class LoopScript : AbstractScript() {
@@ -64,14 +67,38 @@ class LoopScript : AbstractScript() {
 		}
 	}
 
+	var mine = GameObject.Nil
+	var direction = TelekineticRoom.Direction.NORTH
 	override fun poll() {
-//		URL("https://ams1.vultrobjects.com/pow/v2/constants.properties").openStream()
-//			.use { stream ->
-//				logger.info(stream.bufferedReader().readText())
-//			}
-		Constants.GAME_LOADED
 
+		mine = Objects.stream().name("Daeyalt Essence").nearest().first()
+		direction = mine.tile.getDirection()
 		lastLoop = System.currentTimeMillis()
+	}
+
+	private fun Tile.getDirection(): TelekineticRoom.Direction {
+		val me = me.tile()
+		val dx = me.x - x()
+		val dy = me.y - y()
+		return if (dx >= 2) {
+			TelekineticRoom.Direction.WEST
+		} else if (dx <= -2) {
+			TelekineticRoom.Direction.EAST
+		} else if (dy >= 2) {
+			TelekineticRoom.Direction.NORTH
+		} else {
+			TelekineticRoom.Direction.SOUTH
+		}
+	}
+
+	@Subscribe
+	fun onRender(e: RenderEvent) {
+		val g = Rendering
+		val x = 10
+		var y = 20
+		g.drawString("Orientation=${me.orientation()}, direction=${direction}", x, y)
+		y += 15
+		mine.tile.drawOnScreen(outlineColor = Color.RED)
 	}
 
 }
