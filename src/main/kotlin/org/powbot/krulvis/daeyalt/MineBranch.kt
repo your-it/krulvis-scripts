@@ -9,6 +9,8 @@ import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
+import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.walk
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.long
@@ -44,10 +46,34 @@ class AtMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "AtMine?") {
 			Movement.walkTo(staircaseTile)
 		}
 	}
-	override val successComponent: TreeComponent<DaeyaltMiner> = ShouldSpecial(script)
+	override val successComponent: TreeComponent<DaeyaltMiner> = NextToMine(script)
 
 	override fun validate(): Boolean {
 		return mineCenter.distance() < 50
+	}
+
+}
+
+class NextToMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "NextToMine?") {
+	override val successComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "WalkToMine") {
+		if (script.tickManip || walkTimer?.isFinished() == true) {
+			Movement.step(script.mine)
+			if (waitForDistance(script.mine) { script.mine.distance() < 5 })
+				walkTimer = null
+		}
+	}
+	override val failedComponent: TreeComponent<DaeyaltMiner> = ShouldSpecial(script)
+
+	var walkTimer: Timer? = null
+	override fun validate(): Boolean {
+		script.mine = Objects.stream().name("Daeyalt Essence").action("Mine").nearest().first()
+		if (script.mine.distance() > 5) {
+			if (walkTimer == null) {
+				walkTimer = Timer(Random.nextInt(1000, 5000))
+			}
+			return true
+		}
+		return false
 	}
 
 }
@@ -77,7 +103,7 @@ class ShouldTickManip(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "Shou
 	override val successComponent: TreeComponent<DaeyaltMiner> = TickManip(script)
 
 	override fun validate(): Boolean {
-		return script.tickManip && Inventory.selectedItem().name() == "Swamp tar"
+		return script.tickManip && script.canTickManip()
 	}
 
 }
@@ -97,7 +123,7 @@ class ShouldMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "ShouldMin
 			if (tar.valid()) {
 				tar.interact("Use")
 			}
-			waitFor { script.gameTick > script.startTick + 2 }
+			waitFor { me.animationCycle() > 50 || script.gameTick > script.startTick + 2 }
 		}
 	}
 	override val failedComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "Chill") {
