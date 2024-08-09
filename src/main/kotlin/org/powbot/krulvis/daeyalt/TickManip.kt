@@ -1,0 +1,66 @@
+package org.powbot.krulvis.daeyalt
+
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Movement
+import org.powbot.api.rt4.Objects
+import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.ATContext
+import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.mta.rooms.TelekineticRoom
+import kotlin.random.Random
+
+class TickManip(script: DaeyaltMiner) : Leaf<DaeyaltMiner>(script, "TickManip") {
+	override fun execute() {
+		val mine = Objects.stream().name("Daeyalt Essence").nearest().first()
+		val herb = Inventory.stream().name("Guam", "Irit", "Harralander", "Marrentill").first()
+		val movableTile = getMovableTile(mine.tile) ?: return
+
+		if (herb.valid() && herb.interact("Use")) {
+			sleep(Random.nextInt(150, 250))
+			val startTimeMoving = System.currentTimeMillis()
+			movableTile.matrix().interact("Walk here")
+			script.startTick = script.gameTick
+//			waitFor { script.gameTick > startTick }
+			script.logger.info("Movement took=${System.currentTimeMillis() - startTimeMoving}")
+		}
+	}
+
+	fun getMovableTile(mine: Tile): Tile? {
+		val dir = mine.getDirection()
+		val me = ATContext.me.tile()
+
+		return when (dir) {
+			TelekineticRoom.Direction.EAST, TelekineticRoom.Direction.WEST -> {
+				listOf(
+					Tile(me.x, mine.y + 1, me.floor),
+					Tile(me.x, mine.y - 1, me.floor)
+				).maxByOrNull { it.distanceTo(me) }
+			}
+
+			TelekineticRoom.Direction.NORTH, TelekineticRoom.Direction.SOUTH -> {
+				listOf(
+					Tile(mine.x + 1, me.y, me.floor),
+					Tile(mine.x - 1, me.y, me.floor)
+				).maxByOrNull { it.distanceTo(me) }
+			}
+		}
+	}
+
+
+	private fun Tile.getDirection(): TelekineticRoom.Direction {
+		val me = ATContext.me.tile()
+		val dx = me.x - x()
+		val dy = me.y - y()
+		return if (dx >= 2) {
+			TelekineticRoom.Direction.WEST
+		} else if (dx <= -2) {
+			TelekineticRoom.Direction.EAST
+		} else if (dy >= 2) {
+			TelekineticRoom.Direction.NORTH
+		} else {
+			TelekineticRoom.Direction.SOUTH
+		}
+	}
+}
