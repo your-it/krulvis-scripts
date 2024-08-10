@@ -33,7 +33,7 @@ class DKPaint(script: DagannothKings) : ATPaint<DagannothKings>(script) {
 				if (killTile.valid()) {
 					killTile.drawOnScreen(outlineColor = Color.CYAN)
 				}
-				g.drawString(it.name + " respawnTime=${it.respawnTimer}", x, y)
+				g.drawString(it.name + "kill=${it.kill}, respawnTime=${it.respawnTimer}", x, y)
 				y += yy
 			}
 		} else {
