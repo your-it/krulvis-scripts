@@ -36,11 +36,13 @@ object Data {
 		val protectionPrayer: Prayer.Effect,
 		var offensivePrayer: Prayer.Effect?,
 		var equipment: List<EquipmentRequirement>,
+		var spawnTile: Tile,
+		var killTile: Tile,
 		var kill: Boolean
 	) {
-		Supreme(2854, Prayer.Effect.PROTECT_FROM_MISSILES, Prayer.Effect.PIETY, emptyList(), false),
-		Rex(2854, Prayer.Effect.PROTECT_FROM_MELEE, Prayer.Effect.MYSTIC_MIGHT, emptyList(), true),
-		Prime(2854, Prayer.Effect.PROTECT_FROM_MAGIC, Prayer.Effect.EAGLE_EYE, emptyList(), false),
+		Supreme(2854, Prayer.Effect.PROTECT_FROM_MISSILES, Prayer.Effect.PIETY, emptyList(), Tile.Nil, Tile.Nil, false),
+		Rex(2854, Prayer.Effect.PROTECT_FROM_MELEE, Prayer.Effect.MYSTIC_MIGHT, emptyList(), Tile.Nil, Tile.Nil, true),
+		Prime(2854, Prayer.Effect.PROTECT_FROM_MAGIC, Prayer.Effect.EAGLE_EYE, emptyList(), Tile.Nil, Tile.Nil, false),
 		;
 
 		val respawnTimer = Timer(90 * 1000)

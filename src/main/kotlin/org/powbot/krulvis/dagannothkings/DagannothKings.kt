@@ -139,34 +139,53 @@ class DagannothKings : ATScript() {
 	var lureTile: Tile = Tile.Nil
 	var safeTile: Tile = Tile.Nil
 	var rexTile: Tile = Tile.Nil
+
 	val safeSpotRex: Boolean by lazy { getOption(SAFESPOT_REX) }
+	var previousKings: List<Npc> = emptyList()
+	var ladderTile = Tile.Nil
 
 	@Subscribe
 	fun onGameTick(e: TickEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
 		val me = me
 		val targ = me.interacting()
-		if (targ is Npc && targ.valid()) {
+		if (targ is Npc && targ.king() != null) {
 			target = targ
 		}
 
-		if (lureTile == Tile.Nil && Data.getKingsLadderDown().valid()) {
-			logger.info("Setting lureTiles")
+		val newKings = Npcs.stream().nameContains("Dagannoth").toList()
+
+
+		if (!ladderTile.valid()) {
+			//Do everything
 			val ladder = Data.getKingsLadderDown()
-			lureTile = ladder.tile.derive(29, 1)
-			safeTile = ladder.tile.derive(28, -8)
-			rexTile = ladder.tile.derive(28, -4)
+			if (!ladder.valid()) return
+
+			ladderTile = ladder.tile
+		} else if (lureTile == Tile.Nil) {
+			logger.info("Setting lureTiles")
+			lureTile = ladderTile.derive(29, 1)
+			safeTile = ladderTile.derive(28, -8)
+			rexTile = ladderTile.derive(28, -4)
+			Data.King.Rex.spawnTile = ladderTile.derive(15, -3)
 		} else if (lureTile.distance() < 50) {
-			//Inside Kings lair
-			setForcedProtection()
+			//Inside Kings lair and set basic stuff
+			newKings.forEach { k ->
+				if (!previousKings.contains(k)) {
+					val kingTile = k.tile()
+					logger.info("${k.name} spawned at tile=${k.tile()}, dx=${kingTile.x - ladderTile.x}, dy=${kingTile.y - ladderTile.y}")
+				}
+			}
+			previousKings = newKings
+			setForcedProtection(previousKings)
 		}
 
 		watchForLoot()
 	}
 
-	private fun setForcedProtection() {
-		val offensiveKings = Npcs.stream().nameContains("Dagannoth")
-			.filtered { it.king()?.kill == true && it.interacting() == me }
+	private fun setForcedProtection(kings: List<Npc>) {
+		val offensiveKings = kings
+			.filter { it.king()?.kill == true && it.interacting() == me }
 			.mapNotNull { it.king() }.sortedBy { it.ordinal }
 			.filter { it != Data.King.Rex || !safeSpotRex }
 		if (offensiveKings.isNotEmpty()) {
@@ -202,11 +221,12 @@ class DagannothKings : ATScript() {
 		val npc = e.npc
 		val king = npc.king() ?: return
 		val anim = e.animation
-		val lastCycle = animMap.getOrDefault(king, Game.cycle())
-		logger.info("NpcAnimationEvent(npc=${npc.name}, animation=${anim}, cycles=${Game.cycle() - lastCycle})")
-		if (anim == king.offensiveAnim) {
+		val isOffensive = anim == king.offensiveAnim
+		logger.info("NpcAnimationEvent(npc=${npc.name}, animation=${anim}, offensive=${isOffensive})")
+		if (isOffensive) {
+			val lastCycle = animMap.getOrDefault(king, Game.cycle())
 			animMap[king] = Game.cycle()
-			logger.info("Attack from king=$king")
+			logger.info("Attack from king=$king, took=${Game.cycle() - lastCycle}")
 		}
 		if (anim == KING_DEATH_ANIM && npc == target && npc.dead()) {
 			kills++
