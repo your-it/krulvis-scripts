@@ -13,7 +13,11 @@ class ShouldCastNPCContact(script: Runecrafter) : Branch<Runecrafter>(script, "S
     override val successComponent: TreeComponent<Runecrafter> = HasRunes(script)
 
     override fun validate(): Boolean {
-        return EssencePouch.inInventory().any { it.shouldRepair() } && Magic.book() == Magic.Book.LUNAR
+        val repairable = EssencePouch.inInventory().filter { it.shouldRepair() }
+        if(repairable.isEmpty()) return false
+
+        script.logger.info("Repairables=[${repairable.joinToString { it.name }}]")
+        return repairable.isNotEmpty() && Magic.book() == Magic.Book.LUNAR
     }
 }
 

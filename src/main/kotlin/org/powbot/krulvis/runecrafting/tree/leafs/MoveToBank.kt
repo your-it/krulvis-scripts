@@ -3,7 +3,6 @@ package org.powbot.krulvis.runecrafting.tree.leafs
 import org.powbot.api.Area
 import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
@@ -12,7 +11,6 @@ import org.powbot.krulvis.api.ATContext.traverse
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.runecrafting.ABYSS
 import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
 
@@ -30,7 +28,7 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
             if (teleport.cast()) {
                 waitFor(5000) {
                     House.isInside() || ouraniaUpstairsArea.contains(me) || script.getBank()
-                        .valid() || script.getChaosAltar().valid()
+                        .valid() || script.findChaosAltar().valid()
                 }
             }
         } else {
