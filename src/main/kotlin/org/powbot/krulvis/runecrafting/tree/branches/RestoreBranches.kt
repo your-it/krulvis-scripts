@@ -18,7 +18,11 @@ class ShouldPrayAtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "Shou
 	override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "Pray at altar") {
 		val altar = script.findChaosAltar()
 		if (altar.distance() > 4 || !altar.inViewport()) {
-			ouraniaPathToAltar.traverse(1, distanceToLastTile = 4)
+			ouraniaPathToAltar.traverse(1, distanceToLastTile = 4) {
+				if (altar.inViewport() && altar.interact("Pray-at")) {
+					waitForDistance(altar) { fullPrayer() }
+				}
+			}
 		} else if (walkAndInteract(altar, "Pray-at")) {
 			waitForDistance(altar) { fullPrayer() }
 		}

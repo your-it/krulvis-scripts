@@ -82,8 +82,6 @@ interface Item {
 		return false
 	}
 
-//    fun itemName(): String = CacheItemConfig.load(id).name
-
 	companion object {
 		const val HAMMER = 2347
 		const val CANNONBALL = 2
