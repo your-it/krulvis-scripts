@@ -29,14 +29,17 @@ class CastVileVigour(script: Runecrafter) : Leaf<Runecrafter>(script, "CastVileV
 		if (Magic.book() != Magic.Book.ARCEUUS) {
 			val arcComp = arceuusComp()
 			script.logger.info("ARCEUUS spellbook not valid, comp=${arcComp}")
-			if (arcComp.visible()) {
+			if (!arcComp.visible()) {
+				if (Magic.LunarSpell.SPELL_BOOK_SWAP.cast()) {
+					Utils.waitFor(2500) { arceuusComp().visible() }
+				}
+			}
+			if (arcComp.refresh().visible()) {
 				arcComp.click()
 				Utils.waitFor(3000) { Magic.book() == Magic.Book.ARCEUUS }
 			}
-			if (Magic.book() == Magic.Book.ARCEUUS && Magic.LunarSpell.SPELL_BOOK_SWAP.cast()) {
-				Utils.waitFor(2500) { arceuusComp().visible() }
-			}
-		} else if (Magic.ArceuusSpell.VILE_VIGOUR.cast()) {
+		}
+		if (Magic.book() == Magic.Book.ARCEUUS && Magic.ArceuusSpell.VILE_VIGOUR.cast()) {
 			Utils.waitFor(2500) { Skills.level(Skill.Prayer) == 0 || Movement.energyLevel() > 50 }
 		}
 	}
