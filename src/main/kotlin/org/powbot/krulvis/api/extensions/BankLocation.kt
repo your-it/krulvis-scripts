@@ -10,6 +10,7 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
+import org.powbot.krulvis.api.teleports.TeleportMethod
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.slf4j.LoggerFactory
 
@@ -195,18 +196,18 @@ enum class BankLocation(
 				.minByOrNull { it.tile.distanceM(me) }!!
 		}
 
-		fun Bank.openNearest(): Boolean {
+		fun Bank.openNearest(teleportMethod: TeleportMethod = TeleportMethod(null)): Boolean {
 			if (opened()) {
 				return true
 			}
 			val nearest = getBank()
 			logger.info("Nearest bank: $nearest")
-			return if (nearest.getWalkableNeighbor { it.reachable() } != null) {
-				walkAndInteract(nearest, nearest.bankAction())
-			} else {
+			if (nearest.getWalkableNeighbor { it.reachable() } != null) {
+				return walkAndInteract(nearest, nearest.bankAction())
+			} else if (teleportMethod.execute()) {
 				Movement.moveToBank()
-				false
 			}
+			return false
 		}
 	}
 
