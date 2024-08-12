@@ -16,10 +16,12 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.Utils.waitForWhile
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
+import org.slf4j.LoggerFactory
 import kotlin.math.abs
 
 
 object ATContext {
+	val logger = LoggerFactory.getLogger(ATContext.javaClass.simpleName)
 
 	val me: Player get() = Players.local()
 
@@ -31,7 +33,7 @@ object ATContext {
 
 	fun debug(msg: String) {
 		if (debugComponents) {
-			ScriptManager.script()?.log?.info(msg)
+			logger.info(msg)
 		}
 	}
 
@@ -53,6 +55,7 @@ object ATContext {
 	}
 
 	fun List<Tile>.atLastTile(distance: Int = 2) = last().distanceTo(Movement.destination()) <= distance
+
 	fun List<Tile>.traverse(offset: Int = 2, distanceToLastTile: Int = 2, whileWaiting: () -> Any = {}): Boolean {
 		if (atLastTile(offset) && Components.stream(219).id(1).viewable().isEmpty()) {
 			debug("Already at last tile...")
