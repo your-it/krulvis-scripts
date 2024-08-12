@@ -40,7 +40,7 @@ object ATContext {
 
 	fun Actor<*>.dead() = healthBarVisible() && healthPercent() == 0
 
-	
+
 	fun turnRunOn(): Boolean {
 		if (Movement.running()) {
 			return true
@@ -54,7 +54,7 @@ object ATContext {
 
 	fun List<Tile>.atLastTile(distance: Int = 2) = last().distanceTo(Movement.destination()) <= distance
 	fun List<Tile>.traverse(offset: Int = 2, distanceToLastTile: Int = 2, whileWaiting: () -> Any = {}): Boolean {
-		if (atLastTile(offset)) {
+		if (atLastTile(offset) && !Chat.chatting()) {
 			debug("Already at last tile...")
 			return true
 		}
