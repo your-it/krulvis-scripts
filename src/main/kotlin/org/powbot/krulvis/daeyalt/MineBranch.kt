@@ -22,37 +22,7 @@ import org.powbot.mobile.script.ScriptManager
 import kotlin.random.Random
 
 
-class AtMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "AtMine?") {
-	val mineCenter = Tile(3686, 9756, 2)
-	val staircaseTile = Tile(3632, 3340, 0)
-	override val failedComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "WalkingToMine") {
-		if (Bank.opened()) {
-			Bank.close()
-		}
-		val stairCase = Objects.stream().at(staircaseTile).name("Staircase").first()
-		if (stairCase.valid()) {
-			if (walkAndInteract(stairCase, "Climb-down")) {
-				waitForDistance(stairCase) { validate() }
-			}
-		} else if (staircaseTile.distance() > 50) {
-			val medallion = Equipment.stream().name("Drakan's medallion").first()
-			if (!medallion.valid()) {
-				Notifications.showNotification("Can't find medallion")
-				ScriptManager.stop()
-			} else if (medallion.interact("Darkmeyer")) {
-				waitFor(long()) { staircaseTile.distance() < 50 }
-			}
-		} else {
-			Movement.walkTo(staircaseTile)
-		}
-	}
-	override val successComponent: TreeComponent<DaeyaltMiner> = NextToMine(script)
 
-	override fun validate(): Boolean {
-		return mineCenter.distance() < 50
-	}
-
-}
 
 class NextToMine(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "NextToMine?") {
 	override val successComponent: TreeComponent<DaeyaltMiner> = SimpleLeaf(script, "WalkToMine") {

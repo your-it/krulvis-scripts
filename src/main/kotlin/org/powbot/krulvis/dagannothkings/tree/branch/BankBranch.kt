@@ -20,10 +20,13 @@ class ShouldBank(script: DagannothKings) : Branch<DagannothKings>(script, "Shoul
 	override fun validate(): Boolean {
 		if (script.forcedBanking) return true
 
+		val firstMissing = script.allEquipment.firstOrNull { !it.item.hasWith() }
 		if (needsFood() && !hasFood()) {
 			script.forcedBanking = true
-		} else if (script.allEquipment.any { !it.item.hasWith() }) {
-			script.forcedBanking = true
+		} else if (firstMissing != null) {
+			val actuallyMissing = !waitFor(1000) { firstMissing.item.hasWith() }
+			script.logger.info("MissingEquipment=${firstMissing.item.name}, actuallyMissing=$actuallyMissing")
+			script.forcedBanking = actuallyMissing
 		}
 
 
