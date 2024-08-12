@@ -2,12 +2,14 @@ package org.powbot.krulvis.daeyalt
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.utils.Utils.sleep
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.mta.rooms.TelekineticRoom
@@ -22,11 +24,11 @@ class TickManip(script: DaeyaltMiner) : Leaf<DaeyaltMiner>(script, "TickManip") 
 
 		if (herb.valid() && herb.interact("Use")) {
 			sleep(Random.nextInt(10, 50))
-			val startTimeMoving = System.currentTimeMillis()
 			movableTile.matrix().interact("Walk here")
 			script.startTick = script.gameTick
-			waitFor { script.gameTick > script.startTick }
-			script.logger.info("Movement took=${System.currentTimeMillis() - startTimeMoving}, ticks=${script.gameTick - script.startTick}")
+			sleep(Random.nextInt(250, 450))
+//			waitFor { me.movementAnimation() == 819 || script.gameTick > script.startTick + 1 }
+			script.logger.info("Movement animation cycle=${me.movementAnimationCycle()}, animation=${me.movementAnimation()}")
 			val startShards = Inventory.getCount(ESSENCE)
 			if (Utils.walkAndInteract(mine, "Mine")) {
 				sleep(Random.nextInt(250, 450))
@@ -34,8 +36,8 @@ class TickManip(script: DaeyaltMiner) : Leaf<DaeyaltMiner>(script, "TickManip") 
 				if (tar.valid()) {
 					tar.interact("Use")
 				}
-				waitFor { Inventory.getCount(ESSENCE) > startShards || script.gameTick > script.startTick + 2 }
-				script.logger.info("TickManipped animationCycle=${me.animationCycle()}, ticks=${script.gameTick - script.startTick}")
+				waitFor { Inventory.getCount(ESSENCE) > startShards || script.gameTick > script.startTick + 3 }
+//				script.logger.info("TickManipped animationCycle=${me.animationCycle()}, ticks=${script.gameTick - script.startTick}")
 			}
 		}
 	}

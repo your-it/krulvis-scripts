@@ -25,6 +25,17 @@ class DKPaint(script: DagannothKings) : ATPaint<DagannothKings>(script) {
 			if (target.valid()) {
 				target.tile().drawOnScreen(target.distanceTo(t).toString() + " " + target.distanceTo(script.rexTile), Color.RED)
 			}
+			val x = 10
+			var y = 25
+			val yy = 20
+			Data.King.values().forEach {
+				val killTile = it.killTile
+				if (killTile.valid()) {
+					killTile.drawOnScreen(outlineColor = Color.CYAN)
+				}
+				g.drawString(it.name + "kill=${it.kill}, respawnTime=${it.respawnTimer}", x, y)
+				y += yy
+			}
 		} else {
 			script.logger.info("LureTile still is nill")
 		}
