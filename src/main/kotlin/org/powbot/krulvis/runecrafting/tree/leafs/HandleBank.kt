@@ -10,6 +10,7 @@ import org.powbot.api.rt4.magic.RunePouch
 import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.magic.Staff
 import org.powbot.api.script.tree.Leaf
+import org.powbot.krulvis.api.utils.Timer
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.runecrafting.*
 import org.powbot.mobile.script.ScriptManager
@@ -21,7 +22,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
 			bankPouches.forEach { it.withdrawExact(1) }
 		}
 		val invPouches = EssencePouch.inInventory()
-		if (script.altar == RuneAltar.ZMI) Bank.depositAllExcept(*keep)//Immediately deposit runes
+		if (script.altar == RuneAltar.ZMI) depositAllExcept(keep)//Immediately deposit runes
 		if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
 			script.logger.info("Closing bank...")
 			Bank.close()
@@ -29,12 +30,24 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
 			Notifications.showNotification("Out of essence, stopping script")
 			ScriptManager.stop()
 		} else if (invPouches.any { !it.filled() }) {
+			fillEssencePouch(invPouches)
+		} else if (Bank.depositAllExcept(*keep)) {
+			withdrawEssence()
+		}
+	}
+
+
+	fun fillEssencePouch(pouches: List<EssencePouch>) {
+		val fillTimer = Timer(5000)
+		do {
 			if (!Inventory.isFull() && withdrawEssence()) {
 				waitFor { Inventory.isFull() }
 			}
-			invPouches.forEach { it.fill() }
-		} else if (depositAllExcept(keep)) {
-			withdrawEssence()
+			pouches.forEach { it.fill() }
+		} while (!fillTimer.isFinished() && pouches.any { !it.filled() })
+		
+		if (!Inventory.isFull() && withdrawEssence()) {
+			waitFor { Inventory.isFull() }
 		}
 	}
 
