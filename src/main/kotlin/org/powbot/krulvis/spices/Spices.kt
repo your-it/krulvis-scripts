@@ -15,7 +15,7 @@ import org.powbot.krulvis.spices.tree.branches.Killing
 @ScriptManifest(
 	name = "krul SpiceCollector",
 	description = "Stand to curtain of your choice, uses karambwanji",
-	version = "0.0.1",
+	version = "0.0.2",
 	author = "Krulvis",
 	scriptId = "f8514815-0ed1-4b1f-b29c-22325be77f75",
 	category = ScriptCategory.Minigame
@@ -40,10 +40,11 @@ class Spices : ATScript() {
 
 	override val rootComponent: TreeComponent<*> = Killing(this)
 
-	fun cat() = Npcs.stream().name("cat", "hellcat", "overgrown cat").firstOrNull()
+	fun cat() = Npcs.stream().name("cat", "hellcat", "overgrown cat").nearest().firstOrNull()
 
 	fun fighting(): Boolean {
-		return cat()?.healthBarVisible() == true
+		val hellRat = Npcs.stream().name("Hell-Rat Behemoth").nearest().first()
+		return hellRat.valid() && hellRat.healthBarVisible()
 	}
 
 	fun enterComponent() = Components.stream(219, 1).text("Insert your cat").firstOrNull()

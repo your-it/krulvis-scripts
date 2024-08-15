@@ -1,9 +1,7 @@
 package org.powbot.krulvis.orbcharger
 
 import org.powbot.api.Tile
-import org.powbot.api.rt4.GameObject
-import org.powbot.api.rt4.Magic
-import org.powbot.api.rt4.Objects
+import org.powbot.api.rt4.*
 import org.powbot.api.rt4.magic.RunePower
 import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
@@ -13,6 +11,7 @@ import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
 import org.powbot.krulvis.api.utils.requirements.ItemRequirement
+import org.slf4j.LoggerFactory
 
 enum class Orb(
 	val id: Int,
@@ -50,9 +49,18 @@ enum class Orb(
 		EquipmentRequirement(TeleportEquipment.GLORY)
 	);
 
+	val logger = LoggerFactory.getLogger(javaClass.simpleName)
 	fun castOnObelisk(): Boolean {
-		if (Magic.magicspell() != spell) {
-			if (spell.cast()) {
+		val magicSpell = Magic.magicspell()
+		logger.info("Spell=$magicSpell")
+		if (magicSpell != spell) {
+			if (!Game.tab(Game.Tab.MAGIC)) return false
+			val spellC = spell.component()
+			if (!spellC.valid()) {
+				logger.info("Spell component is null")
+				return false
+			}
+			if (spellC.click()) {
 				waitFor { Magic.magicspell() == spell }
 			}
 		}
