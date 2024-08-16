@@ -11,6 +11,7 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.items.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
+import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
 import org.powbot.krulvis.runecrafting.tree.branches.ShouldCastNPCContact
 import org.powbot.mobile.script.ScriptManager
 
@@ -30,7 +31,8 @@ import org.powbot.mobile.script.ScriptManager
 	ScriptConfiguration(name = USE_POUCHES_OPTION, description = "Use pouches?", optionType = OptionType.BOOLEAN, defaultValue = "true"),
 	ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
 	ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS),
-	ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP", optionType = OptionType.INTEGER, defaultValue = "70")
+	ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP", optionType = OptionType.INTEGER, defaultValue = "70"),
+	ScriptConfiguration(EQUIPMENT_CONFIG, "What to wear?", OptionType.EQUIPMENT),
 ])
 class Runecrafter : ATScript() {
 
@@ -44,6 +46,7 @@ class Runecrafter : ATScript() {
 	val vileVigour by lazy { getOption<Boolean>(VILE_VIGOUR_CONFIG) }
 	val usePouches by lazy { getOption<Boolean>(USE_POUCHES_OPTION) }
 	val bankTeleport by lazy { if (method == ABYSS) Magic.Spell.TELEPORT_TO_HOUSE else altar.bankTeleport }
+	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption(EQUIPMENT_CONFIG)) }
 	override fun createPainter(): ATPaint<*> = RCPainter(this)
 
 	fun getBank(): InteractableEntity {

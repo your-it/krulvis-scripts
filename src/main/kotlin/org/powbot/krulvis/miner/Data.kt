@@ -3,6 +3,7 @@ package org.powbot.krulvis.miner
 import org.powbot.api.Area
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Inventory
+import org.powbot.krulvis.api.extensions.items.CoalBag
 import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.api.extensions.items.Item
 
@@ -28,6 +29,7 @@ object Data {
         3150,
         *SPECIAL_ATTACK_PICKS,
         *GemBag.ids,
+        *CoalBag.ids,
         *WATERSKINS,
     )
 

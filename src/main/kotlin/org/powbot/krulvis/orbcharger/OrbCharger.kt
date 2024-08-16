@@ -17,6 +17,8 @@ import org.powbot.krulvis.api.teleports.Teleport
 import org.powbot.krulvis.api.teleports.poh.HouseTeleport
 import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
+import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement.Companion.ids
 import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 
 @ScriptManifest(
@@ -30,6 +32,7 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 )
 @ScriptConfiguration.List(
 	[
+
 		ScriptConfiguration(
 			name = "Orb",
 			allowedValues = ["AIR", "WATER", "EARTH", "FIRE"],
@@ -48,6 +51,7 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 			optionType = OptionType.BOOLEAN,
 			defaultValue = "true"
 		),
+		ScriptConfiguration("Equipment", "What to wear?", OptionType.EQUIPMENT),
 		ScriptConfiguration(
 			name = "BankTeleport",
 			description = "How to get to bank?",
@@ -71,6 +75,7 @@ class OrbCrafter : ATScript() {
 	val fastCharge by lazy { getOption<Boolean>("Fast charge") }
 	val antipoison by lazy { getOption<Boolean>("Antipoison") }
 	val food by lazy { Food.valueOf(getOption("Food")) }
+	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption("Equipment")) }
 
 	override fun createPainter(): ATPaint<*> = OrbPainter(this)
 
@@ -88,7 +93,8 @@ class OrbCrafter : ATScript() {
 			Rune.AIR.id,
 			*Potion.ANTIPOISON.ids,
 			*Potion.SUPER_ANTIPOISON.ids,
-			*orb.requirements.flatMap { it.item.ids.toList() }.toIntArray()
+			*orb.requirements.flatMap { it.item.ids.toList() }.toIntArray(),
+			*equipment.ids()
 		)
 	}
 }

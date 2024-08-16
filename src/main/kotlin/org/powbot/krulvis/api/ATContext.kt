@@ -57,6 +57,7 @@ object ATContext {
 	fun List<Tile>.atLastTile(distance: Int = 2) = last().distanceTo(Movement.destination()) <= distance
 
 	fun List<Tile>.traverse(offset: Int = 2, distanceToLastTile: Int = 2, whileWaiting: () -> Any = {}): Boolean {
+		debug("List<Tile>.traverse(offset=$offset, distanceToLastTile=$distanceToLastTile, whileWaiting=$whileWaiting)")
 		if (atLastTile(offset) && Components.stream(219).id(1).viewable().isEmpty()) {
 			debug("Already at last tile...")
 			return true

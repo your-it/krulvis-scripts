@@ -32,7 +32,9 @@ class ShouldBank(script: Runecrafter) : Branch<Runecrafter>(script, "Should bank
 			script.logger.info("At bank without full inventory")
 			return true
 		}
-		return Bank.opened() || EssencePouch.inInventory().all { it.getEssenceCount() <= 0 } && EssencePouch.essenceCount() == 0
+		return Bank.opened()
+			|| script.equipment.any { !it.meets() }
+			|| (EssencePouch.inInventory().all { it.getEssenceCount() <= 0 } && EssencePouch.essenceCount() == 0)
 	}
 }
 

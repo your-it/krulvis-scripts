@@ -3,7 +3,6 @@ package org.powbot.krulvis.api.utils.requirements
 import org.powbot.api.rt4.Equipment
 import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.IEquipmentItem
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement.Companion.ids
 
 
 class EquipmentRequirement(override val item: IEquipmentItem, override val amount: Int = 1) : ItemRequirement {
@@ -32,6 +31,13 @@ class EquipmentRequirement(override val item: IEquipmentItem, override val amoun
 			return option.map { EquipmentRequirement(it.key, it.value) }
 		}
 
+		fun List<EquipmentRequirement>.withdrawAndEquip(): Boolean {
+			val missing = filterNot { it.meets() }
+			if (missing.isEmpty()) return true
+			return missing.all { it.withdrawAndEquip(true) }
+		}
+
 		fun List<EquipmentRequirement>.ids() = flatMap { it.item.ids.toList() }.toIntArray()
+		fun List<EquipmentRequirement>.names() = map { it.item.name }
 	}
 }
