@@ -27,6 +27,7 @@ class ShouldBank(script: OrbCrafter) : Branch<OrbCrafter>(script, "ShouldBank?")
 		return !Inventory.containsOneOf(Orb.UNPOWERED)
 			|| !hasCosmicRunes()
 			|| !script.orb.staffEquipped()
+			|| script.equipment.any { !it.meets() }
 	}
 }
 
