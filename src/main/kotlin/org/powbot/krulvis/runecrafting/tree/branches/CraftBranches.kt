@@ -18,7 +18,8 @@ class AtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "At altar?") {
     override val successComponent: TreeComponent<Runecrafter> = CraftRunes(script)
 
     override fun validate(): Boolean {
-        return (script.altar.getAltar()?.distance() ?: 99.0) < 13
+        script.logger.info("AtAltar")
+        return script.altar.atAltar()
     }
 }
 

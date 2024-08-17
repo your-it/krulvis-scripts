@@ -52,7 +52,7 @@ class Runecrafter : ATScript() {
 	fun getBank(): InteractableEntity {
 		val eniola = Npcs.stream().name("Eniola").first()
 		if (eniola.valid()) return eniola
-		return Objects.stream().type(GameObject.Type.INTERACTIVE).name("Bank booth").action("Bank").nearest().first()
+		return Objects.stream(25, GameObject.Type.INTERACTIVE).name("Bank booth").action("Bank").nearest().first()
 	}
 
 
