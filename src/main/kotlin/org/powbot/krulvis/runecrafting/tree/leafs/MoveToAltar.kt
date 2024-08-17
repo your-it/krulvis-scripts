@@ -10,6 +10,7 @@ import org.powbot.krulvis.runecrafting.Runecrafter
 
 class MoveToAltar(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving to Altar") {
     override fun execute() {
+        script.logger.info("MovingToAltar")
         val pray = script.prayer
         if (pray != null && Skills.realLevel(Skill.Prayer) >= pray.level() && Skills.level(Skill.Prayer) > 0) {
             Prayer.prayer(pray, true)

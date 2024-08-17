@@ -31,7 +31,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
 		if (script.altar == RuneAltar.ZMI) depositAllExcept(keep)//Immediately deposit runes
 		if (!script.equipment.withdrawAndEquip()) {
 			return
-		} else if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull()) {
+		} else if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull() && EssencePouch.essenceCount() > 0) {
 			script.logger.info("Closing bank...")
 			Bank.close()
 		} else if (Bank.stream().name(script.essence).count() <= 0) {

@@ -4,6 +4,7 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Objects
+import org.powbot.krulvis.api.ATContext.distance
 
 const val FOOD_CONFIGURATION = "Food Config"
 const val EAT_AT_CONFIG = "Eat at Config"
@@ -51,5 +52,6 @@ enum class RuneAltar(val bankTeleport: Magic.MagicSpell?, val pathToAltar: List<
 		pathToAltar = listOf(Tile(3013, 5624, 0), Tile(3013, 5619, 0), Tile(3013, 5613, 0), Tile(3013, 5607, 0), Tile(3013, 5602, 0), Tile(3015, 5597, 0), Tile(3016, 5592, 0), Tile(3016, 5587, 0), Tile(3016, 5582, 0), Tile(3021, 5579, 0), Tile(3026, 5578, 0), Tile(3031, 5578, 0), Tile(3036, 5581, 0), Tile(3041, 5582, 0), Tile(3046, 5580, 0), Tile(3051, 5579, 0), Tile(3057, 5579, 0)))
 	;
 
-	fun getAltar(): GameObject? = Objects.stream().name("Altar").action("Craft-rune").firstOrNull()
+	fun atAltar() = pathToAltar.last().distance() < 10
+	fun getAltar(): GameObject? = Objects.stream(25, GameObject.Type.INTERACTIVE).name("Altar").action("Craft-rune").firstOrNull()
 }
