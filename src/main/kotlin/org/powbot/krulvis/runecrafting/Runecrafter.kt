@@ -31,7 +31,7 @@ import org.powbot.mobile.script.ScriptManager
 	ScriptConfiguration(name = USE_POUCHES_OPTION, description = "Use pouches?", optionType = OptionType.BOOLEAN, defaultValue = "true"),
 	ScriptConfiguration(name = ESSENCE_TYPE_CONFIGURATION, description = "Which essence to use?", optionType = OptionType.STRING, allowedValues = arrayOf(RUNE_ESSENCE, PURE_ESSENCE, DAEYALT_ESSENCE), defaultValue = DAEYALT_ESSENCE),
 	ScriptConfiguration(name = FOOD_CONFIGURATION, description = "Which food to use?", optionType = OptionType.STRING, allowedValues = arrayOf(SALMON, TUNA, LOBSTER, BASS, KARAMBWAN), defaultValue = BASS),
-	ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP", optionType = OptionType.INTEGER, defaultValue = "70"),
+	ScriptConfiguration(name = EAT_AT_CONFIG, description = "Eat below HP (actual HP, not %)", optionType = OptionType.INTEGER, defaultValue = "70"),
 	ScriptConfiguration(EQUIPMENT_CONFIG, "What to wear?", OptionType.EQUIPMENT),
 ])
 class Runecrafter : ATScript() {

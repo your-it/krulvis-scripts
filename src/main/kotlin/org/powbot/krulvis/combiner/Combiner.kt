@@ -20,7 +20,7 @@ import kotlin.math.min
 @ScriptManifest(
 	name = "krul Combiner",
 	author = "Krulvis",
-	version = "1.1.6",
+	version = "1.1.7",
 	markdownFileName = "Combiner.md",
 	scriptId = "28a99f22-08e4-4222-a14b-7c9743db6b6d",
 	description = "Can do any 'interact & wait' Cooking, Crafting, Fletching, Smithing, Smelting"

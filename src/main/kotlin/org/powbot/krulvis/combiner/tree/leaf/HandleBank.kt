@@ -10,48 +10,49 @@ import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.teleports.poh.openable.MountedGloryTeleport
+import org.powbot.krulvis.api.utils.Utils.long
 import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: Combiner) : Leaf<Combiner>(script, "Handle Bank") {
-    override fun execute() {
-        val keepItems = script.items.map { it.key }.toIntArray()
-        if (!Bank.opened()) {
-            val mountedGlory = MountedGloryTeleport.Edgeville.getObject()
-            if (Poh.inside() && mountedGlory != null) {
-                if (MountedGloryTeleport.Edgeville.execute()) {
-                    waitFor { Bank.getBank().valid() }
-                }
-            } else {
-                Bank.openNearest()
-            }
-        } else if (!Inventory.emptyExcept(*keepItems)) {
+	override fun execute() {
+		val keepItems = script.items.map { it.key }.toIntArray()
+		if (!Bank.opened()) {
+			val mountedGlory = MountedGloryTeleport.Edgeville.getObject()
+			if (Poh.inside() && mountedGlory != null) {
+				if (MountedGloryTeleport.Edgeville.execute()) {
+					waitFor { Bank.getBank().valid() }
+				}
+			} else if (Bank.openNearest()) {
+				waitFor(long()) { Bank.opened() }
+			}
+		} else if (!Inventory.emptyExcept(*keepItems)) {
 //            if (Inventory.stream().filtered { it.id !in keepItems }.list().map { it.id }.toSet().size > 1){
 //                Bank.depositAll()
 //            }
-            Bank.depositAllExcept(*keepItems)
-        } else {
-            script.items.forEach { (id, amount) ->
-                val stackable = ItemLoader.lookup(id)?.stackable() == true
-                if (amount == 28 || (stackable && amount > 1)) {
-                    Bank.withdraw(id, Bank.Amount.ALL)
-                } else if (!Bank.withdrawExact(id, amount, false) && amount <= 28) {
-                    return
-                }
-            }
-            val outOfItem =
-                script.items.firstNotNullOfOrNull {
-                    it.takeIf {
-                        (Inventory.getCount(it.key) < if (it.value > 28) 1 else it.value)
-                                && !Bank.containsOneOf(it.key)
-                    }
-                }
-            if (outOfItem != null) {
-                script.logger.info("Out of: ${outOfItem.key}, stopping script")
-                ScriptManager.stop()
-            }
-        }
-    }
+			Bank.depositAllExcept(*keepItems)
+		} else {
+			script.items.forEach { (id, amount) ->
+				val stackable = ItemLoader.lookup(id)?.stackable() == true
+				if (amount == 28 || (stackable && amount > 1)) {
+					Bank.withdraw(id, Bank.Amount.ALL)
+				} else if (!Bank.withdrawExact(id, amount, false) && amount <= 28) {
+					return
+				}
+			}
+			val outOfItem =
+				script.items.firstNotNullOfOrNull {
+					it.takeIf {
+						(Inventory.getCount(it.key) < if (it.value > 28) 1 else it.value)
+							&& !Bank.containsOneOf(it.key)
+					}
+				}
+			if (outOfItem != null) {
+				script.logger.info("Out of: ${outOfItem.key}, stopping script")
+				ScriptManager.stop()
+			}
+		}
+	}
 }

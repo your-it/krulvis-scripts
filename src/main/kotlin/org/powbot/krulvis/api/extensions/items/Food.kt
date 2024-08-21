@@ -58,8 +58,7 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	}
 
 	fun requiredAmount(): Int {
-		val currHealth = currentHP()
-		val missingHealth = maxHP() - currHealth
+		val missingHealth = missingHP()
 		return ceil(missingHealth.toDouble() / healing.toDouble()).toInt()
 	}
 
