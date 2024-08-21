@@ -160,6 +160,7 @@ class Fighter : ATScript() {
 	@ValueChanged(WARRIOR_GUILD_OPTION)
 	fun onWGChange(inWG: Boolean) {
 		if (inWG) {
+			updateOption(USE_SAFESPOT_OPTION, false, OptionType.BOOLEAN)
 			updateOption(CENTER_TILE_OPTION, Defender.killSpot(), OptionType.TILE)
 			val npcAction = NpcActionEvent(
 				0, 0, 10, 13729, 0,
