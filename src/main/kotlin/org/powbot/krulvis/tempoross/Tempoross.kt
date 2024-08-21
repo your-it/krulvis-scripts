@@ -38,7 +38,8 @@ import org.powbot.krulvis.tempoross.tree.leaf.Leave
 	author = "Krulvis",
 	scriptId = "54b4c295-8cb8-4c22-9799-49b7344708e7",
 	markdownFileName = "Tempoross.md",
-	category = ScriptCategory.Fishing
+	category = ScriptCategory.Fishing,
+	perMinuteRate = 3,
 )
 @ScriptConfiguration.List(
 	[

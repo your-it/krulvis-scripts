@@ -42,7 +42,7 @@ import kotlin.random.Random
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.5.4",
+	version = "1.5.5",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -160,7 +160,7 @@ class Fighter : ATScript() {
 	@ValueChanged(WARRIOR_GUILD_OPTION)
 	fun onWGChange(inWG: Boolean) {
 		if (inWG) {
-			updateOption(USE_SAFESPOT_OPTION, Defender.killSpot(), OptionType.TILE)
+			updateOption(CENTER_TILE_OPTION, Defender.killSpot(), OptionType.TILE)
 			val npcAction = NpcActionEvent(
 				0, 0, 10, 13729, 0,
 				"Attack", "<col=ffff00>Cyclops<col=40ff00>  (level-106)",
@@ -338,7 +338,11 @@ class Fighter : ATScript() {
 	val prayAtNearbyAltar by lazy { getOption<Boolean>(PRAY_AT_ALTAR_OPTION) }
 	var nextAltarPrayRestore = Random.nextInt(5, 15)
 
-	private val usingPrayer by lazy { prayAtNearbyAltar || requiredInventory.filter { it.item is Potion }.any { (it.item as Potion).skill == Constants.SKILLS_PRAYER } }
+	private val usingPrayer by lazy {
+		prayAtNearbyAltar || requiredInventory.filter { it.item is Potion }
+			.any { (it.item as Potion).skill == Constants.SKILLS_PRAYER }
+	}
+
 	fun canActivateQuickPrayer() = usingPrayer && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
 	fun canDeactivateQuickPrayer() = Prayer.quickPrayer() &&
 		aggressionTimer.isFinished() && useSafespot && !me.healthBarVisible()
