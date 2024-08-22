@@ -1,7 +1,7 @@
 package org.powbot.krulvis.api.antiban
 
 import org.powbot.api.Random
-import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.extensions.Timer
 
 class DelayHandler(min: Int, max: Int, oddsModifier: OddsModifier = OddsModifier()) {
 

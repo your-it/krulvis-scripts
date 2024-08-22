@@ -10,12 +10,11 @@ import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
-import org.powbot.krulvis.api.utils.Utils.mid
-import org.powbot.krulvis.api.utils.Utils.short
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForWhile
+import org.powbot.krulvis.api.extensions.Utils.mid
+import org.powbot.krulvis.api.extensions.Utils.short
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForWhile
 import org.powbot.mobile.rscache.loader.ItemLoader
-import org.powbot.mobile.script.ScriptManager
 import org.slf4j.LoggerFactory
 import kotlin.math.abs
 

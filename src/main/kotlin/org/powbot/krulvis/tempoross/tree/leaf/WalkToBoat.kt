@@ -1,16 +1,10 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.Tile
-import org.powbot.api.rt4.Constants.GAME_LOADED
-import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.ATContext.walk
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.tempoross.Data.BOAT_AREA
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.script.ScriptManager

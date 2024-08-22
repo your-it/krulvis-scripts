@@ -6,7 +6,7 @@ import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
 
 class Loot(script: DagannothKings) : Leaf<DagannothKings>(script, "Looting") {

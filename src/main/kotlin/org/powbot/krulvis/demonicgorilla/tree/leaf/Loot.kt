@@ -6,7 +6,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 
 class Loot(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Looting") {

@@ -3,7 +3,7 @@ package org.powbot.krulvis.construction.tree.leaf
 import org.powbot.api.rt4.Components
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.construction.Construction
 
 class Remove(script: Construction) : Leaf<Construction>(script, "Remove cape") {

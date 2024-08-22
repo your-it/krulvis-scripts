@@ -9,7 +9,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager

@@ -9,7 +9,7 @@ import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.extensions.randoms.BondPouch
 import org.powbot.krulvis.api.extensions.randoms.RandomHandler
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.mobile.drawing.Rendering
 
 abstract class ATScript : TreeScript() {

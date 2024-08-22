@@ -7,13 +7,12 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.FailureReason
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
 

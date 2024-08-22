@@ -3,7 +3,7 @@ package org.powbot.krulvis.runecrafting.tree.leafs.abyss
 import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 

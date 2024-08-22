@@ -5,9 +5,9 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.rooms.EnchantingRoom
 import org.powbot.krulvis.mta.tree.leafs.DepositOrbs

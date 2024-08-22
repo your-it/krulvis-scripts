@@ -4,7 +4,7 @@ import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.script.AbstractScript
 import org.powbot.api.script.ScriptManifest
-import org.powbot.krulvis.api.teleports.poh.openable.NexusPortalTeleport
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.NexusPortalTeleport
 
 @ScriptManifest(name = "Krul test Teleport", version = "1.0.1", description = "", priv = true)
 class TeleportScript : AbstractScript() {

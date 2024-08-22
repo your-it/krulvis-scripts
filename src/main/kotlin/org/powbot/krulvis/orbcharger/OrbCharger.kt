@@ -10,15 +10,13 @@ import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.teleports.EDGEVILLE_GLORY
-import org.powbot.krulvis.api.teleports.FALADOR_TELEPORT
-import org.powbot.krulvis.api.teleports.SpellTeleport
-import org.powbot.krulvis.api.teleports.Teleport
-import org.powbot.krulvis.api.teleports.poh.HouseTeleport
-import org.powbot.krulvis.api.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
-import org.powbot.krulvis.api.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement.Companion.ids
+import org.powbot.krulvis.api.extensions.teleports.EDGEVILLE_GLORY
+import org.powbot.krulvis.api.extensions.teleports.FALADOR_TELEPORT
+import org.powbot.krulvis.api.extensions.teleports.Teleport
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.FALADOR_TELEPORT_NEXUS
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement.Companion.ids
 import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 
 @ScriptManifest(

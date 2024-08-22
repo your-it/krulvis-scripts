@@ -10,9 +10,9 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.thiever.Thiever
 import org.powbot.krulvis.thiever.tree.leaf.Eat
 import org.powbot.krulvis.thiever.tree.leaf.HandleBank

@@ -14,11 +14,11 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.teleports.Teleport
-import org.powbot.krulvis.api.teleports.TeleportMethod
-import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
-import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
+import org.powbot.krulvis.api.extensions.teleports.Teleport
+import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
 import org.powbot.krulvis.dagannothkings.Data.EQUIPMENT_PREFIX_OPTION
 import org.powbot.krulvis.dagannothkings.Data.INVENTORY_OPTION
 import org.powbot.krulvis.dagannothkings.Data.KILL_PREFIX_OPTION

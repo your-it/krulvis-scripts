@@ -8,7 +8,7 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tempoross.Tempoross
 
 class FindSpot(script: Tempoross) : Leaf<Tempoross>(script, "FindSpotToFish") {

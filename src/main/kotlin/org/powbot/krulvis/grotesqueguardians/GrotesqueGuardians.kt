@@ -7,9 +7,9 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.teleports.Teleport
-import org.powbot.krulvis.api.teleports.TeleportMethod
-import org.powbot.krulvis.api.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
+import org.powbot.krulvis.api.extensions.teleports.Teleport
+import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.demonicgorilla.MELEE_EQUIPMENT_OPTION
 import org.powbot.krulvis.demonicgorilla.MELEE_PRAYER_OPTION
 import org.powbot.krulvis.demonicgorilla.RANGE_EQUIPMENT_OPTION

@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.teleports.poh
+package org.powbot.krulvis.api.extensions.teleports.poh
 
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.*
@@ -8,10 +8,10 @@ import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.House
 import org.powbot.krulvis.api.extensions.House.Pool.Companion.pool
-import org.powbot.krulvis.api.teleports.Teleport
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.teleports.Teleport
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 
 interface HouseTeleport : Teleport {
 	override fun execute(): Boolean {

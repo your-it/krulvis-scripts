@@ -2,13 +2,12 @@ package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.Tile
 import org.powbot.api.rt4.Movement
-import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross

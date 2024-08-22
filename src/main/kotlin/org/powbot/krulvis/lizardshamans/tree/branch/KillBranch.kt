@@ -8,7 +8,7 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
-import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.krulvis.lizardshamans.LizardShamans
 import org.powbot.krulvis.lizardshamans.tree.leaf.AttackShaman
 import org.powbot.krulvis.lizardshamans.tree.leaf.RunToSafety

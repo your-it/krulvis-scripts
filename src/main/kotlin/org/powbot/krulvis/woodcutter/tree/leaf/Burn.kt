@@ -5,8 +5,8 @@ import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.extensions.items.Item.Companion.TINDERBOX
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.mobile.script.ScriptManager
 import org.powbot.util.TransientGetter2D

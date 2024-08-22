@@ -6,7 +6,7 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.branch.moleArea
 

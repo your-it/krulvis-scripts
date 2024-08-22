@@ -8,8 +8,8 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 
 class FixStrut(script: Miner) : Leaf<Miner>(script, "Fixing strut") {

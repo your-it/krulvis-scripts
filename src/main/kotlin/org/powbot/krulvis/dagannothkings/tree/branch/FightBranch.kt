@@ -10,8 +10,8 @@ import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.Data
 import org.powbot.krulvis.dagannothkings.Data.King.Companion.king

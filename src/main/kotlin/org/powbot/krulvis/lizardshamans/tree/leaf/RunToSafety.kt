@@ -2,10 +2,9 @@ package org.powbot.krulvis.lizardshamans.tree.leaf
 
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.mid
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils.mid
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.lizardshamans.LizardShamans
 
 class RunToSafety(script: LizardShamans) : Leaf<LizardShamans>(script, "RunToSafety") {

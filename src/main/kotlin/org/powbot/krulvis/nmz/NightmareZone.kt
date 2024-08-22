@@ -12,7 +12,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.nmz.tree.branch.OutsideNMZ
 
 @ScriptManifest(

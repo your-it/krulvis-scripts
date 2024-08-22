@@ -10,11 +10,10 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.GiantsFoundryItem
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
 
 

@@ -7,8 +7,8 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 
 class ShouldEquipAmmo(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Should equip ammo?") {

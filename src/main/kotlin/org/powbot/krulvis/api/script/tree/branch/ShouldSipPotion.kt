@@ -7,7 +7,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.extensions.Timer
 
 class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
 	Branch<S>(script, "Should sip potion?") {

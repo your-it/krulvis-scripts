@@ -11,8 +11,8 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.leaf.HandleBank
 import kotlin.random.Random

@@ -6,7 +6,7 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.rooms.TelekineticRoom
 import org.powbot.krulvis.mta.tree.leafs.CastTelekineticGrab

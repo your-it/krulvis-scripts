@@ -3,7 +3,7 @@ package org.powbot.krulvis.giantsfoundry.tree.leaf
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.extensions.items.GiantsFoundryItem
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 
 class FillCrucible(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Fill Crucible") {

@@ -11,8 +11,8 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.mole.GiantMole
 import org.powbot.krulvis.mole.tree.leaf.*
 

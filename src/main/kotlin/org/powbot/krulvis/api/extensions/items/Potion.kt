@@ -1,8 +1,8 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.*
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import kotlin.math.abs
 import kotlin.math.floor
 

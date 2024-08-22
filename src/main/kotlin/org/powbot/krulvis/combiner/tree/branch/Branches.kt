@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.krulvis.combiner.tree.leaf.Combine
 import org.powbot.krulvis.combiner.tree.leaf.HandleBank

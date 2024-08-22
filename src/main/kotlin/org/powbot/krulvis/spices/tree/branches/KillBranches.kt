@@ -2,11 +2,10 @@ package org.powbot.krulvis.spices.tree.branches
 
 import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Components
-import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.spices.Spices
 import org.powbot.krulvis.spices.tree.leafs.Enter
 import org.powbot.krulvis.spices.tree.leafs.Feed

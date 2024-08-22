@@ -11,8 +11,8 @@ import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RING_OF_FORGING
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.smelter.Smelter
 import org.powbot.mobile.script.ScriptManager
 

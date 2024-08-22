@@ -2,7 +2,7 @@ package org.powbot.krulvis.dagannothkings.tree.leaf
 
 import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.Data
 

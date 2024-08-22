@@ -1,21 +1,16 @@
 package org.powbot.krulvis.test
 
-import org.powbot.api.Color
-import org.powbot.api.Locatable
 import org.powbot.api.Tile
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.getWalkableNeighbors
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.util.TransientGetter2D
 

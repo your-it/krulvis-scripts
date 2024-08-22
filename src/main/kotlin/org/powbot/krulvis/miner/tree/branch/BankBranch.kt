@@ -7,14 +7,11 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
-import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestDB
-import org.powbot.krulvis.api.extensions.items.GemBag
 import org.powbot.krulvis.api.extensions.items.GemBag.GEM_BAG_CLOSED
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Data
 import org.powbot.krulvis.miner.Data.GEM_BAG_GEMS
 import org.powbot.krulvis.miner.Miner

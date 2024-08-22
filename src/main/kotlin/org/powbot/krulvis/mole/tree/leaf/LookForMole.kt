@@ -5,8 +5,8 @@ import org.powbot.api.rt4.HintArrow
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
 
 class LookForMole(script: GiantMole) : Leaf<GiantMole>(script, "Looking for mole") {

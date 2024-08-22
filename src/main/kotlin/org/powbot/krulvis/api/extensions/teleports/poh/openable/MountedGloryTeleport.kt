@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.teleports.poh.openable
+package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
 import org.powbot.api.requirement.Requirement
 import org.slf4j.Logger

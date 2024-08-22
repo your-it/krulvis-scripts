@@ -10,7 +10,7 @@ import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearestDB
 import org.powbot.krulvis.api.extensions.items.GemBag
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 
 class OpenBank(script: Miner) : Leaf<Miner>(script, "Open Bank") {

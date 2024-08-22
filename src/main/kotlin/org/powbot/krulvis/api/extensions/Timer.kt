@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.utils
+package org.powbot.krulvis.api.extensions
 
 import kotlin.math.ceil
 import kotlin.math.floor

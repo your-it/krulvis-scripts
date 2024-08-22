@@ -9,9 +9,8 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.extensions.items.EquipmentItem
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.demonicgorilla.tree.branch.ShouldDodgeProjectile
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.script.ScriptManager

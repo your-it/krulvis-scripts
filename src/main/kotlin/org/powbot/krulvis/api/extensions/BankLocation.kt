@@ -10,8 +10,8 @@ import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.distanceM
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.teleports.TeleportMethod
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.slf4j.LoggerFactory
 
 
@@ -215,7 +215,7 @@ enum class BankLocation(
 }
 
 private val BANK_ACTIONS = listOf("Bank", "Open", "Use")
-private fun InteractableEntity.bankAction(): String {
+fun InteractableEntity.bankAction(): String {
 	val actions = actions()
 	return actions.first { it in BANK_ACTIONS }
 }

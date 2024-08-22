@@ -2,7 +2,7 @@ package org.powbot.krulvis.runecrafting
 
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 
 enum class EssencePouch(val capacity: Int, val perfectId: Int) : Item {
 	SMALL(3, 5509),

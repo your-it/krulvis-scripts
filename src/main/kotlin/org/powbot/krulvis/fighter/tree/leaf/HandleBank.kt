@@ -8,7 +8,7 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.script.ScriptManager

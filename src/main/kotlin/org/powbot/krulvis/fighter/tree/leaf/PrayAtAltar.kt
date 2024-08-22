@@ -6,7 +6,7 @@ import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.fighter.Fighter
 import kotlin.random.Random
 

@@ -4,8 +4,8 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.canReach
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.mid
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.mid
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import kotlin.math.roundToInt
 

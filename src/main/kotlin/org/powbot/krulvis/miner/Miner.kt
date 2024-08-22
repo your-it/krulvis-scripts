@@ -13,7 +13,7 @@ import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Data.TOP_POLY
 import org.powbot.krulvis.miner.tree.branch.ShouldFixStrut
 import org.powbot.mobile.script.ScriptManager

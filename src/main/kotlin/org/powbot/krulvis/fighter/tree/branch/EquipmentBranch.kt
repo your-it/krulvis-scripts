@@ -1,16 +1,13 @@
 package org.powbot.krulvis.fighter.tree.branch
 
-import org.powbot.api.rt4.Equipment
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Item
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.extensions.items.EquipmentItem
-import org.powbot.krulvis.api.extensions.items.IEquipmentItem
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.fighter.Fighter
 
 class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip ammo?") {

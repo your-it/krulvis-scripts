@@ -1,13 +1,10 @@
 package org.powbot.krulvis.daeyalt
 
 import org.powbot.api.rt4.Bank
-import org.powbot.api.rt4.Equipment
-import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.ATContext.withdrawExact
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement.Companion.ids
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement.Companion.ids
 
 
 class WearingEquipment(script: DaeyaltMiner) : Branch<DaeyaltMiner>(script, "WearingEquipment?") {

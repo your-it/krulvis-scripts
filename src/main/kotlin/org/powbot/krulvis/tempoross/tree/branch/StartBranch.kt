@@ -1,14 +1,13 @@
 package org.powbot.krulvis.tempoross.tree.branch
 
 import org.powbot.api.rt4.*
-import org.powbot.api.rt4.Constants.GAME_LOADED
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Item.Companion.EMPTY_BUCKET
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.BOAT_AREA
 import org.powbot.krulvis.tempoross.Side
 import org.powbot.krulvis.tempoross.Tempoross

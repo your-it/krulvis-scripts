@@ -9,8 +9,8 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 
 class ShouldEat(script: Blackjacking) : Branch<Blackjacking>(script, "Should eat?") {
     override val failedComponent: TreeComponent<Blackjacking> = ShouldEscape(script)

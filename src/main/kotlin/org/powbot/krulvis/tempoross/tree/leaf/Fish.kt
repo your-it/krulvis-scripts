@@ -9,8 +9,8 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.moving
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tempoross.Data.DOUBLE_FISH_ID
 import org.powbot.krulvis.tempoross.Data.FILLING_ANIM
 import org.powbot.krulvis.tempoross.Tempoross

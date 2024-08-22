@@ -5,8 +5,7 @@ import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mole.GiantMole
 
 class Attack(script: GiantMole) : Leaf<GiantMole>(script, "Attack") {

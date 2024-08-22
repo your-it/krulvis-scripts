@@ -3,10 +3,8 @@ package org.powbot.krulvis.runecrafting.tree.leafs
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.runecrafting.Runecrafter
 
 class HandleHouse(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling house") {

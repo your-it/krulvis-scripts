@@ -4,8 +4,8 @@ import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 

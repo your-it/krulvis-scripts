@@ -8,8 +8,8 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.traverse
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.ATContext.walkAndInteractWhile
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
-import org.powbot.krulvis.api.utils.Utils.waitForDistanceWhile
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistanceWhile
 import org.powbot.krulvis.runecrafting.Runecrafter
 import org.powbot.krulvis.runecrafting.tree.Abyss
 
@@ -53,7 +53,7 @@ class EnterAbyss(script: Runecrafter) : Leaf<Runecrafter>(script, "Entering Abys
         if (Players.stream().interactingWithMe()
                         .count { it.combatLevel in combatLevel - wildernessLevel..combatLevel + wildernessLevel } > 0
         ) {
-            script.bankTeleport?.cast()
+            script.bankTeleport.teleport?.execute()
         }
     }
 

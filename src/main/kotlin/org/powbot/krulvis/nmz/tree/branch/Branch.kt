@@ -9,8 +9,8 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.nmz.NightmareZone
 import org.powbot.krulvis.nmz.tree.leaf.EnterDream
 import org.powbot.krulvis.nmz.tree.leaf.SetupInventory

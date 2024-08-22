@@ -1,9 +1,7 @@
-package org.powbot.krulvis.api.utils
+package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.Locatable
 import org.powbot.api.Random
-import org.powbot.krulvis.api.ATContext.distance
-import kotlin.math.max
 import kotlin.math.min
 
 

@@ -20,7 +20,7 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.GRIMY_GUAM
 import org.powbot.krulvis.api.extensions.items.Item.Companion.MITHRIL_AXE
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.mobile.rscache.loader.ItemLoader
 import org.powbot.mobile.script.ScriptManager
 

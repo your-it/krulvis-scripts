@@ -8,7 +8,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.orbcharger.OrbCrafter
 import org.powbot.krulvis.orbcharger.tree.leaf.Charge
 import org.powbot.krulvis.orbcharger.tree.leaf.Walk

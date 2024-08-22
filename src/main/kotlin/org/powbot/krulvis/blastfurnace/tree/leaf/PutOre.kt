@@ -9,8 +9,8 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.items.Ore
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG_CLOSED
 import org.powbot.krulvis.blastfurnace.COAL_BAG_OPENED

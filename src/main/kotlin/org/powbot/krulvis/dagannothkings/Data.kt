@@ -6,8 +6,8 @@ import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Prayer
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RARE_DROP_TABLE
-import org.powbot.krulvis.api.utils.Timer
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 
 object Data {
 

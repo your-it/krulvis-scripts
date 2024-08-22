@@ -16,8 +16,8 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.DRAGON_WARHAMMER
 import org.powbot.krulvis.api.extensions.items.Item.Companion.LEAF_BLADED_BATTLEAXE
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SHIELD_LEFT_HALF
 import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.utils.Utils
-import org.powbot.krulvis.api.utils.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils
+import org.powbot.krulvis.api.extensions.Utils.sleep
 
 class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
     Branch<S>(script, "Should high alch?") {

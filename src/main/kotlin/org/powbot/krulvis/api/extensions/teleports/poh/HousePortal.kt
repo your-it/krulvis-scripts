@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.teleports.poh
+package org.powbot.krulvis.api.extensions.teleports.poh
 
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.GameObject

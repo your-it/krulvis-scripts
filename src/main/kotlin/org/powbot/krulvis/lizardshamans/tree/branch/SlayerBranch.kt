@@ -3,8 +3,8 @@ package org.powbot.krulvis.lizardshamans.tree.branch
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.mid
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.mid
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.fighter.slayer.Slayer
 import org.powbot.krulvis.lizardshamans.LizardShamans
 

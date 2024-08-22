@@ -6,7 +6,7 @@ import org.powbot.api.rt4.Magic
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 
 class ShouldScatterAshes(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldScatterAshes?") {

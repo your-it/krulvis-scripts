@@ -10,7 +10,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.antiban.DelayHandler
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.woodcutter.Woodcutter
 import org.powbot.krulvis.woodcutter.tree.leaf.Chop
 import org.powbot.krulvis.woodcutter.tree.leaf.Walk

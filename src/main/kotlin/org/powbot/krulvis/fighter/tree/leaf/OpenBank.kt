@@ -4,7 +4,7 @@ import org.powbot.api.InteractableEntity
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.fighter.Fighter
 
 class OpenBank(script: Fighter) : Leaf<Fighter>(script, "Opening bank") {

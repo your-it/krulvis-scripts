@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.rooms.GraveyardRoom
 import org.powbot.krulvis.mta.rooms.GraveyardRoom.getEdible

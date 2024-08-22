@@ -7,8 +7,8 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.tithe.Data.EMPTY_CAN
 import org.powbot.krulvis.tithe.Data.WATER_CAN_FULL
 import org.powbot.krulvis.tithe.TitheFarmer

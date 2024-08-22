@@ -12,7 +12,7 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Flag
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.mta.MTA
 import org.powbot.krulvis.mta.tree.branches.FinishedMaze
 import org.powbot.mobile.drawing.Rendering

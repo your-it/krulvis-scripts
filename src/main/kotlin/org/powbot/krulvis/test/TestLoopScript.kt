@@ -60,11 +60,7 @@ class LoopScript : AbstractScript() {
 
 	override fun onStart() {
 		super.onStart()
-		logger.info("Starting")
-		val fields = Constants.javaClass.fields
-		fields.forEach { f ->
-			logger.info("Field=${f.name}, value=${f.get(Constants)}")
-		}
+		logger.info("Mysterious runes = ${Objects.stream().name("Mysterious ruins").first()}")
 	}
 
 	var mine = GameObject.Nil

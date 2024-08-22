@@ -5,7 +5,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.lizardshamans.Data.SHAMAN_AREAS
 import org.powbot.krulvis.lizardshamans.LizardShamans
 import org.powbot.krulvis.lizardshamans.tree.leaf.GoToShamans

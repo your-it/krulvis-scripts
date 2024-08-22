@@ -8,8 +8,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.demonicgorilla.Data
+import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 import org.powbot.krulvis.demonicgorilla.tree.leaf.Attack
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitWhileKilling

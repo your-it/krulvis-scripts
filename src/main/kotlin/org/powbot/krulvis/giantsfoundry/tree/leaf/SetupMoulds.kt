@@ -4,7 +4,7 @@ import org.powbot.api.Input
 import org.powbot.api.Point
 import org.powbot.api.rt4.Component
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.BonusType
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 import org.powbot.krulvis.giantsfoundry.MouldType

@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.teleports.poh.openable
+package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
 import org.powbot.api.Notifications
 import org.powbot.api.rt4.Component
@@ -6,8 +6,8 @@ import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Widgets
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.teleports.poh.HouseTeleport
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.teleports.poh.HouseTeleport
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.mobile.script.ScriptManager
 
 interface OpenableHouseTeleport : HouseTeleport {

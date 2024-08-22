@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.utils.requirements
+package org.powbot.krulvis.api.extensions.requirements
 
 import org.powbot.krulvis.api.extensions.items.Item
 import org.powbot.krulvis.api.extensions.items.Potion

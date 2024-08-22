@@ -8,7 +8,7 @@ import org.powbot.api.rt4.Players
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.lizardshamans.Data.SHAMAN_AREAS
 import org.powbot.krulvis.lizardshamans.Data.SLAYER_CAVE
 import org.powbot.krulvis.lizardshamans.Data.SLAYER_CAVE_ENTRANCE

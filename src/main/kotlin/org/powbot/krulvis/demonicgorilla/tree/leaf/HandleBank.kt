@@ -7,9 +7,8 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
-import org.powbot.krulvis.fighter.Defender
 import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle bank") {

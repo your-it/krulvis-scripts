@@ -1,4 +1,4 @@
-package org.powbot.krulvis.api.utils.requirements
+package org.powbot.krulvis.api.extensions.requirements
 
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.extensions.items.InventoryItem

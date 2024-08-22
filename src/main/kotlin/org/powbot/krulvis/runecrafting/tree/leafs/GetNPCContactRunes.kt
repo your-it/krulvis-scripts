@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.magic.Rune
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.runecrafting.Runecrafter
 
 class GetNPCContactRunes(script: Runecrafter) : Leaf<Runecrafter>(script, "Getting NPCContact runes") {
@@ -18,5 +18,4 @@ class GetNPCContactRunes(script: Runecrafter) : Leaf<Runecrafter>(script, "Getti
         }
         waitFor(1000) { Magic.LunarSpell.NPC_CONTACT.canCast() }
     }
-
 }

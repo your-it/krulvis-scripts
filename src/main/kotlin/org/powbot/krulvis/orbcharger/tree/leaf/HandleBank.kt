@@ -9,8 +9,8 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
-import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
 import org.powbot.krulvis.orbcharger.Orb.Companion.COSMIC
 import org.powbot.krulvis.orbcharger.Orb.Companion.UNPOWERED
 import org.powbot.krulvis.orbcharger.OrbCrafter

@@ -3,8 +3,8 @@ package org.powbot.krulvis.api.extensions.items
 import org.powbot.api.Random
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("TeleportItem")

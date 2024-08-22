@@ -1,7 +1,7 @@
 package org.powbot.krulvis.lizardshamans.event
 
 import org.powbot.api.Tile
-import org.powbot.krulvis.api.utils.Timer
+import org.powbot.krulvis.api.extensions.Timer
 
 class JumpEvent(val startTile: Tile) {
 

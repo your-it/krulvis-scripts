@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Combat
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.mta.rooms.GraveyardRoom.getEdible
 import org.powbot.krulvis.mta.rooms.GraveyardRoom.healing
 import org.powbot.krulvis.mta.MTA

@@ -1,18 +1,19 @@
-package org.powbot.krulvis.api.teleports.poh.openable
+package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.FairyRing
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.teleports.poh.HouseTeleport
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.teleports.poh.HouseTeleport
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 const val IDENTIFYER = "fairy ring"
 const val FAIRY_RING_DJR = "DJR $IDENTIFYER (POH)"
 const val FAIRY_RING_BLS = "BLS $IDENTIFYER (POH)"
+const val FAIRY_RING_DLS = "DLS $IDENTIFYER (POH)"
 
 class FairyRingTeleport(val combination: String) : HouseTeleport {
 

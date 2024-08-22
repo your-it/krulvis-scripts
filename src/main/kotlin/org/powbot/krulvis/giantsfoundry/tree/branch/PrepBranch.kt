@@ -7,9 +7,9 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 import org.powbot.krulvis.giantsfoundry.MouldType
 import org.powbot.krulvis.giantsfoundry.tree.leaf.FillCrucible

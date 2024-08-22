@@ -9,8 +9,8 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.script.tree.branch.ShouldHighAlch
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.mobile.script.ScriptManager
 
 class ShouldClearInv(script: ChestThiever) : Branch<ChestThiever>(script, "Should clear inv?") {

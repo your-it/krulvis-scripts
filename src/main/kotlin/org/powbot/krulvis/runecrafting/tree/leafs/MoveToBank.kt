@@ -10,9 +10,9 @@ import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.ATContext.traverse
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.House
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.runecrafting.Runecrafter
-import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
+import org.powbot.krulvis.runecrafting.ouraniaPrayerAltarPath
 
 class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Bank") {
     override fun execute() {
@@ -20,17 +20,16 @@ class MoveToBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Moving To Ban
         if (ouraniaUpstairsArea.contains(me)) {
             val ladder = ouraniaLadder()
             if (ladder.distance() > 15) {
-                ouraniaPathToAltar.traverse(1)
+                ouraniaPrayerAltarPath.traverse(1)
             } else if (walkAndInteract(ladder, "Climb")) {
                 waitFor(5000) { script.getBank().valid() }
             }
-        } else if (teleport != null) {
-            if (teleport.cast()) {
+        } else if (!teleport.executed) {
+            if (teleport.execute())
                 waitFor(5000) {
                     House.isInside() || ouraniaUpstairsArea.contains(me) || script.getBank()
                         .valid() || script.findChaosAltar().valid()
                 }
-            }
         } else {
             Movement.moveToBank()
         }

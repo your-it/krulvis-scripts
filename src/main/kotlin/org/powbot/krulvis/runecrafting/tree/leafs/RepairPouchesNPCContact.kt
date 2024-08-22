@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Magic
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.runecrafting.EssencePouch
 import org.powbot.krulvis.runecrafting.Runecrafter
 

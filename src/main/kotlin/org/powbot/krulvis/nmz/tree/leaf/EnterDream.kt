@@ -2,7 +2,7 @@ package org.powbot.krulvis.nmz.tree.leaf
 
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.nmz.NightmareZone
 import org.powbot.mobile.script.ScriptManager
 

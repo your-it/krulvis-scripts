@@ -15,7 +15,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 
 @ScriptManifest(
 	name = "krul DaeyaltMiner",

@@ -1,30 +1,27 @@
 package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.script.tree.Branch
+import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.runecrafting.ABYSS
-import org.powbot.krulvis.runecrafting.EssencePouch
+import org.powbot.krulvis.runecrafting.RuneAltar
 import org.powbot.krulvis.runecrafting.Runecrafter
-import org.powbot.krulvis.runecrafting.tree.Abyss
 import org.powbot.krulvis.runecrafting.tree.leafs.CraftRunes
 import org.powbot.krulvis.runecrafting.tree.leafs.MoveToAltar
-import org.powbot.krulvis.runecrafting.tree.leafs.abyss.EnterAbyss
-import org.powbot.krulvis.runecrafting.tree.leafs.abyss.EnterInnerPortal
-import org.powbot.krulvis.runecrafting.tree.leafs.abyss.EnterPortal
-import org.powbot.krulvis.runecrafting.tree.leafs.abyss.RepairPouchInAbyss
 
 class AtAltar(script: Runecrafter) : Branch<Runecrafter>(script, "At altar?") {
     override val failedComponent: TreeComponent<Runecrafter> = AbyssMethod(script)
     override val successComponent: TreeComponent<Runecrafter> = CraftRunes(script)
 
     override fun validate(): Boolean {
+        script.bankTeleport.executed = false
         script.logger.info("AtAltar")
         return script.altar.atAltar()
     }
 }
 
 class AbyssMethod(script: Runecrafter) : Branch<Runecrafter>(script, "Doing abyss?") {
-    override val failedComponent: TreeComponent<Runecrafter> = MoveToAltar(script)
+    override val failedComponent: TreeComponent<Runecrafter> = BloodMethod(script)
     override val successComponent: TreeComponent<Runecrafter> = InInnerCircle(script)
 
     override fun validate(): Boolean {
@@ -32,29 +29,25 @@ class AbyssMethod(script: Runecrafter) : Branch<Runecrafter>(script, "Doing abys
     }
 }
 
-class InInnerCircle(script: Runecrafter) : Branch<Runecrafter>(script, "In inner circle?") {
-    override val failedComponent: TreeComponent<Runecrafter> = InOuterCircle(script)
-    override val successComponent: TreeComponent<Runecrafter> = ShouldRepairDarkMage(script)
+//class ShouldTeleport(script: Runecrafter) : Branch<Runecrafter>(script, "ShouldTeleport?") {
+//    override val failedComponent: TreeComponent<Runecrafter> = BloodMethod(script)
+//    override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "TeleportToAltar") {
+//        script.altarTeleport.execute()
+//    }
+//
+//    override fun validate(): Boolean {
+//        if (script.altarTeleport.teleport == null) script.altarTeleport.executed = true
+//        return !script.altarTeleport.executed
+//    }
+//}
+
+class BloodMethod(script: Runecrafter) : Branch<Runecrafter>(script, "IsBloodCrafting?") {
+    override val failedComponent: TreeComponent<Runecrafter> = MoveToAltar(script)
+    override val successComponent: TreeComponent<Runecrafter> = InRuinsArea(script)
 
     override fun validate(): Boolean {
-        return Abyss.inInnerCircle()
+        return script.altar == RuneAltar.BLOOD
     }
 }
 
-class ShouldRepairDarkMage(script: Runecrafter) : Branch<Runecrafter>(script, "Should talk to dark mage?") {
-    override val failedComponent: TreeComponent<Runecrafter> = EnterPortal(script)
-    override val successComponent: TreeComponent<Runecrafter> = RepairPouchInAbyss(script)
 
-    override fun validate(): Boolean {
-        return EssencePouch.inInventory().any { it.shouldRepair() }
-    }
-}
-
-class InOuterCircle(script: Runecrafter) : Branch<Runecrafter>(script, "In outer circle?") {
-    override val failedComponent: TreeComponent<Runecrafter> = EnterAbyss(script)
-    override val successComponent: TreeComponent<Runecrafter> = EnterInnerPortal(script)
-
-    override fun validate(): Boolean {
-        return Abyss.inOuterCircle()
-    }
-}

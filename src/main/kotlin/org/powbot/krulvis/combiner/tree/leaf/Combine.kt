@@ -9,9 +9,9 @@ import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.debug
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.House
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.combiner.Combiner
 import org.powbot.krulvis.combiner.interactions.InventoryActions.getItem
 import org.powbot.krulvis.combiner.interactions.ObjectActions.getObject

@@ -13,7 +13,7 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.PIE_DISH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SEED_BOX_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.tree.leaf.Loot
 import org.powbot.krulvis.fighter.tree.leaf.PrayAtAltar

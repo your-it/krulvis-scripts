@@ -2,7 +2,7 @@ package org.powbot.krulvis.fighter.tree.leaf
 
 import org.powbot.api.rt4.*
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.fighter.Fighter
 
 class WaitWhileKilling(script: Fighter) : Leaf<Fighter>(script, "Wait for kill confirm...") {

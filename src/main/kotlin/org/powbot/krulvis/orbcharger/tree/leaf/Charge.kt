@@ -3,12 +3,11 @@ package org.powbot.krulvis.orbcharger.tree.leaf
 import org.powbot.api.Production
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.Components
-import org.powbot.api.rt4.Magic
 import org.powbot.api.rt4.Widgets
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.orbcharger.OrbCrafter
 
 class Charge(script: OrbCrafter) : Leaf<OrbCrafter>(script, "Charge Orbs") {

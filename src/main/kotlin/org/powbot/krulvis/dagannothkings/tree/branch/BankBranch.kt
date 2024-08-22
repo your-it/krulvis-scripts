@@ -8,8 +8,8 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
 import org.powbot.krulvis.api.extensions.items.Food.Companion.hasFood
 import org.powbot.krulvis.api.extensions.items.Food.Companion.needsFood
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.tree.leaf.HandleBank
 

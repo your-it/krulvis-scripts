@@ -2,7 +2,7 @@ package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.rt4.*
 import org.powbot.krulvis.api.ATContext.debug
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 
 object House {
 	//

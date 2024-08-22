@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 
 class TakeBarsFromBank(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Take bars from bank") {

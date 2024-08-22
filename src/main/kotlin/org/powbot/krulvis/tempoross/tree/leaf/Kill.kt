@@ -1,12 +1,10 @@
 package org.powbot.krulvis.tempoross.tree.leaf
 
 import org.powbot.api.rt4.Chat
-import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitForDistance
 import org.powbot.krulvis.tempoross.Data.KILLING_ANIM
 import org.powbot.krulvis.tempoross.Tempoross
 import kotlin.math.roundToInt

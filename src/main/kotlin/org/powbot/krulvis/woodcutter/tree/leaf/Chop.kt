@@ -5,8 +5,8 @@ import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Players
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.woodcutter.Woodcutter
 
 class Chop(script: Woodcutter) : Leaf<Woodcutter>(script, "Chop Tree") {

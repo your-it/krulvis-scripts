@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.walking.local.Utils
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 
 class DropSandstone(script: Miner) : Leaf<Miner>(script, "Drop sandstone") {

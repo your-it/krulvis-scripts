@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Npcs
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.lizardshamans.Data
 import org.powbot.krulvis.lizardshamans.LizardShamans
 

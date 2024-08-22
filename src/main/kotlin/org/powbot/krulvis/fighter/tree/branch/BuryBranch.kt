@@ -7,7 +7,7 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.getCount
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.fighter.Fighter
 
 class ShouldBuryBones(script: Fighter) : Branch<Fighter>(script, "Should Bury bones?") {

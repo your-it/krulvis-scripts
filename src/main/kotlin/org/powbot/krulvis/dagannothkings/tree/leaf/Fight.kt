@@ -2,8 +2,6 @@ package org.powbot.krulvis.dagannothkings.tree.leaf
 
 import org.powbot.api.rt4.Prayer
 import org.powbot.api.script.tree.Leaf
-import org.powbot.krulvis.api.ATContext.dead
-import org.powbot.krulvis.api.utils.Utils.waitFor
 import org.powbot.krulvis.dagannothkings.DagannothKings
 import org.powbot.krulvis.dagannothkings.Data.King.Companion.king
 

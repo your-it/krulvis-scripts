@@ -4,7 +4,7 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.extensions.items.Item.Companion.COINS
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.blastfurnace.BlastFurnace
 import org.powbot.krulvis.blastfurnace.COAL_BAG_CLOSED
 import org.powbot.krulvis.blastfurnace.GOLD_GLOVES

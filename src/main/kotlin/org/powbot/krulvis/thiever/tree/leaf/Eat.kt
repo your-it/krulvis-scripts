@@ -4,9 +4,9 @@ import org.powbot.api.rt4.Bank
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.utils.Utils.long
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.long
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.thiever.Thiever
 
 class Eat(script: Thiever) : Leaf<Thiever>(script, "Eat food") {

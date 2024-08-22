@@ -7,10 +7,10 @@ import org.powbot.api.rt4.magic.Staff
 import org.powbot.krulvis.api.extensions.BankLocation
 import org.powbot.krulvis.api.extensions.items.Item.Companion.RUNE_POUCH
 import org.powbot.krulvis.api.extensions.items.TeleportEquipment
-import org.powbot.krulvis.api.utils.Utils.waitFor
-import org.powbot.krulvis.api.utils.requirements.EquipmentRequirement
-import org.powbot.krulvis.api.utils.requirements.InventoryRequirement
-import org.powbot.krulvis.api.utils.requirements.ItemRequirement
+import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
+import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
+import org.powbot.krulvis.api.extensions.requirements.ItemRequirement
 import org.slf4j.LoggerFactory
 
 enum class Orb(

@@ -4,8 +4,8 @@ import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Widgets
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
-import org.powbot.krulvis.api.utils.Utils.sleep
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.sleep
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.giantsfoundry.GiantsFoundry
 
 class HandIn(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Handing in") {

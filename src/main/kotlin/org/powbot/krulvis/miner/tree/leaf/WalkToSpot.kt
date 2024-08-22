@@ -8,9 +8,8 @@ import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.rt4.walking.local.Utils.walkAndInteract
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.getWalkableNeighbor
-import org.powbot.krulvis.api.ATContext.onMap
 import org.powbot.krulvis.api.ATContext.traverse
-import org.powbot.krulvis.api.utils.Utils.waitFor
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Miner
 import org.powbot.mobile.script.ScriptManager
 

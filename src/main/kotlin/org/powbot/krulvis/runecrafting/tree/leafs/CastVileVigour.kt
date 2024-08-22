@@ -4,16 +4,16 @@ import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.traverse
-import org.powbot.krulvis.api.utils.Utils
+import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.runecrafting.Runecrafter
-import org.powbot.krulvis.runecrafting.ouraniaPathToAltar
+import org.powbot.krulvis.runecrafting.ouraniaPrayerAltarPath
 import kotlin.math.max
 
 class CastVileVigour(script: Runecrafter) : Leaf<Runecrafter>(script, "CastVileVigour") {
 	override fun execute() {
 		val altar = script.chaosAltar
 		if (altar.distance() > 3) {
-			ouraniaPathToAltar.traverse(1, distanceToLastTile = 4) {
+			ouraniaPrayerAltarPath.traverse(1, distanceToLastTile = 4) {
 				if (Movement.energyLevel() < 50) {
 					castVileVigour()
 				}
