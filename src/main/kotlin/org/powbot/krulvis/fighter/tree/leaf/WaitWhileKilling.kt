@@ -22,7 +22,7 @@ class WaitWhileKilling(script: Fighter) : Leaf<Fighter>(script, "Wait for kill c
 		}
 
 		val target = Players.local().interacting()
-		val safespot = script.centerTile()
+		val safespot = script.centerTile
 		if (waitFor(600, 1000) { script.shouldReturnToSafespot() || target.died() }) {
 			script.logger.info("Npc died=${target.died()}")
 			if (script.shouldReturnToSafespot()) {

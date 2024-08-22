@@ -12,7 +12,7 @@ class WalkToSpot(script: Fighter) : Leaf<Fighter>(script, "Walking to spot") {
 	override fun execute() {
 		Chat.clickContinue()
 		val npcTeleport = script.monsterTeleport
-		val spot = script.centerTile()
+		val spot = script.centerTile
 		val nearby = script.nearbyMonsters()
 		if (nearby.none { it.reachable() } || (spot.distance() > if (script.useSafespot) script.safespotRadius else script.killRadius)) {
 			if (spot.distance() <= 10 && spot.reachable()) {

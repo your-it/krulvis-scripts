@@ -12,7 +12,7 @@ class WaitForLoot(script: Fighter) : Leaf<Fighter>(script, "Waiting for loot..."
 			Prayer.quickPrayer(false)
 		}
 		if (!script.aggressionTimer.isFinished() && script.shouldReturnToSafespot()) {
-			Movement.step(script.centerTile(), 0)
+			Movement.step(script.centerTile, 0)
 		} else {
 			waitFor { script.loot().isNotEmpty() }
 		}
