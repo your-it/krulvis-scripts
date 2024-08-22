@@ -2,6 +2,7 @@ package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.Area
 import org.powbot.api.Tile
+import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
@@ -26,7 +27,9 @@ class InRuinsArea(script: Runecrafter) : Branch<Runecrafter>(script, "InLaborato
     override val failedComponent: TreeComponent<Runecrafter> = InLaboratories(script)
     override val successComponent: TreeComponent<Runecrafter> = SimpleLeaf(script, "RuinsArea") {
         val ruins = Objects.stream(Tile(3561, 9781, 0)).name("Mysterious ruins").first()
-        if (ruins.valid() && walkAndInteract(ruins, "Enter")) {
+        if (ruins.distance() > 10) {
+            Movement.step(ruins)
+        } else if (walkAndInteract(ruins, "Enter")) {
             waitForDistance(ruins) { script.altar.atAltar() }
         }
     }

@@ -1,7 +1,6 @@
 package org.powbot.krulvis.runecrafting.tree.branches
 
 import org.powbot.api.script.tree.Branch
-import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.runecrafting.ABYSS
 import org.powbot.krulvis.runecrafting.RuneAltar
