@@ -13,6 +13,9 @@ class RunToSafety(script: LizardShamans) : Leaf<LizardShamans>(script, "RunToSaf
 
 		script.logger.info("Stepping to escapeTile=${escapeTile}")
 		val startRunning = Timer()
+		if (!Movement.running() && Movement.energyLevel() > 1) {
+			Movement.running(true)
+		}
 		if (Movement.step(escapeTile, 0)) {
 			script.logger.info("Ran to escapetile to run from spawns within $startRunning")
 			waitFor(mid()) { escapeTile.distance() <= 2 }
