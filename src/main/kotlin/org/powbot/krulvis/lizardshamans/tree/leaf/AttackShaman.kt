@@ -15,7 +15,8 @@ class AttackShaman(script: LizardShamans) : Leaf<LizardShamans>(script, "AttackS
 			script.logger.info("Not attacking because jumpEvent not finished ${script.jumpEvent}")
 			return
 		}
-		val target = if (script.target.valid() && !script.target.dead()) script.target else getTarget()
+		//There is a possibility for shamans to PJ when the other jumps
+		val target = getTarget()
 		if (target.animation() == Data.AttackAnimation.Falling.animation || target.animation() == Data.AttackAnimation.Jump.animation) {
 			script.logger.info("Not attacking in middle of jump animation")
 			return
@@ -31,6 +32,10 @@ class AttackShaman(script: LizardShamans) : Leaf<LizardShamans>(script, "AttackS
 		val shamans = Npcs.stream().name("Lizardman shaman").nearest().filtered {
 			!it.dead() && it.reachable()
 		}.toList()
+		val me = me
+		if (!script.target.dead() && script.target.interacting() == me) {
+			return script.target
+		}
 		return shamans.firstOrNull { it.interacting() == me } ?: shamans.firstOrNull() ?: Npc.Nil
 	}
 }

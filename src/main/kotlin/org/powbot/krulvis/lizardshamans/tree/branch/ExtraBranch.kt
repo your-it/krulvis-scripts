@@ -38,6 +38,7 @@ class ShouldLoot(script: LizardShamans) : Branch<LizardShamans>(script, "ShouldL
 	override val successComponent: TreeComponent<LizardShamans> = Loot(script)
 
 	override fun validate(): Boolean {
-		return script.lootList.isNotEmpty()
+		val loot = script.lootList.firstOrNull() ?: return false
+		return loot.distanceTo(script.target) >= 3
 	}
 }

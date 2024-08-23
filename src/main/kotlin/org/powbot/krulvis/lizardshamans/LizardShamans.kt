@@ -26,7 +26,7 @@ import org.powbot.krulvis.lizardshamans.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
 
 @ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer",
-	category = ScriptCategory.Combat, version = "1.0.0", priv = true,
+	category = ScriptCategory.Combat, version = "1.0.1", priv = true,
 	scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19")
 @ScriptConfiguration.List([
 	ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),

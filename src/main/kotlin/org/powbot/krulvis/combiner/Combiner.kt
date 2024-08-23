@@ -4,10 +4,12 @@ import org.powbot.api.Notifications
 import org.powbot.api.Production
 import org.powbot.api.event.GameActionEvent
 import org.powbot.api.event.InventoryChangeEvent
-import org.powbot.api.event.InventoryItemActionEvent
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
-import org.powbot.api.script.*
+import org.powbot.api.script.OptionType
+import org.powbot.api.script.ScriptConfiguration
+import org.powbot.api.script.ScriptManifest
+import org.powbot.api.script.ScriptState
 import org.powbot.api.script.paint.InventoryItemPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
@@ -15,7 +17,6 @@ import org.powbot.krulvis.api.script.ATScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.combiner.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
-import kotlin.math.min
 
 @ScriptManifest(
 	name = "krul Combiner",
