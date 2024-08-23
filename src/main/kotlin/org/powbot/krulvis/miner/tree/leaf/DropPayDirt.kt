@@ -15,40 +15,40 @@ import org.powbot.krulvis.miner.Miner
 
 class DropPayDirt(script: Miner) : Leaf<Miner>(script, "Drop pay-dirt") {
 
-    override fun execute() {
-        val hopper = getHopper()
-        val totalPaydirt = Inventory.getCount(Ore.PAY_DIRT.id) + script.getMotherloadCount()
-        if (hopper != null && hopper.canReach()) {
-            if (walkAndInteract(hopper, "Deposit")) {
-                script.lastPayDirtDrop = System.currentTimeMillis()
-                sleep(600)
-                waitFor(long()) {
-                    deposited() && canWalkAway()
-                }
-            }
-        } else if (!script.nearHopper.reachable() || script.nearHopper.distance() > 15) {
-            if (!script.escapeTopFloor()) return
-            val path = LocalPathFinder.findPath(script.nearHopper)
-            if (path.isNotEmpty()) {
-                path.traverseUntilReached()
-            } else {
-                Movement.moveTo(script.nearHopper)
-            }
-        }
+	override fun execute() {
+		val hopper = getHopper()
+		val totalPaydirt = Inventory.getCount(Ore.PAY_DIRT.id) + script.getMotherlodeCount()
+		if (hopper != null && hopper.canReach()) {
+			if (walkAndInteract(hopper, "Deposit")) {
+				script.lastPayDirtDrop = System.currentTimeMillis()
+				sleep(600)
+				waitFor(long()) {
+					deposited() && canWalkAway()
+				}
+			}
+		} else if (!script.nearHopper.reachable() || script.nearHopper.distance() > 15) {
+			if (!script.escapeTopFloor()) return
+			val path = LocalPathFinder.findPath(script.nearHopper)
+			if (path.isNotEmpty()) {
+				path.traverseUntilReached()
+			} else {
+				Movement.moveTo(script.nearHopper)
+			}
+		}
 
-        if (totalPaydirt >= 81 && deposited()) {
-            script.shouldEmptySack = true
-        }
-    }
+		if (totalPaydirt >= script.getMotherlodeCapacity() && deposited()) {
+			script.shouldEmptySack = true
+		}
+	}
 
-    fun canWalkAway(): Boolean {
-        return script.getBrokenStrut() == null
-                || Npcs.stream().name("Pay-dirt").isNotEmpty()
-    }
+	fun canWalkAway(): Boolean {
+		return script.getBrokenStrut() == null
+			|| Npcs.stream().name("Pay-dirt").isNotEmpty()
+	}
 
-    fun deposited() = Inventory.getCount(Ore.PAY_DIRT.id) == 0
+	fun deposited() = Inventory.getCount(Ore.PAY_DIRT.id) == 0
 
-    fun getHopper() = Objects.stream(50).type(GameObject.Type.INTERACTIVE)
-            .at(if (script.topLevelHopper) Tile(3755, 5677, 0) else Tile(3748, 5672, 0))
-            .name("Hopper").action("Deposit").nearest().firstOrNull()
+	fun getHopper() = Objects.stream(50).type(GameObject.Type.INTERACTIVE)
+		.at(if (script.topLevelHopper) Tile(3755, 5677, 0) else Tile(3748, 5672, 0))
+		.name("Hopper").action("Deposit").nearest().firstOrNull()
 }

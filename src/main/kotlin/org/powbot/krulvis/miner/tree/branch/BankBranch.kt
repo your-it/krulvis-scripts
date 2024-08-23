@@ -69,7 +69,7 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 
 	fun shouldBankMotherload() = script.shouldEmptySack
 		&& !Inventory.emptyExcept(*Data.TOOLS)
-		&& script.getMotherloadCount() == 0
+		&& script.getMotherlodeCount() == 0
 
 	override val successComponent: TreeComponent<Miner> = ShouldDrop(script)
 	override val failedComponent: TreeComponent<Miner> = ShouldEmptySack(script)
@@ -78,9 +78,9 @@ class ShouldBank(script: Miner) : Branch<Miner>(script, "Should Bank") {
 class ShouldEmptySack(script: Miner) : Branch<Miner>(script, "Should empty sack") {
 
 	override fun validate(): Boolean {
-		val count = script.getMotherloadCount()
-		val capacity = if (Varpbits.varpbit(5556) == 1) 189 else 108
-		if (count >= capacity - 27) {
+		val count = script.getMotherlodeCount()
+		val capacity = script.getMotherlodeCapacity()
+		if (count >= capacity) {
 			script.shouldEmptySack = true
 		} else if (count == 0 && Inventory.emptyExcept(*Data.TOOLS)) {
 			println("Sack is empty and inventory contains only tools")
