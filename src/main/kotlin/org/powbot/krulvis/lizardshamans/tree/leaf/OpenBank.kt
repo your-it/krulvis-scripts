@@ -5,6 +5,7 @@ import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.Utils.waitForDistance
+import org.powbot.krulvis.api.extensions.bankAction
 import org.powbot.krulvis.lizardshamans.LizardShamans
 
 class OpenBank(script: LizardShamans) : Leaf<LizardShamans>(script, "Open Bank") {
@@ -15,7 +16,7 @@ class OpenBank(script: LizardShamans) : Leaf<LizardShamans>(script, "Open Bank")
 			if (script.bankTeleport.execute()) {
 				Movement.walkTo(bank)
 			}
-		} else if (walkAndInteract(bank, "Open")) {
+		} else if (walkAndInteract(bank, bank.bankAction())) {
 			waitForDistance(bank) { Bank.opened() }
 		}
 	}

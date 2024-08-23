@@ -46,9 +46,10 @@ interface IEquipmentItem : Item {
 	fun equip(wait: Boolean = true): Boolean {
 		if (inInventory()) {
 			val item = Inventory.stream().nameContains(name).first()
-			val action = item.actions().first { it in listOf("Wear", "Wield", "Equip") }
-			ScriptManager.script()!!.logger.info("Equipping $name action=$action")
-			if (item.interact(action)) {
+			val actions = item.actions()
+			val action = actions.firstOrNull { it in listOf("Wear", "Wield", "Equip") }
+			ScriptManager.script()!!.logger.info("Equipping $name action=$action, actions=[${actions.joinToString()}]")
+			if (if (action == null) item.click() else item.interact(action)) {
 				if (wait) waitFor(2000) { inEquipment() } else return true
 			}
 		}

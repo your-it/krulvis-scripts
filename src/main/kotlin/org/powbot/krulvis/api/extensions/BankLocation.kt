@@ -209,6 +209,7 @@ enum class BankLocation(
 			}
 			return false
 		}
+
 	}
 
 
