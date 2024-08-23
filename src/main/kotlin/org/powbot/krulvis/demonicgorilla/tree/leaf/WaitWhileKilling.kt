@@ -27,7 +27,7 @@ class WaitWhileKilling(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "W
 		}
 
 		if (specialWeapon?.canSpecial() == true && script.equipment.any { it.item.id == specialWeapon.id }) {
-			val makesSense = specialWeapon != Weapon.ARCLIGHT || (!script.reducedStats && script.currentTarget.healthPercent() >= 80)
+			val makesSense = specialWeapon != Weapon.ARCLIGHT || (!script.reducedStats && script.currentTarget.healthPercent() >= 75)
 			val specialWatcherOff = specialWatcher == null || !specialWatcher!!.active
 			if (makesSense && specialWatcherOff && !Combat.specialAttack() && Combat.specialAttack(true)) {
 				script.logger.info("Casting special because arclight=${specialWeapon == Weapon.ARCLIGHT}, reducedStats=${script.reducedStats}, hp=${script.currentTarget.healthPercent()}")

@@ -25,7 +25,7 @@ class WalkToSpot(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Walking
 			val path = LocalPathFinder.findPath(spot)
 			if (path.isNotEmpty()) {
 				script.seedPodTeleport.executed = false
-				path.traverseUntilReached(0.0)
+				path.traverse()
 			} else if (script.seedPodTeleport.execute()) {
 				script.aggressionTimer.reset()
 				Movement.builder(spot).setWalkUntil { spot.distance() < 25 }.move()

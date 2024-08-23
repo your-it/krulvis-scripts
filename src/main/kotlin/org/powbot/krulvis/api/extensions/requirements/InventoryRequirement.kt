@@ -26,6 +26,9 @@ open class InventoryRequirement(
 	}
 
 	override fun meets(): Boolean {
+		if (item is Potion) {
+			item.getInventoryCount()
+		}
 		return if (allowMore) getCount() >= amount else getCount() == amount
 	}
 
@@ -49,6 +52,7 @@ open class InventoryRequirement(
 
 
 	companion object {
-		fun forOption(option: Map<Int, Int>) = option.map { InventoryRequirement(it.key, it.value, allowMore = it.value > 28) }
+		fun forOption(option: Map<Int, Int>) =
+			option.map { InventoryRequirement(it.key, it.value, allowMore = it.value > 28) }
 	}
 }

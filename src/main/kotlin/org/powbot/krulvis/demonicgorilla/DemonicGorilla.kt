@@ -66,8 +66,12 @@ import org.powbot.mobile.script.ScriptManager
 			optionType = OptionType.EQUIPMENT, visible = true
 		),
 		ScriptConfiguration(
-			MELEE_PRAYER_OPTION, "What melee offensive prayer to use?",
-			optionType = OptionType.STRING, visible = true, defaultValue = "PIETY", allowedValues = ["NONE", "CHIVALRY", "PIETY"]
+			MELEE_PRAYER_OPTION,
+			"What melee offensive prayer to use?",
+			optionType = OptionType.STRING,
+			visible = true,
+			defaultValue = "PIETY",
+			allowedValues = ["NONE", "CHIVALRY", "PIETY"]
 		),
 		ScriptConfiguration(
 			USE_RANGE_OPTION, "Use ranged gear?",
@@ -78,8 +82,12 @@ import org.powbot.mobile.script.ScriptManager
 			optionType = OptionType.EQUIPMENT, visible = true
 		),
 		ScriptConfiguration(
-			RANGE_PRAYER_OPTION, "What range offensive prayer to use?",
-			optionType = OptionType.STRING, visible = true, defaultValue = "EAGLE_EYE", allowedValues = ["NONE", "SHARP_EYE", "HAWK_EYE", "EAGLE_EYE", "RIGOUR"]
+			RANGE_PRAYER_OPTION,
+			"What range offensive prayer to use?",
+			optionType = OptionType.STRING,
+			visible = true,
+			defaultValue = "EAGLE_EYE",
+			allowedValues = ["NONE", "SHARP_EYE", "HAWK_EYE", "EAGLE_EYE", "RIGOUR"]
 		),
 		ScriptConfiguration(
 			USE_MAGE_OPTION, "Use mage gear?",
@@ -90,16 +98,23 @@ import org.powbot.mobile.script.ScriptManager
 			optionType = OptionType.EQUIPMENT, visible = false
 		),
 		ScriptConfiguration(
-			MAGE_PRAYER_OPTION, "What mage offensive prayer to use?",
-			optionType = OptionType.STRING, visible = false, defaultValue = "MYSTIC_MIGHT", allowedValues = ["NONE", "MYSTIC_WILL", "MYSTIC_LORE", "MYSTIC_MIGHT", "AUGURY"]
+			MAGE_PRAYER_OPTION,
+			"What mage offensive prayer to use?",
+			optionType = OptionType.STRING,
+			visible = false,
+			defaultValue = "MYSTIC_MIGHT",
+			allowedValues = ["NONE", "MYSTIC_WILL", "MYSTIC_LORE", "MYSTIC_MIGHT", "AUGURY"]
 		),
 		ScriptConfiguration(
 			SPECIAL_WEAPON_OPTION, "Special Attack Weapon?",
 			optionType = OptionType.STRING, defaultValue = ARCLIGHT, allowedValues = ["NONE", DDS, ARCLIGHT]
 		),
 		ScriptConfiguration(
-			RESURRECT_OPTION, "Resurrect spell?",
-			optionType = OptionType.STRING, defaultValue = GREATER_GHOST, allowedValues = ["NONE", GREATER_GHOST, GREATER_ZOMBIE, GREATER_SKELETON]
+			RESURRECT_OPTION,
+			"Resurrect spell?",
+			optionType = OptionType.STRING,
+			defaultValue = GREATER_GHOST,
+			allowedValues = ["NONE", GREATER_GHOST, GREATER_ZOMBIE, GREATER_SKELETON]
 		),
 		ScriptConfiguration(
 			BURY_BONES_OPTION, "Scatter ashes?",
@@ -251,11 +266,17 @@ class DemonicGorilla : ATScript() {
 	val buryBones by lazy { getOption<Boolean>(BURY_BONES_OPTION) }
 
 	//Prayer options
-	val protectionPrayerSwitchTimer = Timer(1800)
+	val protectionPrayerSwitchTimer = Timer(3000)
 	var protectionPrayer = Prayer.Effect.PROTECT_FROM_MISSILES
-	val meleeOffensivePrayer by lazy { Prayer.Effect.values().firstOrNull { it.name == getOption<String>(MELEE_PRAYER_OPTION) } }
-	val rangeOffensivePrayer by lazy { Prayer.Effect.values().firstOrNull { it.name == getOption<String>(RANGE_PRAYER_OPTION) } }
-	val mageOffensivePrayer by lazy { Prayer.Effect.values().firstOrNull { it.name == getOption<String>(MAGE_PRAYER_OPTION) } }
+	val meleeOffensivePrayer by lazy {
+		Prayer.Effect.values().firstOrNull { it.name == getOption<String>(MELEE_PRAYER_OPTION) }
+	}
+	val rangeOffensivePrayer by lazy {
+		Prayer.Effect.values().firstOrNull { it.name == getOption<String>(RANGE_PRAYER_OPTION) }
+	}
+	val mageOffensivePrayer by lazy {
+		Prayer.Effect.values().firstOrNull { it.name == getOption<String>(MAGE_PRAYER_OPTION) }
+	}
 	var offensivePrayer: Prayer.Effect? = null
 
 	//Resurrection options
@@ -345,7 +366,9 @@ class DemonicGorilla : ATScript() {
 		}
 		setCurrentTarget()
 		if (currentTarget.valid() && currentTarget.name == DEMONIC_GORILLA) {
-			if (currentTarget.overheadMessage()?.contains("Rhaaa") == true && protectionPrayerSwitchTimer.isFinished()) {
+			if (currentTarget.overheadMessage()
+					?.contains("Rhaaa") == true && protectionPrayerSwitchTimer.isFinished()
+			) {
 				logger.info("Switching attack style RHAAAA")
 				protectionPrayerSwitchTimer.reset()
 				if (currentTarget.inMotion()) {
@@ -353,9 +376,12 @@ class DemonicGorilla : ATScript() {
 					protectionPrayer = Prayer.Effect.PROTECT_FROM_MELEE
 				} else {
 					logger.info("Not in motion so other prayer")
-					protectionPrayer = if (protectionPrayer == Prayer.Effect.PROTECT_FROM_MISSILES)
-						Prayer.Effect.PROTECT_FROM_MAGIC
-					else Prayer.Effect.PROTECT_FROM_MISSILES
+					val prots = arrayOf(
+						Prayer.Effect.PROTECT_FROM_MISSILES,
+						Prayer.Effect.PROTECT_FROM_MAGIC,
+						Prayer.Effect.PROTECT_FROM_MELEE
+					)
+					protectionPrayer = prots.filterNot { it == protectionPrayer }.random()
 				}
 			}
 			val prayId = currentTarget.prayerHeadIconId()
@@ -403,13 +429,17 @@ class DemonicGorilla : ATScript() {
 
 	private fun findSafeSpotFromProjectile() {
 		val dangerousTiles = projectiles.map { it.first.destination() }
-		val myTile = if (equipment == meleeEquipment && currentTarget.valid()) currentTarget.tile() else me.tile()
-		val collisionMap = Movement.collisionMap(myTile.floor).collisionMap.flags
+		val targetTile = currentTarget.tile()
+		val centerTile = if (equipment == meleeEquipment && currentTarget.valid()) targetTile else me.tile()
+		val distanceToTarget = targetTile.distance()
+		val collisionMap = Movement.collisionMap(centerTile.floor).collisionMap.flags
 		val grid = mutableListOf<Pair<Tile, Double>>()
 		for (x in -2 until 2) {
 			for (y in -2 until 2) {
-				val t = Tile(myTile.x + x, myTile.y + y, myTile.floor)
-				if (!t.blocked(collisionMap)) {
+				val t = Tile(centerTile.x + x, centerTile.y + y, centerTile.floor)
+				if (t.blocked(collisionMap)) continue
+				//If we are further than 5 tiles away, make sure that the tile is closer to the target so we don't walk further away
+				if (distanceToTarget <= 5 || t.distanceTo(targetTile) < distanceToTarget) {
 					grid.add(t to dangerousTiles.minOf { it.distanceTo(t) })
 				}
 			}

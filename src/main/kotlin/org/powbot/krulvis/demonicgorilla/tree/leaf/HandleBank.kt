@@ -6,8 +6,8 @@ import org.powbot.api.rt4.Inventory
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.missingHP
-import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
 import org.powbot.mobile.script.ScriptManager
 
@@ -19,7 +19,8 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 			return
 		}
 		script.bankTeleport.executed = false
-		val ids = (script.requiredInventory.flatMap { it.item.ids.toList() } + script.allEquipmentItems.flatMap { it.ids.toList() }).toIntArray()
+		val ids =
+			(script.requiredInventory.flatMap { it.item.ids.toList() } + script.allEquipmentItems.flatMap { it.ids.toList() }).toIntArray()
 		val edibleFood = foodToEat()
 		if (!Inventory.emptyExcept(*ids)) {
 			Bank.depositAllExcept(*ids)
@@ -27,7 +28,6 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 			edibleFood.eat()
 			waitFor { foodToEat() == null }
 		} else if (handleEquipment() && foodToEat() == null) {
-
 			script.requiredInventory.forEach {
 				if (!it.withdraw(true) && !it.item.inBank()) {
 					script.logger.info("Stopped because no ${it.item.name} in bank")
@@ -35,13 +35,19 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 				}
 			}
 
-			script.forcedBanking = script.requiredInventory.all { it.meets() }
+			val missing = script.requiredInventory.filter { !it.meets() }
+			script.logger.info(
+				"Still missing requiredInventory=[${
+					missing.joinToString { it.item.name }
+				}]"
+			)
+			script.forcedBanking = missing.isNotEmpty()
 			if (!script.forcedBanking) Bank.close()
 		}
 
 	}
 
-	fun foodToEat() = Food.values().firstOrNull { it.inInventory() && it.healing <= missingHP() }
+	fun foodToEat() = Food.values().firstOrNull { it.inInventory() && missingHP() >= it.healing }
 
 	fun handleEquipment(): Boolean {
 		script.equipment.forEach {
