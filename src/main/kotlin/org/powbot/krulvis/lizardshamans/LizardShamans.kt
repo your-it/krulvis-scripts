@@ -11,32 +11,44 @@ import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
+import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.teleports.Teleport
 import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FAIRY_RING_BLS
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FAIRY_RING_DJR
+import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.lizardshamans.Data.LOOT
 import org.powbot.krulvis.lizardshamans.event.JumpEvent
 import org.powbot.krulvis.lizardshamans.tree.branch.ShouldBank
 import org.powbot.mobile.script.ScriptManager
 
-@ScriptManifest("krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer",
+@ScriptManifest(
+	"krul LizardmanShamans", "Kills lizardman shamans for Dragon Warhammer",
 	category = ScriptCategory.Combat, version = "1.0.1", priv = true,
-	scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19")
-@ScriptConfiguration.List([
-	ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),
-	ScriptConfiguration("Inventory", "What to take with?", optionType = OptionType.INVENTORY),
-	ScriptConfiguration("Slayer", "Kill for slayer task?", optionType = OptionType.BOOLEAN),
-	ScriptConfiguration("BankTeleport", "How to get to bank?", optionType = OptionType.STRING,
-		allowedValues = [CASTLE_WARS_JEWELLERY_BOX, EDGEVILLE_MOUNTED_GLORY], defaultValue = CASTLE_WARS_JEWELLERY_BOX),
-	ScriptConfiguration("ShamanTeleport", "How to get to Shamans?", OptionType.STRING,
-		allowedValues = [FAIRY_RING_BLS, FAIRY_RING_DJR], defaultValue = FAIRY_RING_DJR),
-])
+	scriptId = "08bda146-7aba-4fb3-90e9-68b4bdeb2d19"
+)
+@ScriptConfiguration.List(
+	[
+		ScriptConfiguration("Equipment", "What to wear?", optionType = OptionType.EQUIPMENT),
+		ScriptConfiguration("Inventory", "What to take with?", optionType = OptionType.INVENTORY),
+		ScriptConfiguration("Slayer", "Kill for slayer task?", optionType = OptionType.BOOLEAN),
+		ScriptConfiguration(
+			"BankTeleport",
+			"How to get to bank?",
+			optionType = OptionType.STRING,
+			allowedValues = [CASTLE_WARS_JEWELLERY_BOX, EDGEVILLE_MOUNTED_GLORY],
+			defaultValue = CASTLE_WARS_JEWELLERY_BOX
+		),
+		ScriptConfiguration(
+			"ShamanTeleport", "How to get to Shamans?", OptionType.STRING,
+			allowedValues = [FAIRY_RING_BLS, FAIRY_RING_DJR], defaultValue = FAIRY_RING_DJR
+		),
+	]
+)
 class LizardShamans : ATScript() {
 	override fun createPainter(): ATPaint<*> = LizardShamanPainter(this)
 
@@ -135,7 +147,7 @@ class LizardShamans : ATScript() {
 		val name = name()
 		return name in LOOT
 			|| (name == "Coins" && stackSize() > 1000)
-			|| (Inventory.emptySlotCount() > 2 && name == "Chilli potato")
+			|| (name == "Chilli potato" && Inventory.emptySlotCount() > (if (Food.CHILI_POTATO.canEat()) 1 else 2))
 	}
 
 
