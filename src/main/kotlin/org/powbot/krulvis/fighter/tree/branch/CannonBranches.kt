@@ -71,6 +71,7 @@ class ShouldAddCannonballs(script: Fighter) : Branch<Fighter>(script, "ShouldAdd
         val cannon = script.getCannon()
         if (walkAndInteract(cannon, "Fire")) {
             waitForDistance(cannon) { !validate() }
+            nextCannonRefill = Random.nextInt(0, 20)
         }
     }
     override val failedComponent: TreeComponent<Fighter> = GettingDefenders(script)
