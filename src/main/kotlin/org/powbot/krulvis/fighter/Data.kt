@@ -22,6 +22,8 @@ const val PRAY_AT_ALTAR_OPTION = "Pray At Altar"
 const val BANK_TELEPORT_OPTION = "Bank Teleport"
 const val MONSTER_TELEPORT_OPTION = "Monster Teleport"
 const val MONSTER_AUTO_DESTROY_OPTION = "Auto Kill"
+const val USE_CANNON_OPTION = "Use Cannon"
+const val CANNON_TILE_OPTION = "Cannon Tile"
 
 
 enum class Superior(val protectPrayer: Prayer.Effect = Prayer.Effect.PROTECT_FROM_MELEE) {

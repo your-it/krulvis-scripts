@@ -10,10 +10,10 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.teleports.Teleport
 import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
-import org.powbot.krulvis.demonicgorilla.MELEE_EQUIPMENT_OPTION
-import org.powbot.krulvis.demonicgorilla.MELEE_PRAYER_OPTION
-import org.powbot.krulvis.demonicgorilla.RANGE_EQUIPMENT_OPTION
-import org.powbot.krulvis.demonicgorilla.RANGE_PRAYER_OPTION
+import org.powbot.krulvis.tormenteddemon.MELEE_EQUIPMENT_OPTION
+import org.powbot.krulvis.tormenteddemon.MELEE_PRAYER_OPTION
+import org.powbot.krulvis.tormenteddemon.RANGE_EQUIPMENT_OPTION
+import org.powbot.krulvis.tormenteddemon.RANGE_PRAYER_OPTION
 import org.powbot.krulvis.fighter.BANK_TELEPORT_OPTION
 import org.powbot.krulvis.grotesqueguardians.tree.branch.ShouldBank
 

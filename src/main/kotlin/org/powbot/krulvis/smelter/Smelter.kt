@@ -1,5 +1,7 @@
 package org.powbot.krulvis.smelter
 
+import com.google.common.eventbus.Subscribe
+import org.powbot.api.event.TickEvent
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
@@ -48,8 +50,9 @@ class Smelter : ATScript() {
 	val bar by lazy { Bar.valueOf(getOption<String>("Bar")) }
 	val cannonballs by lazy { getOption<Boolean>("Cannonball") }
 	val forgingRing by lazy { getOption<Boolean>("Ring of forging") }
+
 }
 
 fun main() {
-	Smelter().startScript(false)
+	Smelter().startScript("127.0.0.1", "GIM", false)
 }

@@ -7,6 +7,7 @@ import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.BankLocation.Companion.openNearest
+import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD
 import org.powbot.krulvis.api.extensions.items.Item.Companion.AMMO_MOULD_DOUBLE
@@ -19,7 +20,8 @@ class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {
 
     override fun validate(): Boolean {
         if (script.cannonballs) {
-            val shouldBank = !Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE) || !Inventory.containsOneOf(Bar.STEEL.id)
+            val shouldBank =
+                !Inventory.containsOneOf(AMMO_MOULD, AMMO_MOULD_DOUBLE) || !Inventory.containsOneOf(Bar.STEEL.id)
             script.logger.info("Should bank for balls = $shouldBank")
             return shouldBank
         }
@@ -30,7 +32,9 @@ class ShouldBank(script: Smelter) : Branch<Smelter>(script, "ShouldBank") {
 class IsBankOpen(script: Smelter) : Branch<Smelter>(script, "IsBankOpen") {
     override val successComponent: TreeComponent<Smelter> = HandleBank(script)
     override val failedComponent: TreeComponent<Smelter> = SimpleLeaf(script, "Opening Bank") {
-        Bank.openNearest()
+        if (Bank.openNearest()) {
+            waitFor { Bank.opened() }
+        }
     }
 
     override fun validate(): Boolean {
