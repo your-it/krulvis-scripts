@@ -1,6 +1,5 @@
 package org.powbot.krulvis.fighter.tree.leaf
 
-import org.powbot.api.Tile
 import org.powbot.api.rt4.Chat
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.walking.local.LocalPathFinder

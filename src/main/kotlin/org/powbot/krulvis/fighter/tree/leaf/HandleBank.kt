@@ -38,15 +38,20 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 			}
 		} else if (handleEquipment() && foodToEat() == null) {
 
-			script.requiredInventory.forEach {
+			val missingItem = script.requiredInventory.filter { !it.meets() }
+			missingItem.forEach {
 				if (!it.withdraw(true) && !it.item.inBank()) {
 					script.logger.info("Stopped because no ${it.item.name} in bank")
 					ScriptManager.stop()
 				}
 			}
 
-			script.forcedBanking = script.requiredInventory.all { it.meets() }
+			script.logger.info("Missing Items=[${missingItem.joinToString { it.item.name }}]")
+
+			script.forcedBanking = missingItem.any { !it.meets() }
 			if (!script.forcedBanking) Bank.close()
+		} else {
+			script.logger.info("Handling equipment not finished...")
 		}
 
 	}
