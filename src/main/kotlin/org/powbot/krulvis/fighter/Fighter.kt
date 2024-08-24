@@ -364,7 +364,8 @@ class Fighter : ATScript() {
     //Cannon option
     val useCannon by lazy { getOption<Boolean>(USE_CANNON_OPTION) }
     val cannonTile by lazy { getOption<Tile>(CANNON_TILE_OPTION) }
-    fun getCannon() = Objects.stream(cannonTile, GameObject.Type.INTERACTIVE).name("Dwarf multicannon").first()
+    fun getCannon() =
+        Objects.stream(cannonTile, GameObject.Type.INTERACTIVE).name("Broken multicannon", "Dwarf multicannon").first()
 
     //Custom slayer options
     var lastTask = false
