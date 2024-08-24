@@ -46,7 +46,7 @@ class DGPainter(script: TormentedDemon) : ATPaint<TormentedDemon>(script) {
         }
         val projectiles = script.projectiles
         if (projectiles.isNotEmpty()) {
-            projectiles.forEach { (projectile, time) ->
+            projectiles.forEach { projectile ->
                 projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}")
             }
             if (script.projectileSafespot != Tile.Nil) {
