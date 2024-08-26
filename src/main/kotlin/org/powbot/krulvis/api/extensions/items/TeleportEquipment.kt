@@ -122,17 +122,24 @@ enum class TeleportEquipment(
 
 
 	private fun teleportSlayerRing(location: String): Boolean {
-		val teleportWidget = Components.stream(219, 1).textContains(location).first()
+		var teleportWidget = slayerRingTeleportWidget(location)
+		logger.info("SlayerRing Teleport to location=$location, componentVisible=${teleportWidget.visible()}")
 		if (!teleportWidget.visible()) {
 			if (Equipment.stream().id(*ids).first().interact("Teleport")) {
-				waitFor { teleportWidget.refresh().visible() }
+				waitFor {
+					teleportWidget = slayerRingTeleportWidget(location)
+					teleportWidget.visible()
+				}
 			}
 		}
+
 		if (teleportWidget.valid() && teleportWidget.visible()) {
 			return teleportWidget.click()
 		}
 		return false
 	}
+
+	private fun slayerRingTeleportWidget(location: String) = Components.stream(219, 1).textContains(location).first()
 
 
 	fun withdraw(): Boolean {
