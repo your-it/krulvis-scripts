@@ -81,7 +81,7 @@ class CanKill(script: Fighter) : Branch<Fighter>(script, "Can Kill?") {
 class ShouldHop(script: Fighter) : Branch<Fighter>(script, "Should hop?") {
 
     override val successComponent: TreeComponent<Fighter> = HopFromPlayers(script)
-    override val failedComponent: TreeComponent<Fighter> = ShouldSipPotion(script, Attack(script))
+    override val failedComponent: TreeComponent<Fighter> = ShouldConsume(script, Attack(script))
 
     override fun validate(): Boolean {
         return script.hopFromPlayers && Players.stream().within(script.centerTile, script.killRadius).notLocalPlayer()

@@ -4,6 +4,7 @@ import org.powbot.api.Condition
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Prayer
+import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext
 import org.powbot.krulvis.fighter.Fighter
@@ -15,7 +16,7 @@ class Attack(script: Fighter) : Leaf<Fighter>(script, "Attacking") {
 		if (script.canActivateQuickPrayer()) {
 			Prayer.quickPrayer(true)
 		}
-		target.bounds(-32, 32, -192, 0, 0-32, 32)
+		target.bounds(-32, 32, -192, 0, 0 - 32, 32)
 		if (attack(target)) {
 			script.currentTarget = target
 			Condition.wait({
@@ -28,10 +29,13 @@ class Attack(script: Fighter) : Leaf<Fighter>(script, "Attacking") {
 	}
 
 	fun attack(target: Npc?): Boolean {
+		val t = target ?: return false
 		return if (script.useSafespot) {
-			target?.interact("Attack") == true
+			target.interact("Attack")
+		} else if (!t.reachable()) {
+			LocalPathFinder.findWalkablePath(t.tile()).traverse()
 		} else {
-			ATContext.walkAndInteract(target, "Attack")
+			ATContext.walkAndInteract(t, "Attack")
 		}
 	}
 }
