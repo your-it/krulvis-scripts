@@ -25,6 +25,7 @@ import org.powbot.krulvis.api.extensions.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
+import org.powbot.krulvis.api.extensions.teleports.poh.openable.POISON_WASTE_SPIRIT_TREE_POH
 import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.ATScript
@@ -135,7 +136,7 @@ import kotlin.random.Random
 			optionType = OptionType.STRING,
 			defaultValue = EDGEVILLE_MOUNTED_GLORY,
 			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD,
-				FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
+				FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL]
 		),
 		ScriptConfiguration(
 			MONSTER_TELEPORT_OPTION,
@@ -143,7 +144,7 @@ import kotlin.random.Random
 			optionType = OptionType.STRING,
 			defaultValue = "NONE",
 			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX,
-				CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL,
+				CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL, POISON_WASTE_SPIRIT_TREE_POH,
 				STRONGHOLD_SLAYER, FREMENNIK_SLAYER, MORYTANIA_SLAYER]
 		)
 	]
