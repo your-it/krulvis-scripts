@@ -42,7 +42,7 @@ class HasTarget(script: DagannothKings) : Branch<DagannothKings>(script, "HasNew
 
 class ShouldEquipGear(script: DagannothKings) : Branch<DagannothKings>(script, "WearingCorrectEquipment?") {
 	override val successComponent: TreeComponent<DagannothKings> = SimpleLeaf(script, "EquippingGear") {
-		script.logger.info("Equipping = ${missingEquipment.joinToString { it.item.name }}")
+		script.logger.info("Equipping = ${missingEquipment.joinToString { it.item.itemName }}")
 		missingEquipment.forEach { it.item.equip(false) }
 		equipTimer.reset()
 	}

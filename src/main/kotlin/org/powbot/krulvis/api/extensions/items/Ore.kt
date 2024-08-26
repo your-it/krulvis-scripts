@@ -37,6 +37,7 @@ enum class Ore(
 	BLURITE(intArrayOf(668), 1, -1, -1, 696969),
 	SOFT_CLAY(intArrayOf(1761), 70, -1, -1, 7062);
 
+	override val itemName: String = "${name.lowercase().replace("_", " ")} ore"
 	private val mask = 255
 
 	override val stackable: Boolean = false

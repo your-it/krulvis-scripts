@@ -13,7 +13,7 @@ interface ITeleportItem : Item {
 	fun teleport(destination: String): Boolean
 }
 
-enum class TeleportItem(val itemName: String, override val ids: IntArray) : ITeleportItem {
+enum class TeleportItem(override val itemName: String, override val ids: IntArray) : ITeleportItem {
 	ROYAL_SEED_POD("Royal seed pod", intArrayOf(19564)),
 	;
 
@@ -23,7 +23,7 @@ enum class TeleportItem(val itemName: String, override val ids: IntArray) : ITel
 
 	override fun getCount(countNoted: Boolean): Int = getInventoryCount(false)
 	override fun teleport(destination: String): Boolean {
-		logger.info("$name Teleport to: $destination")
+		logger.info("$itemName Teleport to: $destination")
 		Bank.close()
 		val w = if (Widgets.widget(300).componentCount() >= 91) Widgets.widget(300).component(91) else null
 		if (w != null && w.interact("Close")) {
@@ -34,14 +34,14 @@ enum class TeleportItem(val itemName: String, override val ids: IntArray) : ITel
 }
 
 enum class TeleportEquipment(
-	val itemName: String,
+	override val itemName: String,
 	override val slot: Equipment.Slot,
 	override vararg val ids: Int,
 ) : IEquipmentItem, ITeleportItem {
-	GLORY("Glory", Equipment.Slot.NECK, 11978, 11976, 1712, 1710, 1708, 1706),
-	GAMES("Games", Equipment.Slot.NECK, 3853, 3855, 3857, 3859, 3861, 3863, 3865, 3867),
-	ROD("Duel Ring", Equipment.Slot.RING, 2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566),
-	ROW("Wealth Ring", Equipment.Slot.RING, 11980, 11982, 11984, 11986, 11988),
+	GLORY("Amulet of Glory", Equipment.Slot.NECK, 11978, 11976, 1712, 1710, 1708, 1706),
+	GAMES("Games necklace", Equipment.Slot.NECK, 3853, 3855, 3857, 3859, 3861, 3863, 3865, 3867),
+	ROD("Ring of dueling", Equipment.Slot.RING, 2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566),
+	ROW("Ring of wealth", Equipment.Slot.RING, 11980, 11982, 11984, 11986, 11988),
 	SKILLS("Skills Necklace", Equipment.Slot.NECK, 11968, 11970, 11105, 11107, 11109, 11111),
 	WARRIORS("Warriors Bracelet", Equipment.Slot.HANDS, 11972, 11974, 11118, 11120, 11122, 11124),
 	BURNING("Burning Amulet", Equipment.Slot.NECK, 21166, 21169, 21171, 21173, 21175),
@@ -155,10 +155,6 @@ enum class TeleportEquipment(
 
 
 	companion object {
-		val GLORY_EMPTY = 1704
-		val ROW_EMPTY = 2572
-		val COMBAT_EMPTY = 11126
-
 		fun isTeleportItem(id: Int): Boolean {
 			for (ti in values()) {
 				for (i in ti.ids) {

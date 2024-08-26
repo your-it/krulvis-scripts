@@ -34,7 +34,7 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         if (!script.equipment.withdrawAndEquip()) {
             return
         } else if (missingItems.isNotEmpty()) {
-            val missingString = missingItems.joinToString { it.item.name }
+            val missingString = missingItems.joinToString { it.item.itemName }
             script.logger.info("Missing Item Requirements=[$missingString]")
             missingItems.forEach { it.withdraw(true) }
         } else if (invPouches.all { it.filled() } && Bank.depositAllExcept(*keep) && Inventory.isFull() && EssencePouch.essenceCount() > 0) {
@@ -99,8 +99,8 @@ class HandleBank(script: Runecrafter) : Leaf<Runecrafter>(script, "Handling Bank
         val bankTeleport = script.bankTeleport.teleport?.requirements ?: emptyList()
         val altarTeleport = script.altarTeleport.teleport?.requirements ?: emptyList()
 
-        list.addAll(bankTeleport.filterIsInstance<ItemRequirement>().map { it.item.name })
-        list.addAll(altarTeleport.filterIsInstance<ItemRequirement>().map { it.item.name })
+        list.addAll(bankTeleport.filterIsInstance<ItemRequirement>().map { it.item.itemName })
+        list.addAll(altarTeleport.filterIsInstance<ItemRequirement>().map { it.item.itemName })
 
 
         val runes = bankTeleport.filterIsInstance<RunePowerRequirement>().map { it.power }.toMutableList()

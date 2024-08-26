@@ -30,7 +30,7 @@ class HandleBank(script: TormentedDemon) : Leaf<TormentedDemon>(script, "Handle 
 
 			script.requiredInventory.forEach {
 				if (!it.withdraw(true) && !it.item.inBank()) {
-					script.logger.info("Stopped because no ${it.item.name} in bank")
+					script.logger.info("Stopped because no ${it.item.itemName} in bank")
 					ScriptManager.stop()
 				}
 			}

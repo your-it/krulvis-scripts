@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.missingHP
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.items.container.Emptiable
 import org.powbot.krulvis.fighter.Defender
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.mobile.script.ScriptManager
@@ -36,17 +37,21 @@ class HandleBank(script: Fighter) : Leaf<Fighter>(script, "Handle bank") {
 				script.logger.info("Out of warrior tokens, stopping script")
 				ScriptManager.stop()
 			}
+		} else if (!Emptiable.emptyAll()) {
+			val failed = Emptiable.values().filter { !it.empty() }
+			script.logger.info("failed=${failed.joinToString { it.itemName }}")
+			return
 		} else if (handleEquipment() && foodToEat() == null) {
 
 			val missingItem = script.requiredInventory.filter { !it.meets() }
 			missingItem.forEach {
 				if (!it.withdraw(true) && !it.item.inBank()) {
-					script.logger.info("Stopped because no ${it.item.name} in bank")
+					script.logger.info("Stopped because no ${it.item.itemName} in bank")
 					ScriptManager.stop()
 				}
 			}
 
-			script.logger.info("Missing Items=[${missingItem.joinToString { it.item.name }}]")
+			script.logger.info("Missing Items=[${missingItem.joinToString { it.item.itemName }}]")
 
 			script.forcedBanking = missingItem.any { !it.meets() }
 			if (!script.forcedBanking) Bank.close()

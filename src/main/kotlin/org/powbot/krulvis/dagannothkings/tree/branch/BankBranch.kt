@@ -25,7 +25,7 @@ class ShouldBank(script: DagannothKings) : Branch<DagannothKings>(script, "Shoul
 			script.forcedBanking = true
 		} else if (firstMissing != null) {
 			val actuallyMissing = !waitFor(1000) { firstMissing.item.hasWith() }
-			script.logger.info("MissingEquipment=${firstMissing.item.name}, actuallyMissing=$actuallyMissing")
+			script.logger.info("MissingEquipment=${firstMissing.item.itemName}, actuallyMissing=$actuallyMissing")
 			script.forcedBanking = actuallyMissing
 		}
 

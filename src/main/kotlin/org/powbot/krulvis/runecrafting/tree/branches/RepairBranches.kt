@@ -24,7 +24,7 @@ class ShouldRepairPouches(script: Runecrafter) : Branch<Runecrafter>(script, "Sh
         val repairable = EssencePouch.inInventory().filter { it.shouldRepair() }
         if (repairable.isEmpty()) return false
 
-        script.logger.info("Repairables=[${repairable.joinToString { it.name }}]")
+        script.logger.info("Repairables=[${repairable.joinToString { it.itemName }}]")
         return repairable.isNotEmpty()
     }
 }

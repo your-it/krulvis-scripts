@@ -7,7 +7,7 @@ import org.powbot.krulvis.dagannothkings.DagannothKings
 
 class HandleBank(script: DagannothKings) : Leaf<DagannothKings>(script, "HandleBank") {
 	override fun execute() {
-		val names = script.allEquipment.map { it.item.name } + script.inventory.map { it.item.name }
+		val names = script.allEquipment.map { it.item.itemName } + script.inventory.map { it.item.itemName }
 		val depositables = Inventory.get { item -> names.none { n -> n.contains(item.name()) || item.name().contains(n) } }
 		val missingGear = script.allEquipment.filter { !it.item.hasWith() }
 		if (depositables.isNotEmpty()) {

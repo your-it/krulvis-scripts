@@ -12,6 +12,8 @@ enum class EssencePouch(val capacity: Int, val perfectId: Int) : Item {
 	COLOSSAL(40, 26784),
 	;
 
+	override val itemName: String = "${name.lowercase()} pouch"
+
 	override val ids: IntArray = intArrayOf(perfectId)
 	override val stackable: Boolean = false
 
@@ -19,7 +21,8 @@ enum class EssencePouch(val capacity: Int, val perfectId: Int) : Item {
 
 	override fun getCount(countNoted: Boolean): Int = if (getInvItem() != null) 1 else 0
 
-	override fun getInvItem(worse: Boolean): org.powbot.api.rt4.Item? = Inventory.stream().nameContains(name.lowercase() + " pouch").firstOrNull()
+	override fun getInvItem(worse: Boolean): org.powbot.api.rt4.Item? =
+		Inventory.stream().nameContains(itemName).firstOrNull()
 
 	private var essenceCount: Int = 0
 		set(value) {

@@ -30,7 +30,7 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 		} else if (handleEquipment() && foodToEat() == null) {
 			script.requiredInventory.forEach {
 				if (!it.withdraw(true) && !it.item.inBank()) {
-					script.logger.info("Stopped because no ${it.item.name} in bank")
+					script.logger.info("Stopped because no ${it.item.itemName} in bank")
 					ScriptManager.stop()
 				}
 			}
@@ -38,7 +38,7 @@ class HandleBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Handle 
 			val missing = script.requiredInventory.filter { !it.meets() }
 			script.logger.info(
 				"Still missing requiredInventory=[${
-					missing.joinToString { it.item.name }
+					missing.joinToString { it.item.itemName }
 				}]"
 			)
 			script.forcedBanking = missing.isNotEmpty()

@@ -14,7 +14,7 @@ interface Item {
 	val id: Int
 		get() = ids[0]
 
-	val name: String
+	val itemName: String
 
 	val stackable: Boolean
 
@@ -22,18 +22,18 @@ interface Item {
 
 	fun notedInBank(): Boolean = Bank.stream().id(*getNotedIds()).isNotEmpty()
 
-	fun inInventory(): Boolean = Inventory.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.isNotEmpty()
+	fun inInventory(): Boolean = Inventory.stream().filtered { it.name().stripBarrowsCharge() == itemName || it.id in ids }.isNotEmpty()
 
-	fun inEquipment(): Boolean = Equipment.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.isNotEmpty()
+	fun inEquipment(): Boolean = Equipment.stream().filtered { it.name().stripBarrowsCharge() == itemName || it.id in ids }.isNotEmpty()
 	fun hasWith(): Boolean
 
-	fun inBank(): Boolean = Bank.stream().filtered { it.name().stripBarrowsCharge() == name || it.id in ids }.sumOf { it.stack } > 0
+	fun inBank(): Boolean = Bank.stream().filtered { it.name().stripBarrowsCharge() == itemName || it.id in ids }.sumOf { it.stack } > 0
 
 	fun getBankId(worse: Boolean = false): Int {
 		val ids = if (worse) ids.reversed().toIntArray() else ids
 		val bankIds = Bank.stream().filtered { it.id() in ids }.map { it.id }
 		val bankItem = ids.firstOrNull { it in bankIds }
-		return bankItem ?: Bank.stream().filtered { it.name().stripBarrowsCharge() == name }.first().id()
+		return bankItem ?: Bank.stream().filtered { it.name().stripBarrowsCharge() == itemName }.first().id()
 	}
 
 	fun getInvItem(worse: Boolean = true): Item? {
@@ -45,22 +45,22 @@ interface Item {
 				}
 			}
 		}
-		return items.firstOrNull { it.name().stripBarrowsCharge() == name }
+		return items.firstOrNull { it.name().stripBarrowsCharge() == itemName }
 	}
 
 	fun getInventoryCount(countNoted: Boolean = true): Int {
 		return if (countNoted) Inventory.stream()
-			.filtered { ids.contains(it.id()) || getNotedIds().contains(it.id()) || it.name().stripBarrowsCharge() == name }
+			.filtered { ids.contains(it.id()) || getNotedIds().contains(it.id()) || it.name().stripBarrowsCharge() == itemName }
 			.sumOf { if (it.stack <= 0) 1 else it.stack }
-		else Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.count(true).toInt()
+		else Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == itemName }.count(true).toInt()
 	}
 
 	fun getEquipmentCount(): Int {
 		return Equipment.stream()
-			.firstOrNull { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }?.stackSize() ?: 0
+			.firstOrNull { ids.contains(it.id()) || it.name().stripBarrowsCharge() == itemName }?.stackSize() ?: 0
 	}
 
-	fun getInventoryId() = Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == name }.first().id
+	fun getInventoryId() = Inventory.stream().filtered { ids.contains(it.id()) || it.name().stripBarrowsCharge() == itemName }.first().id
 
 	fun getCount(countNoted: Boolean = true): Int
 
@@ -221,7 +221,7 @@ interface Item {
 		fun forId(id: Int): org.powbot.krulvis.api.extensions.items.Item {
 			return object : org.powbot.krulvis.api.extensions.items.Item {
 				override val ids: IntArray = intArrayOf(id)
-				override val name: String by lazy { ItemLoader.lookup(id)!!.name() }
+				override val itemName: String by lazy { ItemLoader.lookup(id)!!.name() }
 				override val stackable: Boolean by lazy { ItemLoader.lookup(id)!!.stackable() }
 
 				override fun hasWith(): Boolean = inInventory() || inEquipment()

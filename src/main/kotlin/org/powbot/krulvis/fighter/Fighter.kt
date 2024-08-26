@@ -134,14 +134,17 @@ import kotlin.random.Random
 			"Teleport to bank",
 			optionType = OptionType.STRING,
 			defaultValue = EDGEVILLE_MOUNTED_GLORY,
-			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
+			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD,
+				FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX]
 		),
 		ScriptConfiguration(
 			MONSTER_TELEPORT_OPTION,
 			"Teleport to Monsters",
 			optionType = OptionType.STRING,
 			defaultValue = "NONE",
-			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL, STRONGHOLD_SLAYER, FREMENNIK_SLAYER, MORYTANIA_SLAYER]
+			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX,
+				CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL,
+				STRONGHOLD_SLAYER, FREMENNIK_SLAYER, MORYTANIA_SLAYER]
 		)
 	]
 )
@@ -246,7 +249,7 @@ class Fighter : ATScript() {
 	val lootNames by lazy {
 		val names = lootNameOptions.filterNot { it.startsWith("!") }.toMutableList()
 		if (ammo != null) {
-			names.add(ammo!!.item.name)
+			names.add(ammo!!.item.itemName)
 		}
 		names.add("hydra's")
 		names.add("visage")

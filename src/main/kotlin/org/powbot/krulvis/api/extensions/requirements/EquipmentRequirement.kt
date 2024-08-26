@@ -42,6 +42,6 @@ class EquipmentRequirement(override val item: IEquipmentItem, override val amoun
         }
 
         fun List<EquipmentRequirement>.ids() = flatMap { it.item.ids.toList() }.toIntArray()
-        fun List<EquipmentRequirement>.names() = map { it.item.name }
+        fun List<EquipmentRequirement>.names() = map { it.item.itemName }
     }
 }

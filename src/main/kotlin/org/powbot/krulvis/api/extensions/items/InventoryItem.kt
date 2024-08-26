@@ -6,7 +6,7 @@ class InventoryItem(override val ids: IntArray) : Item {
 
 	constructor(id: Int) : this(intArrayOf(id))
 
-	override val name: String by lazy { ItemLoader.lookup(id)!!.name() }
+	override val itemName: String by lazy { ItemLoader.lookup(id)!!.name() }
 	override val stackable: Boolean by lazy { ItemLoader.lookup(id)!!.stackable() }
 
 	override fun hasWith(): Boolean = inInventory()

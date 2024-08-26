@@ -182,7 +182,7 @@ class DemonicGorilla : ATScript() {
 		}
 	}
 
-	val specialWeapon by lazy { Weapon.values().firstOrNull { it.name == getOption(SPECIAL_WEAPON_OPTION) } }
+	val specialWeapon by lazy { Weapon.values().firstOrNull { it.itemName == getOption(SPECIAL_WEAPON_OPTION) } }
 	var reducedStats = false
 	val meleeEquipment by lazy { getEquipment(MELEE_EQUIPMENT_OPTION) }
 	val rangeEquipment by lazy { getEquipment(RANGE_EQUIPMENT_OPTION) }

@@ -13,11 +13,11 @@ class BFPainter(script: BlastFurnace) : ATPaint<BlastFurnace>(script) {
     override fun buildPaint(paintBuilder: PaintBuilder): Paint {
         paintBuilder.addString("Bars:") { script.bar.blastFurnaceCount.toString() }
         paintBuilder.addString(
-                { "${script.bar.primary.name} Ore: " },
+                { "${script.bar.primary.itemName} Ore: " },
                 { script.bar.primary.blastFurnaceCount.toString() })
         if (script.bar.secondaryMultiplier > 0) {
             paintBuilder.addString(
-                    { "${script.bar.secondary.name} Ore: " },
+                    { "${script.bar.secondary.itemName} Ore: " },
                     { script.bar.secondary.blastFurnaceCount.toString() })
         }
         paintBuilder.trackSkill(Skill.Smithing)

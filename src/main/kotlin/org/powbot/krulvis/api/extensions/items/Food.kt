@@ -42,8 +42,10 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	;
 
 	override fun toString(): String {
-		return name
+		return itemName
 	}
+
+	override val itemName: String = name.lowercase().replace("_", " ")
 
 	fun canEat(): Boolean = missingHP() >= healing
 	override val stackable: Boolean = false
@@ -93,11 +95,11 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 
 		fun forId(id: Int): Food? = values().firstOrNull { id in it.ids }
 
-		fun forName(name: String): Food? = values().firstOrNull { it.name.equals(name, true) }
+		fun forName(name: String): Food? = values().firstOrNull { it.itemName.equals(name, true) }
 	}
 
 }
 
 fun main() {
-	println("[\"${Food.values().map { it.name }.joinToString("\", \"")}\"]")
+	println("[\"${Food.values().map { it.itemName }.joinToString("\", \"")}\"]")
 }

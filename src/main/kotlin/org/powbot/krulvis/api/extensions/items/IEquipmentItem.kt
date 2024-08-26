@@ -10,7 +10,7 @@ import org.powbot.mobile.script.ScriptManager
 
 class EquipmentItem(override val id: Int, override val slot: Equipment.Slot) : IEquipmentItem {
 	override val ids: IntArray = intArrayOf(id)
-	override val name: String by lazy { ItemLoader.lookup(id)!!.name().stripBarrowsCharge() }
+	override val itemName: String by lazy { ItemLoader.lookup(id)!!.name().stripBarrowsCharge() }
 	override val stackable: Boolean by lazy { ItemLoader.lookup(id)!!.stackable() }
 }
 
@@ -33,7 +33,7 @@ interface IEquipmentItem : Item {
 			) {
 				waitFor(5000) { inInventory() }
 			} else if (!inBank() && stopIfOut) {
-				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: $name")
+				ScriptManager.script()!!.logger.warn("Stopping script due to being out of: $itemName")
 				ScriptManager.stop()
 			}
 		}
@@ -45,10 +45,10 @@ interface IEquipmentItem : Item {
 
 	fun equip(wait: Boolean = true): Boolean {
 		if (inInventory()) {
-			val item = Inventory.stream().nameContains(name).first()
+			val item = Inventory.stream().nameContains(itemName).first()
 			val actions = item.actions()
 			val action = actions.firstOrNull { it in listOf("Wear", "Wield", "Equip") }
-			ScriptManager.script()!!.logger.info("Equipping $name action=$action, actions=[${actions.joinToString()}]")
+			ScriptManager.script()!!.logger.info("Equipping $itemName action=$action, actions=[${actions.joinToString()}]")
 			if (if (action == null) item.click() else item.interact(action)) {
 				if (wait) waitFor(2000) { inEquipment() } else return true
 			}
@@ -60,7 +60,7 @@ interface IEquipmentItem : Item {
 		if (!inEquipment()) {
 			return true
 		}
-		val equipped = Equipment.stream().nameContains(name).first()
+		val equipped = Equipment.stream().nameContains(itemName).first()
 		return equipped.click()
 	}
 }

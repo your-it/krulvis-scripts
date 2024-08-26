@@ -5,7 +5,7 @@ import org.powbot.api.rt4.Equipment
 
 object ExplorerRing : IEquipmentItem {
 	override val ids: IntArray = intArrayOf(13125, 13126, 13127, 13128)
-	override val name: String = "Explorer's ring"
+	override val itemName: String = "Explorer's ring"
 	override val stackable: Boolean = false
 
 	private const val ALCHEMY_WIDGET = -1

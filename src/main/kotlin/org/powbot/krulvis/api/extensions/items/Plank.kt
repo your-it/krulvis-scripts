@@ -6,6 +6,8 @@ enum class Plank(override val ids: IntArray) : Item {
 	TEAK(intArrayOf(8780)),
 	MAHOGANY(intArrayOf(8782));
 
+	override val itemName: String = "${name.lowercase()} plank"
+
 	override val stackable: Boolean = false
 	override fun hasWith(): Boolean {
 		return getCount(false) >= 1

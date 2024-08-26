@@ -39,6 +39,7 @@ enum class Potion(
 	SUPER_RESTORE(Constants.SKILLS_PRAYER, -1, 3024, 3026, 3028, 3030)
 	;
 
+	override val itemName: String = "${name.lowercase().replace("_", " ")} potion"
 	override val stackable: Boolean = false
 	val bestPot: Int = ids[0]
 
@@ -53,7 +54,7 @@ enum class Potion(
 			ATTACK, STRENGTH, DEFENCE, COMBAT -> 3 + floor(Skills.realLevel(skill) / 10.0).toInt()
 			SUPER_ATTACK, SUPER_STRENGTH, SUPER_DEFENCE, SUPER_COMBAT,
 			DIVINE_SUPER_COMBAT, DIVINE_SUPER_ATTACK, DIVINE_SUPER_STRENGTH, DIVINE_SUPER_DEFENCE
-			-> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
+				-> 5 + floor(Skills.realLevel(skill) * 0.15).toInt()
 
 			else -> {
 				restore
