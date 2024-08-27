@@ -32,9 +32,9 @@ class Loot(script: Fighter) : Leaf<Fighter>(script, "Looting") {
 				waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || Players.local().tile() == gi.tile }
 			}
 		}
-		script.lootList.removeAll { loot ->
+		script.ironmanLoot.removeAll { loot ->
 			GroundItems.stream().at(loot.tile).name(loot.name()).none { gi -> gi.stackSize() == loot.stackSize() }
 		}
-		script.logger.info("Remaining loot=[${script.lootList.joinToString()}]")
+		script.logger.info("Remaining loot=[${script.ironmanLoot.joinToString()}]")
 	}
 }

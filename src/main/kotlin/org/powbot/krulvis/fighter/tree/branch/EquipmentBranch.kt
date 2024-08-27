@@ -15,7 +15,7 @@ class ShouldEquipAmmo(script: Fighter) : Branch<Fighter>(script, "Should equip a
 		invAmmo.interact("Equip")
 		Utils.waitFor { !validate() }
 	}
-	override val failedComponent: TreeComponent<Fighter> = ShouldHighAlch(script, ShouldEquipGear(script))
+	override val failedComponent: TreeComponent<Fighter> = ShouldEquipGear(script)
 
 	var invAmmo = Item.Nil
 	override fun validate(): Boolean {

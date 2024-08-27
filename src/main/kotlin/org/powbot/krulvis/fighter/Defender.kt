@@ -7,7 +7,7 @@ import org.powbot.krulvis.api.extensions.items.EquipmentItem
 
 object Defender {
 
-	val defenders = listOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
+	val defenders = intArrayOf(8844, 8845, 8846, 8847, 8848, 8849, 8850, 12954)
 	var lastDefenderIndex = -1
 
 	private val basementTile = Tile(2915, 9966, 0)
@@ -17,7 +17,7 @@ object Defender {
 	fun currentDefenderIndex(): Int {
 		val inv = Inventory.stream().list().map { it.id }
 		val equipped = Equipment.itemAt(Equipment.Slot.OFF_HAND).id
-		val defender = defenders.lastOrNull { it in inv || equipped == it }
+		val defender = defenders.lastOrNull { it in inv || equipped == it } ?: return -1
 		return defenders.indexOf(defender)
 	}
 

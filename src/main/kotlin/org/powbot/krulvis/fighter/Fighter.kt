@@ -13,7 +13,6 @@ import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.getPrice
-import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.api.extensions.items.ITeleportItem
@@ -29,9 +28,9 @@ import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWE
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.POISON_WASTE_SPIRIT_TREE_POH
-import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KillerScript
+import org.powbot.krulvis.api.script.UniqueLootTracker
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
@@ -154,7 +153,7 @@ import kotlin.random.Random
 	]
 )
 //</editor-fold>
-class Fighter : ATScript() {
+class Fighter : KillerScript(), UniqueLootTracker {
 
 	override fun createPainter(): ATPaint<*> = FighterPainter(this)
 
@@ -239,19 +238,16 @@ class Fighter : ATScript() {
 	val ammo by lazy {
 		equipment.firstOrNull { it.slot == Slot.QUIVER }
 	}
-	val ammoId by lazy { ammo?.item?.id ?: -1 }
+	override val ammoIds by lazy { intArrayOf(ammo?.item?.id ?: -1) }
+	override val autoDestroy: Boolean by lazy { getOption(MONSTER_AUTO_DESTROY_OPTION) }
 
 	val teleportEquipments by lazy {
 		equipment.mapNotNull { TeleportEquipment.getTeleportEquipment(it.item.id) }
 	}
 
 	//Loot
-	fun isLootWatcherActive() = lootWachter?.active == true
-	var lootWachter: LootWatcher? = null
-	var kills = 0
 	var superiorsSpawned = 0
 	var superiorsKilled = 0
-	val lootList = mutableListOf<GroundItem>()
 	val ironman by lazy { getOption<Boolean>(IRONMAN_DROPS_OPTION) }
 	val waitForLootAfterKill by lazy { getOption<Boolean>(WAIT_FOR_LOOT_OPTION) }
 	val minLootPrice by lazy { getOption<Int>(LOOT_PRICE_OPTION) }
@@ -283,16 +279,8 @@ class Fighter : ATScript() {
 		trimmed
 	}
 
-	fun watchLootDrop(tile: Tile) {
-		if (!isLootWatcherActive()) {
-			logger.info("Waiting for loot at $tile")
-			lootWachter = LootWatcher(tile, intArrayOf(ammoId), lootList = lootList, isLoot = { it.isLoot() })
-		} else {
-			logger.info("Already watching loot at tile: $tile for loot")
-		}
-	}
 
-	fun GroundItem.isLoot() = isLoot(stackSize())
+	override fun GroundItem.isLoot() = isLoot(stackSize())
 
 	private fun GenericItem.isLoot(amount: Int): Boolean {
 		if (warriorGuild && id() in Defender.defenders) return true
@@ -303,9 +291,7 @@ class Fighter : ATScript() {
 
 
 	fun loot(): List<GroundItem> =
-		if (ironman) lootList else GroundItems.stream().within(centerTile, killRadius).filter { it.isLoot() }
-
-	var npcDeathWatchers: MutableList<NpcDeathWatcher> = mutableListOf()
+		if (ironman) ironmanLoot else GroundItems.stream().within(centerTile, killRadius).filter { it.isLoot() }
 
 	//Banking option
 	var forcedBanking = false
@@ -317,9 +303,7 @@ class Fighter : ATScript() {
 	private val monsters by lazy {
 		getOption<List<NpcActionEvent>>(MONSTERS_OPTION).map { it.name }
 	}
-	val autoDestroyMonster by lazy { getOption<Boolean>(MONSTER_AUTO_DESTROY_OPTION) }
 	val monsterTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }
-	var currentTarget: Npc = Npc.Nil
 	val aggressionTimer = Timer(15 * 60 * 1000)
 
 	private val monsterNames: List<String> get() = if (superiorActive) SUPERIORS else monsters
@@ -358,7 +342,7 @@ class Fighter : ATScript() {
 	fun shouldReturnToSafespot() = useSafespot
 		&& centerTile.distance() > safespotRadius
 		&& (walkBack || Players.local().healthBarVisible())
-		&& projectiles.none { it.first.destination() == centerTile }
+		&& projectiles.none { it.destination() == centerTile }
 
 	//Hop from players options
 	val hopFromPlayers by lazy { getOption<Boolean>(HOP_FROM_PLAYERS_OPTION) }
@@ -390,70 +374,6 @@ class Fighter : ATScript() {
 	//Custom slayer options
 	var lastTask = false
 	var superiorActive = false
-	private val slayerBraceletNames = arrayOf("Bracelet of slaughter", "Expeditious bracelet")
-	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
-	fun wearingSlayerBracelet() = Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
-	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
-
-
-	@Subscribe
-	fun onTickEvent(_e: TickEvent) {
-		if (ScriptManager.state() != ScriptState.Running) return
-		val time = System.currentTimeMillis()
-		projectiles.forEach {
-			if (time - it.second > projectileDuration) {
-				projectiles.remove(it)
-			}
-		}
-		val interacting = me.interacting()
-		if (interacting is Npc && interacting != Npc.Nil) {
-			currentTarget = interacting
-			val activeLW = lootWachter
-			if (activeLW?.active == true && activeLW.tile.distanceTo(currentTarget.tile()) < 2) return
-			val deathWatcher = npcDeathWatchers.firstOrNull { it.npc == interacting }
-			if (deathWatcher == null || !deathWatcher.active) {
-				val newDW = NpcDeathWatcher(
-					interacting,
-					autoDestroyMonster
-				) {
-					if (interacting.superior() != null) {
-						superiorsKilled++
-					}
-					kills++
-					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
-						val slayBracelet = getSlayerBracelet()
-						if (slayBracelet.valid()) {
-							getSlayerBracelet().fclick()
-							logger.info("Wearing bracelet on death at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
-						}
-					}
-					if (ironman) {
-						watchLootDrop(interacting.tile())
-					}
-					if (interacting.name.lowercase() in SUPERIORS) {
-						superiorActive = false
-					}
-				}
-				npcDeathWatchers.add(newDW)
-			}
-		}
-		npcDeathWatchers.removeAll { !it.active }
-	}
-
-	@Subscribe
-	fun onInventoryChange(evt: InventoryChangeEvent) {
-		if (ScriptManager.state() != ScriptState.Running) return
-		val id = evt.itemId
-		val isTeleport = TeleportEquipment.isTeleportEquipment(id)
-		if (evt.quantityChange > 0 && id != VIAL
-			&& id !in Defender.defenders
-			&& requiredInventory.none { id in it.item.ids }
-			&& equipment.none { it.item.ids.contains(id) }
-			&& !isTeleport
-		) {
-			painter.trackItem(id, evt.quantityChange)
-		}
-	}
 
 	@Subscribe
 	fun experienceEvent(xpEvent: SkillExpGainedEvent) {
@@ -471,45 +391,12 @@ class Fighter : ATScript() {
 		}
 	}
 
-	var projectiles = mutableListOf<Pair<Projectile, Long>>()
-	var projectileSafespot = Tile.Nil
-	val projectileDuration = 2400
-	var fightingFromDistance = false
-
-	private fun findSafeSpotFromProjectile() {
-		val dangerousTiles = projectiles.map { it.first.destination() }
-		val myTile = me.tile()
-		val targTile = currentTarget.tile()
-		val myDistance = targTile.distance()
-		val collisionMap = Movement.collisionMap(myTile.floor).collisionMap.flags
-		val grid = mutableListOf<Pair<Tile, Double>>()
-		for (x in -2 until 2) {
-			for (y in -2 until 2) {
-				val t = Tile(myTile.x + x, myTile.y + y, myTile.floor)
-				if (!t.blocked(collisionMap)) {
-					grid.add(t to dangerousTiles.minOf { it.distanceTo(t) })
-				}
-			}
+	override fun onDeath(npc: Npc) {
+		if (npc.superior() != null) {
+			superiorsKilled++
+			superiorActive = false
 		}
-		projectileSafespot =
-			grid.filter { it.first.distanceTo(targTile) > myDistance }.maxByOrNull { it.second }!!.first
-	}
-
-	@Subscribe
-	fun onProjectile(e: ProjectileDestinationChangedEvent) {
-		if (e.target() == Actor.Nil) {
-			val distance = e.destination().distance()
-			if (distance < 2) {
-				logger.info("Dangerous projectile spawned! tile=${e.destination()}")
-				projectiles.add(e.projectile to System.currentTimeMillis())
-				findSafeSpotFromProjectile()
-				if (distance == 0.0) {
-					Movement.step(projectileSafespot, 0)
-				}
-			}
-		} else if (e.target() == currentTarget) {
-			fightingFromDistance = true
-		}
+		super.onDeath(npc)
 	}
 
 	@Subscribe
@@ -517,7 +404,7 @@ class Fighter : ATScript() {
 		if (msg.messageType != MessageType.Game) return
 		if (msg.message.contains("so you can't take ")) {
 			logger.info("Ironman message CANT TAKE type=${msg.messageType}")
-			lootList.clear()
+			ironmanLoot.clear()
 		}
 		if (msg.message.contains("A superior foe has appeared")) {
 			logger.info("Superior appeared message received: type=${msg.messageType}")
@@ -550,6 +437,14 @@ class Fighter : ATScript() {
 		} else if (pcce.checkboxId == "stopAtBank") {
 			lastTrip = pcce.checked
 		}
+	}
+
+	override val requiredIds: IntArray by lazy {
+		intArrayOf(
+			*Defender.defenders,
+			*requiredInventory.flatMap { it.item.ids.toList() }.toIntArray(),
+			*equipment.flatMap { it.item.ids.toList() }.toIntArray()
+		)
 	}
 }
 

@@ -16,7 +16,7 @@ class FightSuperior(script: Fighter) : Leaf<Fighter>(script, "Fight Superior") {
 			return
 		}
 		val prayer = superior.protectPrayer
-		if (prayer == Prayer.Effect.PROTECT_FROM_MELEE && script.fightingFromDistance) {
+		if (prayer == Prayer.Effect.PROTECT_FROM_MELEE && !script.melee) {
 			return
 		}
 		if (!Prayer.prayerActive(prayer)) {

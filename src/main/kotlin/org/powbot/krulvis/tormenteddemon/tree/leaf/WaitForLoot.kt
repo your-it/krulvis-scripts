@@ -6,7 +6,7 @@ import org.powbot.krulvis.tormenteddemon.TormentedDemon
 
 class WaitForLoot(script: TormentedDemon) : Leaf<TormentedDemon>(script, "Waiting for loot...") {
 	override fun execute() {
-		waitFor { script.lootList.isNotEmpty() }
+		waitFor { script.ironmanLoot.isNotEmpty() }
 	}
 
 }

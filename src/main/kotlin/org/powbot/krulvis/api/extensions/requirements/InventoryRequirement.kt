@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.requirements
 
+import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.extensions.items.ITeleportItem
 import org.powbot.krulvis.api.extensions.items.InventoryItem
@@ -27,9 +28,6 @@ open class InventoryRequirement(
 	}
 
 	override fun meets(): Boolean {
-		if (item is Potion) {
-			item.getInventoryCount()
-		}
 		return if (allowMore) getCount() >= amount else getCount() == amount
 	}
 

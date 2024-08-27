@@ -11,7 +11,7 @@ import org.powbot.krulvis.tormenteddemon.TormentedDemon
 
 class Loot(script: TormentedDemon) : Leaf<TormentedDemon>(script, "Looting") {
 	override fun execute() {
-		val loots = script.lootList.sortedWith(compareBy<GroundItem> { it.distance() }
+		val loots = script.ironmanLoot.sortedWith(compareBy<GroundItem> { it.distance() }
 			.thenByDescending { GrandExchange.getItemPrice(it.id()) * it.stackSize() })
 		script.logger.info("Looting=[${loots.joinToString()}]")
 
@@ -26,9 +26,9 @@ class Loot(script: TormentedDemon) : Leaf<TormentedDemon>(script, "Looting") {
 				waitFor(5000) { currentCount < Inventory.getCount(gi.id()) || (i < loots.size - 1 && Players.local().tile() == gi.tile) }
 			}
 		}
-		script.lootList.removeAll { loot ->
+		script.ironmanLoot.removeAll { loot ->
 			GroundItems.stream().at(loot.tile).name(loot.name()).none { gi -> gi.stackSize() == loot.stackSize() }
 		}
-		script.logger.info("Remaining loot=[${script.lootList.joinToString()}]")
+		script.logger.info("Remaining loot=[${script.ironmanLoot.joinToString()}]")
 	}
 }

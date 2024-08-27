@@ -29,7 +29,7 @@ class CanLoot(script: TormentedDemon) : Branch<TormentedDemon>(script, "Can loot
 	}
 
 	override fun validate(): Boolean {
-		val loot = script.lootList.map { it to it.stackSize() * max(GrandExchange.getItemPrice(it.id()), it.price()) }
+		val loot = script.ironmanLoot.map { it to it.stackSize() * max(GrandExchange.getItemPrice(it.id()), it.price()) }
 		if (loot.isEmpty() || !loot.first().first.reachable()) {
 			return false
 		}

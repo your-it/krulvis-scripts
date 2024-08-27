@@ -22,7 +22,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 			.addCheckbox("Stop at bank", "stopAtBank", false)
 			.withTotalLoot(true)
 			.addString("Npc Death Watchers") {
-				script.npcDeathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
+				script.deathWatchers.joinToString { "${it.npc.name}: ${it.active}" }
 			}
 			.addString("Kills") { "${script.kills}, ${script.timer.getPerHour(script.kills)}/hr" }
 			.trackSkill(Skill.Attack)
@@ -45,7 +45,7 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 			g.drawString("Anim : ${target.animation()}", 500, 240)
 			g.drawString("Valid: ${target.valid()}", 500, 260)
 			g.drawString(
-				"Watcher count total=${script.npcDeathWatchers.size}, target=${script.npcDeathWatchers.count { it.npc == target }}",
+				"Watcher count total=${script.deathWatchers.size}, target=${script.deathWatchers.count { it.npc == target }}",
 				500,
 				300
 			)
@@ -55,7 +55,9 @@ class FighterPainter(script: Fighter) : ATPaint<Fighter>(script) {
 			lootWatcher.tile.drawOnScreen(outlineColor = Color.CYAN)
 		val projectiles = script.projectiles
 		if (projectiles.isNotEmpty()) {
-			projectiles.forEach { (projectile, time) -> projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}") }
+			projectiles.forEach { projectile ->
+				projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}")
+			}
 			if (script.projectileSafespot != Tile.Nil) {
 				script.projectileSafespot.drawOnScreen(outlineColor = Color.GREEN)
 			}
