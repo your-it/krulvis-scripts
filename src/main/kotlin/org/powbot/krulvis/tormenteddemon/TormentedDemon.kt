@@ -202,7 +202,7 @@ class TormentedDemon : KillerScript(), UniqueLootTracker, ProjectileEvader {
     override val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
 
     val teleportEquipments by lazy {
-        allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportItem(it.id) }
+        allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportEquipment(it.id) }
     }
     var equipment: List<EquipmentRequirement> = emptyList()
 

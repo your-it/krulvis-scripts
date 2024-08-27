@@ -9,17 +9,20 @@ import org.powbot.api.rt4.Equipment.Slot
 import org.powbot.api.rt4.walking.model.Skill
 import org.powbot.api.script.*
 import org.powbot.api.script.paint.CheckboxPaintItem
+import org.powbot.api.script.paint.TextPaintItem
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.extensions.items.ITeleportItem
 import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
+import org.powbot.krulvis.api.extensions.requirements.ItemRequirement
 import org.powbot.krulvis.api.extensions.teleports.*
 import org.powbot.krulvis.api.extensions.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWELLERY_BOX
@@ -33,6 +36,7 @@ import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
 import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
+import org.powbot.krulvis.fighter.Superior.Companion.superior
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
 import org.powbot.mobile.script.ScriptManager
 import kotlin.math.floor
@@ -161,6 +165,17 @@ class Fighter : ATScript() {
 		if (prayAtNearbyAltar) {
 			ShouldSipPotion.skippingPotions.addAll(listOf(Potion.PRAYER, Potion.SUPER_RESTORE))
 		}
+
+		val bankTeleportItemReqs =
+			bankTeleport.teleport?.requirements?.filterIsInstance<ItemRequirement>() ?: emptyList()
+		val monsterTeleportItemReqs =
+			monsterTeleport.teleport?.requirements?.filterIsInstance<ItemRequirement>() ?: emptyList()
+		val teleportItemReqs = (bankTeleportItemReqs + monsterTeleportItemReqs).groupingBy { it.item }.eachCount()
+		requiredInventory.filter { it.item is ITeleportItem }.forEach {
+			if (it.item in teleportItemReqs.keys) {
+				it.amount = teleportItemReqs[it.item]!!
+			}
+		}
 	}
 
 	//<editor-fold desc="UISubscribers">
@@ -207,9 +222,6 @@ class Fighter : ATScript() {
 	//Inventory
 	private val inventoryOptions by lazy { getOption<Map<Int, Int>>(INVENTORY_OPTION) }
 	val requiredInventory by lazy { inventoryOptions.map { InventoryRequirement(it.key, it.value) } }
-//	val requiredPotions by lazy {
-//		requiredInventory.filter { it.item is Potion }.map { PotionRequirement(it.item as Potion, it.amount) }
-//	}
 
 	//Equipment
 	fun getEquipment(optionKey: String): List<EquipmentRequirement> {
@@ -230,13 +242,15 @@ class Fighter : ATScript() {
 	val ammoId by lazy { ammo?.item?.id ?: -1 }
 
 	val teleportEquipments by lazy {
-		equipment.mapNotNull { TeleportEquipment.getTeleportItem(it.item.id) }
+		equipment.mapNotNull { TeleportEquipment.getTeleportEquipment(it.item.id) }
 	}
 
 	//Loot
 	fun isLootWatcherActive() = lootWachter?.active == true
 	var lootWachter: LootWatcher? = null
 	var kills = 0
+	var superiorsSpawned = 0
+	var superiorsKilled = 0
 	val lootList = mutableListOf<GroundItem>()
 	val ironman by lazy { getOption<Boolean>(IRONMAN_DROPS_OPTION) }
 	val waitForLootAfterKill by lazy { getOption<Boolean>(WAIT_FOR_LOOT_OPTION) }
@@ -308,7 +322,7 @@ class Fighter : ATScript() {
 	var currentTarget: Npc = Npc.Nil
 	val aggressionTimer = Timer(15 * 60 * 1000)
 
-	private val monsterNames: List<String> get() = if (superiorAppeared) SUPERIORS else monsters
+	private val monsterNames: List<String> get() = if (superiorActive) SUPERIORS else monsters
 	fun nearbyMonsters(): List<Npc> =
 		Npcs.stream().within(centerTile, killRadius.toDouble()).name(*monsterNames.toTypedArray()).nearest().list()
 
@@ -316,8 +330,6 @@ class Fighter : ATScript() {
 		val interacting = interacting()
 		return interacting is Player && interacting != Players.local()
 	}
-
-//	private val GWD_AREA = Area(Tile(2816, 5120), Tile(3008, 5376))
 
 	fun target(): Npc {
 		val local = Players.local()
@@ -356,9 +368,13 @@ class Fighter : ATScript() {
 	val prayAtNearbyAltar by lazy { getOption<Boolean>(PRAY_AT_ALTAR_OPTION) }
 	var nextAltarPrayRestore = Random.nextInt(5, 15)
 
+	private val prayerItems = arrayOf("Bonecrusher", "Bonecrusher necklace", "Ash sanctifier")
 	private val usingPrayer by lazy {
-		prayAtNearbyAltar || requiredInventory.filter { it.item is Potion }
+		prayAtNearbyAltar
+			|| requiredInventory.filter { it.item is Potion }
 			.any { (it.item as Potion).skill == Constants.SKILLS_PRAYER }
+			|| (CATACOMBS_AREA.contains(centerTile) && requiredInventory.any { it.item.itemName in prayerItems })
+			|| (CATACOMBS_AREA.contains(centerTile) && buryBones)
 	}
 
 	fun canActivateQuickPrayer() = usingPrayer && !Prayer.quickPrayer() && Prayer.prayerPoints() > 0
@@ -373,7 +389,7 @@ class Fighter : ATScript() {
 
 	//Custom slayer options
 	var lastTask = false
-	var superiorAppeared = false
+	var superiorActive = false
 	private val slayerBraceletNames = arrayOf("Bracelet of slaughter", "Expeditious bracelet")
 	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
 	fun wearingSlayerBracelet() = Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
@@ -400,6 +416,9 @@ class Fighter : ATScript() {
 					interacting,
 					autoDestroyMonster
 				) {
+					if (interacting.superior() != null) {
+						superiorsKilled++
+					}
 					kills++
 					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
 						val slayBracelet = getSlayerBracelet()
@@ -412,7 +431,7 @@ class Fighter : ATScript() {
 						watchLootDrop(interacting.tile())
 					}
 					if (interacting.name.lowercase() in SUPERIORS) {
-						superiorAppeared = false
+						superiorActive = false
 					}
 				}
 				npcDeathWatchers.add(newDW)
@@ -425,7 +444,7 @@ class Fighter : ATScript() {
 	fun onInventoryChange(evt: InventoryChangeEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
 		val id = evt.itemId
-		val isTeleport = TeleportEquipment.isTeleportItem(id)
+		val isTeleport = TeleportEquipment.isTeleportEquipment(id)
 		if (evt.quantityChange > 0 && id != VIAL
 			&& id !in Defender.defenders
 			&& requiredInventory.none { id in it.item.ids }
@@ -502,9 +521,19 @@ class Fighter : ATScript() {
 		}
 		if (msg.message.contains("A superior foe has appeared")) {
 			logger.info("Superior appeared message received: type=${msg.messageType}")
-			superiorAppeared = true
+			superiorActive = true
+			superiorsSpawned++
+			if (!painter.containsLabel("Superior (K/S)")) {
+				val indexForKills = painter.paintRowIndexForLabel("Kills")
+				val superiorRow = listOf(
+					TextPaintItem { "Superior (K/S)" },
+					TextPaintItem { "(${superiorsKilled}/${superiorsSpawned})" }
+				)
+				painter.paintBuilder.items.add(indexForKills, superiorRow)
+			}
 		}
 	}
+
 
 	@Subscribe
 	fun onPaintCheckbox(pcce: PaintCheckboxChangedEvent) {

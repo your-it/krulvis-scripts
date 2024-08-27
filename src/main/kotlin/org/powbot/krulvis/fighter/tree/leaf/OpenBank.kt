@@ -10,6 +10,9 @@ import org.powbot.krulvis.fighter.Fighter
 
 class OpenBank(script: Fighter) : Leaf<Fighter>(script, "Opening bank") {
 	override fun execute() {
+		script.superiorActive = false
+		script.currentTarget = Npc.Nil
+
 		Emptiable.requireEmpty()
 		val bankTeleport = script.bankTeleport
 		if (Game.clientState() == Constants.GAME_LOGGED) {

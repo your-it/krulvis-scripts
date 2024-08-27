@@ -205,7 +205,7 @@ class DemonicGorilla : ATScript() {
 	val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
 
 	val teleportEquipments by lazy {
-		allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportItem(it.id) }
+		allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportEquipment(it.id) }
 	}
 	var equipment: List<EquipmentRequirement> = emptyList()
 
@@ -395,7 +395,7 @@ class DemonicGorilla : ATScript() {
 	fun onInventoryChange(evt: InventoryChangeEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
 		val id = evt.itemId
-		val isTeleport = TeleportEquipment.isTeleportItem(id)
+		val isTeleport = TeleportEquipment.isTeleportEquipment(id)
 		if (evt.quantityChange > 0 && id != VIAL
 			&& requiredInventory.none { id in it.item.ids }
 			&& allEquipmentItems.none { it.ids.contains(id) }

@@ -1,5 +1,8 @@
 package org.powbot.krulvis.fighter
 
+import org.powbot.api.Area
+import org.powbot.api.Tile
+import org.powbot.api.rt4.Npc
 import org.powbot.api.rt4.Prayer
 
 const val WARRIOR_GUILD_OPTION = "Warrior Guild"
@@ -25,6 +28,7 @@ const val MONSTER_AUTO_DESTROY_OPTION = "Auto Kill"
 const val USE_CANNON_OPTION = "Use Cannon"
 const val CANNON_TILE_OPTION = "Cannon Tile"
 
+val CATACOMBS_AREA = Area(Tile(1589, 10115, 0), Tile(1746, 9976, 0))
 
 enum class Superior(val protectPrayer: Prayer.Effect = Prayer.Effect.PROTECT_FROM_MELEE) {
 	CRUSHING_HAND,
@@ -61,6 +65,7 @@ enum class Superior(val protectPrayer: Prayer.Effect = Prayer.Effect.PROTECT_FRO
 	;
 
 	companion object {
+		fun Npc.superior() = forName(name)
 		fun forName(monster: String): Superior? {
 			val monsterName = monster.replace(" ", "_").uppercase()
 			return values().firstOrNull { it.name == monsterName }

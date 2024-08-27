@@ -6,42 +6,38 @@ import org.powbot.krulvis.api.extensions.items.IEquipmentItem
 import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 
 
-class EquipmentRequirement(override val item: IEquipmentItem, override val amount: Int = 1) : ItemRequirement {
+class EquipmentRequirement(override val item: IEquipmentItem, override var amount: Int = 1) : ItemRequirement {
 
-    val slot = item.slot
+	val slot = item.slot
 
-    constructor(id: Int, slot: Equipment.Slot, amount: Int = 1) : this(EquipmentItem(id, slot), amount)
-    constructor(id: Int, slot: Int, amount: Int = 1) : this(
-        TeleportEquipment.getTeleportItem(id) ?: EquipmentItem(id, Equipment.Slot.forIndex(slot)!!),
-        amount
-    )
+	constructor(id: Int, slot: Equipment.Slot, amount: Int = 1) : this(EquipmentItem(id, slot), amount)
+	constructor(id: Int, slot: Int, amount: Int = 1) : this(
+		TeleportEquipment.getTeleportEquipment(id) ?: EquipmentItem(id, Equipment.Slot.forIndex(slot)!!),
+		amount
+	)
 
-    override fun withdraw(wait: Boolean): Boolean {
-        return item.withdrawExact(amount)
-    }
+	fun withdrawAndEquip(stopIfOut: Boolean): Boolean {
+		return item.withdrawAndEquip(stopIfOut)
+	}
 
-    fun withdrawAndEquip(stopIfOut: Boolean): Boolean {
-        return item.withdrawAndEquip(stopIfOut)
-    }
+	override fun meets(): Boolean {
+		return item.inEquipment()
+	}
 
-    override fun meets(): Boolean {
-        return item.inEquipment()
-    }
+	override fun toString(): String = "EquipmentRequirement -> ${item.id}: $amount"
 
-    override fun toString(): String = "EquipmentRequirement -> ${item.id}: $amount"
+	companion object {
+		fun forEquipmentOption(option: Map<Int, Int>): List<EquipmentRequirement> {
+			return option.map { EquipmentRequirement(it.key, it.value) }
+		}
 
-    companion object {
-        fun forEquipmentOption(option: Map<Int, Int>): List<EquipmentRequirement> {
-            return option.map { EquipmentRequirement(it.key, it.value) }
-        }
+		fun List<EquipmentRequirement>.withdrawAndEquip(): Boolean {
+			val missing = filterNot { it.meets() }
+			if (missing.isEmpty()) return true
+			return missing.all { it.withdrawAndEquip(true) }
+		}
 
-        fun List<EquipmentRequirement>.withdrawAndEquip(): Boolean {
-            val missing = filterNot { it.meets() }
-            if (missing.isEmpty()) return true
-            return missing.all { it.withdrawAndEquip(true) }
-        }
-
-        fun List<EquipmentRequirement>.ids() = flatMap { it.item.ids.toList() }.toIntArray()
-        fun List<EquipmentRequirement>.names() = map { it.item.itemName }
-    }
+		fun List<EquipmentRequirement>.ids() = flatMap { it.item.ids.toList() }.toIntArray()
+		fun List<EquipmentRequirement>.names() = map { it.item.itemName }
+	}
 }

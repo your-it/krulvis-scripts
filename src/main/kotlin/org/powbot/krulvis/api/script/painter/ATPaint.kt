@@ -1,9 +1,6 @@
 package org.powbot.krulvis.api.script.painter
 
-import org.powbot.api.script.paint.InventoryItemPaintItem
-import org.powbot.api.script.paint.Paint
-import org.powbot.api.script.paint.PaintBuilder
-import org.powbot.api.script.paint.TrackInventoryOption
+import org.powbot.api.script.paint.*
 import org.powbot.krulvis.api.script.ATScript
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.rscache.loader.ItemLoader
@@ -18,13 +15,23 @@ abstract class ATPaint<S : ATScript>(val script: S, val x: Int = 110, val y: Int
 		paintBuilder.addString("Leaf: ") { script.lastLeaf.name }
 	}
 
-	fun PaintBuilder.trackInventoryItemQ(itemId: Int) = trackInventoryItem(itemId = itemId, textSize = null, TrackInventoryOption.QuantityChange)
+	fun PaintBuilder.trackInventoryItemQ(itemId: Int) =
+		trackInventoryItem(itemId = itemId, textSize = null, TrackInventoryOption.QuantityChange)
 
 	abstract fun buildPaint(paintBuilder: PaintBuilder): Paint
 
 	open fun paintCustom(g: Rendering) {}
 
 	fun perHourText(amount: Int) = "$amount, ${script.timer.getPerHour(amount)}/hr"
+
+	fun containsLabel(label: String) = paintRowIndexForLabel(label) != -1
+
+	fun paintRowIndexForLabel(label: String): Int {
+		val rowWithLabel =
+			paintBuilder.items.firstOrNull { row -> row.any { it is TextPaintItem && it.text().equals(label, true) } }
+				?: return -1
+		return paintBuilder.items.indexOf(rowWithLabel)
+	}
 
 	fun isTrackingItem(id: Int): Boolean {
 		return paintBuilder.items.any { row -> row.any { it is InventoryItemPaintItem && it.itemId == id } }

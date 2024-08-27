@@ -7,7 +7,6 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.script.tree.branch.ShouldConsume
-import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.fighter.Fighter
 import org.powbot.krulvis.fighter.SUPERIORS
 import org.powbot.krulvis.fighter.tree.leaf.*
@@ -28,7 +27,7 @@ class IsKilling(script: Fighter) : Branch<Fighter>(script, "Killing?") {
     override val successComponent: TreeComponent<Fighter> = ShouldConsume(script, FightingSuperior(script))
 
     override fun validate(): Boolean {
-        return killing(script.superiorAppeared)
+        return killing(script.superiorActive)
     }
 
     companion object {

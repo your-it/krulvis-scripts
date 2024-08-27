@@ -11,6 +11,16 @@ private val logger = LoggerFactory.getLogger("TeleportItem")
 
 interface ITeleportItem : Item {
 	fun teleport(destination: String): Boolean
+
+	fun getCharges(): Int
+
+	companion object {
+		fun isTeleportItem(id: Int) = getTeleportItem(id) != null
+
+		fun getTeleportItem(id: Int): ITeleportItem? =
+			TeleportItem.getTeleportItem(id) ?: TeleportEquipment.getTeleportEquipment(id)
+
+	}
 }
 
 enum class TeleportItem(override val itemName: String, override val ids: IntArray) : ITeleportItem {
@@ -21,6 +31,8 @@ enum class TeleportItem(override val itemName: String, override val ids: IntArra
 
 	override fun hasWith(): Boolean = inInventory()
 
+	override fun getCharges(): Int = Int.MAX_VALUE
+
 	override fun getCount(countNoted: Boolean): Int = getInventoryCount(false)
 	override fun teleport(destination: String): Boolean {
 		logger.info("$itemName Teleport to: $destination")
@@ -30,6 +42,21 @@ enum class TeleportItem(override val itemName: String, override val ids: IntArra
 			sleep(Random.nextInt(200, 500))
 		}
 		return Inventory.stream().id(*ids).firstOrNull()?.interact(destination) == true
+	}
+
+	companion object {
+		fun isTeleportItem(id: Int) = getTeleportItem(id) != null
+
+		fun getTeleportItem(id: Int): TeleportEquipment? {
+			for (ti in TeleportEquipment.values()) {
+				for (i in ti.ids) {
+					if (i == id) {
+						return ti
+					}
+				}
+			}
+			return null
+		}
 	}
 }
 
@@ -58,14 +85,24 @@ enum class TeleportEquipment(
 		return ids.contains(id)
 	}
 
-	fun getCharges(): Int {
-		val item = Equipment.stream().id(*ids).firstOrNull() ?: return 0
+	private fun org.powbot.api.rt4.Item.getCharges(): Int {
+		if (ids.size == 1) return Int.MAX_VALUE
 		for (i in ids.indices.reversed()) {
-			if (ids[i] == item.id) {
+			if (ids[i] == id) {
 				return ids.size - i
 			}
 		}
-		return -1
+		return 0
+	}
+
+	fun getEquipmentCharges(): Int {
+		val item = Equipment.stream().id(*ids).firstOrNull() ?: return 0
+		return item.getCharges()
+	}
+
+	override fun getCharges(): Int {
+		val equipmentCharges = getEquipmentCharges()
+		return equipmentCharges + Inventory.get { it.id in ids }.sumOf { it.getCharges() }
 	}
 
 	fun getNotedCharges(): Int {
@@ -139,7 +176,26 @@ enum class TeleportEquipment(
 		return false
 	}
 
-	private fun slayerRingTeleportWidget(location: String) = Components.stream(219, 1).textContains(location).first()
+	private fun slayerRingTeleportWidget(location: String) =
+		Components.stream(219, 1).textContains(location).first()
+
+	override fun withdrawExact(amount: Int, worse: Boolean, wait: Boolean): Boolean {
+		val charges = getCharges()
+		if (charges >= amount) return true
+		val bankItemForCharges = getBankItemForCharges(amount - charges) ?: return false
+
+		if (Bank.withdrawModeNoted(false) && inBank()
+			&& Bank.withdraw(bankItemForCharges, 1)
+		) {
+			return !wait || waitFor(5000) { getCharges() >= amount }
+		}
+		return false
+	}
+
+	private fun getBankItemForCharges(minCharges: Int): org.powbot.api.rt4.Item? {
+		val bankItems = Bank.get { it.id in ids }.sortedBy { it.getCharges() }
+		return bankItems.firstOrNull { it.getCharges() >= minCharges }
+	}
 
 
 	fun withdraw(): Boolean {
@@ -155,18 +211,9 @@ enum class TeleportEquipment(
 
 
 	companion object {
-		fun isTeleportItem(id: Int): Boolean {
-			for (ti in values()) {
-				for (i in ti.ids) {
-					if (i == id) {
-						return true
-					}
-				}
-			}
-			return false
-		}
+		fun isTeleportEquipment(id: Int) = getTeleportEquipment(id) != null
 
-		fun getTeleportItem(id: Int): TeleportEquipment? {
+		fun getTeleportEquipment(id: Int): TeleportEquipment? {
 			for (ti in values()) {
 				for (i in ti.ids) {
 					if (i == id) {
@@ -177,6 +224,7 @@ enum class TeleportEquipment(
 			return null
 		}
 	}
+
 }
 
 
