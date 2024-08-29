@@ -16,7 +16,6 @@ import org.powbot.krulvis.api.ATContext.getPrice
 import org.powbot.krulvis.api.extensions.TargetWidget
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.api.extensions.items.ITeleportItem
-import org.powbot.krulvis.api.extensions.items.Item.Companion.VIAL
 import org.powbot.krulvis.api.extensions.items.Potion
 import org.powbot.krulvis.api.extensions.items.TeleportEquipment
 import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
@@ -28,7 +27,6 @@ import org.powbot.krulvis.api.extensions.teleports.poh.openable.CASTLE_WARS_JEWE
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.EDGEVILLE_MOUNTED_GLORY
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FEROX_ENCLAVE_JEWELLERY_BOX
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.POISON_WASTE_SPIRIT_TREE_POH
-import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.krulvis.api.script.KillerScript
 import org.powbot.krulvis.api.script.UniqueLootTracker
 import org.powbot.krulvis.api.script.painter.ATPaint
@@ -37,7 +35,6 @@ import org.powbot.krulvis.api.script.tree.branch.ShouldSipPotion
 import org.powbot.krulvis.fighter.Defender.currentDefenderIndex
 import org.powbot.krulvis.fighter.Superior.Companion.superior
 import org.powbot.krulvis.fighter.tree.branch.ShouldStop
-import org.powbot.mobile.script.ScriptManager
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -239,7 +236,6 @@ class Fighter : KillerScript(), UniqueLootTracker {
 		equipment.firstOrNull { it.slot == Slot.QUIVER }
 	}
 	override val ammoIds by lazy { intArrayOf(ammo?.item?.id ?: -1) }
-	override val autoDestroy: Boolean by lazy { getOption(MONSTER_AUTO_DESTROY_OPTION) }
 
 	val teleportEquipments by lazy {
 		equipment.mapNotNull { TeleportEquipment.getTeleportEquipment(it.item.id) }
@@ -262,6 +258,7 @@ class Fighter : KillerScript(), UniqueLootTracker {
 		if (ammo != null) {
 			names.add(ammo!!.item.itemName)
 		}
+		names.add("imbued heart")
 		names.add("hydra's")
 		names.add("visage")
 		names.add("brimstone key")

@@ -8,8 +8,11 @@ object ExplorerRing : IEquipmentItem {
 	override val itemName: String = "Explorer's ring"
 	override val stackable: Boolean = false
 
-	private const val ALCHEMY_WIDGET = -1
+	private const val ALCHEMY_WIDGET = 483
 	override val slot: Equipment.Slot = Equipment.Slot.RING
+
+	fun alchemyWidgetOpen() = Components.stream(ALCHEMY_WIDGET).text("High Alchemy").first().visible()
+
 
 	override fun hasWith(): Boolean {
 		return getInventoryCount() >= 1 || getEquipmentCount() >= 1

@@ -9,10 +9,11 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class NpcDeathWatcher(val npc: Npc, private val autoDestroyed: Boolean, private val onDeath: () -> Unit) : Watcher() {
+class NpcDeathWatcher(val npc: Npc, private val onDeath: () -> Unit) : Watcher() {
 
 	val logger = LoggerFactory.getLogger(javaClass.simpleName)
 	val latch = CountDownLatch(1)
+	val autoDestroyed = npc.name == "Gargoyle"
 
 	val active get() = latch.count > 0
 

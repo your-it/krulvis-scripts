@@ -14,21 +14,6 @@ import org.powbot.krulvis.demonicgorilla.tree.leaf.Attack
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WaitWhileKilling
 import org.powbot.krulvis.demonicgorilla.tree.leaf.WalkToSpot
 
-class ShouldDodgeProjectile(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldDodgeProjectile?") {
-	override val failedComponent: TreeComponent<DemonicGorilla> = ShouldCastResurrect(script)
-	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "Dodge Rock") {
-		Movement.step(script.projectileSafespot, 0)
-		sleep(600)
-		script.currentTarget.interact("Attack")
-	}
-
-	override fun validate(): Boolean {
-		val dest = Movement.destination()
-		val tile = if (dest.valid()) dest else Players.local().tile()
-		return script.projectiles.any { it.first.destination() == tile }
-	}
-}
-
 class ShouldCastResurrect(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "ShouldResurrect?") {
 	override val failedComponent: TreeComponent<DemonicGorilla> = IsKilling(script)
 	override val successComponent: TreeComponent<DemonicGorilla> = SimpleLeaf(script, "Resurrecting") {

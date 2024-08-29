@@ -47,7 +47,7 @@ class DGPainter(script: DemonicGorilla) : ATPaint<DemonicGorilla>(script) {
 		}
 		val projectiles = script.projectiles
 		if (projectiles.isNotEmpty()) {
-			projectiles.forEach { (projectile, time) -> projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}") }
+			projectiles.forEach { projectile -> projectile.destination().drawOnScreen(outlineColor = Color.RED, text = "${projectile.valid()}") }
 			if (script.projectileSafespot != Tile.Nil) {
 				script.projectileSafespot.drawOnScreen(outlineColor = Color.GREEN)
 			}

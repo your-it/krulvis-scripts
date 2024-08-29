@@ -9,13 +9,15 @@ import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Item.Companion.HERB_SACK_OPEN
 import org.powbot.krulvis.api.extensions.items.Item.Companion.SEED_BOX_OPEN
+import org.powbot.krulvis.api.script.tree.branch.ShouldDodgeProjectile
+import org.powbot.krulvis.api.script.tree.leaf.Loot
 import org.powbot.krulvis.demonicgorilla.DemonicGorilla
-import org.powbot.krulvis.demonicgorilla.tree.leaf.Loot
 import kotlin.math.max
 
 class CanLoot(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Can loot?") {
 	override val successComponent: TreeComponent<DemonicGorilla> = Loot(script)
-	override val failedComponent: TreeComponent<DemonicGorilla> = ShouldDodgeProjectile(script)
+	override val failedComponent: TreeComponent<DemonicGorilla> =
+		ShouldDodgeProjectile(script, ShouldCastResurrect(script))
 
 	private fun makeSpace(worth: Int): Boolean {
 		val edibleFood = Food.getFirstFood()
@@ -29,7 +31,8 @@ class CanLoot(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Can loot
 	}
 
 	override fun validate(): Boolean {
-		val loot = script.lootList.map { it to it.stackSize() * max(GrandExchange.getItemPrice(it.id()), it.price()) }
+		val loot =
+			script.ironmanLoot.map { it to it.stackSize() * max(GrandExchange.getItemPrice(it.id()), it.price()) }
 		if (loot.isEmpty() || !loot.first().first.reachable()) {
 			return false
 		}

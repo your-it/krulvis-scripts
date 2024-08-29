@@ -29,6 +29,7 @@ import org.powbot.krulvis.api.extensions.teleports.poh.openable.FEROX_ENCLAVE_JE
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
+import org.powbot.krulvis.api.script.KillerScript
 import org.powbot.krulvis.demonicgorilla.Data.DEMONIC_GORILLA_DEATH_ANIM
 import org.powbot.krulvis.demonicgorilla.Data.DEMONIC_GORILLA_MAGE_ANIM
 import org.powbot.krulvis.demonicgorilla.Data.DEMONIC_GORILLA_MELEE_ANIM
@@ -130,7 +131,7 @@ import org.powbot.mobile.script.ScriptManager
 	]
 )
 //</editor-fold>
-class DemonicGorilla : ATScript() {
+class DemonicGorilla : KillerScript() {
 
 	override fun createPainter(): ATPaint<*> = DGPainter(this)
 
@@ -183,7 +184,6 @@ class DemonicGorilla : ATScript() {
 	}
 
 	val specialWeapon by lazy { Weapon.values().firstOrNull { it.itemName == getOption(SPECIAL_WEAPON_OPTION) } }
-	var reducedStats = false
 	val meleeEquipment by lazy { getEquipment(MELEE_EQUIPMENT_OPTION) }
 	val rangeEquipment by lazy { getEquipment(RANGE_EQUIPMENT_OPTION) }
 	val mageEquipment by lazy { getEquipment(MAGE_EQUIPMENT_OPTION) }
@@ -202,31 +202,14 @@ class DemonicGorilla : ATScript() {
 			mutableAmmoList.add(mageAmmo.item)
 		mutableAmmoList.distinct()
 	}
-	val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
+	override val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
 
 	val teleportEquipments by lazy {
 		allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportEquipment(it.id) }
 	}
 	var equipment: List<EquipmentRequirement> = emptyList()
 
-	//Loot
-	fun isLootWatcherActive() = lootWachter?.active == true
-	var lootWachter: LootWatcher? = null
-	var kills = 0
-	val lootList = mutableListOf<GroundItem>()
-
-
-	fun watchLootDrop(tile: Tile) {
-		reducedStats = false
-		if (!isLootWatcherActive()) {
-			logger.info("Waiting for loot at $tile")
-			lootWachter = LootWatcher(tile, ammoIds, lootList = lootList, isLoot = { it.isLoot() })
-		} else {
-			logger.info("Already watching loot at tile: $tile for loot")
-		}
-	}
-
-	fun GroundItem.isLoot() = isLoot(stackSize())
+	override fun GroundItem.isLoot() = isLoot(stackSize())
 
 	private fun GenericItem.isLoot(amount: Int): Boolean {
 		val nameLC = name().lowercase()
@@ -240,7 +223,6 @@ class DemonicGorilla : ATScript() {
 	var lastTrip = false
 	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
 	val seedPodTeleport = TeleportMethod(ItemTeleport.ROYAL_SEED_POD)
-	var currentTarget: Npc = Npc.Nil
 	val aggressionTimer = Timer(15 * 60 * 1000)
 
 	fun nearbyMonsters(): List<Npc> =
@@ -286,10 +268,6 @@ class DemonicGorilla : ATScript() {
 	//Custom slayer options
 	var lastTask = false
 	var superiorAppeared = false
-	private val slayerBraceletNames = arrayOf("Bracelet of slaughter", "Expeditious bracelet")
-	fun getSlayerBracelet() = Inventory.stream().name(*slayerBraceletNames).first()
-	fun wearingSlayerBracelet() = Equipment.stream().name(*slayerBraceletNames).isNotEmpty()
-	val hasSlayerBracelet by lazy { getSlayerBracelet().valid() }
 
 	var demonicPrayer: DemonicPrayer = DemonicPrayer.NONE
 	fun switchStyle(prayer: DemonicPrayer) {
@@ -327,44 +305,9 @@ class DemonicGorilla : ATScript() {
 		}
 	}
 
-	fun setCurrentTarget() {
-		val interacting = me.interacting()
-		if (interacting is Npc && interacting != Npc.Nil) {
-			currentTarget = interacting
-			val activeLW = lootWachter
-			if (activeLW?.active == true && activeLW.tile.distanceTo(currentTarget.tile()) < 2) return
-			val deathWatcher = npcDeathWatchers.firstOrNull { it.npc == currentTarget }
-			if (deathWatcher == null || !deathWatcher.active) {
-				val newDW = NpcDeathWatcher(
-					interacting,
-					false
-				) {
-					kills++
-					if (hasSlayerBracelet && !wearingSlayerBracelet()) {
-						val slayBracelet = getSlayerBracelet()
-						if (slayBracelet.valid()) {
-							getSlayerBracelet().fclick()
-							logger.info("Wearing bracelet on death at ${System.currentTimeMillis()}, cycle=${Game.cycle()}")
-						}
-					}
-					watchLootDrop(interacting.tile())
-				}
-				npcDeathWatchers.add(newDW)
-			}
-		}
-		npcDeathWatchers.removeAll { !it.active }
-	}
-
 	@Subscribe
 	fun onTickEvent(_e: TickEvent) {
 		if (ScriptManager.state() != ScriptState.Running) return
-		val time = System.currentTimeMillis()
-		projectiles.forEach {
-			if (time - it.second > projectileDuration) {
-				projectiles.remove(it)
-			}
-		}
-		setCurrentTarget()
 		if (currentTarget.valid() && currentTarget.name == DEMONIC_GORILLA) {
 			if (currentTarget.overheadMessage()
 					?.contains("Rhaaa") == true && protectionPrayerSwitchTimer.isFinished()
@@ -412,7 +355,7 @@ class DemonicGorilla : ATScript() {
 		logger.info("Gorilla animation=${anim}")
 		if (anim == DEMONIC_GORILLA_DEATH_ANIM) {
 			logger.info("We found death animation")
-			lootWachter = LootWatcher(e.npc.tile(), ammoIds, isLoot = { it.isLoot() }, lootList = lootList)
+			lootWachter = LootWatcher(e.npc.tile(), ammoIds, isLoot = { it.isLoot() }, lootList = ironmanLoot)
 		}
 		when (e.animation) {
 			DEMONIC_GORILLA_MELEE_ANIM -> protectionPrayer = Prayer.Effect.PROTECT_FROM_MELEE
@@ -420,63 +363,6 @@ class DemonicGorilla : ATScript() {
 			DEMONIC_GORILLA_MAGE_ANIM -> protectionPrayer = Prayer.Effect.PROTECT_FROM_MAGIC
 		}
 		logger.info("ProtectionPrayer=${protectionPrayer}")
-	}
-
-	var projectiles = mutableListOf<Pair<Projectile, Long>>()
-	var projectileSafespot = Tile.Nil
-	val projectileDuration = 2400
-	var fightingFromDistance = false
-
-	private fun findSafeSpotFromProjectile() {
-		val dangerousTiles = projectiles.map { it.first.destination() }
-		val targetTile = currentTarget.tile()
-		val centerTile = if (equipment == meleeEquipment && currentTarget.valid()) targetTile else me.tile()
-		val distanceToTarget = targetTile.distance()
-		val collisionMap = Movement.collisionMap(centerTile.floor).collisionMap.flags
-		val grid = mutableListOf<Pair<Tile, Double>>()
-		for (x in -2 until 2) {
-			for (y in -2 until 2) {
-				val t = Tile(centerTile.x + x, centerTile.y + y, centerTile.floor)
-				if (t.blocked(collisionMap)) continue
-				//If we are further than 5 tiles away, make sure that the tile is closer to the target so we don't walk further away
-				if (distanceToTarget <= 5 || t.distanceTo(targetTile) < distanceToTarget) {
-					grid.add(t to dangerousTiles.minOf { it.distanceTo(t) })
-				}
-			}
-		}
-		projectileSafespot = grid.maxByOrNull { it.second }!!.first
-	}
-
-	@Subscribe
-	fun onProjectile(e: ProjectileDestinationChangedEvent) {
-		if (e.target() == Actor.Nil) {
-			val myDest = Movement.destination()
-			val tile = if (myDest.valid()) myDest else me.tile()
-			val dest = e.destination()
-			if (dest == tile) {
-				logger.info("Dangerous projectile spawned! tile=${e.destination()}")
-				projectiles.add(e.projectile to System.currentTimeMillis())
-				findSafeSpotFromProjectile()
-				val targetTile = lootList.firstOrNull { it.valid() && it.tile.valid() && it.tile != dest }?.tile
-					?: projectileSafespot
-				Movement.step(targetTile, 0)
-			}
-		} else if (e.target() == currentTarget) {
-			fightingFromDistance = true
-		}
-	}
-
-	@Subscribe
-	fun messageReceived(msg: MessageEvent) {
-		if (msg.messageType != MessageType.Game) return
-		if (msg.message.contains("so you can't take ")) {
-			logger.info("Ironman message CANT TAKE type=${msg.messageType}")
-			lootList.clear()
-		}
-		if (msg.message.contains("A superior foe has appeared")) {
-			logger.info("Superior appeared message received: type=${msg.messageType}")
-			superiorAppeared = true
-		}
 	}
 
 	@Subscribe

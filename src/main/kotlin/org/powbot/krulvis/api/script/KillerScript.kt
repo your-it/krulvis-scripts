@@ -13,7 +13,6 @@ import org.powbot.mobile.script.ScriptManager
 
 abstract class KillerScript(val dodgeProjectiles: Boolean = true) : ATScript() {
 	abstract val ammoIds: IntArray
-	abstract val autoDestroy: Boolean
 	var currentTarget: Npc = Npc.Nil
 	var lootWachter: LootWatcher? = null
 	val deathWatchers = mutableListOf<NpcDeathWatcher>()
@@ -59,7 +58,7 @@ abstract class KillerScript(val dodgeProjectiles: Boolean = true) : ATScript() {
 			if (activeLW?.active == true && activeLW.tile.distanceTo(currentTarget.tile()) < 2) return
 			val deathWatcher = deathWatchers.firstOrNull { it.npc == currentTarget }
 			if (deathWatcher == null || !deathWatcher.active) {
-				val newDW = NpcDeathWatcher(interacting, autoDestroy) { onDeath(interacting) }
+				val newDW = NpcDeathWatcher(interacting) { onDeath(interacting) }
 				deathWatchers.add(newDW)
 			}
 		}

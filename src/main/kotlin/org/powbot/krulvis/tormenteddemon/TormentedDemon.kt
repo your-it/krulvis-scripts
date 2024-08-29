@@ -199,7 +199,6 @@ class TormentedDemon : KillerScript(), UniqueLootTracker {
 		mutableAmmoList.distinct()
 	}
 	override val ammoIds by lazy { ammos.map { it.id }.toIntArray() }
-	override val autoDestroy: Boolean = false
 
 	val teleportEquipments by lazy {
 		allEquipmentItems.mapNotNull { TeleportEquipment.getTeleportEquipment(it.id) }
