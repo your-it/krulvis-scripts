@@ -84,4 +84,4 @@ fabric.properties
 .gradle/
 build/
 
-api/*
+src/main/kotlin/org/powbot/krulvis/tempoross
