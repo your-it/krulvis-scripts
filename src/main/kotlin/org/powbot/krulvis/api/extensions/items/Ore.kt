@@ -4,6 +4,7 @@ import org.powbot.api.Tile
 import org.powbot.api.rt4.GameObject
 import org.powbot.api.rt4.Objects
 import org.powbot.api.rt4.Varpbits
+import org.powbot.krulvis.api.ATContext.uppercaseFirst
 import java.util.*
 
 
@@ -37,7 +38,7 @@ enum class Ore(
 	BLURITE(intArrayOf(668), 1, -1, -1, 696969),
 	SOFT_CLAY(intArrayOf(1761), 70, -1, -1, 7062);
 
-	override val itemName: String = "${name.lowercase().replace("_", " ")} ore"
+	override val itemName: String = "${name.uppercaseFirst().replace("_", " ")} ore"
 	private val mask = 255
 
 	override val stackable: Boolean = false

@@ -2,27 +2,27 @@ package org.powbot.krulvis.tithe
 
 import com.google.common.eventbus.Subscribe
 import org.powbot.api.*
-import org.powbot.api.event.*
+import org.powbot.api.event.GameActionEvent
+import org.powbot.api.event.GameActionOpcode
+import org.powbot.api.event.PaintCheckboxChangedEvent
 import org.powbot.api.rt4.*
 import org.powbot.api.rt4.walking.local.LocalPathFinder
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
-import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Timer
+import org.powbot.krulvis.api.script.KrulScript
+import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.tithe.Data.NAMES
-import org.powbot.krulvis.tithe.Patch.Companion.isPatch
 import org.powbot.krulvis.tithe.tree.branch.ShouldStart
 import org.powbot.krulvis.tithe.tree.leaf.Refill
 import org.powbot.krulvis.tithe.tree.leaf.Start
-import org.powbot.mobile.script.ScriptManager
 import kotlin.math.min
 
 @ScriptManifest(
 	name = "krul Tithe",
 	description = "Tithe farming mini-game",
 	author = "Krulvis",
-	version = "1.1.4",
+	version = "1.1.5",
 	scriptId = "97078671-3780-4a44-b488-36ef241686dd",
 	markdownFileName = "Tithe.md",
 	category = ScriptCategory.Farming,
@@ -31,33 +31,18 @@ import kotlin.math.min
 @ScriptConfiguration.List(
 	[
 		ScriptConfiguration(
-			name = "Smart Patches",
-			description = "17, 17, 17, 17, 16, 16",
-			optionType = OptionType.BOOLEAN,
-			defaultValue = "true"
-		),
-		ScriptConfiguration(
 			name = "Patches",
 			description = "How many patches do you want to use? Max 20",
 			optionType = OptionType.INTEGER,
 			defaultValue = "16"
 		),
-		ScriptConfiguration(
-			name = "Crash Watcher",
-			description = "Stop script if being crashed?",
-			optionType = OptionType.BOOLEAN,
-			defaultValue = "true"
-		)
 	]
 )
-class TitheFarmer : ATScript() {
+class TitheFarmer : KrulScript() {
 
 	override val rootComponent: TreeComponent<*> = ShouldStart(this)
 
-	val _patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
-	val smartPatches by lazy { getOption<Boolean>("Smart Patches") }
-	val crashWatcher by lazy { getOption<Boolean>("Crash Watcher") }
-	var currentTick = -1L
+	val patchCount by lazy { min(getOption<Int>("Patches").toInt(), 20) }
 	var lastPatch: Patch? = null
 	var nextPatch: Patch? = null
 	var lastRound = false
@@ -67,26 +52,29 @@ class TitheFarmer : ATScript() {
 	val chillTimer = Timer(5000)
 	var planting = false
 
-	val patchCount
-		get() = if (_patchCount == 16 && smartPatches && seedCount() >= 32) 17 else _patchCount
-
-	override fun onStart() {
-		super.onStart()
-	}
-
 	override fun createPainter(): ATPaint<*> {
 		return TithePainter(this)
 	}
 
-	fun getCornerPatchTile(): Tile {
-		val allPatches = Objects.stream(30).filtered { it.isPatch() }.list()
-		val maxX = allPatches.minOf { it.tile().x() }
-		val maxY = allPatches.maxOf { it.tile().y() }
-		return Tile(maxX, maxY, 0)
+
+	override fun onStart() {
+		super.onStart()
+		val production = Production.ProductionTracker(Data.WATER_CAN_FULL, true)
+		Production.trackers.add(production)
+		Production.trackers.first { it.id == production.id }.lastChangeTime = System.currentTimeMillis() - 5000
 	}
 
+	val cornerPatchTile by lazy {
+		val allPatches = Objects.stream(25, GameObject.Type.INTERACTIVE)
+			.nameContains("Logavano", "Bologano", "Golovanova", "Tithe patch").list()
+		val maxX = allPatches.minOf { it.tile().x() }
+		val maxY = allPatches.maxOf { it.tile().y() }
+		Tile(maxX, maxY, 0)
+	}
+
+
 	fun getPatchTiles(): List<Tile> {
-		val tiles = mutableListOf(getCornerPatchTile())
+		val tiles = mutableListOf(cornerPatchTile)
 		val columns = mutableListOf<Tile>()
 		tiles.add(Tile(tiles[0].x(), tiles[0].y() - 15))
 		tiles.forEach {
@@ -106,27 +94,25 @@ class TitheFarmer : ATScript() {
 	}
 
 	fun refreshPatches() {
+		val startTimer = System.currentTimeMillis()
 		val tiles = getPatchTiles()
-		val onorderedPatches =
-			Objects.stream(35)
-				.filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
-				.list()
+		val onorderedPatches = tiles.map { tile ->
+			Objects.stream(tile, GameObject.Type.INTERACTIVE).filtered { it.name().isNotEmpty() && it.name() != "null" }
+				.first()
+		}
 		patches = tiles.mapIndexed { index, tile ->
 			Patch(onorderedPatches.firstOrNull { it.tile() == tile } ?: GameObject.Nil, tile, index)
 		}
-
+		logger.info("Refreshed patches in =${System.currentTimeMillis() - startTimer}")
 	}
 
-	fun hasSeeds(): Boolean = getSeed() > 0
+	fun hasSeeds(): Boolean = getSeed() != Item.Nil
 
 	override fun canBreak(): Boolean {
 		return lastLeaf is Start || lastLeaf is Refill
 	}
 
-	fun getSeed(): Int {
-		val seed = Inventory.stream().id(*Data.SEEDS).findFirst()
-		return if (seed.isPresent) seed.get().id() else -1
-	}
+	fun getSeed() = Inventory.stream().id(*Data.SEEDS).first()
 
 	fun seedCount(): Int {
 		return Inventory.stream().id(*Data.SEEDS).count(true).toInt()
@@ -161,27 +147,12 @@ class TitheFarmer : ATScript() {
 		}
 	}
 
-	@com.google.common.eventbus.Subscribe
+	@Subscribe
 	fun onCheckBoxEvent(e: PaintCheckboxChangedEvent) {
 		if (e.checkboxId == "lastRound") {
 			lastRound = e.checked
 		}
 	}
-
-	@com.google.common.eventbus.Subscribe
-	fun onMsg(e: MessageEvent) {
-		logger.info("MSG: \n Type=${e.type}, msg=${e.message}")
-		if (e.message.contains("This plant was planted by ") && crashWatcher) {
-			Notifications.showNotification("World is crashed... stopping script")
-			ScriptManager.stop()
-		}
-	}
-
-	@Subscribe
-	fun onGameTick(e: TickEvent) {
-		currentTick = System.currentTimeMillis()
-	}
-
 
 	fun interact(
 		target: Interactive?,

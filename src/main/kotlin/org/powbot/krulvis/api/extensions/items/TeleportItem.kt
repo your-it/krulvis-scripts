@@ -76,7 +76,12 @@ enum class TeleportEquipment(
 	SLAYER("Slayer ring", Equipment.Slot.RING, 21268, 11866, 11867, 11868, 11869, 11870, 11871, 11872, 11873),
 	RADAS_BLESSING("Rada's Blessing", Equipment.Slot.QUIVER, 22945, 22947),
 	GHOMMAL_HILT("Ghommal's Hilt", Equipment.Slot.OFF_HAND, 25936, 25934, 25932, 25930, 25928),
-	ARD_CLOAK("Ardougne Cloak", Equipment.Slot.CAPE, 13121);
+	ARD_CLOAK("Ardougne cloak", Equipment.Slot.CAPE, 13121),
+	KARAMJA_GLOVES("Karamja gloves", Equipment.Slot.HANDS, 13103, 11140),
+	ACHIEVEMENT_DIARY_CAPE("Achievement diary Cape", Equipment.Slot.CAPE, 13069, 19476),
+	CRAFTING_CAPE("Crafting cape", Equipment.Slot.CAPE, 9780, 9781),
+	MYTH_CAPE("Mythical cape", Equipment.Slot.CAPE, 22114),
+	;
 
 	val bestId: Int = ids[0]
 

@@ -13,7 +13,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 
@@ -31,7 +31,7 @@ import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 	ScriptConfiguration("Tick Manip", "Use 1.5 herb+tar tick-manipulation", OptionType.BOOLEAN, defaultValue = "false"),
 	ScriptConfiguration("Special", "Perform special attack", OptionType.BOOLEAN, defaultValue = "false"),
 ])
-class DaeyaltMiner : ATScript() {
+class DaeyaltMiner : KrulScript() {
 
 	override fun createPainter(): ATPaint<*> {
 		return DaeyaltPainter(this)
@@ -53,7 +53,7 @@ class DaeyaltMiner : ATScript() {
 
 	val tickManip by lazy { getOption<Boolean>("Tick Manip") }
 	val special by lazy { getOption<Boolean>("Special") }
-	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption("Equipment")) }
+	val equipment by lazy { EquipmentRequirement.forOption(getOption("Equipment")) }
 	override val rootComponent: TreeComponent<*> = WearingEquipment(this)
 
 

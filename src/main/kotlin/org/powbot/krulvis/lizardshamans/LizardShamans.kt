@@ -148,7 +148,7 @@ class LizardShamans : KillerScript(false), UniqueLootTracker {
 	}
 
 
-	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption("Equipment")) }
+	val equipment by lazy { EquipmentRequirement.forOption(getOption("Equipment")) }
 	val inventory by lazy { InventoryRequirement.forOption(getOption("Inventory")) }
 	val slayerTask by lazy { getOption<Boolean>("Slayer") }
 	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption("BankTeleport"))) }

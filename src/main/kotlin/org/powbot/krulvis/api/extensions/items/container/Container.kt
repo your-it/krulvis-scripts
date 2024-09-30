@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe
 import org.powbot.api.Events
 import org.powbot.api.event.MessageEvent
 import org.powbot.api.event.MessageType
+import org.powbot.krulvis.api.ATContext.uppercaseFirst
 import org.powbot.krulvis.api.extensions.items.Item
 import org.slf4j.LoggerFactory
 
@@ -21,7 +22,7 @@ enum class Container(override val CLOSED_ID: Int, override val OPEN_ID: Int) : I
         Events.register(this)
     }
 
-    override val itemName: String = name.lowercase().replace("_", " ")
+    override val itemName: String = name.uppercaseFirst().replace("_", " ")
     override val stackable: Boolean = false
     override val ids: IntArray = intArrayOf(CLOSED_ID, OPEN_ID)
 

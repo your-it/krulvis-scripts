@@ -8,7 +8,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.teleports.EDGEVILLE_GLORY
 import org.powbot.krulvis.api.extensions.teleports.FALADOR_TELEPORT
@@ -66,14 +66,14 @@ import org.powbot.krulvis.orbcharger.tree.branch.ShouldBank
 		)
 	]
 )
-class OrbCrafter : ATScript() {
+class OrbCrafter : KrulScript() {
 
 	val orb by lazy { Orb.valueOf(getOption("Orb")) }
 	val bankTeleport by lazy { Teleport.forName(getOption("BankTeleport"))!! }
 	val fastCharge by lazy { getOption<Boolean>("Fast charge") }
 	val antipoison by lazy { getOption<Boolean>("Antipoison") }
 	val food by lazy { Food.valueOf(getOption("Food")) }
-	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption("Equipment")) }
+	val equipment by lazy { EquipmentRequirement.forOption(getOption("Equipment")) }
 
 	override fun createPainter(): ATPaint<*> = OrbPainter(this)
 

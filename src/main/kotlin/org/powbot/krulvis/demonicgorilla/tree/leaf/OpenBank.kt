@@ -1,7 +1,10 @@
 package org.powbot.krulvis.demonicgorilla.tree.leaf
 
 import org.powbot.api.InteractableEntity
-import org.powbot.api.rt4.*
+import org.powbot.api.rt4.Bank
+import org.powbot.api.rt4.Constants
+import org.powbot.api.rt4.Game
+import org.powbot.api.rt4.Movement
 import org.powbot.api.script.tree.Leaf
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.Utils.waitForDistance
@@ -13,9 +16,7 @@ class OpenBank(script: DemonicGorilla) : Leaf<DemonicGorilla>(script, "Opening b
 		if (Game.clientState() == Constants.GAME_LOGGED) {
 			val bank = Bank.getBank()
 			script.forcedBanking = true
-			if (Prayer.quickPrayer()) {
-				Prayer.quickPrayer(false)
-			} else if (bank.valid()) {
+			if (bank.valid()) {
 				if (walkAndInteract(bank, bank.bankAction())) {
 					waitForDistance(bank) { Bank.opened() }
 				}

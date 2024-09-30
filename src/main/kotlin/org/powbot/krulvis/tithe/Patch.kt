@@ -13,7 +13,7 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 	fun refresh(gameObject: GameObject? = null): GameObject {
 		go = gameObject ?: Objects.stream(tile, GameObject.Type.INTERACTIVE)
 			.filtered { it.name().isNotEmpty() && it.name() != "null" }
-			.firstOrNull() ?: GameObject.Nil
+			.first()
 		return go
 	}
 
@@ -73,15 +73,16 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 		return id in PLANTED || id in GROWN_1 || id in GROWN_2 || id in DONE
 	}
 
-	fun plant(seed: Int): Boolean {
+	fun plant(seed: Item): Boolean {
 		val selectedId = Inventory.selectedItem().id()
-		if (selectedId != seed) {
-			Game.tab(Game.Tab.INVENTORY)
-			Inventory.stream().id(seed).findFirst().ifPresent {
-				it.interact("Use", false)
+		if (selectedId != seed.id) {
+			if (selectedId != Item.Nil.id) {
+				Game.Tab.INVENTORY.getByTexture()?.click()
 			}
+			seed.interact("Use", false)
 		}
-		return Condition.wait { Inventory.selectedItem().id() == seed } && go.interact("Use", false)
+		go.bounds(-32, 32, -64, 0, -32, 32)
+		return Condition.wait { Inventory.selectedItem().id() == seed.id } && go.interact("Use", false)
 	}
 
 	fun clear(): Boolean = interact("Clear")
@@ -118,7 +119,8 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 				Menu.close()
 			}
 		}
-		return go.interact(action, false)
+		go.bounds(-32, 32, -64, 0, -32, 32)
+		return go.click(action, false)
 	}
 
 	override fun toString(): String = "Patch(id=${go.id()}, tile=${go.tile()})"
@@ -134,15 +136,6 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 		val DONE = PLANTED.map { it + 9 }.toIntArray()
 		val BLIGHTED = intArrayOf(27386, 27389, 27392, 27394, 27397, 27400, 27403, 27405)
 
-		fun GameObject.isPatch(): Boolean {
-			val name = name()
-			return listOf("Logavano", "Bologano", "Golovanova", "Tithe patch").any { it in name }
-		}
-
-		fun List<Patch>.hasEmpty(): Boolean = any { it.isEmpty() }
-
-		fun List<Patch>.hasDone(): Boolean = any { it.isDone() }
-
 		fun List<Patch>.nearest(): Patch = minByOrNull { it.tile.distance() } ?: Patch(GameObject.Nil, -1)
 
 		fun List<Patch>.tiles(): List<Tile> = map { it.tile }
@@ -151,15 +144,14 @@ class Patch(var go: GameObject, val tile: Tile, val index: Int) {
 
 		fun List<Patch>.refresh(): List<Patch> {
 			val tiles = tiles()
-			val gameObjects =
-				Objects.stream(35, GameObject.Type.INTERACTIVE)
-					.filtered { it.name().isNotEmpty() && it.name() != "null" && it.tile() in tiles }
-					.list()
+			val gameObjects = tiles.map { tile ->
+				Objects.stream(tile, GameObject.Type.INTERACTIVE)
+					.filtered { it.name().isNotEmpty() && it.name() != "null" }.first()
+			}
 			return onEach { patch -> patch.refresh(gameObjects.firstOrNull { go -> go.tile() == patch.tile }) }
 		}
 
 		fun List<Patch>.index(patch: Patch?): Int = if (patch == null) -1 else indexOfFirst { it.tile == patch.tile }
-
 	}
 
 }

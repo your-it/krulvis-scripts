@@ -92,6 +92,15 @@ object ATContext {
 
 	fun Movement.moving(): Boolean = destination() != Tile.Nil
 
+	fun Movement.stepNoConfirm(tile: Tile): Boolean {
+		val matrix = tile.matrix()
+		if (tile.distance() < 10 && matrix.inViewport()) {
+			return matrix.click("Walk here")
+		}
+		val pos = Game.tileToMap(tile)
+		return Input.tap(pos)
+	}
+
 	fun walk(position: Tile?, enableRun: Boolean = true, forceMinimap: Boolean = false): Boolean {
 		if (position == null || position == Tile.Nil) {
 			return true
@@ -146,7 +155,7 @@ object ATContext {
 		val destination = Movement.destination()
 
 		turnRunOn()
-		debug("Interacting with: $name at: $pos")
+		logger.info("Interacting with: $name at: $pos")
 		if (Menu.opened() && Menu.contains {
 				it.action.equals(action, true) && (name == null || it.option.contains(
 					name,
@@ -404,4 +413,5 @@ object ATContext {
 	val TAG_REGEX = Regex("""<[^>]*>""")
 
 	fun String.stripTags() = replace(TAG_REGEX, "").trimEnd()
+	fun String.uppercaseFirst() = lowercase().replaceFirstChar { it.uppercase() }
 }

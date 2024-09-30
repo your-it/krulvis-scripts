@@ -80,7 +80,7 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
 			} ?: return
 
 			val bonusStr = bestMould.second.joinToString(separator = ", ") { "${it.type}: ${it.amount}" }
-			script.logger.info("Found max mould=${bonusStr}, isSelected=${bestMould.first.name().isBlank()}")
+			script.logger.info("Found max mould=${bonusStr}, nameIsBlank=${bestMould.first.name().isBlank()}")
 
 			if (bestMould.first.name().isNotBlank()) {
 				val scrollBar = mouldWidget().component(11).component(1)
@@ -89,6 +89,8 @@ class SetupMoulds(script: GiantsFoundry) : Leaf<GiantsFoundry>(script, "Setup mo
 					val selected = waitFor { mouldType.hasSelectedAny() }
 					script.logger.info("Selected bestMould successfully=$selected")
 				}
+			} else {
+				script.logger.info("notSelected=${mouldType}, bestMouldName=${bestMould.first.name()}, jigName=${script.jig().name}")
 			}
 		} else if (Bank.close()) {
 			if (jig.interact(action)) {

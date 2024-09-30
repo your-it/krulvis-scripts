@@ -8,7 +8,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.antiban.OddsModifier
 import org.powbot.krulvis.api.extensions.items.Item.Companion.TINDERBOX
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
 
@@ -55,7 +55,7 @@ import org.powbot.krulvis.woodcutter.tree.branch.ShouldBurn
         )
     ]
 )
-class Woodcutter : ATScript() {
+class Woodcutter : KrulScript() {
 
     val redwoods by lazy { getOption<List<GameObjectActionEvent>>("Trees").any { it.name.contains("Redwood") } }
     val trees by lazy {

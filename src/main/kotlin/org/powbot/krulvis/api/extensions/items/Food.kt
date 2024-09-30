@@ -6,6 +6,7 @@ import org.powbot.api.rt4.Game
 import org.powbot.krulvis.api.ATContext.currentHP
 import org.powbot.krulvis.api.ATContext.maxHP
 import org.powbot.krulvis.api.ATContext.missingHP
+import org.powbot.krulvis.api.ATContext.uppercaseFirst
 import java.io.Serializable
 import kotlin.math.ceil
 
@@ -38,6 +39,7 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	POTATO_CHEESE(16, 6705),
 	MONKFISH(16, 7946),
 	SHARK(20, 385),
+	MANTA_RAY(22, 391),
 	KARAMBWAN(16, 3144),
 	SUMMER_PIE(11, 7218, 7220),
 	;
@@ -46,18 +48,15 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 		return itemName
 	}
 
-	override val itemName: String = name.lowercase().replace("_", " ")
+	override val itemName: String = name.uppercaseFirst().replace("_", " ")
 
 	fun canEat(): Boolean = missingHP() >= healing
 	override val stackable: Boolean = false
 
 	fun eat(): Boolean {
-		nextEatPercent = Random.nextInt(25, 55)
 		val item = getInvItem()
-		Game.tab(Game.Tab.INVENTORY)
-		return item != null
-			&& item
-			.interact(if (this == WINE) "Drink" else "Eat")
+		if (!Bank.opened()) Game.tab(Game.Tab.INVENTORY)
+		return item != null && item.interact(if (this == WINE) "Drink" else "Eat")
 	}
 
 	fun requiredAmount(): Int {
@@ -74,8 +73,6 @@ enum class Food(val healing: Int, override vararg val ids: Int) : Item, Serializ
 	}
 
 	companion object {
-
-		var nextEatPercent = Random.nextInt(25, 55)
 
 		fun getFirstFood(): Food? {
 			for (f in values()) {

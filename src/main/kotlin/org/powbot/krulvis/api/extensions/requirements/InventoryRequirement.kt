@@ -1,11 +1,7 @@
 package org.powbot.krulvis.api.extensions.requirements
 
-import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Inventory
-import org.powbot.krulvis.api.extensions.items.ITeleportItem
-import org.powbot.krulvis.api.extensions.items.InventoryItem
-import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.extensions.items.Potion
+import org.powbot.krulvis.api.extensions.items.*
 
 
 open class InventoryRequirement(
@@ -16,23 +12,26 @@ open class InventoryRequirement(
 	val countNoted: Boolean = true
 ) : ItemRequirement {
 
+	var minAmount = 1
+	var allowLess = false
+
 	constructor(id: Int, amount: Int, allowMore: Boolean = false, countNoted: Boolean = true) : this(
-		Potion.forId(id) ?: ITeleportItem.getTeleportItem(id) ?: InventoryItem(id),
+		Potion.forId(id) ?: BloodEssence.forId(id) ?: ITeleportItem.getTeleportItem(id) ?: InventoryItem(id),
 		amount, false, allowMore, countNoted
 	)
 
-
 	fun getCount(): Int {
-		return (if (onlyBest) Inventory.stream().id(item.id).count(countNoted).toInt()
+		return (if (onlyBest) Inventory.stream().id(*item.ids).count(countNoted).toInt()
 		else item.getInventoryCount(countNoted))
 	}
 
 	override fun meets(): Boolean {
-		return if (allowMore) getCount() >= amount else getCount() == amount
+		val count = getCount()
+		return if (allowLess) count >= minAmount else if (allowMore) count >= amount else count == amount
 	}
 
 	override fun toString(): String =
-		"InventoryRequirement(name=${item.itemName}, amount=$amount, type=${item.javaClass.simpleName})"
+		"InventoryRequirement(name=${item.itemName}, amount=$amount, minAmount=${minAmount}, allowLess=${allowLess}, type=${item.javaClass.simpleName})"
 
 
 	companion object {

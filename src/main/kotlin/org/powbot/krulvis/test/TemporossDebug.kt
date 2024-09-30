@@ -12,7 +12,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.Leaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.krulvis.tempoross.Side
@@ -21,7 +21,7 @@ import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.input.Touchscreen
 
 @ScriptManifest(name = "Tempoross - Debug", description = "Some testing", version = "1.0")
-class TemporossDebug : ATScript() {
+class TemporossDebug : KrulScript() {
 
     lateinit var tempoross: Tempoross
 

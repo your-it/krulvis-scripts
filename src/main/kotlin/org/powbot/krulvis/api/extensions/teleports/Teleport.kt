@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.teleports
 
+import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.krulvis.api.extensions.teleports.poh.HousePortal
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.FairyRingTeleport
@@ -15,9 +16,13 @@ interface Teleport {
 	val logger: Logger
 	val action: String
 	val requirements: List<Requirement>
+	val destination: Tile
 	fun execute(): Boolean
 
 	companion object {
+
+		const val USE_WEB_OPTION = "Use Web"
+		const val DISABLE_TELEPORTS_OPTION = "Disable Teleports"
 
 		fun forName(name: String): Teleport? {
 			LoggerFactory.getLogger("Teleport")!!.info("Getting teleport for name=$name")

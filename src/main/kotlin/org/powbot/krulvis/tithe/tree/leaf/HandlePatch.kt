@@ -22,10 +22,13 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
 		val hasEnoughWater = script.getWaterCount() > 0
 		val ms = System.currentTimeMillis()
 		debug("Waiting for handling of patchIndex=${script.patches.index(script.lastPatch)}")
-		if (Condition.wait({ script.lastPatch?.needsAction(true) == false }, 100, 20)) {
+		if (Condition.wait({ script.lastPatch?.needsAction(true) == false }, 100, 30)) {
 			debug("Last patch: ${script.lastPatch?.index} = handled in ${System.currentTimeMillis() - ms}ms")
 			script.lastPatch = null
+		} else {
+			debug("Failed to handle last patch=${script.lastPatch?.index}")
 		}
+
 		val patches = script.patches.refresh().sortedWith(compareBy(Patch::id, Patch::index))
 		val patch = patches.firstOrNull {
 			it.needsAction() && (hasEnoughWater || it.isDone())
@@ -33,7 +36,6 @@ class HandlePatch(script: TitheFarmer) : Leaf<TitheFarmer>(script, "Handling pat
 		debug("Refreshed and selected next patch! INTERACTING")
 
 		if (patch.handle(script.patches)) {
-			val lastTick = script.currentTick
 			val currentPatchIndex = script.patches.index(patch)
 			val nextPatchIndex = currentPatchIndex + 1
 			val nextPatch =

@@ -1,14 +1,12 @@
 package org.powbot.krulvis.smelter
 
-import com.google.common.eventbus.Subscribe
-import org.powbot.api.event.TickEvent
 import org.powbot.api.script.OptionType
 import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Bar
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.smelter.tree.branch.ShouldBank
 
@@ -43,7 +41,7 @@ import org.powbot.krulvis.smelter.tree.branch.ShouldBank
 		)
 	]
 )
-class Smelter : ATScript() {
+class Smelter : KrulScript() {
 	override fun createPainter(): ATPaint<*> = SmelterPainter(this)
 	override val rootComponent: TreeComponent<*> = ShouldBank(this)
 

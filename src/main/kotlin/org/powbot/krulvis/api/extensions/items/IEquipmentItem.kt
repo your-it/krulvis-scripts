@@ -2,6 +2,7 @@ package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.Bank
 import org.powbot.api.rt4.Equipment
+import org.powbot.api.rt4.Game
 import org.powbot.api.rt4.Inventory
 import org.powbot.krulvis.api.ATContext.stripNumbersAndCharges
 import org.powbot.krulvis.api.extensions.Utils.waitFor
@@ -41,18 +42,20 @@ interface IEquipmentItem : Item {
 			}
 		}
 		if (inInventory()) {
+			logger.info("withdrawAndEquip: $this, inInventory=true")
 			return equip(true)
 		}
 		return inEquipment()
 	}
 
 	fun equip(wait: Boolean = true): Boolean {
-		if (inInventory()) {
+		if (inEquipment()) return true
+		if (inInventory() && (Bank.opened() || Game.tab(Game.Tab.INVENTORY))) {
 			val item = Inventory.stream().nameContains(itemName).first()
 			val actions = item.actions()
 			val action = actions.firstOrNull { it in listOf("Wear", "Wield", "Equip") }
 			ScriptManager.script()!!.logger.info("Equipping $itemName action=$action, actions=[${actions.joinToString()}]")
-			if (if (action == null) item.click() else item.interact(action)) {
+			if (if (action == null || !wait) item.click() else item.interact(action)) {
 				if (wait) waitFor(2000) { inEquipment() } else return true
 			}
 		} else {

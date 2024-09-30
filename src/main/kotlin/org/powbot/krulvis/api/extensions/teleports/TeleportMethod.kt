@@ -20,8 +20,11 @@ class TeleportMethod(val teleport: Teleport?) {
 			logger.info("In too high wilderness! Walking south before teleporting")
 			Movement.step(Tile(tile.x, tile.y - 15, tile.floor))
 			waitFor { Combat.wildernessLevel() <= teleport.wildernessLevel }
-		} else if (teleport.execute())
-			executed = waitFor(long()) { tile.distance() > 50 }
+		} else if (teleport.destination.distance() < 25 || teleport.execute()) {
+			val startTime = System.currentTimeMillis()
+			executed = waitFor(long()) { teleport.destination.distance() < 25 }
+			logger.info("Teleported and reached destination within ${System.currentTimeMillis() - startTime} ms")
+		}
 		return executed
 	}
 }

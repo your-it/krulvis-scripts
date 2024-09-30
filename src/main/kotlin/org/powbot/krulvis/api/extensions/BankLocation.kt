@@ -1,6 +1,8 @@
 package org.powbot.krulvis.api.extensions
 
+import org.powbot.api.Interactable
 import org.powbot.api.InteractableEntity
+import org.powbot.api.Nameable
 import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.*
@@ -157,7 +159,8 @@ enum class BankLocation(
 			val nearest = values()
 				.filter { it.type == BankType.DEPOSIT_BOX }
 				.minByOrNull { it.tile.distance() } ?: return false
-			val box = Objects.stream().name("Mine Cart", "Bank deposit box", "Bank deposit chest").action("Deposit").firstOrNull()
+			val box = Objects.stream().name("Mine Cart", "Bank deposit box", "Bank deposit chest").action("Deposit")
+				.firstOrNull()
 			if (box == null || nearest.tile.distance() > 15 || !nearest.tile.reachable()) {
 				logger.info("nearest=$nearest, distance=${nearest.tile.distance()} is not reachable!")
 				val localPath = LocalPathFinder.findPath(nearest.tile.getWalkableNeighbor())
@@ -174,26 +177,9 @@ enum class BankLocation(
 					}
 				}
 			} else {
-				return ATContext.walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
+				return walkAndInteract(box, "Deposit") && waitFor(5000) { opened() }
 			}
 			return false
-		}
-
-		private fun getAllowedBanks(): List<BankLocation> =
-			values().filter { it.requirements.isEmpty() || it.requirements.all { req -> req.meets() } }
-
-		/**
-		 * @return the nearest bank according to the geographical distance
-		 */
-		fun Bank.getNearestBank(includeDepositBox: Boolean = false): BankLocation {
-			return getNearestBankWithoutWeb(includeDepositBox)
-		}
-
-		fun Bank.getNearestBankWithoutWeb(includeDepositBox: Boolean = false): BankLocation {
-			val me = Players.local()
-			return getAllowedBanks()
-				.filter { (includeDepositBox || it.type != BankType.DEPOSIT_BOX) && it.canUse() }
-				.minByOrNull { it.tile.distanceM(me) }!!
 		}
 
 		fun Bank.openNearest(teleportMethod: TeleportMethod = TeleportMethod(null)): Boolean {
@@ -203,6 +189,7 @@ enum class BankLocation(
 			val nearest = getBank()
 			logger.info("Nearest bank: $nearest")
 			if (nearest.getWalkableNeighbor { it.reachable() } != null) {
+				nearest.setBankBounds()
 				return walkAndInteract(nearest, nearest.bankAction())
 			} else if (teleportMethod.execute()) {
 				Movement.moveToBank()
@@ -213,6 +200,15 @@ enum class BankLocation(
 	}
 
 
+}
+
+val GE_BANK_BOUNDS = intArrayOf(28, 52, -94, 0, -32, 32)
+val BANK_BOUNDS = intArrayOf(-32, 32, -64, 0, -32, 32)
+
+fun InteractableEntity.setBankBounds() {
+	val name = (this as Nameable).name()
+	val bounds = if (name == "Grand Exchange booth") GE_BANK_BOUNDS else BANK_BOUNDS
+	(this as Interactable).bounds(bounds)
 }
 
 private val BANK_ACTIONS = listOf("Bank", "Open", "Use")

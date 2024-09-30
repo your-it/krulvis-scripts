@@ -8,7 +8,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.Utils
 import org.powbot.krulvis.api.extensions.items.*
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
 
@@ -17,7 +17,7 @@ import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
 	name = "krul GiantFoundry",
 	description = "Makes swords for big giant.",
 	author = "Krulvis",
-	version = "1.0.6",
+	version = "1.0.7",
 	scriptId = "6e058edd-cc5b-4b20-b4aa-6def55e9e903",
 	category = ScriptCategory.Smithing,
 )
@@ -47,7 +47,7 @@ import org.powbot.krulvis.giantsfoundry.tree.branch.IsSmithing
 		)
 	]
 )
-class GiantsFoundry : ATScript() {
+class GiantsFoundry : KrulScript() {
 	override fun createPainter(): ATPaint<*> {
 		return GiantsFoundryPainter(this)
 	}

@@ -25,7 +25,7 @@ class LookForMole(script: GiantMole) : Leaf<GiantMole>(script, "Looking for mole
 		} else if (hintTile.valid() && hintTile.distance() > 5 && script.respawnTimer.isFinished()) {
 			script.logger.info("HintTile is valid, walking to hintTile=${hintTile}")
 			Movement.step(hintTile)
-			waitForDistance(hintTile, 10000) { script.findMole().distance() <= 20 || Movement.destination().distance() <= 5 }
+			waitForDistance(hintTile, maxWait = 10000) { script.findMole().distance() <= 20 || Movement.destination().distance() <= 5 }
 		} else if (centerTile.distance() > 10) {
 			script.logger.info("Walking to centerTile=${centerTile}")
 			Movement.step(centerTile)

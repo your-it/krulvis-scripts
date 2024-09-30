@@ -12,27 +12,20 @@ import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.script.ScriptManager
 
 class TithePainter(script: TitheFarmer) : ATPaint<TitheFarmer>(script) {
-    override fun buildPaint(paintBuilder: PaintBuilder): Paint {
-        return paintBuilder
-            .addString("Last leaf:") { script.lastLeaf.name }
-            .addString("Gained points:") {
-                "${script.gainedPoints}, (${
-                    PaintFormatters.perHour(
-                        script.gainedPoints,
-                        ScriptManager.getRuntime(true)
-                    )
-                }/hr)"
-            }
-            .addString("Single-tap") { Game.singleTapEnabled().toString() }
-            .trackSkill(Skill.Farming)
-            .addCheckbox("Last round:", "lastRound", false)
-            .build()
-    }
+	override fun buildPaint(paintBuilder: PaintBuilder): Paint {
+		return paintBuilder
+			.addString("Last leaf:") { script.lastLeaf.name }
+			.addString("Single-tap") { Game.singleTapEnabled().toString() }
+			.trackSkill(Skill.Farming)
+			.trackInventoryItems(13426, 13427, 13428)
+			.addCheckbox("Last round:", "lastRound", false)
+			.build()
+	}
 
-    override fun paintCustom(g: Rendering) {
-        if (debugComponents) {
-            script.lastPatch?.tile?.drawOnScreen(outlineColor = Color.GREEN)
-            script.nextPatch?.tile?.drawOnScreen(outlineColor = Color.ORANGE)
-        }
-    }
+	override fun paintCustom(g: Rendering) {
+		if (debugComponents) {
+			script.lastPatch?.tile?.drawOnScreen(outlineColor = Color.GREEN)
+			script.nextPatch?.tile?.drawOnScreen(outlineColor = Color.ORANGE)
+		}
+	}
 }

@@ -5,7 +5,7 @@ import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptConfiguration
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.teleports.Teleport
 import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
@@ -25,7 +25,7 @@ import org.powbot.krulvis.grotesqueguardians.tree.branch.ShouldBank
 	ScriptConfiguration(RANGE_PRAYER_OPTION, "Which range offensive prayer?", OptionType.STRING, defaultValue = "EAGLE_EYE", allowedValues = ["EAGLE_EYE", "RIGOURv"]),
 	ScriptConfiguration(BANK_TELEPORT_OPTION, "How to teleport to bank?", OptionType.STRING, defaultValue = CASTLE_WARS_JEWELLERY_BOX, allowedValues = [CASTLE_WARS_JEWELLERY_BOX]),
 ])
-class GrotesqueGuardians : ATScript() {
+class GrotesqueGuardians : KrulScript() {
 	override fun createPainter(): ATPaint<*> = GGPaint(this)
 
 	var banking = false

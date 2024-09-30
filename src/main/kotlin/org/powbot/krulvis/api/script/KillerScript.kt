@@ -11,7 +11,7 @@ import org.powbot.krulvis.api.extensions.watcher.LootWatcher
 import org.powbot.krulvis.api.extensions.watcher.NpcDeathWatcher
 import org.powbot.mobile.script.ScriptManager
 
-abstract class KillerScript(val dodgeProjectiles: Boolean = true) : ATScript(), Looting {
+abstract class KillerScript(val dodgeProjectiles: Boolean = true) : KrulScript(), Looting {
 
 	abstract val ammoIds: IntArray
 	var currentTarget: Npc = Npc.Nil
