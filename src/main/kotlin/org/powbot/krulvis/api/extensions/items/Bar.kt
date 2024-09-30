@@ -5,6 +5,7 @@ import org.powbot.api.rt4.Components
 import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Varpbits
 import org.powbot.krulvis.api.ATContext.containsOneOf
+import org.powbot.krulvis.api.ATContext.uppercaseFirst
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -36,7 +37,7 @@ enum class Bar(
 	ADAMANTITE(intArrayOf(2361), 112, 546, 0, Ore.ADAMANTITE, Ore.COAL, 6),
 	RUNITE(intArrayOf(2363), 113, 546, 8, Ore.RUNITE, Ore.COAL, 8);
 
-	override val itemName: String = "${name.lowercase()} bar"
+	override val itemName: String = "${name.uppercaseFirst()} bar"
 	fun craftedBarItemPrefix(): String {
 		return when (this) {
 			ADAMANTITE -> "adamant"

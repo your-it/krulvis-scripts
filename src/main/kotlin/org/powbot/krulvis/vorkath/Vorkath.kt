@@ -30,7 +30,7 @@ import org.powbot.krulvis.vorkath.tree.branches.Fighting
 )
 class Vorkath : KillerScript(true) {
 
-	val equipment by lazy { EquipmentRequirement.forEquipmentOption(getOption(EQUIPMENT_OPTION)) }
+	val equipment by lazy { EquipmentRequirement.forOption(getOption(EQUIPMENT_OPTION)) }
 	val inventory by lazy { InventoryRequirement.forOption(getOption(INVENTORY_OPTION)) }
 	val bankTeleport by lazy { TeleportMethod(Teleport.forName(getOption(BANK_TELEPORT_OPTION))) }
 	val vorkathTeleport by lazy { TeleportMethod(Teleport.forName(getOption(MONSTER_TELEPORT_OPTION))) }

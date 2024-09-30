@@ -10,7 +10,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.nmz.tree.branch.OutsideNMZ
@@ -50,7 +50,7 @@ import org.powbot.krulvis.nmz.tree.branch.OutsideNMZ
 		),
 	]
 )
-class NightmareZone : ATScript() {
+class NightmareZone : KrulScript() {
 	override fun createPainter(): ATPaint<*> {
 		return NMZPainter(this)
 	}

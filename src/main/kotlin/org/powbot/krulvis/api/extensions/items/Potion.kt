@@ -1,8 +1,10 @@
 package org.powbot.krulvis.api.extensions.items
 
 import org.powbot.api.rt4.*
+import org.powbot.krulvis.api.ATContext.uppercaseFirst
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.slf4j.LoggerFactory
 import kotlin.math.abs
 import kotlin.math.floor
 
@@ -39,7 +41,7 @@ enum class Potion(
 	SUPER_RESTORE(Constants.SKILLS_PRAYER, -1, 3024, 3026, 3028, 3030)
 	;
 
-	override val itemName: String = "${name.lowercase().replace("_", " ")} potion"
+	override val itemName: String = "${name.uppercaseFirst().replace("_", " ")} potion"
 	override val stackable: Boolean = false
 	val bestPot: Int = ids[0]
 
@@ -65,7 +67,7 @@ enum class Potion(
 	fun drink(): Boolean {
 		val item = getInvItem(true)
 		if (item != null) {
-			Game.tab(Game.Tab.INVENTORY)
+			if (!Bank.opened()) Game.tab(Game.Tab.INVENTORY)
 			val id = item.id
 			val drank = item.interact("Drink")
 			if (drank && (this == ANTIFIRE_EXTENDED || this == ANTIFIRE)
@@ -73,6 +75,7 @@ enum class Potion(
 			) {
 				antiFireTimer = Timer(if (this == ANTIFIRE_EXTENDED) 12 * 60 * 1000 else 5.8 * 60 * 1000)
 			}
+			logger.info("Drinking $name, success=$drank")
 			if (drank) {
 				lastSip = Timer()
 			}
@@ -122,6 +125,7 @@ enum class Potion(
 
 	companion object {
 
+		private val logger = LoggerFactory.getLogger("Potion")
 		var antiFireTimer = Timer(1)
 
 		fun isHighOnStamina(): Boolean {

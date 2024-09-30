@@ -2,6 +2,7 @@ package org.powbot.krulvis.giantsfoundry.tree.branch
 
 import org.powbot.api.Random
 import org.powbot.api.rt4.GameObject
+import org.powbot.api.rt4.Inventory
 import org.powbot.api.rt4.Movement
 import org.powbot.api.rt4.Objects
 import org.powbot.api.script.tree.Branch
@@ -81,7 +82,7 @@ class HasCrucibleItems(script: GiantsFoundry) : Branch<GiantsFoundry>(script, "H
 		val totalBarCount =
 			script.inventoryBarCounts().map { it.key to it.value + it.key.crucibleCount() }.filter { it.second > 0 }
 		script.logger.info("barsToGet=${script.barsToGet}, invBarCount=$totalBarCount")
-		return script.barsToGet.all { bg ->
+		return Inventory.isFull() || script.barsToGet.all { bg ->
 			val invBarCount = totalBarCount.firstOrNull { barCount -> barCount.first == bg.first }?.second ?: 0
 			invBarCount == bg.second
 		}

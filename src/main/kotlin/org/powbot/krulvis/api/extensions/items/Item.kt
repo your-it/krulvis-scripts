@@ -98,6 +98,7 @@ interface Item {
 		const val AMMO_MOULD = 4
 		const val AMMO_MOULD_DOUBLE = 27012
 		const val GRIMY_GUAM = 199
+		const val THREAD = 1734
 		const val SAW = 8794
 		const val BOND_CHARGED = 13190
 		const val BOND_UNCHARGED = 13192
@@ -172,6 +173,9 @@ interface Item {
 		const val BLOOD_SHARD = 24777
 		const val EMPTY_SEAS = 11908
 		const val KNIFE = 946
+		const val PURE_ESSENCE = 7936
+		const val RUNE_ESSENCE = 1436
+		const val DAEYALT_ESSENCE = 24704
 		const val BLACK_MASK_10 = 8901
 		const val ABYSSAL_WHIP = 4151
 		const val ABYSSAL_DAGGER = 13265

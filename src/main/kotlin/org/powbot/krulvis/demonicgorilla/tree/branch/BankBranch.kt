@@ -16,7 +16,6 @@ class ShouldBank(script: DemonicGorilla) : Branch<DemonicGorilla>(script, "Shoul
 
 	override fun validate(): Boolean {
 		if (script.forcedBanking) return true
-
 		val ammo = script.ammos
 		if (ammo.isNotEmpty() && ammo.none { it.inEquipment() }) return true
 

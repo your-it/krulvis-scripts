@@ -47,9 +47,9 @@ import org.powbot.krulvis.api.extensions.items.Item.Companion.TRIDENT_UNCHARGED
 import org.powbot.krulvis.api.extensions.items.Item.Companion.WARPED_SCEPTRE_CHARGED
 import org.powbot.krulvis.api.extensions.items.Item.Companion.WARPED_SCEPTRE_UNCHARGED
 import org.powbot.krulvis.api.extensions.items.Item.Companion.WYVERN_VISAGE
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 
-class ShouldHighAlch<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
+class ShouldHighAlch<S : KrulScript>(script: S, override val failedComponent: TreeComponent<S>) :
 	Branch<S>(script, "Should high alch?") {
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "High alching") {
 		val alchable = alchable ?: return@SimpleLeaf

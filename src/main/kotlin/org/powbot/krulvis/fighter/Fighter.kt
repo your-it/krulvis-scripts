@@ -22,6 +22,8 @@ import org.powbot.krulvis.api.extensions.requirements.EquipmentRequirement
 import org.powbot.krulvis.api.extensions.requirements.InventoryRequirement
 import org.powbot.krulvis.api.extensions.requirements.ItemRequirement
 import org.powbot.krulvis.api.extensions.teleports.*
+import org.powbot.krulvis.api.extensions.teleports.Teleport.Companion.DISABLE_TELEPORTS_OPTION
+import org.powbot.krulvis.api.extensions.teleports.Teleport.Companion.USE_WEB_OPTION
 import org.powbot.krulvis.api.extensions.teleports.poh.LUNAR_ISLE_HOUSE_PORTAL
 import org.powbot.krulvis.api.extensions.teleports.poh.openable.*
 import org.powbot.krulvis.api.script.KillerScript
@@ -41,7 +43,7 @@ import kotlin.random.Random
 	name = "krul Fighter",
 	description = "Fights anything, anywhere. Supports defender collecting.",
 	author = "Krulvis",
-	version = "1.5.7",
+	version = "1.5.8",
 	markdownFileName = "Fighter.md",
 	scriptId = "d3bb468d-a7d8-4b78-b98f-773a403d7f6d",
 	category = ScriptCategory.Combat,
@@ -132,15 +134,15 @@ import kotlin.random.Random
 			"Teleport to bank",
 			optionType = OptionType.STRING,
 			defaultValue = EDGEVILLE_MOUNTED_GLORY,
-			allowedValues = ["NONE", ROYAL_SEED_POD, EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD,
+			allowedValues = [USE_WEB_OPTION, DISABLE_TELEPORTS_OPTION, ROYAL_SEED_POD, EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD,
 				FEROX_ENCLAVE_JEWELLERY_BOX, CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL]
 		),
 		ScriptConfiguration(
 			MONSTER_TELEPORT_OPTION,
 			"Teleport to Monsters",
 			optionType = OptionType.STRING,
-			defaultValue = "NONE",
-			allowedValues = ["NONE", EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX,
+			defaultValue = USE_WEB_OPTION,
+			allowedValues = [USE_WEB_OPTION, DISABLE_TELEPORTS_OPTION, EDGEVILLE_GLORY, EDGEVILLE_MOUNTED_GLORY, FEROX_ENCLAVE_ROD, FEROX_ENCLAVE_JEWELLERY_BOX,
 				CASTLE_WARS_ROD, CASTLE_WARS_JEWELLERY_BOX, LUNAR_ISLE_HOUSE_PORTAL, POISON_WASTE_SPIRIT_TREE_POH,
 				STRONGHOLD_SLAYER, FREMENNIK_SLAYER, MORYTANIA_SLAYER, MOUNT_KARUULM_BLESSING, FAIRY_RING_CKS, LAVA_MAZE_BURNING, BANDIT_CAMP_BURNING]
 		)
@@ -150,6 +152,9 @@ import kotlin.random.Random
 class Fighter : KillerScript(), UniqueLootTracker {
 
 	override fun createPainter(): ATPaint<*> = FighterPainter(this)
+
+	val useTeleportsToBank by lazy { getOption<String>(BANK_TELEPORT_OPTION) != DISABLE_TELEPORTS_OPTION }
+	val useTeleportsToMonsters by lazy { getOption<String>(MONSTER_TELEPORT_OPTION) != DISABLE_TELEPORTS_OPTION }
 
 	override val rootComponent: TreeComponent<*> = ShouldConsume(this, ShouldStop(this))
 	override fun onStart() {

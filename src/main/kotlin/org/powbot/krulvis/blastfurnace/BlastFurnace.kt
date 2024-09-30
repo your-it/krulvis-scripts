@@ -6,7 +6,7 @@ import org.powbot.api.script.*
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Bar
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.api.extensions.Utils
@@ -52,7 +52,7 @@ import org.powbot.krulvis.blastfurnace.tree.branch.ShouldPay
 		)
 	]
 )
-class BlastFurnace : ATScript() {
+class BlastFurnace : KrulScript() {
 
 	val drinkPotion by lazy { getOption<Boolean>("Drink potions") }
 	val potion by lazy { Potion.valueOf(getOption("Potion")) }

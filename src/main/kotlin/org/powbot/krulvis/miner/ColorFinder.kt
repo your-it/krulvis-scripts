@@ -12,7 +12,7 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Rendering
 
@@ -24,7 +24,7 @@ import org.powbot.mobile.drawing.Rendering
         markdownFileName = "Miner.md",
         category = ScriptCategory.Mining
 )
-class ColorFinder : ATScript() {
+class ColorFinder : KrulScript() {
     override fun createPainter(): ATPaint<*> {
         return Painter(this)
     }

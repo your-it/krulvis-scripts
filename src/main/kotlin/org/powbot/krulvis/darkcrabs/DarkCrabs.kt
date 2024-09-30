@@ -10,7 +10,7 @@ import org.powbot.api.script.ScriptCategory
 import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.ScriptState
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.darkcrabs.tree.branch.ShouldHop
 import org.powbot.mobile.script.ScriptManager
@@ -21,7 +21,7 @@ import org.powbot.mobile.script.ScriptManager
     version = "1.0.0",
     category = ScriptCategory.Fishing,
 )
-class DarkCrabs : ATScript() {
+class DarkCrabs : KrulScript() {
 
     var forcedBanking = false
     val startXp: Int by lazy { Skills.experience(Skill.Fishing) }

@@ -11,7 +11,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.antiban.DelayHandler
 import org.powbot.krulvis.api.extensions.items.Ore.Companion.hasOre
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.miner.Data.TOP_POLY
@@ -73,7 +73,7 @@ import org.powbot.mobile.script.ScriptManager
 		),
 	]
 )
-class Miner : ATScript() {
+class Miner : KrulScript() {
 
 	@ValueChanged("Bank ores")
 	fun onBankOresValue(bank: Boolean) {

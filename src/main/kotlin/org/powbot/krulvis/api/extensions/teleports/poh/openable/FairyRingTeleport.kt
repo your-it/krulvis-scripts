@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
+import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.FairyRing
 import org.powbot.api.rt4.GameObject
@@ -15,8 +16,15 @@ const val FAIRY_RING_DJR = "DJR $IDENTIFYER (POH)"
 const val FAIRY_RING_BLS = "BLS $IDENTIFYER (POH)"
 const val FAIRY_RING_DLS = "DLS $IDENTIFYER (POH)"
 const val FAIRY_RING_CKS = "CKS $IDENTIFYER (POH)"
+const val FAIRY_RING_ZANARIS = "Zanaris $IDENTIFYER (POH)"
 
-class FairyRingTeleport(val combination: String) : HouseTeleport {
+enum class FairyRingTeleport(override val destination: Tile) : HouseTeleport {
+	DJR(Tile(1455, 3658, 0)),
+	BLS(Tile(1295, 3493, 0)),
+	DLS(Tile(3447, 9824, 0)),
+	CKS(Tile(3447, 3470, 0)),
+	Zanaris(Tile(2412, 4434, 0)),
+	;
 
 	private fun getRings(): GameObject {
 		return Objects.stream().type(GameObject.Type.INTERACTIVE).name("Spiritual Fairy Tree", "Fairy ring").first()
@@ -24,7 +32,7 @@ class FairyRingTeleport(val combination: String) : HouseTeleport {
 
 	override fun insideHouseTeleport(): Boolean {
 		val rings = getRings()
-		val lastDestinationAction = rings.actions().firstOrNull { it.contains(combination, true) }
+		val lastDestinationAction = rings.actions().firstOrNull { it.contains(name, true) }
 		if (lastDestinationAction != null) {
 			return walkAndInteract(rings, lastDestinationAction)
 		}
@@ -35,7 +43,7 @@ class FairyRingTeleport(val combination: String) : HouseTeleport {
 			}
 		}
 		if (FairyRing.opened()) {
-			return FairyRing.teleport(combination)
+			return FairyRing.teleport(name)
 		}
 
 		return false
@@ -43,19 +51,19 @@ class FairyRingTeleport(val combination: String) : HouseTeleport {
 
 
 	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)
-	override val action: String = "last-destination ($combination)"
+	override val action: String = "last-destination ($name)"
 	override val requirements: List<Requirement> = emptyList()
 
 	override fun toString(): String {
-		return "FairyRingTeleport($combination)"
+		return "FairyRingTeleport($name)"
 	}
 
 	companion object {
 		fun forName(name: String): FairyRingTeleport? {
 			return if (!name.contains(IDENTIFYER)) null
 			else {
-				val combination = name.substring(0, 3)
-				return FairyRingTeleport(combination.uppercase())
+				val combination = name.split(" ").first()
+				return FairyRingTeleport.values().find { it.name.equals(combination, true) }
 			}
 		}
 	}

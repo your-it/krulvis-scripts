@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
+import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.ScrollHelper
@@ -12,9 +13,9 @@ import org.slf4j.LoggerFactory
 const val FARMING_GUILD_SPIRIT_TREE_POH = "Farming Guild spirit tree (POH)"
 const val POISON_WASTE_SPIRIT_TREE_POH = "Poison Waste spirit tree (POH)"
 
-enum class SpiritTreeTeleport(override val action: String) : OpenableHouseTeleport {
-	FarmingGuild("Farming guild"),
-	PoisonWaste("Poison Waste"),
+enum class SpiritTreeTeleport(override val action: String, override val destination: Tile) : OpenableHouseTeleport {
+	FarmingGuild("Farming guild", Tile(1251, 3750, 0)),
+	PoisonWaste("Poison Waste", Tile(2339, 3109, 0)),
 	;
 
 	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)

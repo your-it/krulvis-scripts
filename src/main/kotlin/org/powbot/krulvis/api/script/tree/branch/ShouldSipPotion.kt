@@ -6,10 +6,10 @@ import org.powbot.api.script.tree.Branch
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Potion
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.extensions.Timer
 
-class ShouldSipPotion<S : ATScript>(script: S, override val failedComponent: TreeComponent<S>) :
+class ShouldSipPotion<S : KrulScript>(script: S, override val failedComponent: TreeComponent<S>) :
 	Branch<S>(script, "Should sip potion?") {
 
 	override val successComponent: TreeComponent<S> = SimpleLeaf(script, "Sipping") {

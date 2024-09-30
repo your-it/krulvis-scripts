@@ -25,7 +25,7 @@ class WalkToSpot(script: Fighter) : Leaf<Fighter>(script, "Walking to spot") {
 			} else if (npcTeleport.execute()) {
 				script.logger.info("Walking to spot after npcTeleport executed successfully")
 				script.aggressionTimer.reset()
-				Movement.walkTo(spot)
+				Movement.builder(spot).setUseTeleports(script.useTeleportsToMonsters).move()
 			}
 		}
 	}

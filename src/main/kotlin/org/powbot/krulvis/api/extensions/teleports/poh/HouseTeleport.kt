@@ -29,7 +29,7 @@ interface HouseTeleport : Teleport {
 					waitFor(5000) { House.isInside() }
 				}
 			} else if (tab.valid()) {
-				if (tab.interact("Break")) {
+				if (tab.interact("Inside")) {
 					waitFor(5000) { House.isInside() }
 				}
 			} else if (Magic.Spell.TELEPORT_TO_HOUSE.canCast()) {
@@ -48,7 +48,7 @@ interface HouseTeleport : Teleport {
 
 	fun shouldRestorePool(poolObj: GameObject): Boolean {
 		val pool = poolObj.pool() ?: return false
-
+		logger.info("ShouldRestorePool(pool=$pool, ordinal=${pool.ordinal})")
 		if (pool.ordinal >= 1 && Movement.energyLevel() <= 90) return true
 		if (pool.ordinal >= 2 && Skills.level(Skill.Prayer) < Skills.realLevel(Skill.Prayer)) return true
 		if (pool.ordinal >= 4 && currentHP() < maxHP()) return true

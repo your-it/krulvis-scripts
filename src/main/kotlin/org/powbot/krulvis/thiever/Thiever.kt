@@ -11,7 +11,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.EquipmentItem
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Timer
 import org.powbot.krulvis.thiever.tree.branch.ShouldEat
@@ -105,7 +105,7 @@ import org.powbot.mobile.service.ScriptUploader
 
 	]
 )
-class Thiever : ATScript() {
+class Thiever : KrulScript() {
 	override fun createPainter(): ATPaint<*> = ThieverPainter(this)
 
 	override val rootComponent: TreeComponent<*> = ShouldEat(this)

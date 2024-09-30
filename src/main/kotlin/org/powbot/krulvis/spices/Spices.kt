@@ -8,7 +8,7 @@ import org.powbot.api.script.ScriptManifest
 import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.spices.tree.branches.Killing
 
@@ -31,7 +31,7 @@ import org.powbot.krulvis.spices.tree.branches.Killing
 //            ),
 	]
 )
-class Spices : ATScript() {
+class Spices : KrulScript() {
 
 	val spice by lazy { Spice.valueOf(getOption("spice")) }
 	override fun createPainter(): ATPaint<*> {

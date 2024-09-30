@@ -2,6 +2,7 @@ package org.powbot.krulvis.api.extensions
 
 import org.powbot.api.Locatable
 import org.powbot.api.Random
+import org.powbot.api.rt4.Movement
 import kotlin.math.min
 
 
@@ -41,8 +42,7 @@ object Utils {
 			}
 			sleep(
 				Random.nextInt(
-					150,
-					250
+					50, 100
 				)
 			)
 		} while (totalDelay > System.currentTimeMillis())
@@ -51,10 +51,22 @@ object Utils {
 
 	fun waitFor(timeOut: Int = mid(), condition: () -> Boolean): Boolean = waitForWhile(timeOut, condition)
 
-	fun waitForDistanceWhile(locatable: Locatable, maxWait: Int = 20000, condition: () -> Boolean, whileWaiting: () -> Any = {}) =
-		waitForWhile(min(locatable.distance().toInt() * 1000, maxWait), condition, whileWaiting)
+	fun waitForDistanceWhile(
+		locatable: Locatable,
+		extraWait: Int = 1200,
+		maxWait: Int = 20000,
+		condition: () -> Boolean,
+		whileWaiting: () -> Any = {}
+	): Boolean {
+		val distanceWaitingTime = locatable.distance().toInt() * if (Movement.running()) 300 else 600
+		return waitForWhile(
+			min(distanceWaitingTime + extraWait, maxWait),
+			condition,
+			whileWaiting
+		)
+	}
 
-	fun waitForDistance(locatable: Locatable, maxWait: Int = 20000, condition: () -> Boolean) =
-		waitForDistanceWhile(locatable, maxWait, condition)
 
+	fun waitForDistance(locatable: Locatable, extraWait: Int = 1200, maxWait: Int = 20000, condition: () -> Boolean) =
+		waitForDistanceWhile(locatable, extraWait, maxWait, condition)
 }

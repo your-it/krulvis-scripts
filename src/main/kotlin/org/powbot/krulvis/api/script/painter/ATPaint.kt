@@ -1,11 +1,11 @@
 package org.powbot.krulvis.api.script.painter
 
 import org.powbot.api.script.paint.*
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.mobile.rscache.loader.ItemLoader
 
-abstract class ATPaint<S : ATScript>(val script: S, val x: Int = 110, val y: Int = 70) {
+abstract class ATPaint<S : KrulScript>(val script: S, val x: Int = 110, val y: Int = 70) {
 
 	val paintBuilder = PaintBuilder()
 

@@ -8,13 +8,13 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.containsOneOf
 import org.powbot.krulvis.api.extensions.items.Food
 import org.powbot.krulvis.api.extensions.items.container.Container
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.Looting
 import org.powbot.krulvis.api.script.tree.leaf.Loot
 import kotlin.math.max
 
 class CanLoot<S>(script: S, override val failedComponent: TreeComponent<S>) :
-	Branch<S>(script, "CanLoot") where S : ATScript, S : Looting {
+	Branch<S>(script, "CanLoot") where S : KrulScript, S : Looting {
 	override val successComponent: TreeComponent<S> = Loot(script)
 
 	private fun makeSpace(worth: Int): Boolean {

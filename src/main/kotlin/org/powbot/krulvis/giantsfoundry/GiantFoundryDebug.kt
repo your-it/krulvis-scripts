@@ -8,13 +8,13 @@ import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.Utils.sleep
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.mobile.drawing.Rendering
 import kotlin.math.abs
 
 @ScriptManifest("giantFoundryDebug", "Debug GiantFoundry", priv = true)
-class GiantFoundryDebug : ATScript() {
+class GiantFoundryDebug : KrulScript() {
 	override fun createPainter(): ATPaint<*> = DebugPainter(this)
 	override val rootComponent: TreeComponent<*> = SimpleLeaf(this, "Debug") {
 		sleep(1000)

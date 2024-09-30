@@ -12,7 +12,7 @@ import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.ATContext.dead
 import org.powbot.krulvis.api.ATContext.me
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.teleports.Teleport
 import org.powbot.krulvis.api.extensions.teleports.TeleportMethod
@@ -88,7 +88,7 @@ fun main() {
 		)
 	]
 )
-class DagannothKings : ATScript() {
+class DagannothKings : KrulScript() {
 
 	val lootList = mutableListOf<GroundItem>()
 	val skippedLoot = mutableListOf<GroundItem>()
@@ -117,7 +117,7 @@ class DagannothKings : ATScript() {
 		Data.King.values().forEach {
 			it.offensivePrayer = Prayer.Effect.values()
 				.firstOrNull { pray -> pray.name == getOption(OFFENSIVE_PRAY_PREFIX_OPTION + it.name) }
-			it.equipment = EquipmentRequirement.forEquipmentOption(getOption(EQUIPMENT_PREFIX_OPTION + it.name))
+			it.equipment = EquipmentRequirement.forOption(getOption(EQUIPMENT_PREFIX_OPTION + it.name))
 			it.kill = getOption(KILL_PREFIX_OPTION + it.name)
 			it.respawnTimer.stop()
 		}

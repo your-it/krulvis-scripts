@@ -10,10 +10,10 @@ import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.walkAndInteract
 import org.powbot.krulvis.api.extensions.Utils.waitFor
 import org.powbot.krulvis.api.extensions.items.Item
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.Looting
 
-class Loot<S>(script: S) : Leaf<S>(script, "Looting") where S : ATScript, S : Looting {
+class Loot<S>(script: S) : Leaf<S>(script, "Looting") where S : KrulScript, S : Looting {
 
 
 	override fun execute() {

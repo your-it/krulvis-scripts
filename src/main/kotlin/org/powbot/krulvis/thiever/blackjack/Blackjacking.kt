@@ -10,7 +10,7 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.TreeComponent
 import org.powbot.krulvis.api.extensions.items.Food
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Utils
 
@@ -24,7 +24,7 @@ import org.powbot.krulvis.api.extensions.Utils
     category = ScriptCategory.Thieving,
     priv = true
 )
-class Blackjacking : ATScript() {
+class Blackjacking : KrulScript() {
 
 
     val target = "Bandit"

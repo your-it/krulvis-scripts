@@ -1,5 +1,6 @@
 package org.powbot.krulvis.api.extensions.teleports.poh.openable
 
+import org.powbot.api.Tile
 import org.powbot.api.requirement.Requirement
 import org.powbot.api.rt4.Component
 import org.powbot.api.rt4.ScrollHelper
@@ -16,40 +17,40 @@ private const val PORTAL_CLOSE_BUTTON = 13
 
 const val FALADOR_TELEPORT_NEXUS = "Falador nexus teleport (poh)"
 
-enum class NexusPortalTeleport(override val action: String) : OpenableHouseTeleport {
-	ArceuusLibrary("Arceuus Library"),
-	DraynorManor("Draynor Manor"),
-	Battlefront("Battlefront"),
-	Varrock("Varrock"),
-	GrandExchange("Grand Exchange"),
-	MindAltar("Mind Altar"),
-	Lumbridge("Lumbridge"),
-	Falador("Falador"),
-	SalveGraveyard("Salve Graveyard"),
-	Camelot("Camelot"),
-	SeersVillage("Seers' Village"),
-	FenkenstrainsCastle("Fenkenstrain's Castle"),
-	EastArdougne("East Ardougne"),
-	Watchtower("Watchtower"),
-	Yanille("Yanille"),
-	Senntisten("Senntisten"),
-	WestArdougne("West Ardougne"),
-	Marim("Marim"),
-	HarmonyIsland("Harmony Island"),
-	Kharyrll("Kharyrll"),
-	KourendCastle("Kourend Castle"),
-	LunarIsle("Lunar Isle"),
-	ForgottenCemetery("The Forgotten Cemetery"),
-	WaterbirthIsland("Waterbirth Island"),
-	Barrows("Barrows"),
-	Carrallanger("Carrallanger"),
-	FishingGuild("Fishing Guild"),
-	Catherby("Catherby"),
-	Annakarl("Annakarl"),
-	ApeAtollDungeon("Ape Atoll Dungeon"),
-	Ghorrock("Ghorrock"),
-	Weiss("Weiss"),
-	TrollStronghold("Troll Stronghold");
+enum class NexusPortalTeleport(override val action: String, override val destination: Tile) : OpenableHouseTeleport {
+	ArceuusLibrary("Arceuus Library", Tile.Nil),
+	DraynorManor("Draynor Manor",Tile.Nil),
+	Battlefront("Battlefront",Tile.Nil),
+	Varrock("Varrock",Tile(3213, 3423, 0)),
+	GrandExchange("Grand Exchange", Tile(3162, 3478, 0)),
+	MindAltar("Mind Altar",Tile.Nil),
+	Lumbridge("Lumbridge",Tile.Nil),
+	Falador("Falador",Tile(2966, 3377, 0)),
+	SalveGraveyard("Salve Graveyard",Tile.Nil),
+	Camelot("Camelot",Tile.Nil),
+	SeersVillage("Seers' Village",Tile.Nil),
+	FenkenstrainsCastle("Fenkenstrain's Castle",Tile.Nil),
+	EastArdougne("East Ardougne",Tile.Nil),
+	Watchtower("Watchtower",Tile.Nil),
+	Yanille("Yanille",Tile.Nil),
+	Senntisten("Senntisten",Tile.Nil),
+	WestArdougne("West Ardougne",Tile.Nil),
+	Marim("Marim",Tile.Nil),
+	HarmonyIsland("Harmony Island",Tile(3797, 2865, 0)),
+	Kharyrll("Kharyrll",Tile.Nil),
+	KourendCastle("Kourend Castle",Tile.Nil),
+	LunarIsle("Lunar Isle",Tile(2092, 3914, 0)),
+	ForgottenCemetery("The Forgotten Cemetery",Tile.Nil),
+	WaterbirthIsland("Waterbirth Island",Tile.Nil),
+	Barrows("Barrows",Tile(3567, 3316, 0)),
+	Carrallanger("Carrallanger",Tile.Nil),
+	FishingGuild("Fishing Guild",Tile.Nil),
+	Catherby("Catherby",Tile(2802, 3447, 0)),
+	Annakarl("Annakarl",Tile.Nil),
+	ApeAtollDungeon("Ape Atoll Dungeon",Tile.Nil),
+	Ghorrock("Ghorrock",Tile.Nil),
+	Weiss("Weiss",Tile(2847, 3942, 0)),
+	TrollStronghold("Troll Stronghold",Tile(2838, 3694, 0));
 
 	override val logger: Logger = LoggerFactory.getLogger(javaClass.simpleName)
 

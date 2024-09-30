@@ -8,14 +8,14 @@ import org.powbot.api.script.paint.Paint
 import org.powbot.api.script.paint.PaintBuilder
 import org.powbot.api.script.tree.SimpleLeaf
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.api.extensions.Utils.sleep
 import org.powbot.mobile.drawing.Rendering
 import org.powbot.util.TransientGetter2D
 
 @ScriptManifest(name = "test Web", version = "1.0.1", description = "", priv = true)
-class TestWeb : ATScript() {
+class TestWeb : KrulScript() {
 	override fun createPainter(): ATPaint<*> = TestWebPainter(this)
 
 	var destination = Tile(2339, 3109, 0)

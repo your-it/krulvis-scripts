@@ -4,7 +4,7 @@ import org.powbot.api.Notifications
 import org.powbot.api.script.*
 import org.powbot.api.script.tree.SimpleBranch
 import org.powbot.api.script.tree.TreeComponent
-import org.powbot.krulvis.api.script.ATScript
+import org.powbot.krulvis.api.script.KrulScript
 import org.powbot.krulvis.api.script.painter.ATPaint
 import org.powbot.krulvis.mta.rooms.*
 import org.powbot.krulvis.mta.tree.leafs.GoInside
@@ -40,7 +40,7 @@ import org.powbot.mobile.script.ScriptManager
         ),
     ]
 )
-class MTA : ATScript() {
+class MTA : KrulScript() {
 
     val method by lazy { getOption<String>("Method") }
     val stopAtPoints by lazy { getOption<Boolean>("Stop at points") }

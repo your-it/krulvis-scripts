@@ -10,16 +10,12 @@ class EquipmentRequirement(override val item: IEquipmentItem, override var amoun
 
 	val slot = item.slot
 
-	constructor(id: Int, amount: Int = 1) : this(EquipmentItem(id, Equipment.Slot.QUIVER), amount)
-	
-	constructor(id: Int, slot: Equipment.Slot, amount: Int = 1) : this(
+	constructor(id: Int, slot: Equipment.Slot = Equipment.Slot.QUIVER, amount: Int = 1) : this(
 		TeleportEquipment.getTeleportEquipment(id) ?: EquipmentItem(id, slot), amount
 	)
 
-	constructor(id: Int, slot: Int, amount: Int = 1) : this(
-		TeleportEquipment.getTeleportEquipment(id) ?: EquipmentItem(id, Equipment.Slot.forIndex(slot)!!),
-		amount
-	)
+	constructor(id: Int, slot: Int, amount: Int = 1) : this(id, Equipment.Slot.forIndex(slot)!!, amount)
+
 
 	fun withdrawAndEquip(stopIfOut: Boolean): Boolean {
 		return item.withdrawAndEquip(stopIfOut)
@@ -32,7 +28,7 @@ class EquipmentRequirement(override val item: IEquipmentItem, override var amoun
 	override fun toString(): String = "EquipmentRequirement -> ${item.id}: $amount"
 
 	companion object {
-		fun forEquipmentOption(option: Map<Int, Int>): List<EquipmentRequirement> {
+		fun forOption(option: Map<Int, Int>): List<EquipmentRequirement> {
 			return option.map { EquipmentRequirement(it.key, it.value) }
 		}
 
