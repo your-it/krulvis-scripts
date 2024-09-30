@@ -85,3 +85,6 @@ fabric.properties
 build/
 
 api/*
+
+src/main/kotlin/org/powbot/krulvis/tempoross
+src/main/kotlin/org/powbot/krulvis/runecrafting
