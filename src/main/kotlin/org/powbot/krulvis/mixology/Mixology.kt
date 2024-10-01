@@ -32,6 +32,7 @@ import org.powbot.krulvis.mixology.tree.branches.AtMixologyLab
 	"Completes Mixology Minigame. Protip: Use krul Combiner to make the paste",
 	"Krulvis",
 	"1.0.5",
+	scriptId = "13cedc84-2a5b-458c-87f5-209b78e66ab9",
 	category = ScriptCategory.Herblore,
 )
 @ScriptConfiguration.List(
