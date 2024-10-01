@@ -19,27 +19,29 @@ class HasFinishedPotion(script: Mixology) : Branch<Mixology>(script, "HasFinishe
 		val belt = Objects.stream(20, GameObject.Type.INTERACTIVE).name("Conveyor belt").first()
 		val orders = Data.MixPotion.getOrders()
 		if (walkAndInteract(belt, "Fulfil-order")) {
-			waitForDistance(belt) { !orders.contentEquals(Data.MixPotion.getOrders()) }
+			waitForDistance(belt) { !orders.containsAll(Data.MixPotion.getOrders()) }
 		}
 	}
 
 	override fun validate(): Boolean {
 		val validOrders = Data.MixPotion.getOrders()
 		script.logger.info("ValidOrders=${validOrders.joinToString()}")
-		script.mixToMake = validOrders.filter { it.hasLevel }.maxByOrNull { it.xp } ?: script.fallbackPot
-		script.modifier = script.mixToMake.modifier()
-		return script.mixToMake.hasFinishedPotion()
+		script.mixToMake = validOrders.filter { it.first.hasLevel }.maxByOrNull { it.first.xp } ?: Pair(
+			script.fallbackPot,
+			Data.Modifier.Concentrate
+		)
+		return script.mixToMake.first.hasFinishedPotion()
 	}
 }
 
 class ShouldModify(script: Mixology) : Branch<Mixology>(script, "ShouldModify") {
 	override val successComponent: TreeComponent<Mixology> = SimpleLeaf(script, "Modify") {
-		val machine = script.modifier.getMachine()
+		val machine = script.mixToMake.second.getMachine()
 		val modifying = me.animation() != -1
 		machine.bounds(-32, 32, -64, 0, -32, 32)
-		if (!modifying && walkAndInteract(machine, script.modifier.action)) {
+		if (!modifying && walkAndInteract(machine, script.mixToMake.second.action)) {
 			waitForDistance(machine, extraWait = 10000) {
-				Inventory.stream().id(script.mixToMake.finishedId).isNotEmpty()
+				Inventory.stream().id(script.mixToMake.first.finishedId).isNotEmpty()
 			}
 		} else if (modifying) {
 			script.logger.info("Waiting for modifier to finish!")
@@ -48,7 +50,7 @@ class ShouldModify(script: Mixology) : Branch<Mixology>(script, "ShouldModify") 
 	override val failedComponent: TreeComponent<Mixology> = HasIngredients(script)
 
 	override fun validate(): Boolean {
-		return script.mixToMake.hasUnfinished() || script.modifier.isActive()
+		return script.mixToMake.first.hasUnfinished() || script.mixToMake.second.isActive()
 	}
 }
 
@@ -57,6 +59,6 @@ class HasIngredients(script: Mixology) : Branch<Mixology>(script, "HasIngredient
 	override val failedComponent: TreeComponent<Mixology> = CanDepositPaste(script)
 
 	override fun validate(): Boolean {
-		return script.mixToMake.hasStoredIngredients()
+		return script.mixToMake.first.hasStoredIngredients()
 	}
 }

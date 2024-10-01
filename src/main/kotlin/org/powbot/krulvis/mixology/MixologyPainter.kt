@@ -9,8 +9,8 @@ import org.powbot.mobile.drawing.Rendering
 class MixologyPainter(script: Mixology) : ATPaint<Mixology>(script) {
 	override fun buildPaint(paintBuilder: PaintBuilder): Paint {
 		return paintBuilder
-			.addString("MixToMake") { script.mixToMake.name.replace("_", " ") }
-			.addString("Modifier") { script.modifier.toString() }
+			.addString("MixToMake") { script.mixToMake.first.name.replace("_", " ") }
+			.addString("Modifier") { script.mixToMake.second.toString() }
 			.addString("Gained") { script.gained.joinToString { perHourText(it) } }
 			.addString("Total Points") { script.totals.joinToString() }
 			.trackSkill(Skill.Herblore).build()

@@ -21,13 +21,13 @@ class CanDepositPaste(script: Mixology) : Branch<Mixology>(script, "CanDeposit")
 		val hopper = Objects.stream().type(GameObject.Type.INTERACTIVE).name("Hopper").first()
 		if (walkAndInteract(hopper, "Deposit")) {
 			waitForDistance(hopper, extraWait = 5000) {
-				script.mixToMake.hasStoredIngredients()
+				script.mixToMake.first.hasStoredIngredients()
 			}
 		}
 	}
 
 	override fun validate(): Boolean {
-		val requiredIngredients = script.mixToMake.ingredientsPaired
+		val requiredIngredients = script.mixToMake.first.ingredientsPaired
 		val storedIngredients = Data.Ingredient.getStoredIngredients()
 		val missingIngredients =
 			requiredIngredients.keys.associateWith { requiredIngredients[it]!! - storedIngredients[it]!! }

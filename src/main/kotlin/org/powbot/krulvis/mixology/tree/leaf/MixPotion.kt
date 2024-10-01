@@ -13,13 +13,14 @@ import org.powbot.krulvis.mixology.Mixology
 class MixPotion(script: Mixology) : Leaf<Mixology>(script, "MixPotion") {
 	override fun execute() {
 		var activeIngreeds = Data.Ingredient.getActiveIngredients().paired()
-		val requiredIngredients = script.mixToMake.ingredientsPaired
+		val potion = script.mixToMake.first
+		val requiredIngredients = potion.ingredientsPaired
 		if (activeIngreeds == requiredIngredients) {
 			val mixingVessel =
 				Objects.stream().type(GameObject.Type.INTERACTIVE).nameContains("Mixing vessel").action("Take-from")
 					.first()
 			if (walkAndInteract(mixingVessel, "Take-from")) {
-				waitForDistance(mixingVessel, 1000) { script.mixToMake.hasUnfinished() }
+				waitForDistance(mixingVessel, 1000) { potion.hasUnfinished() }
 			}
 		} else {
 			requiredIngredients.filter { it.value > 0 }.forEach { ingredient ->
@@ -40,7 +41,7 @@ class MixPotion(script: Mixology) : Leaf<Mixology>(script, "MixPotion") {
 				}
 			}
 			val mixComplete =
-				waitFor { script.mixToMake.ingredients.paired() == Data.Ingredient.getActiveIngredients().paired() }
+				waitFor { potion.ingredients.paired() == Data.Ingredient.getActiveIngredients().paired() }
 			script.logger.info("MixComplete=${mixComplete}")
 		}
 	}

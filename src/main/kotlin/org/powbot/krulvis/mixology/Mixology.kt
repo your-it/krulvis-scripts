@@ -31,7 +31,7 @@ import org.powbot.krulvis.mixology.tree.branches.AtMixologyLab
 	"krul Mixology",
 	"Completes Mixology Minigame. Protip: Use krul Combiner to make the paste",
 	"Krulvis",
-	"1.0.4",
+	"1.0.5",
 	category = ScriptCategory.Herblore,
 )
 @ScriptConfiguration.List(
@@ -50,8 +50,7 @@ class Mixology : KrulScript() {
 
 	override val rootComponent: TreeComponent<*> = AtMixologyLab(this)
 	val fallbackPot by lazy { Data.MixPotion.forName(getOption(FALLBACK_OPTION))!! }
-	var mixToMake = Data.MixPotion.Mammoth_might_mix
-	var modifier = Data.Modifier.Crystalise
+	var mixToMake = Pair(Data.MixPotion.Mammoth_might_mix, Data.Modifier.Homogenise)
 	var modifierNpc = Npc.Nil
 
 	var totals = arrayOf(0, 0, 0)
@@ -78,7 +77,7 @@ class Mixology : KrulScript() {
 
 	@Subscribe
 	fun onTick(e: TickEvent) {
-		val modifier = modifier
+		val modifier = mixToMake.second
 		modifierNpc = Npcs.stream().at(modifier.machineTile).last()
 	}
 
