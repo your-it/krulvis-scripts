@@ -9,6 +9,7 @@ import org.powbot.krulvis.api.ATContext.emptyExcept
 import org.powbot.krulvis.api.ATContext.getCount
 import org.powbot.krulvis.api.ATContext.withdrawExact
 import org.powbot.krulvis.api.extensions.Utils.waitFor
+import org.powbot.krulvis.api.extensions.items.Item.Companion.HARPOONS
 import org.powbot.krulvis.api.extensions.items.container.Container.FISH_BARREL
 
 import org.powbot.krulvis.darkcrabs.DarkCrabs
@@ -16,7 +17,6 @@ import org.powbot.krulvis.darkcrabs.Data
 import org.powbot.krulvis.darkcrabs.Data.DARK_BAIT
 import org.powbot.krulvis.darkcrabs.Data.LOBSTER_POT
 import org.powbot.krulvis.darkcrabs.Data.SPIRIT_FLAKES
-import org.powbot.krulvis.tempoross.Data.HARPOONS
 import org.powbot.mobile.script.ScriptManager
 
 class HandleBank(script: DarkCrabs) : Leaf<DarkCrabs>(script, "Handle Bank") {

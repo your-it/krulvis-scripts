@@ -217,6 +217,13 @@ interface Item {
 		const val HYDRA_EYE = 22973
 		const val HYDRA_LEATHER = 22983
 		const val HYDRA_TAIL = 22988
+
+		val HARPOON = 311
+		val BARB_TAIL_HARPOON = 10129
+		val SPEC_HARPOONS = intArrayOf(21028, 21031, 21033, 23762, 23764, 25059, 25373)
+		val WEARABLE_HARPOONS = intArrayOf(BARB_TAIL_HARPOON, *SPEC_HARPOONS)
+		val HARPOONS = intArrayOf(HARPOON, *WEARABLE_HARPOONS)
+
 		val RARE_DROP_TABLE = arrayOf(
 			"Dragon spear",
 			"Rune kiteshield",
